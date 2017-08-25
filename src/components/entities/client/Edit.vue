@@ -1,14 +1,19 @@
 <template>
-  <div>
-    <breadcrumb :path="['Clients', $route.params.id, 'Edit']"></breadcrumb>
+   <div class="modal-form">
+    <modal-tabs>
+      <modal-tab title="Blank">
+        <!--  -->
+      </modal-tab>
+    </modal-tabs>
   </div>
 </template>
 
 <script>
-  export default {
-  }
+export default {
+  name: 'edit-client'
+}
 </script>
 
 <style lang="scss">
-
+// put edit-client specific styling here
 </style>
