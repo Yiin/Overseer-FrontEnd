@@ -111,10 +111,7 @@ export default {
    * @return {void}
    */
   logout() {
-    store.commit('CLEAR_ALL_DATA')
-    router.push({
-      name: 'login'
-    })
+    // do not logout
   },
 
   /**

@@ -4,7 +4,7 @@ export const STORAGE_KEY = 'state'
 
 let state = {
   auth: {
-    isLoggedIn: false,
+    isLoggedIn: true,
     accessToken: null
   },
   user: {

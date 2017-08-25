@@ -2,7 +2,7 @@ import * as types from './mutation-types'
 
 export default {
   [types.UPDATE_AUTH](state, auth) {
-    state.auth = auth
+    // do not update shit
   },
 
   [types.UPDATE_USER](state, user) {
@@ -64,10 +64,6 @@ export default {
    * TODO: use a common import of default state to reset these values with.
    */
   [types.CLEAR_ALL_DATA](state) {
-    // Auth
-    state.auth.isLoggedIn = false
-    state.auth.accessToken = null
-
     // User
     state.user.first_name = ''
     state.user.last_name = ''
