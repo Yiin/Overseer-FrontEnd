@@ -1,0 +1,113 @@
+.table {
+    display: table;
+    position: relative;
+    width: 100%;
+    box-shadow: $box-shadow;
+
+    &__heading {
+        margin-bottom: 37px;
+        margin-top: 26px;
+    }
+
+    &__head {
+        display: table-header-group;
+        background: $table-head-bg;
+        color: $color-text-alt;
+        font-weight: $font-weight-semibold;
+        user-select: none;
+
+        .column {
+            height: 50px;
+            border-color: $table-head-border-color;
+
+            &__checkbox {
+                min-width: 50px;
+                max-width: 50px;
+                .checkbox {
+                    &::before {
+                        border-color: $color-text-alt;
+                        background: $color-main-dark;
+                    }
+                    &::after {
+                        background: $color-text-alt;
+                    }
+                }
+            }
+        }
+    }
+
+    &__body {
+        display: table-row-group;
+        background: $table-bg;
+        font-size: 16px;
+
+        .column, a, span, {
+            color: $color-text;
+            text-decoration: none;
+        }
+
+        .column {
+            border-color: $table-border-color;
+        }
+    }
+
+    &__row {
+        display: table-row;
+
+        &:hover {
+            background-color: $table-row-hover-bg;
+        }
+
+        .column {
+            height: $table-row-height;
+        }
+
+        &:not(:last-child) {
+            .column {
+                border-bottom: 1px solid $table-border-color;
+            }
+        }
+
+        &--full-width {
+            &::after {
+                content: "";
+                display: table-cell;
+                height: $table-row-height;
+            }
+
+            .column {
+                position: absolute;
+                width: 100%;
+                background: $table-bg;
+                text-align: center;
+                top: 50px;
+                left: 0;
+                line-height: $table-row-height;
+                padding-left: 0;
+            }
+        }
+    }
+
+    .column {
+        display: table-cell;
+        vertical-align: middle;
+        padding-left: 15px;
+
+        &:not(:last-child) {
+            border-right-width: 1px;
+            border-right-style: solid;
+        }
+
+        &--center {
+            text-align: center;
+            padding: 0;
+        }
+    }
+
+    .currency {
+        font-weight: $font-weight-bold;
+        &--primary {
+            color: $color-main;
+        }
+    }
+}

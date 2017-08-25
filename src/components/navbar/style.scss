@@ -1,0 +1,89 @@
+/**
+ * Base navbar style
+ */
+.navbar
+{
+    position: fixed;
+    top: 0;
+
+    width: 100%;
+    height: $height-navbar;
+
+    user-select: none;
+
+    background: $color-navbar-bg;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+}
+
+.navbar__content
+{
+    display: flex;
+
+    margin: 15px 0;
+
+    align-items: middle;
+    &--left
+    {
+        float: left;
+
+        margin-left: 27px;
+    }
+    &--right
+    {
+        float: right;
+
+        margin-right: 49px;
+    }
+}
+
+.sidebar-toggle
+{
+    cursor: pointer;
+    > i
+    {
+        font-size: 21px;
+    }
+}
+
+.logo
+{
+    height: 17px;
+    padding-top: 2px;
+}
+
+.logo-holder
+{
+    height: 18px;
+    margin-left: 63px;
+}
+
+/**
+ * Notification icon
+ */
+
+.notifications-icon
+{
+    position: relative;
+    > i
+    {
+        font-size: 15px;
+    }
+    .notifications-count
+    {
+        font-size: 9px;
+        font-weight: bold;
+        line-height: 1;
+
+        position: absolute;
+        top: -5px;
+        right: -10px;
+
+        padding: 2px 5px;
+
+        text-align: center;
+        white-space: nowrap;
+
+        color: $color-notifications-count;
+        background: $color-notifications-count-bg;
+    }
+}

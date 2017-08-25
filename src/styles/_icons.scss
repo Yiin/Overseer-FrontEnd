@@ -1,0 +1,211 @@
+@font-face
+{
+    font-family: 'icomoon';
+    font-weight: normal;
+    font-style: normal;
+
+    src: url('../assets/fonts/icomoon.eot');
+    src: url('../assets/fonts/icomoon.eot') format('embedded-opentype'),
+         url('../assets/fonts/icomoon.ttf') format('truetype'),
+         url('../assets/fonts/icomoon.woff') format('woff'),
+         url('../assets/fonts/icomoon.svg') format('svg');
+}
+
+[class^='icon-'],
+[class*=' icon-']
+{
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    font-weight: normal;
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+
+    text-transform: none;
+
+    speak: none;
+    /* Better Font Rendering ========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+[class^='icon-dropdown-'] {
+    color: #808080;
+}
+
+[class^='icon-new-'] {
+    color: #fff;
+}
+
+[class^='icon-pagination-'] {
+    color: #949494;
+}
+
+.icon-create-btn
+{
+    font-size: 18px;
+
+    position: relative;
+    top: 1px;
+
+    display: inline-block;
+    float: left !important;
+
+    margin-left: 1px;
+    padding-top: 3px;
+    padding-right: 15px;
+    padding-left: 0;
+}
+
+.btn:hover > .icon-create-btn::before {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.icon-calendar-weekly:before {
+  content: "\e930";
+}
+.icon-sidebar-clients:before {
+  content: "\e900";
+}
+.icon-sidebar-credits:before {
+  content: "\e901";
+}
+.icon-sidebar-expenses:before {
+  content: "\e902";
+}
+.icon-sidebar-invoices:before {
+  content: "\e903";
+}
+.icon-sidebar-overview:before {
+  content: "\e904";
+}
+.icon-sidebar-payments:before {
+  content: "\e905";
+}
+.icon-sidebar-products:before {
+  content: "\e906";
+}
+.icon-sidebar-quotes:before {
+  content: "\e907";
+}
+.icon-sidebar-recurring:before {
+  content: "\e908";
+}
+.icon-sidebar-reports:before {
+  content: "\e909";
+}
+.icon-sidebar-settings:before {
+  content: "\e90a";
+}
+.icon-sidebar-tasks:before {
+  content: "\e90b";
+}
+.icon-sidebar-vendors:before {
+  content: "\e90c";
+}
+.icon-dropdown-archive:before {
+  content: "\e90d";
+}
+.icon-dropdown-clone:before {
+  content: "\e90e";
+}
+.icon-dropdown-clone_qoute:before {
+  content: "\e90f";
+}
+.icon-dropdown-convert:before {
+  content: "\e910";
+}
+.icon-dropdown-credit:before {
+  content: "\e911";
+}
+.icon-dropdown-delete:before {
+  content: "\e912";
+}
+.icon-dropdown-download:before {
+  content: "\e913";
+}
+.icon-dropdown-edit:before {
+  content: "\e914";
+}
+.icon-dropdown-email:before {
+  content: "\e915";
+}
+.icon-dropdown-expense:before {
+  content: "\e916";
+}
+.icon-dropdown-history:before {
+  content: "\e917";
+}
+.icon-dropdown-history_qoute:before {
+  content: "\e918";
+}
+.icon-dropdown-mark:before {
+  content: "\e919";
+}
+.icon-dropdown-new_invoice:before {
+  content: "\e91a";
+}
+.icon-dropdown-new_task:before {
+  content: "\e91b";
+}
+.icon-dropdown-payment:before {
+  content: "\e91c";
+}
+.icon-dropdown-preview:before {
+  content: "\e91d";
+}
+.icon-dropdown-quote:before {
+  content: "\e91e";
+}
+.icon-dropdown-refund:before {
+  content: "\e91f";
+}
+.icon-home_icon:before {
+  content: "\e920";
+    color: #47a0d9;
+}
+.icon-new-client-btn-icon:before {
+  content: "\e921";
+}
+.icon-new-credit-btn-icon:before {
+  content: "\e922";
+}
+.icon-new-invoice-btn-icon:before {
+  content: "\e923";
+}
+.icon-new-payment-btn-icon:before {
+  content: "\e924";
+}
+.icon-new-product-btn-icon:before {
+  content: "\e925";
+}
+.icon-new-quote-btn-icon:before {
+  content: "\e926";
+}
+.icon-new-recurring-btn-icon:before {
+  content: "\e927";
+}
+.icon-new-vendor-btn-icon:before {
+  content: "\e928";
+}
+.icon-pagination_button_left:before {
+  content: "\e929";
+}
+.icon-pagination_button_right:before {
+  content: "\e92a";
+}
+.icon-search-by_inputs_disable_icon:before {
+  content: "\e92b";
+}
+.icon-search-by_inputs_disable_icon_white:before {
+    content: "\e92c";
+    color: #fff;
+}
+.icon-warning:before {
+  content: "\e92e";
+    color: #ed492e;
+}
+.icon-warning_icon:before {
+  content: "\e92f";
+    color: #ed492e;
+}

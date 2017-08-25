@@ -1,0 +1,206 @@
+.background-dim
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: $modal-bg-dim;
+}
+
+.modal-background
+{
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+
+    padding: 52px 31px 0;
+
+    transform: translate(-50%, 0);
+
+    background: $modal-outer-bg;
+}
+
+.modal
+{
+    &__title
+    {
+        font-size: 16px;
+
+        position: absolute;
+        top: 20px;
+
+        user-select: none;
+    }
+    &__body
+    {
+        background: $modal-inner-bg;
+        box-shadow: $box-shadow;
+    }
+    &-icon
+    {
+        float: left;
+
+        width: 12px;
+        height: 12px;
+        padding: 5px;
+
+        cursor: pointer;
+
+        background-size: cover;
+        &:not(:first-child)
+        {
+            margin-left: 20px;
+        }
+        &__hide
+        {
+            background-image: url('../assets/icons/hide.svg');
+            &:hover
+            {
+                background-image: url('../assets/icons/hide_hover.svg');
+            }
+        }
+        &__full
+        {
+            transform: rotateZ(90deg);
+
+            background-image: url('../assets/icons/fullscreen.svg');
+            &:hover
+            {
+                background-image: url('../assets/icons/fullscreen_hover.svg');
+            }
+        }
+        &__close
+        {
+            background-image: url('../assets/icons/close.svg');
+            &:hover
+            {
+                background-image: url('../assets/icons/close_hover.svg');
+            }
+        }
+    }
+    &__controls
+    {
+        position: absolute;
+        top: 20px;
+        right: 31px;
+    }
+    &-tabs
+    {
+        user-select: none;
+        &__list
+        {
+            overflow: hidden;
+        }
+        &__content
+        {
+            padding: 60px 20px 40px 20px;
+        }
+    }
+    &__tab
+    {
+        font-size: 15px;
+        font-weight: $font-weight-semibold;
+
+        display: inline-flex;
+
+        height: 53px;
+        padding: 14px 20px;
+
+        cursor: pointer;
+
+        color: $color-text;
+
+        align-items: center;
+        @for $i from 1 through length($modal-tab-colors)
+        {
+            $color: nth($modal-tab-colors, $i);
+            &:nth-child(#{$i})
+            {
+                &.modal__tab--active,
+                .tab-number
+                {
+                    color: $color-text-alt;
+                    background: $color;
+                }
+            }
+        }
+    }
+}
+
+.modal-buttons
+{
+    font-size: 0;
+    height: 44px;
+    &-group
+    {
+        &::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        &--left
+        {
+            float: left;
+        }
+        &--right
+        {
+            float: right;
+        }
+    }
+}
+
+.modal-button
+{
+    font-size: 16px;
+    font-weight: 600;
+
+    display: inline-flex;
+
+    height: 44px;
+
+    color: $color-text-alt;
+
+    justify-content: center;
+    align-items: center;
+    &__back
+    {
+        width: 51px;
+
+        background: $color-main-dark;
+    }
+    &__cancel
+    {
+        width: 135px;
+        margin-left: 20px;
+
+        background: $color-main-dark;
+    }
+    &__save
+    {
+        width: 119px;
+
+        background: $color-forest-green;
+    }
+    &__next
+    {
+        width: 132px;
+        margin-left: 20px;
+
+        background: $color-main;
+    }
+}
+
+.tab-number
+{
+    display: flex;
+
+    width: 25px;
+    height: 25px;
+    margin-right: 16px;
+
+    align-items: center;
+    justify-content: center;
+}

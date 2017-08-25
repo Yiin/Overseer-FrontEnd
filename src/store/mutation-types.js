@@ -1,0 +1,6 @@
+export const UPDATE_AUTH = 'UPDATE_AUTH'
+export const UPDATE_USER = 'UPDATE_USER'
+export const CLEAR_ALL_DATA = 'CLEAR_ALL_DATA'
+export const UPDATE_TABLE = 'UPDATE_TABLE'
+export const TOGGLE_ROW = 'TOGGLE_ROW'
+export const PRELOAD_TABLE = 'PRELOAD_TABLE'

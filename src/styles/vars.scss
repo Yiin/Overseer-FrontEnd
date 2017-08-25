@@ -1,0 +1,68 @@
+/**
+ * Definitions
+ */
+
+// Colors
+$color-azure-radiance: #01a8fe;
+$color-black: #000000;
+$color-white: #ffffff;
+$color-mine-shaft: #373737;
+$color-wild-sand: #f5f5f5;
+$color-carnation: #f54d4d;
+$color-dove-gray: #6d6d6d;
+$color-mercury: #e1e1e1;
+$color-blaze-orange: #ff6c02;
+$color-forest-green: #24b921;
+$color-purple-heart: #9f33d4;
+$color-alabaster: #fbfbfb;
+
+// Fonts
+$font-default: 'Open Sans', sans-serif;
+$font-weight-semibold: 600;
+$font-weight-bold: bold;
+
+// Shadows
+$box-shadow-1: 0 2px 5px 0 rgba(161, 161, 161, 0.3);//, -1px 0px 5px 0 rgba(161, 161, 161, 0.3), 1px 0px 5px 0 rgba(161, 161, 161, 0.3);
+$box-shadow-2: 0 2px 5px rgba(0, 0, 0, .2);
+$box-shadow: $box-shadow-2;
+
+// Borders
+$border-radius: 2px;
+
+/**
+ * Variables
+ */
+
+$modal-bg-dim: rgba($color-black, 0.5);
+$modal-inner-bg: $color-white;
+$modal-outer-bg: $color-alabaster;
+$modal-tab-colors: $color-azure-radiance, $color-blaze-orange, $color-forest-green, $color-purple-heart;
+
+$color-main: $color-azure-radiance;
+$color-main-dark: $color-mine-shaft;
+
+$color-text: $color-black;
+$color-text-alt: $color-white;
+
+// - Page
+$color-page-bg: $color-wild-sand;
+
+// - Navbar
+$color-navbar-bg: $color-white;
+$color-navbar-link-hover-bg: $color-mine-shaft;
+$color-navbar-link-hover: $color-text-alt;
+$color-navbar-link-active: $color-text-alt;
+$color-notifications-count: $color-white;
+$color-notifications-count-bg: $color-carnation;
+$height-navbar: 50px;
+
+// - Sidebar
+$sidebar-width: 220px;
+
+// - Table
+$table-head-bg: $color-mine-shaft;
+$table-bg: $color-white;
+$table-head-border-color: $color-dove-gray;
+$table-border-color: $color-mercury;
+$table-row-hover-bg: $color-wild-sand;
+$table-row-height: 51px;

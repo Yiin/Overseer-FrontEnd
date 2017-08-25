@@ -1,0 +1,91 @@
+.sidebar
+{
+    float: left;
+
+    width: $sidebar-width;
+    &__content
+    {
+        margin-top: 40px;
+
+        user-select: none;
+        text-align: center;
+    }
+    .profile-area
+    {
+        width: 182px;
+        margin-left: 24px;
+        .profile-name
+        {
+            color: $color-mine-shaft;
+        }
+    }
+    &__nav
+    {
+        width: 183px;
+        margin: 27px 25px;
+
+        text-align: left;
+        hr
+        {
+            height: 0;
+            margin-top: 10px;
+            margin-bottom: 4px;
+
+            border: none;
+            border-top: 1px solid #eee;
+        }
+        &-link
+        {
+            font-size: 15px;
+            line-height: 20px;
+
+            margin-right: 11px;
+            padding: 6px 0 7px 0;
+
+            cursor: pointer;
+            &:hover
+            {
+                font-weight: $font-weight-semibold;
+
+                color: $color-navbar-link-hover;
+                background: $color-navbar-link-hover-bg;
+            }
+            &--active
+            {
+                font-weight: $font-weight-semibold;
+
+                color: $color-navbar-link-active;
+                background-color: $color-main;
+            }
+            i
+            {
+                display: inline-block;
+
+                width: 32px;
+                padding: 0 5px 0 12px;
+            }
+        }
+        &-category
+        {
+            font-weight: 700;
+            font-style: normal;
+            line-height: 20px;
+
+            margin-right: 11px;
+            margin-bottom: 5px;
+            padding: 0 5px 0;
+
+            text-transform: uppercase;
+
+            color: #01a8fe;
+        }
+    }
+}
+
+.profile-picture
+{
+    width: 90px;
+    margin-bottom: 10px;
+
+    border-radius: 50%;
+}
