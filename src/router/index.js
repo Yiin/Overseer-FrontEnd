@@ -362,29 +362,13 @@ const router = new Router({
 })
 
 function checkIfGuest(to, from, next) {
-  const auth = router.app.$options.store.state.auth
-
-  if (auth.isLoggedIn) {
-    next({
-      path: '/'
-    })
-  } else {
-    next()
-  }
+  next({
+    path: '/'
+  })
 }
 
 function checkIfLoggedIn(to, from, next) {
-  // work-around to get to the Vuex store (as of Vue 2.0)
-  const auth = router.app.$options.store.state.auth
-
-  if (!auth.isLoggedIn) {
-    next({
-      path: '/login',
-      query: { redirect: to.fullPath }
-    })
-  } else {
-    next()
-  }
+  next()
 }
 
 function preloadList(to) {
