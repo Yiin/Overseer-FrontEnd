@@ -5,6 +5,7 @@
         <img class="profile-picture" src="https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAANPAAAAJGNlYzQzNzZiLTcwZDgtNDcxMC04ZmE0LWUyNDhkY2I4ZWEyMg.jpg">
         <div class="profile-name">
           Stanislovas Janonis
+          <span class="caret"></span>
         </div>
         <div v-show="0" class="profile-options">
           <div class="profile-option">
@@ -15,23 +16,23 @@
       <div class="sidebar__nav">
         <nav-link :name="routes.overview">
           <i class="icon-sidebar-overview"></i>
-          Overview
+          {{ $t('common.overview') }}
         </nav-link>
         <nav-link :name="routes.products" :preload="true">
           <i class="icon-sidebar-products"></i>
-          Products
+          {{ $t('common.products') }}
         </nav-link>
         <nav-link :name="routes.clients" :preload="true">
           <i class="icon-sidebar-clients"></i>
-          Clients
+          {{ $t('common.clients') }}
         </nav-link>
         <nav-link :name="routes.invoices" :preload="true">
           <i class="icon-sidebar-invoices"></i>
-          Invoices
+          {{ $t('common.invoices') }}
         </nav-link>
         <nav-link :name="routes.recurring" :preload="true">
           <i class="icon-sidebar-recurring"></i>
-          Recurring
+          {{ $t('common.recurring') }}
         </nav-link>
         <hr>
         <div class="sidebar__nav-category">
@@ -39,15 +40,15 @@
         </div>
         <nav-link :name="routes.payments" :preload="true">
           <i class="icon-sidebar-payments"></i>
-          Payments
+          {{ $t('common.payments') }}
         </nav-link>
         <nav-link :name="routes.expenses" :preload="true">
           <i class="icon-sidebar-expenses"></i>
-          Expenses
+          {{ $t('common.expenses') }}
         </nav-link>
         <nav-link :name="routes.credits" :preload="true">
           <i class="icon-sidebar-credits"></i>
-          Credits
+          {{ $t('common.credits') }}
         </nav-link>
         <hr>
         <div class="sidebar__nav-category">
@@ -55,11 +56,11 @@
         </div>
         <nav-link :name="routes.quotes" :preload="true">
           <i class="icon-sidebar-quotes"></i>
-          Quotes
+          {{ $t('common.quotes') }}
         </nav-link>
         <nav-link :name="routes.vendors" :preload="true">
           <i class="icon-sidebar-vendors"></i>
-          Vendors
+          {{ $t('common.vendors') }}
         </nav-link>
         <hr>
         <div class="sidebar__nav-category">
@@ -67,11 +68,11 @@
         </div>
         <div class="sidebar__nav-link">
           <i class="icon-sidebar-reports"></i>
-          Reports
+          {{ $t('common.reports') }}
         </div>
         <div class="sidebar__nav-link">
           <i class="icon-sidebar-settings"></i>
-          Settings
+          {{ $t('common.settings') }}
         </div>
       </div>
     </div>

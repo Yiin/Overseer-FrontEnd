@@ -11,13 +11,13 @@
 export default {
   computed: {
     items() {
-      return this.$store.getters.idleItems
+      return this.$store.getters.idle_items
     }
   },
 
   methods: {
     activateItem(item) {
-      this.$store.dispatch('activateItem', item)
+      this.$store.dispatch('ACTIVATE_TASKBAR_ITEM', item)
     }
   }
 }

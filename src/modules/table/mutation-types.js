@@ -1,0 +1,6 @@
+export const UPDATE_TABLE = 'UPDATE_TABLE'
+export const TOGGLE_ROW = 'TOGGLE_ROW'
+export const PRELOAD_TABLE = 'PRELOAD_TABLE'
+export const INSERT_ROW = 'INSERT_ROW'
+export const UPDATE_ROW = 'UPDATE_ROW'
+export const TOGGLE_FILTER_BY = 'TOGGLE_FILTER_BY'

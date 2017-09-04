@@ -4,8 +4,10 @@
 
 // Colors
 $color-azure-radiance: #01a8fe;
+$color-persian-green: hsla(166, 99%, 33%, 1);
 $color-black: #000000;
 $color-white: #ffffff;
+$color-red: #e60b0b;
 $color-mine-shaft: #373737;
 $color-wild-sand: #f5f5f5;
 $color-carnation: #f54d4d;
@@ -15,6 +17,8 @@ $color-blaze-orange: #ff6c02;
 $color-forest-green: #24b921;
 $color-purple-heart: #9f33d4;
 $color-alabaster: #fbfbfb;
+$color-gallery: #ebebeb;
+$color-dusty-gray: #949494;
 
 // Fonts
 $font-default: 'Open Sans', sans-serif;
@@ -24,25 +28,30 @@ $font-weight-bold: bold;
 // Shadows
 $box-shadow-1: 0 2px 5px 0 rgba(161, 161, 161, 0.3);//, -1px 0px 5px 0 rgba(161, 161, 161, 0.3), 1px 0px 5px 0 rgba(161, 161, 161, 0.3);
 $box-shadow-2: 0 2px 5px rgba(0, 0, 0, .2);
-$box-shadow: $box-shadow-2;
+$box-shadow-3: -3px 2px rgba(0, 0, 0, 0.05), 3px 2px 5px rgba(0, 0, 0, 0.05), 0px 5px 5px rgba(0, 0, 0, 0.05);
+$box-shadow: $box-shadow-3;
 
 // Borders
-$border-radius: 2px;
+$border-radius: 3px;
 
 /**
  * Variables
  */
 
-$modal-bg-dim: rgba($color-black, 0.5);
-$modal-inner-bg: $color-white;
-$modal-outer-bg: $color-alabaster;
-$modal-tab-colors: $color-azure-radiance, $color-blaze-orange, $color-forest-green, $color-purple-heart;
-
 $color-main: $color-azure-radiance;
 $color-main-dark: $color-mine-shaft;
 
+$modal-bg-dim: rgba($color-black, 0.5);
+$modal-inner-bg: $color-white;
+$modal-outer-bg: $color-alabaster;
+$modal-tab-colors: $color-main, $color-blaze-orange, $color-forest-green, $color-purple-heart;
+
 $color-text: $color-black;
 $color-text-alt: $color-white;
+
+$color-text-placeholder: $color-dusty-gray;
+
+$border-color: $color-mercury;
 
 // - Page
 $color-page-bg: $color-wild-sand;
@@ -62,7 +71,8 @@ $sidebar-width: 220px;
 // - Table
 $table-head-bg: $color-mine-shaft;
 $table-bg: $color-white;
-$table-head-border-color: $color-dove-gray;
+// $table-head-border-color: $color-dove-gray;
+$table-head-border-color: $color-wild-sand;
 $table-border-color: $color-mercury;
 $table-row-hover-bg: $color-wild-sand;
-$table-row-height: 51px;
+$table-row-height: 53px;

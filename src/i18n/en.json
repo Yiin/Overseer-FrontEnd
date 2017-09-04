@@ -1,0 +1,84 @@
+{
+    "common": {
+        "overview": "Overview",
+        "products": "Products",
+        "clients":  "Clients",
+        "invoices": "Invoices",
+        "recurring": "Recurring",
+        "payments": "Payments",
+        "expenses": "Expenses",
+        "credits": "Credits",
+        "quotes": "Quotes",
+        "vendors": "Vendors",
+        "reports": "Reports",
+        "settings": "Settings"
+    },
+    "placeholders": {
+        "type_in_or_select": "Type In Or Select"
+    },
+    "actions": {
+        "new_product": "New Product",
+        "edit_product": "Edit Product",
+        "select_to_show": "Select to show",
+        "search_by": "Search by"
+    },
+    "labels": {
+        "range_from": "From",
+        "range_to": "To"
+    },
+    "fields": {
+        "product_name": "Product",
+        "description": "Description",
+        "price": "Price",
+        "stock": "Stock",
+        "client_name": "Name",
+        "vat_number": "VAT Number",
+        "phone_number": "Phone Number",
+        "email": "Email",
+        "date_created": "Date Created",
+        "balance": "Balance"
+    },
+    "table": {
+        "page": "Page",
+        "showing_all_entries": "Showing all entries",
+        "showing_some_entries": "There are no entries | Showing {from} to {to} out of {total} entry | Showing {from} to {to} out of {total} entries",
+        "total": "Total",
+        "for_selected_is": "for selected is",
+        "page": "Page",
+        "rows": "rows"
+    },
+    "filters": {
+        "show_all": "All",
+        "active": "Active",
+        "archived": "Archived",
+        "deleted": "Deleted",
+        "in_stock": "In Stock",
+        "out_of_stock": "Out Of Stock",
+        "services": "Services",
+        "draft": "Draft",
+        "sent": "Sent",
+        "viewed": "Viewed",
+        "approved": "Approved",
+        "partial": "Partial",
+        "paid": "Paid",
+        "overdue": "Overdue",
+        "clients": "Where Client Is",
+        "products": "Where Product Is",
+        "vat_verified": "VAT Verified",
+        "vat_pending": "VAT Pending",
+        "vat_invalid": "VAT Invalid",
+        "countries": "Countries",
+        "currencies": "Currencies"
+    },
+    "search_by": {
+        "product_name": "Product Name",
+        "product_price": "Product Price",
+        "words_in_description": "Words In Description",
+        "stock_amount": "Stock Amount",
+        "client_name": "Client Name",
+        "contact_number": "Contact Number",
+        "client_email": "Email",
+        "date_created": "Date Created",
+        "balance": "Balance"
+    }
+}

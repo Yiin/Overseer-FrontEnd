@@ -39,10 +39,15 @@
             font-size: 15px;
             line-height: 20px;
 
+            display: block;
+
             margin-right: 11px;
             padding: 6px 0 7px 0;
 
             cursor: pointer;
+            text-decoration: none;
+
+            color: #373737;
             &:hover
             {
                 font-weight: $font-weight-semibold;
@@ -77,7 +82,7 @@
 
             text-transform: uppercase;
 
-            color: #01a8fe;
+            color: $color-main;
         }
     }
 }

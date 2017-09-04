@@ -21,7 +21,7 @@
     methods: {
       login() {
         const { username, password } = this
-        this.$store.dispatch('login', { username, password })
+        this.$store.dispatch('LOGIN', { username, password })
       }
     }
   }

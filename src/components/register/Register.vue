@@ -40,7 +40,7 @@
     methods: {
       register() {
         const form = this.form
-        this.$store.dispatch('register', form)
+        this.$store.dispatch('REGISTER', form)
       }
     }
   }

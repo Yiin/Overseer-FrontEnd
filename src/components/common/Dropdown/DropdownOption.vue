@@ -9,9 +9,7 @@ export default {
   name: 'dropdown-option',
 
   props: {
-    value: {
-      required: true
-    },
+    value: String,
     selected: {
       type: Boolean,
       default: false
@@ -27,7 +25,7 @@ export default {
 
   methods: {
     select() {
-      this.$emit('select', this)
+      this.$emit('select', { value: this.value })
     }
   }
 }

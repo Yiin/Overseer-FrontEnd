@@ -1,39 +1,52 @@
 import * as types from './mutation-types'
+import Echo from '@/echo'
+import i18n from '@/i18n'
 import Auth from '@/auth'
-import Api from '@/api'
 import { OVERVIEW } from '@/router/routes'
+import router from '@/router'
 
-export const login = ({ commit }, creds) => {
-  Auth.login(creds, OVERVIEW)
+export const LOGIN = ({ store }, creds) => {
+  Auth.login(creds)
+    .then((response) => {
+      const accessToken = response.body.access_token
+      const user = response.body.user
+
+      store.dispatch('AUTHENTICATE', { accessToken, user })
+    })
 }
 
-export const register = ({ commit }, data) => {
-  Auth.register(data, OVERVIEW)
+export const REGISTER = ({ store }, data) => {
+  Auth.register(data)
+    .then((response) => {
+      const accessToken = response.body.access_token
+      const user = response.body.user
+
+      store.dispatch('AUTHENTICATE', { accessToken, user })
+    })
 }
 
-/**
- * Update state with auth details
- */
-export const authenticate = ({ commit }, { auth }) => {
-  commit(types.UPDATE_AUTH, auth)
-}
+export const AUTHENTICATE = ({ commit }, { accessToken, user }) => {
+  commit(types.UPDATE_ACCESS_TOKEN, accessToken)
+  commit(types.UPDATE_USER, user)
 
-/**
- * Load table data
- */
-export const preloadData = ({ commit, getters }, { name }) => {
-  commit(types.PRELOAD_TABLE, { name })
-
-  Api.get(name, {
-    params: getters[`${name}Table`]
-  }).then((response) => {
-    commit(types.UPDATE_TABLE, { name, data: response })
+  router.push({
+    name: OVERVIEW
   })
+
+  Echo.connect()
 }
 
-/**
- * Toggle table row
- */
-export const toggleRow = ({ commit }, data) => {
-  commit(types.TOGGLE_ROW, data)
+export const LOGOUT = ({ commit }) => {
+  commit(types.RESET_AUTH)
+  commit(types.RESET_USER)
+
+  localStorage.removeItem('state')
+  Echo.disconnect()
+
+  router.push({ name: 'login' })
+}
+
+export const CHANGE_LOCALE = ({ commit, store }, locale) => {
+  i18n.locale = locale
+  commit(types.UPDATE_LOCALE, locale)
 }

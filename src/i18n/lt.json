@@ -1,0 +1,84 @@
+{
+    "common": {
+        "overview": "Apžvalga",
+        "products": "Produktai",
+        "clients":  "Klientai",
+        "invoices": "Sąskaitos",
+        "recurring": "Debetinės",
+        "payments": "Mokėjimai",
+        "expenses": "Išlaidos",
+        "credits": "Kreditai",
+        "quotes": "Sąmatos",
+        "vendors": "Tiekėjai",
+        "reports": "Ataskaitos",
+        "settings": "Nustatymai"
+    },
+    "placeholders": {
+        "type_in_or_select": "Įrašykite Arba Pasirinkite"
+    },
+    "actions": {
+        "new_product": "Kurti Produktą",
+        "edit_product": "Keisti Produktą",
+        "select_to_show": "Parinkti rodyti",
+        "search_by": "Ieškoti pagal"
+    },
+    "labels": {
+        "range_from": "From",
+        "range_to": "To"
+    },
+    "fields": {
+        "product_name": "Pavadinimas",
+        "description": "Aprašymas",
+        "price": "Kaina",
+        "stock": "Kiekis",
+        "client_name": "Pavadinimas",
+        "vat_number": "PVM Kodas",
+        "phone_number": "Tel. Numeris",
+        "email": "El. Paštas",
+        "date_created": "Sukurtas",
+        "balance": "Balansas"
+    },
+    "table": {
+        "page": "Puslapis",
+        "showing_all_entries": "Rodomi visi įrašai",
+        "showing_some_entries": "Nėra jokių įrašų | Rodoma nuo {from} iki {to}, iš {total} įrašo | Rodoma nuo {from} iki {to}, iš {total} įrašų",
+        "total": "Sumuota",
+        "for_selected_is": "pasirinktiems elementams yra",
+        "page": "Puslapis",
+        "rows": "eilučių"
+    },
+    "filters": {
+        "show_all": "Visus",
+        "active": "Aktyvius",
+        "archived": "Archyvuotus",
+        "deleted": "Ištrintus",
+        "in_stock": "Inventoriuje",
+        "out_of_stock": "Išparduotus",
+        "services": "Paslaugas",
+        "draft": "Neišsiųstus",
+        "sent": "Išsiųstus",
+        "viewed": "Peržiūrėtus",
+        "approved": "Patvirtintus",
+        "partial": "Dalinai Apmokėtus",
+        "paid": "Apmokėtus",
+        "overdue": "Vėluojančius",
+        "clients": "Kur Yra Klientas",
+        "products": "Kur Yra Produktas",
+        "vat_verified": "PVM Yra Patvirtintas",
+        "vat_pending": "VAT Pending",
+        "vat_invalid": "VAT Invalid",
+        "countries": "Countries",
+        "currencies": "Currencies"
+    },
+    "search_by": {
+        "product_name": "Produktą",
+        "product_price": "Produkto Kainą",
+        "words_in_description": "Aprašymą",
+        "stock_amount": "Inventoriaus Kiekį",
+        "client_name": "Client Name",
+        "contact_number": "Contact Number",
+        "client_email": "Email",
+        "date_created": "Date Created",
+        "balance": "Balance"
+    }
+}

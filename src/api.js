@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import store from './store'
 import Auth from './auth'
+import Echo from '@/echo'
 
 /**
  * API Plugin
@@ -18,13 +19,22 @@ export default {
     Vue.http.options.root = process.env.API_ROOT
 
     Vue.http.interceptors.push((request, next) => {
+      request.credentials = true
+
+      // Auth header
       const token = store.state.auth.accessToken
       const hasAuthHeader = request.headers.has('Authorization')
 
-      request.credentials = true
-
       if (token && !hasAuthHeader) {
         Auth.setAuthHeader(request)
+      }
+
+      // X-Socket-ID
+      const socketId = Echo.socketId()
+      const hasSocketIdHeader = request.headers.has('X-Socket-ID')
+
+      if (socketId && !hasSocketIdHeader) {
+        request.headers.set('X-Socket-ID', socketId)
       }
 
       if (request.url === 'login/refresh') {

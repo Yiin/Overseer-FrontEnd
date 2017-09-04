@@ -1,6 +1,7 @@
 .background-dim
 {
-    position: absolute;
+    position: fixed;
+    z-index: 1;
     top: 0;
     left: 0;
 
@@ -36,6 +37,8 @@
     }
     &__body
     {
+        position: relative;
+
         background: $modal-inner-bg;
         box-shadow: $box-shadow;
     }
@@ -69,7 +72,7 @@
             background-image: url('../assets/icons/fullscreen.svg');
             &:hover
             {
-                background-image: url('../assets/icons/fullscreen_hover.svg');
+                // background-image: url('../assets/icons/fullscreen_hover.svg');
             }
         }
         &__close
@@ -89,6 +92,8 @@
     }
     &-tabs
     {
+        position: relative;
+
         user-select: none;
         &__list
         {
@@ -133,13 +138,22 @@
 .modal-buttons
 {
     font-size: 0;
+
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+
+    width: 100%;
     height: 44px;
+    padding: 0 20px;
     &-group
     {
-        &::after {
-            content: "";
+        &::after
+        {
             display: table;
             clear: both;
+
+            content: '';
         }
         &--left
         {
@@ -160,6 +174,8 @@
     display: inline-flex;
 
     height: 44px;
+
+    cursor: pointer;
 
     color: $color-text-alt;
 
@@ -190,6 +206,14 @@
         margin-left: 20px;
 
         background: $color-main;
+    }
+    &--disabled
+    {
+        cursor: default;
+
+        background: $color-main-dark;
+
+        filter: opacity(.5);
     }
 }
 

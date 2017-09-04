@@ -1,11 +1,14 @@
 /* Vue */
 import Vue from 'vue'
 import VueResource from 'vue-resource'
+import Echo from './echo'
 import App from './App'
 import Api from './api'
 import Auth from './auth'
 import router from './router'
 import store from './store'
+import i18n from './i18n'
+import * as plugins from './plugins'
 import * as filters from './filters'
 import * as components from './components/common'
 import * as directives from './directives'
@@ -36,11 +39,25 @@ for (let name in directives) {
   Vue.directive(name, directives[name])
 }
 
+/* Plugins */
+for (let name in plugins) {
+  Vue.use(plugins[name])
+}
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   template: '<App/>',
-  components: { App }
+  components: { App },
+
+  mounted() {
+    console.log('mounted')
+    /* Realtime Events */
+    Echo.connect()
+  }
 })
+
+i18n.locale = store.state.locale

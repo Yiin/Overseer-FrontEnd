@@ -1,0 +1,100 @@
+.sidebar-toggle > i
+{
+    margin-top: -1px !important;
+    padding-bottom: 1px !important;
+    padding-left: 3px !important;
+}
+
+.logo
+{
+    padding-left: 11px !important;
+}
+
+.profile-area
+{
+    margin-top: -3px !important;
+}
+
+.profile-name::after
+{
+    position: absolute !important;
+    top: 4px !important;
+    right: -12px !important;
+
+    display: block !important;
+
+    border-top: 4px solid !important;
+    border-right: 4px solid transparent !important;
+    border-left: 4px solid transparent !important;
+}
+
+.profile-name
+{
+    position: relative !important;
+
+    margin-top: 4px !important;
+}
+
+span.caret
+{
+    display: inline-block !important;
+
+    margin-top: 0 !important;
+
+    vertical-align: middle !important;
+
+    color: #373737 !important;
+    border-top: 4px solid !important;
+    border-right: 4px solid transparent !important;
+    border-left: 4px solid transparent !important;
+}
+
+.sidebar__nav
+{
+    margin-top: 32px !important;
+}
+
+.sidebar__nav-link i::before
+{
+    position: absolute !important;
+    top: 9px !important;
+}
+
+.sidebar__nav-link
+{
+    position: relative !important;
+}
+
+.breadcrumb
+{
+    margin-top: 2px !important;
+}
+
+.page-content
+{
+    padding-left: 33px !important;
+    padding-right: 43px !important;
+}
+
+.table__heading
+{
+    margin-top: 23px !important;
+}
+
+.button__create > [class^='icon-new-']::before
+{
+    position: absolute !important;
+    top: -8px !important;
+    left: 2px !important;
+}
+
+.button__create > [class^='icon-new-']
+{
+    position: relative !important;
+
+    padding-right: 24px !important;
+}
+
+input.table__footer-page-input {
+    padding-top: 2px !important;
+}

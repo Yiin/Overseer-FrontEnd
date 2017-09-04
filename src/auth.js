@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import router from './router'
-import store from './store'
+import store from '@/store'
+import { UPDATE_ACCESS_TOKEN } from '@/store/mutation-types'
 
 /**
  * @var{string} LOGIN_URL The endpoint for logging in.
@@ -54,19 +54,8 @@ export default {
    * @param {string|null} redirect The name of the Route to redirect to.
    * @return {Promise}
    */
-  register(data, redirect) {
+  register(data) {
     return Vue.http.post(REGISTRATION_URL, data, AUTH_BASIC_HEADERS)
-      .then((response) => {
-        this._storeToken(response)
-
-        if (redirect) {
-          router.push({
-            name: redirect
-          })
-        }
-
-        return response
-      })
       .catch(() => {
         //
       })
@@ -79,42 +68,16 @@ export default {
    * @param {string|null} redirect The name of the Route to redirect to.
    * @return {Promise}
    */
-  login(creds, redirect) {
+  login(creds) {
     const params = {
       'username': creds.username,
       'password': creds.password
     }
 
     return Vue.http.post(LOGIN_URL, params, AUTH_BASIC_HEADERS)
-      .then((response) => {
-        this._storeToken(response)
-
-        if (redirect) {
-          router.push({
-            name: redirect
-          })
-        }
-
-        return response
-      })
       .catch(() => {
         //
       })
-  },
-
-  /**
-   * Logout
-   *
-   * Clear all data in our Vuex store (which resets logged-in status) and redirect back
-   * to login form.
-   *
-   * @return {void}
-   */
-  logout() {
-    store.commit('CLEAR_ALL_DATA')
-    router.push({
-      name: 'login'
-    })
   },
 
   /**
@@ -159,8 +122,8 @@ export default {
    */
   _refreshToken(request) {
     return Vue.http.post(REFRESH_TOKEN_URL, {}, AUTH_BASIC_HEADERS)
-      .then((result) => {
-        this._storeToken(result)
+      .then((response) => {
+        store.commit(UPDATE_ACCESS_TOKEN, response.body.access_token)
         return this._retry(request)
       })
       .catch((errorResponse) => {
@@ -169,26 +132,6 @@ export default {
         }
         return errorResponse
       })
-  },
-
-  /**
-   * Store tokens
-   *
-   * Update the Vuex store with the access/refresh tokens received from the response from
-   * the Oauth2 server.
-   *
-   * @private
-   * @param {Response} response Vue-resource Response instance from an OAuth2 server.
-   *      that contains our tokens.
-   * @return {void}
-   */
-  _storeToken(response) {
-    const auth = store.state.auth
-
-    auth.isLoggedIn = true
-    auth.accessToken = response.body.access_token
-
-    store.dispatch('authenticate', { auth })
   },
 
   /**

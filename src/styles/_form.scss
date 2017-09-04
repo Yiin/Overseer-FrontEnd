@@ -7,6 +7,10 @@
         margin: 40px 0;
 
         justify-content: space-between;
+        &:last-child
+        {
+            margin-bottom: 20px;
+        }
     }
     &__input-wrapper
     {
@@ -28,6 +32,14 @@
             user-select: none;
         }
     }
+    &__inputs-group
+    {
+        display: flex;
+        > * + *
+        {
+            margin-left: 20px;
+        }
+    }
     &__input
     {
         font-size: 16px;
@@ -38,7 +50,7 @@
 
         color: #373737;
         border: 1px solid #e2e2e2;
-        border-radius: 2px;
+        border-radius: $border-radius;
     }
     textarea
     {

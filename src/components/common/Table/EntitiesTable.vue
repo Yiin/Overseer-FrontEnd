@@ -27,7 +27,7 @@
         v-for="row in pageRows"
         class="table__row"
         :class="{ 'table__row--selected': isRowSelected(row) }"
-        @click="toggle(row)"
+        @click="toggle(row, $event)"
       >
         <!-- Row checkbox which indicates if row is selected -->
         <div class="column column__checkbox column--center">
@@ -52,7 +52,7 @@ export default {
      * @return {Array} List of rows
      */
     pageRows() {
-      return this.data ? this.data.page : []
+      return this.data ? this.data.pageList : []
     },
 
     /**
@@ -88,10 +88,14 @@ export default {
     /**
      * Toggle row selection
      * @param  {object} row Row to toggle
+     * @param  {object} event
      * @return {void}
      */
-    toggle(row) {
-      this.$store.dispatch('toggleRow', {
+    toggle(row, event = null) {
+      if (event && ['a'].indexOf(event.target.nodeName.toLowerCase()) > -1) {
+        return
+      }
+      this.$store.dispatch('TOGGLE_ROW', {
         name: this.data.name,
         row
       })

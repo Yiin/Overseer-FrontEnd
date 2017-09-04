@@ -1,14 +1,21 @@
 import * as types from './mutation-types'
 
 export default {
-  [types.OPEN_MODAL](state, { title, component, data }) {
+  [types.OPEN_MODAL](state, data) {
     state.isOpen = true
-    state.title = title
-    state.component = component
     state.data = data
   },
 
   [types.CLOSE_MODAL](state) {
     state.isOpen = false
+    state.data = null
+  },
+
+  [types.UPDATE_MODAL_TABS](state, tabs) {
+    state.tabs = tabs
+  },
+
+  [types.UPDATE_ACTIVE_TAB_INDEX](state, index) {
+    state.activeTabIndex = index
   }
 }

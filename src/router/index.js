@@ -389,8 +389,8 @@ function checkIfLoggedIn(to, from, next) {
 
 function preloadList(to) {
   const store = router.app.$options.store
-  if (!store.state.lists[to.name].loading) {
-    store.dispatch('preloadData', {name: to.name})
+  if (!store.getters[to.name].loading) {
+    store.dispatch('LOAD_TABLE', { name: to.name })
   }
 }
 

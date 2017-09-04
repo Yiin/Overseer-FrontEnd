@@ -1,15 +1,21 @@
+/**
+ * Base dropdown class
+ */
 .dropdown
 {
+    font-size: 16px;
+
     position: relative;
 
     cursor: default;
     user-select: none;
-    &__input
+    &:focus
     {
-        line-height: 42px;
-
-        @extend .form__input;
+        outline: none;
     }
+    /**
+     * List of dropdown options
+     */
     &__options
     {
         position: absolute;
@@ -20,56 +26,422 @@
         padding-bottom: 17px;
 
         border: 1px solid #e2e2e2;
-        border-top: none;
         border-top: 1px solid #ebebeb;
-        border-radius: 0 0 2px 2px;
+        border-radius: 0 0 $border-radius $border-radius;
         background: #fff;
         box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
     }
+    /**
+     * Dropdown option base style
+     */
     &__option
     {
-        font-size: 16px;
         line-height: 34px;
 
-        padding: 0 15px;
+        padding: 0 15px 0 26px;
 
         cursor: default;
         user-select: none;
+        /**
+         * Slight shade on hover
+         */
         &:hover
         {
-            background: #f2f2f2;
+            background: $color-wild-sand;
+        }
+        /**
+         * This options is checkable, a.k.a it has checkbox
+         */
+        &--checkbox
+        {
+            // reset font size to fix whitespace issues
+            font-size: 0;
+            // checkbox inside should be relative to it's
+            // parent option, which happens to be this option
+
+            position: relative;
+
+            height: 34px;
+            padding: 6px 10px 7px 26px;
+
+            user-select: none;
+            /**
+             * Checkbox inside this option
+             */
+            .checkbox
+            {
+                display: inline-block;
+            }
+            /**
+             * Option label next to checkbox
+             */
+            .option-label
+            {
+                // Set font size back to default
+                font-size: 16px;
+                font-weight: 400;
+                line-height: initial;
+
+                display: inline-block;
+                overflow: hidden;
+
+                max-width: 160px;
+                margin-left: 18px;
+
+                vertical-align: top;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+
+                border-radius: $border-radius;
+            }
+        }
+        /**
+         * Option which has other options inside of it
+         */
+        &--nested
+        {
+            // Child options dropdown position should be relative to this option
+            position: relative;
+
+            padding-left: 26px;
+            /**
+             * Label of this nested option
+             */
+            > .option-label
+            {
+                /**
+                 * Small triangle arrow indicating that this options is
+                 * indeed a dropdown by itself
+                 */
+                &::after
+                {
+                    position: absolute;
+                    top: 13px;
+                    right: 15px;
+
+                    content: '';
+
+                    color: $color-mine-shaft;
+                    border-width: 4px 0 4px 4px;
+                    border-style: solid;
+                    border-color: transparent transparent transparent $color-mine-shaft;
+                }
+            }
+            /**
+             * Wrapper for child dropdown search input,
+             * so we can position it better
+             */
+            .dropdown__child-search-wrapper
+            {
+                margin: 0 15px 17px 15px;
+                padding-right: 25px;
+
+                border-bottom: 1px solid $color-mercury;
+            }
+            /**
+             * Search input for child options
+             */
+            .dropdown__child-search
+            {
+                font-weight: 600;
+                line-height: initial;
+
+                display: block;
+                overflow: hidden;
+
+                height: 35px;
+
+                white-space: nowrap;
+
+                color: $color-main;
+                /**
+                 * On focus show basic text w/o much styling
+                 */
+                &:focus
+                {
+                    font-weight: normal;
+
+                    color: $color-mine-shaft;
+                    outline: none;
+                }
+                /**
+                 * When search input isn't focused,
+                 * and is empty - show placeholder
+                 */
+                &:empty:not(:focus)::before
+                {
+                    font-weight: normal;
+
+                    content: attr(data-placeholder);
+                    cursor: text;
+                    text-transform: capitalize;
+
+                    color: $color-text-placeholder;
+                    background: $color-white;
+                }
+            }
+            /**
+             * List containing all child options
+             */
+            .dropdown__childs-menu
+            {
+                position: absolute;
+                top: -8px;
+                left: 268px;
+
+                width: 268px;
+                padding: 13px 0 18px;
+
+                border-top: 1px solid $color-gallery;
+                border-radius: 0 0 $border-radius $border-radius;
+                background: $color-white;
+                box-shadow: $box-shadow;
+                /**
+                 * And the child option itself
+                 */
+                .dropdown__option
+                {
+                    padding-left: 26px;
+                }
+            }
         }
     }
+    /**
+     * Search query input or static display of current selected value
+     */
     &__input
     {
-        background: white;
+        line-height: 42px;
+
+        background: $color-white;
         box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
+
+        @extend .form__input;
+        &.--placeholder
+        {
+            // color: $color-text-placeholder;
+        }
+        // caret
+        &::before
+        {
+            position: absolute;
+            top: 19px;
+            right: 15px;
+
+            content: '';
+
+            border-top: 4px solid;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+        }
     }
-    // caret
-    &__input::before
-    {
-        position: absolute;
-        top: 19px;
-        right: 15px;
-
-        content: '';
-
-        border-top: 4px solid;
-        border-right: 4px solid transparent;
-        border-left: 4px solid transparent;
-    }
-    &--open &__input::before
-    {
-        top: 15px;
-
-        content: '';
-
-        border-top: 4px solid transparent;
-        border-bottom: 4px solid;
-        border-left: 4px solid transparent;
-    }
+    // caret when open
     &--open &__input
     {
-        border-radius: 2px 2px 0 0;
+        border-radius: $border-radius $border-radius 0 0;
+        &::before
+        {
+            top: 15px;
+
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid;
+            border-left: 4px solid transparent;
+        }
+    }
+    /**
+     * filter by checkbox
+     */
+    &--primary
+    {
+        width: 268px;
+        &:not(:first-child)
+        {
+            margin-left: 30px;
+        }
+        &.dropdown--open
+        {
+            // adjust caret height for filter dropdown
+            // because of different height
+            > .dropdown__input::before
+            {
+                top: 16px;
+            }
+        }
+        /**
+         * Adjust heights and shadows
+         */
+        > .dropdown__input
+        {
+            line-height: 44px;
+
+            height: 44px;
+
+            border: none;
+            box-shadow: $box-shadow;
+            &::before
+            {
+                top: 20px;
+            }
+        }
+        /**
+         * Box shadow on dropdown menu
+         */
+        > .dropdown__options
+        {
+            border-right: none;
+            border-bottom: none;
+            border-left: none;
+            box-shadow: $box-shadow;
+        }
+    }
+
+    &--small {
+        min-width: 140px;
+    }
+}
+
+/**
+ * Position relative, so we can position clear input icon correctly
+ */
+.dropdown__option--text
+{
+    position: relative;
+
+    margin: 0;
+    padding: 0;
+
+    cursor: text;
+}
+
+/**
+ * Medium.js input default style
+ * w/o focus or anything
+ */
+.dropdown__option--text-input
+{
+    font-weight: 600;
+    line-height: 34px;
+
+    height: 34px;
+    padding-left: 26px;
+
+    color: $color-main;
+    /**
+     * If empty and w/o content, show placeholder
+     * and imitate text field
+     */
+    &:empty::before
+    {
+        font-weight: normal;
+
+        content: attr(data-placeholder);
+        cursor: text;
+        text-transform: capitalize;
+
+        color: $color-text;
+    }
+    /**
+     * On hover highlight background
+     */
+    &:hover
+    {
+        background: $color-wild-sand;
+    }
+    /**
+     * On parent element hover, fix white background on placeholder
+     */
+    .dropdown__option--text:hover &::before
+    {
+        background: none;
+    }
+    /**
+     * On focus, prepare for input
+     */
+    &:focus
+    {
+        color: $color-text-alt;
+        outline: none;
+        background: $color-main;
+        /**
+         * and hide placeholder
+         */
+        &::before
+        {
+            display: none;
+        }
+    }
+}
+
+/**
+ * Clear input button
+ */
+.mediumjs-input-clear
+{
+    /**
+     * Base style
+     */
+    .mediumjs-input + &
+    {
+        position: absolute;
+
+        width: 12px;
+        height: 12px;
+
+        cursor: pointer;
+
+        background: url(../assets/icons/cross.svg) center center no-repeat;
+        background-size: contain;
+    }
+    /**
+     * Dropdown text option
+     */
+    .dropdown__option--text-input + &
+    {
+        top: 11px;
+        right: 15px;
+    }
+    .dropdown__option--text-input:focus + &
+    {
+        background-image: url(../assets/icons/cross-white.svg);
+    }
+    /**
+     * Dropdown nested option search input
+     */
+    .dropdown__child-search + &
+    {
+        top: 18px;
+        right: 15px;
+    }
+    /**
+     * Inline select search input
+     */
+    .inline-select__search-input + &
+    {
+        top: 18px;
+        right: 15px;
+    }
+    /**
+     * Numeric option title
+     */
+    .dropdown-numeric-option__header + &
+    {
+        top: 11px;
+        right: 15px;
+
+        background-image: none;
+    }
+    .dropdown-numeric-option__header:not(.mediumjs-input--empty) + &
+    {
+        top: 11px;
+        right: 15px;
+
+        background-image: url(../assets/icons/cross.svg);
+    }
+    .dropdown__option--open .dropdown-numeric-option__header + &
+    {
+        top: 11px;
+        right: 15px;
+
+        background-image: url(../assets/icons/cross-white.svg);
     }
 }

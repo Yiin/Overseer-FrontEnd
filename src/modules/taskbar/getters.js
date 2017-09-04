@@ -1,15 +1,19 @@
-import Taskbar from './model'
+import TaskbarItem from './item-types'
 
 export default {
-  activeItem: (state) => {
-    return state.items.length >= state.activeIndex ? state.items[state.activeIndex] : null
+  items: (state) => {
+    return state.items
   },
 
-  idleItems: (state) => {
+  active_items: (state) => {
+    return state.activeIndex < state.items.length ? state.items[state.activeIndex] : null
+  },
+
+  idle_items: (state) => {
     return state.items.filter((item, index) => index !== state.activeIndex)
   },
 
   modals: (state) => {
-    return state.items.filter((item) => item.type === Taskbar.TASKBAR_ITEM_MODAL)
+    return state.items.filter((item) => item.type === TaskbarItem.MODAL)
   }
 }

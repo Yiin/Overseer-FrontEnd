@@ -7,13 +7,24 @@
     &__heading {
         margin-bottom: 37px;
         margin-top: 26px;
+        font-size: 0;
+    }
+
+    &__dropdowns {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 45px;
+
+      > .dropdown {
+        float: left;
+      }
     }
 
     &__head {
         display: table-header-group;
         background: $table-head-bg;
         color: $color-text-alt;
-        font-weight: $font-weight-semibold;
+        font-weight: bold;
         user-select: none;
 
         .column {
@@ -41,7 +52,7 @@
         background: $table-bg;
         font-size: 16px;
 
-        .column, a, span, {
+        .column, span, {
             color: $color-text;
             text-decoration: none;
         }
@@ -91,7 +102,7 @@
     .column {
         display: table-cell;
         vertical-align: middle;
-        padding-left: 15px;
+        padding-left: 21px;
 
         &:not(:last-child) {
             border-right-width: 1px;

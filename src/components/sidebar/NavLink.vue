@@ -1,9 +1,8 @@
 <template>
   <router-link
-    tag="div"
     :to="{ name }"
     @mousedown.native="onMouseDown"
-    class="sidebar__nav-link"
+    class="sidebar__nav-link --do-not-style-link"
     active-class="sidebar__nav-link--active"
   >
     <slot></slot>
@@ -17,7 +16,7 @@ export default {
   methods: {
     onMouseDown() {
       if (this.preload) {
-        this.$store.dispatch('preloadData', {name: this.name})
+        this.$store.dispatch('LOAD_TABLE', {name: this.name})
       }
     }
   }

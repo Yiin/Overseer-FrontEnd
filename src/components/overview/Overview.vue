@@ -1,6 +1,6 @@
 <template>
   <div>
-    <breadcrumb :path="['Overview']"></breadcrumb>
+    <breadcrumb :path="[$t('common.overview')]"></breadcrumb>
   </div>
 </template>
 

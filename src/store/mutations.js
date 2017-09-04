@@ -1,59 +1,24 @@
 import * as types from './mutation-types'
 
 export default {
-  [types.UPDATE_AUTH](state, auth) {
-    state.auth = auth
+  [types.UPDATE_ACCESS_TOKEN](state, accessToken) {
+    state.auth.isLoggedIn = true
+    state.auth.accessToken = accessToken
   },
 
   [types.UPDATE_USER](state, user) {
-    state.user = user
+    state.user.profile.first_name = user.profile.first_name
+    state.user.profile.last_name = user.profile.last_name
+    state.user.profile.email = user.profile.email
+    state.user.profile.phone = user.profile.phone
+    state.user.profile.job_position = user.profile.job_position
+    state.user.username = user.username
+    state.user.company = user.company
   },
 
-  [types.PRELOAD_TABLE](state, { name }) {
-    const list = state.lists[name]
-
-    list.loading = true
-
-    state.lists[name] = list
+  [types.UPDATE_LOCALE](state, locale) {
+    state.locale = locale
   },
-
-  [types.UPDATE_TABLE](state, { name, data }) {
-    const list = state.lists[name]
-
-    list.loading = false
-    list.page = Math.min(Math.max(list.page, 0), data.pages)
-    list.pages = data.pages
-    list.list = data.rows
-    list.total = data.total
-
-    state.lists[name] = list
-  },
-
-  [types.TOGGLE_ROW](state, { name, row }) {
-    const list = state.lists[name]
-
-    const found = list.selection.find((item) => item === row)
-
-    if (found) {
-      list.selection = list.selection.filter((item) => item !== row)
-    } else {
-      list.selection.push(row)
-    }
-
-    state.lists[name] = list
-  },
-
-  // [types.OPEN_FORM](state, { name }) {
-  //   const taskbar = state.taskbar
-
-  //   taskbar.list.push({
-  //     name: name
-  //   })
-
-  //   taskbar.activeIndex = taskbar.length - 1
-
-  //   state.taskbar = taskbar
-  // },
 
   /**
    * Clear each property, one by one, so reactivity still works.
@@ -69,7 +34,12 @@ export default {
     state.auth.accessToken = null
 
     // User
-    state.user.first_name = ''
-    state.user.last_name = ''
+    state.user.profile.first_name = null
+    state.user.profile.last_name = null
+    state.user.profile.email = null
+    state.user.profile.phone = null
+    state.user.profile.job_position = null
+    state.user.username = null
+    state.user.company = null
   }
 }
