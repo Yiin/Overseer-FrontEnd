@@ -1,55 +1,106 @@
 <template>
   <div class="modal-form">
     <modal-tabs @save="save" @cancel="cancel">
-      <modal-tab title="Details">
-        <div class="form">
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>Product Name</label>
-              <input v-model="name" class="form__input" type="text" name="product_name">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>Price</label>
-              <input v-model="price" class="form__input" type="text" name="price">
-            </div>
-            <div class="form__input-wrapper">
-              <label>Currency</label>
-              <dropdown v-model="currency" placeholder="Currency">
-                <dropdown-option v-for="c in currencies"
-                                 :key="c.code"
-                                 :value="c.code"
-                                 :selected.once="c.code === currency">
-                  {{ c.code }}
+      <modal-tab :title="$t('tabs.details')">
+
+        <form-container name="product">
+          <form-row>
+
+            <!--
+              Product Name
+            -->
+            <form-field :label="$t('labels.product_name')" catch-errors="product_name">
+              <form-text-input name="product_name"></form-text-input>
+            </form-field>
+
+            <!--
+              Price
+            -->
+            <form-field :label="$t('labels.price')" :catch-errors="[ 'price', 'currency' ]">
+              <form-inputs-group>
+
+                <!--
+                  Amount
+                -->
+                <form-text-input name="price"></form-text-input>
+
+                <!--
+                  Currency
+                -->
+                <form-dropdown-input name="currency" class="dropdown--small" :placeholder="$t('labels.currency')">
+                  <dropdown-option v-for="currency in currencies" :key="currency.id"
+                                  :value="currency.id"
+                                  :selected.once="currency.id === form.currency">
+                    {{ currency.code }}
+                  </dropdown-option>
+                </form-dropdown-input>
+
+              </form-inputs-group>
+            </form-field>
+
+          </form-row>
+
+          <form-row>
+
+            <!--
+              Quantity
+            -->
+            <form-field :label="$t('labels.quantity')">
+              <form-text-input name="qty"></form-text-input>
+            </form-field>
+
+            <!--
+              Tax Rate
+            -->
+            <form-field :label="$t('labels.tax_rate')">
+
+              <form-dropdown-input name="tax_rate" :placeholder="$t('labels.tax_rate')">
+                <dropdown-option v-for         = "taxRate in taxRates"
+                                :key           = "taxRate.uuid"
+                                :value         = "taxRate.uuid"
+                                :selected.once = "taxRate.uuid === form.tax_rate"
+                >
+                  {{ taxRate.name }}
                 </dropdown-option>
-              </dropdown>
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>Quantity</label>
-              <input v-model="qty" class="form__input" type="text" name="qty">
-            </div>
-            <div class="form__input-wrapper">
-              <label>Tax Rate</label>
-              <dropdown v-model="taxRate" placeholder="Tax Rate">
-                <dropdown-option v-for="tR in taxRates"
-                                 :key="tR.name"
-                                 :value="tR.name"
-                                 :selected.once="tR.name === taxRate">
-                  {{ tR.name }}
-                </dropdown-option>
-              </dropdown>
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>Description</label>
-              <textarea v-model="description" class="form__input"></textarea>
-            </div>
-          </div>
-        </div>
+              </form-dropdown-input>
+
+            </form-field>
+
+          </form-row>
+
+          <form-row>
+
+            <!--
+              Description
+            -->
+            <form-field :label="$t('labels.description')">
+              <form-textarea-input name="description"></form-textarea-input>
+            </form-field>
+
+          </form-row>
+
+        </form-container>
+
+      </modal-tab>
+
+      <modal-tab :title="$t('tabs.images')">
+        <form-container name="product">
+          <form-row>
+            <form-field catch-errors="images" :label="$t('labels.images')">
+
+              <form-dropzone-input name="images" class="product-images-upload-field" box multiple>
+                <img slot="icon" src="../../../assets/icons/upload.svg">
+                <template slot="title">
+                  {{ $t('placeholders.upload_product_image') }}
+                </template>
+                <template slot="subtitle">
+                  {{ $t('placeholders.drag_and_drop_image_or_click_to_browse') }}
+                </template>
+              </form-dropzone-input>
+
+            </form-field>
+          </form-row>
+        </form-container>
       </modal-tab>
     </modal-tabs>
   </div>
@@ -59,56 +110,24 @@
 export default {
   name: 'edit-product',
 
-  props: {
-    data: {
-      default: () => {
-        return {}
-      }
-    }
-  },
-
   data() {
-    const current = this.data.product
-
     return {
       currencies: [
-        { code: 'EUR' },
-        { code: 'USD' }
+        { id: 1, code: 'EUR' },
+        { id: 2, code: 'USD' }
       ],
 
       taxRates: [
         { name: 'VAT' },
         { name: 'Alcohol Product' },
         { name: 'Tobacco Product' }
-      ],
-
-      name: current.name,
-      price: current.price,
-      qty: current.qty,
-      currency: current.currency,
-      taxRate: current.taxRate,
-      description: current.description
+      ]
     }
   },
 
-  watch: {
-    name: function (val) {
-      this.data.product.name = val
-    },
-    price: function (val) {
-      this.data.product.price = val
-    },
-    qty: function (val) {
-      this.data.product.qty = val
-    },
-    currency: function (val) {
-      this.data.product.currency = val
-    },
-    taxRate: function (val) {
-      this.data.product.taxRate = val
-    },
-    description: function (val) {
-      this.data.product.description = val
+  computed: {
+    form() {
+      return this.$store.state.form.product
     }
   },
 
@@ -138,8 +157,22 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .modal-form {
     width: 866px;
+}
+
+textarea {
+    height: 124px !important;
+}
+</style>
+
+<style lang="scss">
+.product-images-upload-field > .form__input--file-upload {
+    height: 287px !important;
+
+    .uploaded-images {
+      height: 287px !important;
+    }
 }
 </style>

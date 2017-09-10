@@ -4,7 +4,7 @@
     {
         display: flex;
 
-        margin: 40px 0;
+        margin: 20px 0;
 
         justify-content: space-between;
         &:last-child
@@ -17,11 +17,12 @@
         position: relative;
 
         width: 100%;
+        margin-top: 20px;
         & + &
         {
             margin-left: 20px;
         }
-        & > label
+        & > .form__label
         {
             font-size: 14px;
             font-weight: 600;
@@ -45,20 +46,157 @@
         font-size: 16px;
 
         width: 100%;
-        height: 42px;
         padding: 0 15px;
 
         color: #373737;
         border: 1px solid #e2e2e2;
         border-radius: $border-radius;
+        &:not(textarea)
+        {
+            height: 44px;
+        }
+        &:focus {
+            outline-color: $color-main;
+        }
+        &-error
+        {
+            margin-left: 10px;
+
+            color: $color-red;
+        }
     }
     textarea
     {
+        font-family: inherit;
+
         height: auto;
         padding: 15px;
+
+        resize: none;
     }
     &__inline-inputs:first-child
     {
         margin-top: 0;
+    }
+}
+
+.items-list
+{
+    overflow-x: hidden;
+
+    max-height: 240px;
+    margin-top: 20px;
+    padding-right: 20px;
+    &__item
+    {
+        font-size: 16px;
+        line-height: 44px;
+
+        display: flex;
+
+        height: 44px;
+        &:first-child
+        {
+            margin-top: 5px;
+        }
+    }
+    &__summary
+    {
+        position: absolute;
+        bottom: 41px;
+
+        display: flex;
+
+        width: 924px;
+        height: 150px;
+        padding-top: 26px;
+
+        border-top: 2px solid #e9e9e9;
+        background: #fff;
+
+        justify-content: flex-end;
+    }
+}
+
+.summary
+{
+    &-block
+    {
+        line-height: .7;
+
+        width: 170px;
+        height: 38px;
+        padding-left: 19px;
+        &:not(:last-child)
+        {
+            border-right: 1px solid #e1e1e1;
+        }
+        &__title
+        {
+            font-weight: 600;
+
+            display: block;
+
+            margin-bottom: 16px;
+        }
+        .currency
+        {
+            font-size: 16px;
+            font-weight: bold;
+            line-height: .9;
+            &--value
+            {
+                color: $color-main;
+            }
+        }
+    }
+}
+
+.remove-item-btn
+{
+    position: relative;
+
+    width: 0;
+    margin: 0 auto;
+
+    cursor: pointer;
+    &__icon
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        padding: 20px;
+        &::before
+        {
+            position: absolute;
+            top: 15px;
+            left: 13px;
+
+            width: 14px;
+            height: 14px;
+
+            content: '';
+
+            background: url(../assets/icons/cross.svg) no-repeat;
+            background-size: contain;
+        }
+    }
+}
+
+.list-item
+{
+    &__field
+    {
+        & + &
+        {
+            margin-left: 20px;
+        }
+    }
+    &__index
+    {
+        display: inline-block;
+
+        width: 30px;
     }
 }

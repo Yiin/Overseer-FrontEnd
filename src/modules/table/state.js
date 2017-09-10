@@ -8,15 +8,14 @@ const tableState = (state = {}) => {
     orderBy: 'created_at',
     orderDirection: 'desc',
     list: [],
-    selection: []
+    selection: [],
+    filterBy: [],
+    searchBy: {}
   }, state)
 }
 
 const state = {
-  products: tableState({
-    filterBy: [],
-    searchBy: {}
-  }),
+  products: tableState(),
   clients: tableState(),
   invoices: tableState(),
   recurring_invoices: tableState(),
@@ -26,7 +25,5 @@ const state = {
   quotes: tableState(),
   vendors: tableState()
 }
-
-console.log(state)
 
 export default state

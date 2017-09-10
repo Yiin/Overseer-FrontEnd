@@ -48,117 +48,113 @@
 </template>
 
 <script>
-  const name = 'invoices'
+const name = 'invoices'
 
-  export default {
-    data() {
+export default {
+  data() {
+    return {
+      filterBy: [
+        { name: 'active', placeholder: this.$t('filters.active') },
+        { name: 'archived', placeholder: this.$t('filters.archived') },
+        { name: 'deleted', placeholder: this.$t('filters.deleted') },
+        { type: 'separator' },
+        { name: 'draft', placeholder: this.$t('filters.draft') },
+        { name: 'sent', placeholder: this.$t('filters.sent') },
+        { name: 'viewed', placeholder: this.$t('filters.viewed') },
+        { name: 'approved', placeholder: this.$t('filters.approved') },
+        { name: 'partial', placeholder: this.$t('filters.partial') },
+        { name: 'paid', placeholder: this.$t('filters.paid') },
+        { name: 'overdue', placeholder: this.$t('filters.overdue') },
+        { type: 'separator' },
+        { type: 'list',
+          placeholder: this.$t('filters.clients'),
+          keyName: 'name',
+          list: [
+            { name: 'Client A' },
+            { name: 'Client B' },
+            { name: 'Client C' },
+            { name: 'Client D' },
+            { name: 'Client E' },
+            { name: 'Client F' }
+          ]
+        },
+        { type: 'list',
+          placeholder: this.$t('filters.products'),
+          keyName: 'name',
+          list: [
+            { name: 'Product A' },
+            { name: 'Product B' },
+            { name: 'Product C' },
+            { name: 'Product D' },
+            { name: 'Product E' },
+            { name: 'Product F' }
+          ]
+        }
+      ],
+
+      searchBy: [
+        { type: 'text', name: 'invoice_number', placeholder: this.$t('search_by.invoice_number') },
+        { type: 'numeric', name: 'invoice_date', placeholder: this.$t('search_by.invoice_date') },
+        { type: 'numeric', name: 'due_date', placeholder: this.$t('search_by.due_date') },
+        { type: 'numeric', name: 'invoice_amount', placeholder: this.$t('search_by.invoice_amount') },
+        { type: 'separator' },
+        { type: 'text', name: 'client_name', placeholder: this.$t('search_by.client_name') },
+        { type: 'text', name: 'product_name', placeholder: this.$t('search_by.product_name') }
+      ]
+    }
+  },
+
+  watch: {
+    // filterBy: function (val) {
+      //
+    // }
+  },
+
+  computed: {
+    table() {
+      return this.$store.getters[name]
+    },
+
+    list() {
       return {
-        filterBy: [
-          { name: 'active', placeholder: this.$t('filters.active') },
-          { name: 'archived', placeholder: this.$t('filters.archived') },
-          { name: 'deleted', placeholder: this.$t('filters.deleted') },
-          { type: 'separator' },
-          { name: 'draft', placeholder: this.$t('filters.draft') },
-          { name: 'sent', placeholder: this.$t('filters.sent') },
-          { name: 'viewed', placeholder: this.$t('filters.viewed') },
-          { name: 'approved', placeholder: this.$t('filters.approved') },
-          { name: 'partial', placeholder: this.$t('filters.partial') },
-          { name: 'paid', placeholder: this.$t('filters.paid') },
-          { name: 'overdue', placeholder: this.$t('filters.overdue') },
-          { type: 'separator' },
-          { type: 'list',
-            placeholder: this.$t('filters.clients'),
-            keyName: 'name',
-            list: [
-              { name: 'Client A' },
-              { name: 'Client B' },
-              { name: 'Client C' },
-              { name: 'Client D' },
-              { name: 'Client E' },
-              { name: 'Client F' }
-            ]
-          },
-          { type: 'list',
-            placeholder: this.$t('filters.products'),
-            keyName: 'name',
-            list: [
-              { name: 'Product A' },
-              { name: 'Product B' },
-              { name: 'Product C' },
-              { name: 'Product D' },
-              { name: 'Product E' },
-              { name: 'Product F' }
-            ]
-          }
-        ],
-
-        searchBy: [
-          { type: 'text', name: 'invoice_number', placeholder: this.$t('search_by.invoice_number') },
-          { type: 'numeric', name: 'invoice_date', placeholder: this.$t('search_by.invoice_date') },
-          { type: 'numeric', name: 'due_date', placeholder: this.$t('search_by.due_date') },
-          { type: 'numeric', name: 'invoice_amount', placeholder: this.$t('search_by.invoice_amount') },
-          { type: 'separator' },
-          { type: 'text', name: 'client_name', placeholder: this.$t('search_by.client_name') },
-          { type: 'text', name: 'product_name', placeholder: this.$t('search_by.product_name') }
-        ]
+        name,
+        pageList: this.table.list,
+        selection: this.table.selection
       }
     },
 
-    watch: {
-      // filterBy: function (val) {
-        //
-      // }
-    },
-
-    computed: {
-      table() {
-        return this.$store.getters[name]
-      },
-
-      list() {
-        return {
-          name,
-          pageList: this.table.list,
-          selection: this.table.selection
-        }
-      },
-
-      pagination() {
-        return {
-          page: this.table.page,
-          pages: this.table.pages,
-          amount: this.table.amount,
-          total: this.table.total
-        }
-      }
-    },
-
-    methods: {
-      create() {
-        this.$store.dispatch('CREATE_MODAL', {
-          tableName: 'invoices',
-          title: this.$t('actions.new_invoice'),
-          component: 'edit-invoice',
-          data: {
-            invoice: {}
-          }
-        })
-      },
-
-      edit(data) {
-        this.$store.dispatch('OPEN_MODAL', {
-          tableName: 'invoices',
-          title: this.$t('actions.edit_invoice'),
-          component: 'edit-invoice',
-          data: {
-            invoice: Object.assign({}, data)
-          }
-        })
+    pagination() {
+      return {
+        page: this.table.page,
+        pages: this.table.pages,
+        amount: this.table.amount,
+        total: this.table.total
       }
     }
+  },
+
+  methods: {
+    create() {
+      this.$store.dispatch('CREATE_MODAL', {
+        tableName: 'invoices',
+        title: this.$t('actions.new_invoice'),
+        component: 'edit-invoice',
+        data: {
+          invoice: {}
+        }
+      })
+    },
+
+    edit(data) {
+      this.$store.dispatch('OPEN_MODAL', {
+        tableName: 'invoices',
+        title: this.$t('actions.edit_invoice'),
+        component: 'edit-invoice',
+        data: {
+          invoice: Object.assign({}, data)
+        }
+      })
+    }
   }
+}
 </script>
-
-<style lang="scss">
-
-</style>

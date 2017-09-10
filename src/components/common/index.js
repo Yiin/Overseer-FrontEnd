@@ -25,6 +25,23 @@ export { default as DropdownNumericOption } from './Dropdown/DropdownNumericOpti
 
 export { default as InlineSelect } from './Select/InlineSelect.vue'
 export { default as InlineOption } from './Select/InlineOption.vue'
+export { default as InlineSelectColumn } from './Select/InlineSelectColumn.vue'
+export { default as InlineSelectRow } from './Select/InlineSelectRow.vue'
+
+export { default as Tabs } from './Tabs/Tabs.vue'
+export { default as Tab } from './Tabs/Tab.vue'
+
+export { default as FormContainer } from './Form/FormContainer.vue'
+export { default as FormRow } from './Form/FormRow.vue'
+export { default as FormField } from './Form/FormField.vue'
+export { default as FormInputsGroup } from './Form/FormInputsGroup.vue'
+export { default as FormTextInput } from './Form/FormTextInput.vue'
+export { default as FormDropdownInput } from './Form/FormDropdownInput.vue'
+export { default as FormTextareaInput } from './Form/FormTextareaInput.vue'
+export { default as FormDateInput } from './Form/FormDateInput.vue'
+export { default as FormDropzoneInput } from './Form/FormDropzoneInput.vue'
+export { default as FormInlineSelect } from './Form/FormInlineSelect.vue'
+export { default as FormItemsList } from './Form/FormItemsList.vue'
 
 /**
  * Components
@@ -32,3 +49,7 @@ export { default as InlineOption } from './Select/InlineOption.vue'
 export { default as EditProduct } from '@/components/entities/product/Edit.vue'
 export { default as EditClient } from '@/components/entities/client/Edit.vue'
 export { default as EditInvoice } from '@/components/entities/invoice/Edit.vue'
+export { default as EditRecurringInvoice } from '@/components/entities/recurring-invoice/Edit.vue'
+export { default as EditPayment } from '@/components/entities/payment/Edit.vue'
+export { default as EditExpenses } from '@/components/entities/expense/Edit.vue'
+export { default as EditCredits } from '@/components/entities/credit/Edit.vue'

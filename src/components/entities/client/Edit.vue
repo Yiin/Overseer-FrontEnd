@@ -2,199 +2,172 @@
   <div class="modal-form">
     <modal-tabs @save="save" @cancel="cancel">
       <modal-tab :title="$t('tabs.organization')">
-        <div class="form">
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.company_name') }}</label>
-              <input v-model="name" class="form__input" type="text" name="company_name">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.registration_number') }}</label>
-              <input v-model="registration_number" class="form__input" type="text" name="registration_number">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.vat_number') }}</label>
-              <input v-model="vat_number" class="form__input" type="text" name="vat_number">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.website') }}}</label>
-              <input v-model="website" class="form__input" type="text" name="website">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.phone') }}}</label>
-              <input v-model="phone" class="form__input" type="text" name="phone">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>Logo</label>
-              <dropzone id="myVueDropzone" url="https://httpbin.org/post" v-on:vdropzone-success="showSuccess">
-                <input type="hidden" name="token" value="xxx">
-                <div class="dz-default dz-message">
-                  <div class="dz-message__title">
-                    Upload Company Logo Image
-                  </div>
-                  <div class="dz-message__sub-title">
-                    Drag and Drop Image or Click to Browse
-                  </div>
-                </div>
-              </dropzone>
-            </div>
-          </div>
-        </div>
+        <form-container name="client">
+          <form-row>
+
+            <form-field :label="$t('labels.company_name')">
+              <form-text-input name="company_name"></form-text-input>
+            </form-field>
+
+          </form-row>
+          <form-row>
+
+            <form-field :label="$t('labels.registration_number')">
+              <form-text-input name="registration_number"></form-text-input>
+            </form-field>
+
+            <form-field :label="$t('labels.vat_number')">
+              <form-text-input name="vat_number"></form-text-input>
+            </form-field>
+
+          </form-row>
+          <form-row>
+
+            <form-field :label="$t('labels.website')">
+              <form-text-input name="website"></form-text-input>
+            </form-field>
+
+            <form-field :label="$t('labels.phone')">
+              <form-text-input name="phone"></form-text-input>
+            </form-field>
+
+          </form-row>
+
+          <form-row>
+            <form-field :label="$t('labels.logo')">
+
+              <form-dropzone-input name="logo" multiple>
+                <img slot="icon" src="../../../assets/icons/upload.svg">
+                <template slot="title">
+                  {{ $t('placeholders.upload_company_logo_image') }}
+                </template>
+                <template slot="subtitle">
+                  {{ $t('placeholders.drag_and_drop_image_or_click_to_browse') }}
+                </template>
+              </form-dropzone-input>
+
+            </form-field>
+          </form-row>
+        </form-container>
       </modal-tab>
       <modal-tab :title="$t('tabs.address')">
-        <div class="form">
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.street') }}</label>
-              <input v-model="address1" class="form__input" type="text" name="address1">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.apt_suite') }}</label>
-              <input v-model="address2" class="form__input" type="text" name="address2">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.city') }}</label>
-              <input v-model="city" class="form__input" type="text" name="city">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.postal_code') }}</label>
-              <input v-model="postal_code" class="form__input" type="text" name="postal_code">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.state_province') }}</label>
-              <dropdown v-model="area" :placeholder="$t('fields.state_or_province')">
-                <dropdown-option v-for="c in areas"
-                                 :key="c.name"
-                                 :value="c.name"
-                                 :selected.once="c.name === area">
-                  {{ c.name }}
+        <form-container name="client">
+          <form-row>
+            <form-field :label="$t('labels.street')">
+              <form-text-input name="address1"></form-text-input>
+            </form-field>
+            <form-field :label="$t('labels.apt_suite')">
+              <form-text-input name="address2"></form-text-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.city')">
+              <form-text-input name="city"></form-text-input>
+            </form-field>
+            <form-field :label="$t('labels.postal_code')">
+              <form-text-input name="postal_code"></form-text-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.state')">
+              <form-text-input name="state"></form-text-input>
+            </form-field>
+            <form-field :label="$t('labels.country')">
+              <form-dropdown-input name="country">
+                <dropdown-option v-for = "country in countries" :key="country.id"
+                                :value = "country.id"
+                                :selected.once="country.id === form.country">
+                  {{ country.name }}
                 </dropdown-option>
-              </dropdown>
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.country') }}</label>
-              <dropdown v-model="country" :placeholder="$t('fields.country')">
-                <dropdown-option v-for="c in countries"
-                                 :key="c.name"
-                                 :value="c.name"
-                                 :selected.once="c.name === country">
-                  {{ c.name }}
-                </dropdown-option>
-              </dropdown>
-            </div>
-          </div>
-        </div>
+              </form-dropdown-input>
+            </form-field>
+          </form-row>
+        </form-container>
       </modal-tab>
       <modal-tab :title="$t('tabs.contacts')">
-        <div class="form">
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.first_name') }}</label>
-              <input v-model="first_name" class="form__input" type="text" name="first_name">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.last_name') }}</label>
-              <input v-model="last_name" class="form__input" type="text" name="last_name">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.job_position') }}</label>
-              <input v-model="job_position" class="form__input" type="text" name="job_position">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.email') }}</label>
-              <input v-model="email" class="form__input" type="text" name="email">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.phone') }}</label>
-              <input v-model="phone" class="form__input" type="text" name="phone">
-            </div>
-          </div>
-        </div>
+        <form-container name="client">
+          <form-row>
+            <form-field :label="$t('labels.first_name')">
+              <form-text-input name="first_name"></form-text-input>
+            </form-field>
+            <form-field :label="$t('labels.last_name')">
+              <form-text-input name="last_name"></form-text-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.job_position')">
+              <form-text-input name="job_position"></form-text-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.email')">
+              <form-text-input name="email"></form-text-input>
+            </form-field>
+            <form-field :label="$t('labels.phone')">
+              <form-text-input name="phone"></form-text-input>
+            </form-field>
+          </form-row>
+        </form-container>
       </modal-tab>
       <modal-tab :title="$t('tabs.additional_info')">
-        <div class="form">
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.currency') }}</label>
-              <dropdown v-model="currency" :placeholder="$t('fields.currency')">
-                <dropdown-option v-for="c in currencies"
-                                 :key="c.name"
-                                 :value="c.name"
-                                 :selected.once="c.name === currency">
-                  {{ c.name }}
+        <form-container name="client">
+          <form-row>
+            <form-field :label="$t('labels.currency')">
+              <form-dropdown-input name="currency">
+                <dropdown-option v-for="currency in currencies" :key="currency.id"
+                                :value="currency.id"
+                                :selected.once="currency.id === form.currency">
+                  {{ currency.code }}
                 </dropdown-option>
-              </dropdown>
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.language') }}</label>
-              <dropdown v-model="language" :placeholder="$t('fields.language')">
-                <dropdown-option v-for="c in languages"
-                                 :key="c.name"
-                                 :value="c.name"
-                                 :selected.once="c.name === language">
-                  {{ c.name }}
+              </form-dropdown-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.language')">
+              <form-dropdown-input name="language">
+                <dropdown-option v-for="language in languages" :key="language.id"
+                                :value="language.id"
+                                :selected.once="language.id === form.language">
+                  {{ language.name }}
                 </dropdown-option>
-              </dropdown>
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.payment_terms') }}</label>
-              <dropdown v-model="pt" :placeholder="$t('fields.payment_terms')">
-                <dropdown-option v-for="c in payment_terms"
-                                 :key="c.name"
-                                 :value="c.name"
-                                 :selected.once="c.name === pt">
-                  {{ c.name }}
+              </form-dropdown-input>
+            </form-field>
+            <form-field :label="$t('labels.payment_term')">
+              <form-dropdown-input name="payment_term">
+                <dropdown-option v-for="payment_term in payment_terms" :key="payment_term.id"
+                                :value="payment_term.id"
+                                :selected.once="payment_term.id === form.payment_term">
+                  {{ payment_term.name }}
                 </dropdown-option>
-              </dropdown>
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.company_size') }}</label>
-              <dropdown v-model="company_size" :placeholder="$t('fields.company_size')">
-                <dropdown-option v-for="c in company_sizes"
-                                 :key="c.name"
-                                 :value="c.name"
-                                 :selected.once="c.name === company_size">
-                  {{ c.name }}
+              </form-dropdown-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.company_size')">
+              <form-dropdown-input name="company_size">
+                <dropdown-option v-for="company_size in company_sizes" :key="company_size.id"
+                                :value="company_size.id"
+                                :selected.once="company_size.id === form.company_size">
+                  {{ company_size.name }}
                 </dropdown-option>
-              </dropdown>
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.industry') }}</label>
-              <dropdown v-model="industry" :placeholder="$t('fields.industry')">
-                <dropdown-option v-for="c in industries"
-                                 :key="c.name"
-                                 :value="c.name"
-                                 :selected.once="c.name === industry">
-                  {{ c.name }}
+              </form-dropdown-input>
+            </form-field>
+            <form-field :label="$t('labels.industry')">
+              <form-dropdown-input name="industry">
+                <dropdown-option v-for="industry in industries" :key="industry.id"
+                                :value="industry.id"
+                                :selected.once="industry.id === form.industry">
+                  {{ industry.name }}
                 </dropdown-option>
-              </dropdown>
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.private_notes') }}</label>
-              <textarea class="form__input"></textarea>
-            </div>
-          </div>
-        </div>
+              </form-dropdown-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.private_notes')">
+              <form-textarea-input name="private_notes" rows="4"></form-textarea-input>
+            </form-field>
+          </form-row>
+        </form-container>
       </modal-tab>
     </modal-tabs>
     <div class="modal-sidebar">
@@ -203,14 +176,14 @@
       </div>
       <div class="form__inline-inputs">
         <div class="form__input-wrapper">
-          <label>{{ $t('labels.country') }}</label>
-          <input v-model="country" class="form__input" type="text" name="country">
+          <label class="form__label">{{ $t('labels.country') }}</label>
+          <input v-model="vat_checker.country" class="form__input" type="text" name="country">
         </div>
       </div>
       <div class="form__inline-inputs">
         <div class="form__input-wrapper">
-          <label>{{ $t('labels.vat_number') }}</label>
-          <input v-model="vat_number" class="form__input" type="text" name="vat_number">
+          <label class="form__label">{{ $t('labels.vat_number') }}</label>
+          <input v-model="vat_checker.number" class="form__input" type="text" name="vat_number">
         </div>
       </div>
       <button class="button button--primary">
@@ -261,128 +234,84 @@
 </template>
 
 <script>
-import Dropzone from 'vue2-dropzone'
-
 export default {
   name: 'edit-client',
 
-  components: {
-    Dropzone
-  },
+  data() {
+    return {
+      areas: [
+        { id: 1, name: 'Area A' },
+        { id: 2, name: 'Area B' },
+        { id: 3, name: 'Area C' },
+        { id: 4, name: 'Area D' },
+        { id: 5, name: 'Area E' },
+        { id: 6, name: 'Area F' }
+      ],
 
-  props: {
-    data: {
-      default: () => {
-        return {}
+      countries: [
+        { id: 7, name: 'Country A' },
+        { id: 8, name: 'Country B' },
+        { id: 9, name: 'Country C' },
+        { id: 10, name: 'Country D' },
+        { id: 11, name: 'Country E' }
+      ],
+
+      currencies: [
+        { id: 1, name: 'Currency A' },
+        { id: 2, name: 'Currency B' },
+        { id: 3, name: 'Currency C' },
+        { id: 4, name: 'Currency D' },
+        { id: 5, name: 'Currency E' }
+      ],
+
+      languages: [
+        { id: 6, name: 'Language A' },
+        { id: 7, name: 'Language B' },
+        { id: 8, name: 'Language C' },
+        { id: 9, name: 'Language D' },
+        { id: 10, name: 'Language E' }
+      ],
+
+      payment_terms: [
+        { id: 11, name: 'Net 7' },
+        { id: 12, name: 'Net 14' },
+        { id: 13, name: 'Net 15' },
+        { id: 14, name: 'Net 30' },
+        { id: 15, name: 'Net 60' },
+        { id: 16, name: 'Net 90' },
+        { id: 17, name: 'Net 0' }
+      ],
+
+      company_sizes: [
+        { id: 18, name: 'Company Size A' },
+        { id: 19, name: 'Company Size B' },
+        { id: 20, name: 'Company Size C' },
+        { id: 21, name: 'Company Size D' },
+        { id: 22, name: 'Company Size E' }
+      ],
+
+      industries: [
+        { id: 23, name: 'Industry A' },
+        { id: 24, name: 'Industry B' },
+        { id: 25, name: 'Industry C' },
+        { id: 26, name: 'Industry D' },
+        { id: 27, name: 'Industry E' }
+      ],
+
+      vat_checker: {
+        country: '',
+        number: ''
       }
     }
   },
 
-  data() {
-    const current = this.data.client
-
-    return {
-      areas: [
-        { name: 'Area A' },
-        { name: 'Area B' },
-        { name: 'Area C' },
-        { name: 'Area D' },
-        { name: 'Area E' },
-        { name: 'Area F' }
-      ],
-
-      countries: [
-        { name: 'Country A' },
-        { name: 'Country B' },
-        { name: 'Country C' },
-        { name: 'Country D' },
-        { name: 'Country E' }
-      ],
-
-      currencies: [
-        { name: 'Currency A' },
-        { name: 'Currency B' },
-        { name: 'Currency C' },
-        { name: 'Currency D' },
-        { name: 'Currency E' }
-      ],
-
-      languages: [
-        { name: 'Language A' },
-        { name: 'Language B' },
-        { name: 'Language C' },
-        { name: 'Language D' },
-        { name: 'Language E' }
-      ],
-
-      payment_terms: [
-        { name: 'Net 7' },
-        { name: 'Net 14' },
-        { name: 'Net 15' },
-        { name: 'Net 30' },
-        { name: 'Net 60' },
-        { name: 'Net 90' },
-        { name: 'Net 0' }
-      ],
-
-      company_sizes: [
-        { name: 'Company Size A' },
-        { name: 'Company Size B' },
-        { name: 'Company Size C' },
-        { name: 'Company Size D' },
-        { name: 'Company Size E' }
-      ],
-
-      industries: [
-        { name: 'Industry A' },
-        { name: 'Industry B' },
-        { name: 'Industry C' },
-        { name: 'Industry D' },
-        { name: 'Industry E' }
-      ],
-
-      name: current.name,
-      registration_number: current.registration_number,
-      vat_number: current.vat_number,
-      website: current.website,
-      phone: current.phone,
-      address1: current.address1,
-      address2: current.address2,
-      currency: current.currency,
-      postal_code: current.postal_code,
-      area: current.area,
-      country: current.country,
-      taxRate: current.taxRate,
-      city: current.city
-    }
-  },
-
-  watch: {
-    name: function (val) {
-      this.data.client.name = val
-    },
-    price: function (val) {
-      this.data.client.price = val
-    },
-    qty: function (val) {
-      this.data.client.qty = val
-    },
-    currency: function (val) {
-      this.data.client.currency = val
-    },
-    taxRate: function (val) {
-      this.data.client.taxRate = val
-    },
-    description: function (val) {
-      this.data.client.description = val
+  computed: {
+    form() {
+      return this.$store.state.form.client
     }
   },
 
   methods: {
-    showSuccess() {
-      console.log('A file was successfully uploaded')
-    },
-
     save() {
       if (this.data.client.key) {
         this.$store.dispatch('SAVE_ENTITY', {

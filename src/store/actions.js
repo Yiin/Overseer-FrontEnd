@@ -5,29 +5,35 @@ import Auth from '@/auth'
 import { OVERVIEW } from '@/router/routes'
 import router from '@/router'
 
-export const LOGIN = ({ store }, creds) => {
+export const LOGIN = ({ dispatch }, creds) => {
   Auth.login(creds)
     .then((response) => {
       const accessToken = response.body.access_token
       const user = response.body.user
 
-      store.dispatch('AUTHENTICATE', { accessToken, user })
+      dispatch('AUTHENTICATE', { accessToken, user })
     })
 }
 
-export const REGISTER = ({ store }, data) => {
+export const REGISTER = ({ dispatch }, data) => {
   Auth.register(data)
     .then((response) => {
       const accessToken = response.body.access_token
       const user = response.body.user
 
-      store.dispatch('AUTHENTICATE', { accessToken, user })
+      dispatch('AUTHENTICATE', { accessToken, user })
     })
 }
 
-export const AUTHENTICATE = ({ commit }, { accessToken, user }) => {
+export const AUTHENTICATE = ({ commit, state }, { accessToken, user }) => {
   commit(types.UPDATE_ACCESS_TOKEN, accessToken)
   commit(types.UPDATE_USER, user)
+
+  localStorage.setItem('state', JSON.stringify({
+    auth: state.auth,
+    user: state.user,
+    locale: state.locale
+  }))
 
   router.push({
     name: OVERVIEW
@@ -37,8 +43,7 @@ export const AUTHENTICATE = ({ commit }, { accessToken, user }) => {
 }
 
 export const LOGOUT = ({ commit }) => {
-  commit(types.RESET_AUTH)
-  commit(types.RESET_USER)
+  commit(types.CLEAR_ALL_DATA)
 
   localStorage.removeItem('state')
   Echo.disconnect()

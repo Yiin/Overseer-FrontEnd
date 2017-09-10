@@ -1,5 +1,5 @@
 <template>
-  <dropdown ref="dropdown" @input="onInput" :placeholder="placeholder">
+  <dropdown ref="dropdown" @input="onInput" :placeholder="placeholder" :primary="primary">
     <slot></slot>
   </dropdown>
 </template>
@@ -8,7 +8,7 @@
 export default {
   name: 'inputs-dropdown',
 
-  props: ['placeholder'],
+  props: ['placeholder', 'primary'],
 
   methods: {
     onInput() {

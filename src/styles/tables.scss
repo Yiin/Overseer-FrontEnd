@@ -53,7 +53,6 @@
         font-size: 16px;
 
         .column, span, {
-            color: $color-text;
             text-decoration: none;
         }
 
@@ -112,13 +111,6 @@
         &--center {
             text-align: center;
             padding: 0;
-        }
-    }
-
-    .currency {
-        font-weight: $font-weight-bold;
-        &--primary {
-            color: $color-main;
         }
     }
 }

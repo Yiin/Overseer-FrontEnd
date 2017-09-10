@@ -11,7 +11,6 @@ body
 
     overflow-y: scroll;
 
-    height: 1000px;
     margin: 0;
     padding: $height-navbar 0 0 0;
 
@@ -44,6 +43,25 @@ a[href]:not(.--do-not-style-link)
 input
 {
     font-family: inherit;
+}
+
+iframe
+{
+    border: none;
+}
+
+
+.currency
+{
+    font-weight: $font-weight-bold;
+    &--primary
+    {
+        color: $color-main;
+    }
+    &--secondary
+    {
+        color: $color-blaze-orange;
+    }
 }
 
 /* Checkbox */
@@ -186,6 +204,7 @@ input
 .scrollable::-webkit-scrollbar
 {
     width: 6px;
+    height: 6px;
 
     background-color: transparent;
 }
@@ -203,7 +222,7 @@ input
     font-size: 16px;
     line-height: 52px;
 
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 
     border-bottom: 1px solid #e1e1e1;
 }
@@ -233,6 +252,15 @@ input
     width: 100%;
 }
 
+.button--positive
+{
+    font-size: 16px;
+
+    width: 100%;
+
+    background: $color-forest-green;
+}
+
 .results__list
 {
     max-height: 249px;
@@ -246,6 +274,7 @@ input
     display: flex;
 
     margin-top: 20px;
+    margin-right: 20px;
 
     align-items: stretch;
 }
@@ -280,12 +309,12 @@ input
 .result-detail__title
 {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: bold;
 
     margin-top: 25px;
-    margin-left: 5px;
+    margin-left: 10px;
 
-    color: #01a8fe;
+    color: $color-main;
 }
 
 .result-detail__sub-title
@@ -294,14 +323,14 @@ input
     font-weight: 600;
     line-height: 1.4;
 
-    margin: 5px 0 19px 5px;
+    margin: 5px 0 24px 10px;
 
     text-transform: uppercase;
 }
 
 span.result-detail__value
 {
-    font-weight: 600;
+    font-weight: bold;
 }
 
 .result--success .result-detail--highlight .result-detail__value

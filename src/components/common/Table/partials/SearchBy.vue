@@ -1,5 +1,5 @@
 <template>
-   <inputs-dropdown :placeholder="$t('actions.search_by')" class="dropdown--primary">
+   <inputs-dropdown :placeholder="$t('actions.search_by')" primary>
 
     <template v-for="option in options">
       <dropdown-separator v-if="option.type === 'separator'"></dropdown-separator>

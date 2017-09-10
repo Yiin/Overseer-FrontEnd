@@ -19,7 +19,11 @@ let state = {
 
 // Sync with local storage.
 if (localStorage.getItem('state')) {
-  state = Object.assign(state, JSON.parse(localStorage.getItem('state')))
+  const savedState = localStorage.getItem('state')
+
+  if (savedState) {
+    state = Object.assign(state, typeof savedState === 'string' ? JSON.parse(savedState) : savedState)
+  }
 }
 
 // Merge data and export it.

@@ -76,7 +76,7 @@ export default {
 
     return Vue.http.post(LOGIN_URL, params, AUTH_BASIC_HEADERS)
       .catch(() => {
-        //
+        console.log('FAILED LOGIN')
       })
   },
 

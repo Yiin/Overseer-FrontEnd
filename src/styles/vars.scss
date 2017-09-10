@@ -5,6 +5,7 @@
 // Colors
 $color-azure-radiance: #01a8fe;
 $color-persian-green: hsla(166, 99%, 33%, 1);
+$color-indigo: #5867c2;
 $color-black: #000000;
 $color-white: #ffffff;
 $color-red: #e60b0b;
@@ -38,7 +39,7 @@ $border-radius: 3px;
  * Variables
  */
 
-$color-main: $color-azure-radiance;
+$color-main: $color-indigo;
 $color-main-dark: $color-mine-shaft;
 
 $modal-bg-dim: rgba($color-black, 0.5);

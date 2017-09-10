@@ -3,7 +3,7 @@
     <div class="modal-tabs__list">
       <div
         v-for="(tab, index) in tabs"
-        @click="showTab(index)"
+        @mousedown="showTab(index)"
         class="modal__tab"
         :class="{ 'modal__tab--active': tab.isActive }"
       >

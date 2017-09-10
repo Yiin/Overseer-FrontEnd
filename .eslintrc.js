@@ -26,6 +26,9 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
 
     "no-unused-vars": ["warn", { "vars": "all"}],
+    "no-unused-expressions": 0,
+
+    "standard/no-callback-literal": 0,
 
     'space-before-function-paren': ['error', {
       'anonymous': 'always',

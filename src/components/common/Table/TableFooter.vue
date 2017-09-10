@@ -5,7 +5,7 @@
       <div class="table__footer-text">
         {{ $t('table.total') }}
       </div>
-      <dropdown placeholder="Select" class="dropdown--primary dropdown--table-footer dropdown--calculator">
+      <dropdown v-model="calc" placeholder="Select" class="dropdown--primary dropdown--table-footer dropdown--calculator">
         <dropdown-option value="Price">
           Price
         </dropdown-option>
@@ -35,7 +35,7 @@
           {{ $tc('table.showing_some_entries', { from, to, total }) }}
         </template>
       </div>
-      <dropdown class="dropdown--primary dropdown--table-footer dropdown--page">
+      <dropdown v-model="rows" class="dropdown--primary dropdown--table-footer dropdown--page">
         <dropdown-option value="10" selected>
           10
         </dropdown-option>
@@ -59,6 +59,13 @@
 <script>
 export default {
   props: ['pagination'],
+
+  data() {
+    return {
+      calc: '',
+      rows: 10
+    }
+  },
 
   computed: {
     page() {

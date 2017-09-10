@@ -1,7 +1,6 @@
 <template>
-  <div v-show="isActive">
+  <div class="modal-tab" v-show="isActive">
     <slot></slot>
-
   </div>
 </template>
 

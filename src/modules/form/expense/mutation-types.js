@@ -1,0 +1,6 @@
+export const SET_VENDOR = 'SET_VENDOR'
+export const SET_CATEGORY = 'SET_CATEGORY'
+export const SET_AMOUNT = 'SET_AMOUNT'
+export const SET_CURRENCY = 'SET_CURRENCY'
+export const SET_DATE = 'SET_DATE'
+export const SET_DOCUMENTS = 'SET_DOCUMENTS'

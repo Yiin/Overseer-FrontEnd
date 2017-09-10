@@ -40,7 +40,11 @@
         position: relative;
 
         background: $modal-inner-bg;
-        box-shadow: $box-shadow;
+        box-shadow: $box-shadow-2;
+    }
+    &-tab
+    {
+        // position: relative;
     }
     &-icon
     {
@@ -101,7 +105,7 @@
         }
         &__content
         {
-            padding: 60px 20px 40px 20px;
+            padding: 40px 20px 105px 20px;
         }
     }
     &__tab
@@ -227,4 +231,9 @@
 
     align-items: center;
     justify-content: center;
+}
+
+.modal-tab > .tabs:first-child
+{
+    margin-top: -21px;
 }

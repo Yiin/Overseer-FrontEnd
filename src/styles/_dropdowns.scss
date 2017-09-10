@@ -30,6 +30,16 @@
         border-radius: 0 0 $border-radius $border-radius;
         background: #fff;
         box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
+        &.scrollable
+        {
+            max-height: 197px;
+        }
+        &--reversed
+        {
+            bottom: 44px;
+
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, .02);
+        }
     }
     /**
      * Dropdown option base style
@@ -37,11 +47,14 @@
     &__option
     {
         line-height: 34px;
+        // overflow: hidden;
 
         padding: 0 15px 0 26px;
 
         cursor: default;
         user-select: none;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         /**
          * Slight shade on hover
          */
@@ -211,18 +224,21 @@
      */
     &__input
     {
-        line-height: 42px;
+        @extend .form__input;
+
+        line-height: 44px;
 
         background: $color-white;
         box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
+        padding: 0 35px 0 15px;
 
-        @extend .form__input;
         &.--placeholder
         {
             // color: $color-text-placeholder;
         }
         // caret
-        &::before
+        &::before,
+        &-wrapper::before
         {
             position: absolute;
             top: 19px;
@@ -234,12 +250,17 @@
             border-right: 4px solid transparent;
             border-left: 4px solid transparent;
         }
+        &-wrapper
+        {
+            position: relative;
+        }
     }
     // caret when open
     &--open &__input
     {
         border-radius: $border-radius $border-radius 0 0;
-        &::before
+        &::before,
+        &-wrapper::before
         {
             top: 15px;
 
@@ -294,8 +315,8 @@
             box-shadow: $box-shadow;
         }
     }
-
-    &--small {
+    &--small
+    {
         min-width: 140px;
     }
 }

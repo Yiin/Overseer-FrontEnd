@@ -1,264 +1,375 @@
 <template>
   <div class="modal-form">
     <modal-tabs @save="save" @cancel="cancel">
+
+      <!--
+        Select client we're sending invoice to
+       -->
       <modal-tab :title="$t('tabs.client')">
-        <div class="form">
-          <inline-select v-model="client" name="client" :placeholder="$t('placeholders.type_client_name')">
-            <inline-option v-for="c in clients"
-                          :key="c.name"
-                          :value="c.name"
-                          :selected="c === client">
-              {{ c.name }}
+        <form-container name="invoice">
+          <form-inline-select-input name="client" :placeholder="$t('placeholders.type_client_name')">
+            <inline-option v-for="client in clients"
+                          :key="client.uuid"
+                          :value="client.uuid"
+                          :selected.once="client.uuid === form.client"
+            >
+              {{ client.name }}
             </inline-option>
-          </inline-select>
-        </div>
+          </form-inline-select-input>
+        </form-container>
       </modal-tab>
-      <modal-tab :title="$t('tabs.address')">
-        <div class="form">
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.invoice_date') }}</label>
-              <input class="form__input form__input--date" type="text" name="invoice_date">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.invoice_number') }}</label>
-              <input class="form__input" type="text" name="invoice_number">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.invoice_due_date') }}</label>
-              <input class="form__input form__input--date" type="text" name="invoice_due_date">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.po_number') }}</label>
-              <input class="form__input" type="text" name="po_number">
-            </div>
-          </div>
-          <div class="form__inline-inputs">
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.partial_deposit') }}</label>
-              <input class="form__input" type="text" name="partial_deposit">
-            </div>
-            <div class="form__input-wrapper">
-              <label>{{ $t('labels.discount') }}</label>
-              <div class="form__inputs-group">
-                <input class="form__input" type="text" name="discount">
-                <dropdown class="dropdown--small">
-                  <dropdown-option>{{ $t('discount_type.percent') }}</dropdown-option>
+
+      <!--
+        Invoice details
+      -->
+      <modal-tab :title="$t('tabs.details')">
+        <form-container name="invoice">
+          <form-row>
+            <form-field :label="$t('labels.invoice_date')">
+              <form-date-input name="invoice_date"></form-date-input>
+            </form-field>
+            <form-field :label="$t('labels.invoice_number')">
+              <form-text-input name="invoice_number"></form-text-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.invoice_due_date')">
+              <form-date-input name="invoice_due_date"></form-date-input>
+            </form-field>
+            <form-field :label="$t('labels.po_number')">
+              <form-text-input name="po_number"></form-text-input>
+            </form-field>
+          </form-row>
+          <form-row>
+            <form-field :label="$t('labels.partial')">
+              <form-date-input name="partial"></form-date-input>
+            </form-field>
+            <form-field :label="$t('labels.discount')">
+              <form-inputs-group>
+                <form-text-input name="discount_value"></form-text-input>
+                <form-dropdown-input name="discount_type" class="dropdown--small">
+                  <dropdown-option :selected="true">{{ $t('discount_type.percent') }}</dropdown-option>
                   <dropdown-option>{{ $t('discount_type.flat') }}</dropdown-option>
-                </dropdown>
+                </form-dropdown-input>
+              </form-inputs-group>
+            </form-field>
+          </form-row>
+        </form-container>
+      </modal-tab>
+
+      <!--
+        Invoice items
+      -->
+      <modal-tab :title="$t('tabs.items')">
+        <form-container name="invoice">
+
+          <form-items-list :model="tmpItem" @add="onAdd" name="items">
+
+            <!--
+              New item form
+            -->
+            <template slot="fields">
+
+              <!--
+                Product
+              -->
+              <form-field class="field--product" :label="$t('labels.item')">
+                <form-dropdown-input v-model="tmpItem.product" with-text searchable scrollable>
+                  <dropdown-option v-for="(product, index) in products" :key="index" :value="product.uuid">
+                    {{ product.name }}
+                  </dropdown-option>
+                </form-dropdown-input>
+              </form-field>
+
+              <!--
+                Unit Price
+              -->
+              <form-field class="field--cost" :label="$t('labels.unit_cost')">
+                <form-text-input v-model="tmpItem.cost" name="price"></form-text-input>
+              </form-field>
+
+              <!--
+                Quantity
+              -->
+              <form-field class="field--qty" :label="$t('labels.qty')">
+                <form-text-input v-model="tmpItem.qty" name="qty"></form-text-input>
+              </form-field>
+
+              <!--
+                Discount
+              -->
+              <form-field class="field--discount" :label="$t('labels.discount')">
+                <form-text-input v-model="tmpItem.discount" name="discount"></form-text-input>
+              </form-field>
+
+              <!--
+                Tax Rate
+              -->
+              <form-field class="field--tax-rate" :label="$t('labels.tax_rate')">
+                <form-dropdown-input v-model="tmpItem.taxRate" with-text searchable scrollable>
+                  <dropdown-option v-for="(tr, index) in taxRates" :key="index" :value="tr.uuid">
+                    {{ tr.name }}
+                  </dropdown-option>
+                </form-dropdown-input>
+              </form-field>
+            </template>
+
+            <!--
+              List item
+            -->
+            <template slot="preview" scope="row">
+              <div class="list-item__field field--product">
+                <div class="list-item__field list-item__index">
+                  {{ row.index + 1 }}.
+                </div>
+                {{ row.item.product.text }}
               </div>
-            </div>
-          </div>
-        </div>
-      </modal-tab>
-      <modal-tab :title="$t('tabs.contacts')">
+              <div class="list-item__field field--cost">
+                <span class="currency">
+                    {{ currency_symbol | currencySymbol }}
+                </span>
+                <span class="currency currency--primary">
+                    {{ row.item.cost | currency }}
+                </span>
+              </div>
+              <div class="list-item__field field--qty">
+                {{ row.item.qty }}
+              </div>
+              <div class="list-item__field field--discount">
+                <span class="currency">
+                    {{ currency_symbol | currencySymbol }}
+                </span>
+                <span class="currency currency--primary">
+                    {{ row.item.discount | currency }}
+                </span>
+              </div>
+              <div class="list-item__field field--tax-rate">
+                {{ row.item.taxRate.text }}
+              </div>
+            </template>
 
+            <template slot="summary">
+              <div class="summary-block">
+                <label class="summary-block__title">
+                    Subtotal
+                </label>
+                <span class="currency">
+                    {{ currency_symbol | currencySymbol }}
+                </span>
+                <span class="currency currency--primary">
+                    {{ subtotal | currency }}
+                </span>
+              </div>
+
+              <div class="summary-block">
+                <label class="summary-block__title">
+                    Discount
+                </label>
+                <span class="currency">
+                    {{ currency_symbol | currencySymbol }}
+                </span>
+                <span class="currency currency--primary">
+                    {{ discount | currency }}
+                </span>
+              </div>
+
+              <div class="summary-block">
+                <label class="summary-block__title">
+                    Taxes
+                </label>
+                <span class="currency">
+                    {{ currency_symbol | currencySymbol }}
+                </span>
+                <span class="currency currency--primary">
+                    {{ taxes | currency }}
+                </span>
+              </div>
+
+              <div class="summary-block">
+                <label class="summary-block__title">
+                  Paid to Date
+                </label>
+                <span class="currency">
+                  {{ currency_symbol | currencySymbol }}
+                </span>
+                <span class="currency currency--primary">
+                  {{ paid_to_date | currency }}
+                </span>
+              </div>
+
+              <div class="summary-block">
+                <label class="summary-block__title">
+                  Balance Due
+                </label>
+                <span class="currency">
+                  {{ currency_symbol | currencySymbol }}
+                </span>
+                <span class="currency currency--primary">
+                  {{ balance_due | currency }}
+                </span>
+              </div>
+            </template>
+          </form-items-list>
+
+        </form-container>
       </modal-tab>
+
+      <!--
+        Additional info
+      -->
       <modal-tab :title="$t('tabs.additional_info')">
+        <tabs>
+          <!--
+            Upload Documents
+          -->
+          <tab :title="$t('tabs.documents')">
 
+          </tab>
+          <tab :title="$t('tabs.note_to_client')">
+            <form-container name="invoice">
+              <form-textarea-input :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12"></form-textarea-input>
+            </form-container>
+          </tab>
+          <tab :title="$t('tabs.terms')">
+            <form-container name="invoice">
+              <form-textarea-input :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12"></form-textarea-input>
+            </form-container>
+          </tab>
+          <tab :title="$t('tabs.footer')">
+            <form-container name="invoice">
+              <form-textarea-input :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12"></form-textarea-input>
+            </form-container>
+          </tab>
+        </tabs>
       </modal-tab>
     </modal-tabs>
     <div class="modal-sidebar">
       <div class="modal-sidebar__title">
-        {{ $t('invoice.check_your_vat_number') }}
+        {{ $t('invoice.invoice_preview') }}
       </div>
-      <div class="form__inline-inputs">
-        <div class="form__input-wrapper">
-          <label>{{ $t('labels.country') }}</label>
-          <input v-model="country" class="form__input" type="text" name="country">
-        </div>
-      </div>
-      <div class="form__inline-inputs">
-        <div class="form__input-wrapper">
-          <label>{{ $t('labels.vat_number') }}</label>
-          <input v-model="vat_number" class="form__input" type="text" name="vat_number">
-        </div>
-      </div>
-      <button class="button button--primary">
-        {{ $t('common.check') }}
-      </button>
-      <div class="results__list scrollable">
-        <div class="result result--success">
-          <div class="result-border"></div>
-          <div class="result-details">
-            <div class="result-detail">
-              VAT: <span class="result-detail__value">LT45546456456465456</span>
-            </div>
-            <div class="result-detail result-detail--highlight">
-              Status: <span class="result-detail__value">Valid</span>
-            </div>
-            <div class="result-detail__title">Loneland Digital Ltd</div>
-            <div class="result-detail__sub-title">Birželio 23-iosios g. 4-4, Vilniaus m., Vilniaus m. sav.</div>
-            <div class="result-detail">
-              Checked <span class="result-detail__value">a moment ago</span>
-            </div>
-            <div class="result-detail">
-            </div>
-            <div class="result-detail">
-            </div>
-          </div>
-        </div>
-        <div class="result result--failure">
-          <div class="result-border"></div>
-          <div class="result-details">
-            <div class="result-detail">
-              VAT: <span class="result-detail__value">LT41651521231321321</span>
-            </div>
-            <div class="result-detail result-detail--highlight">
-              Status: <span class="result-detail__value">Valid</span>
-            </div>
-            <div class="result-detail">
-              Checked <span class="result-detail__value">a moment ago</span>
-            </div>
-            <div class="result-detail">
-            </div>
-            <div class="result-detail">
-            </div>
-          </div>
-        </div>
+      <div class="invoice__preview">
+        <object type="application/pdf" data="http://localhost:8000/test.pdf#view=Fit&toolbar=0" width="357" height="487"></object>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Dropzone from 'vue2-dropzone'
-
 export default {
   name: 'edit-invoice',
 
-  components: {
-    Dropzone
-  },
+  data() {
+    return {
+      clients: [
+        { uuid: '0001', name: 'Client A' },
+        { uuid: '0002', name: 'Client B' },
+        { uuid: '0003', name: 'Client C' },
+        { uuid: '0004', name: 'Client D' },
+        { uuid: '0005', name: 'Client E' }
+      ],
 
-  props: {
-    data: {
-      default: () => {
-        return {}
+      products: [
+        { uuid: '0001', name: 'Product A' },
+        { uuid: '0002', name: 'Product B' },
+        { uuid: '0003', name: 'Product C' },
+        { uuid: '0004', name: 'Product D' },
+        { uuid: '0005', name: 'Product E' },
+        { uuid: '0006', name: 'Product F' },
+        { uuid: '0007', name: 'Product G' },
+        { uuid: '0008', name: 'Product H' },
+        { uuid: '0009', name: 'Product I' },
+        { uuid: '0010', name: 'Product J' }
+      ],
+
+      taxRates: [
+        { uuid: '0001', name: 'VAT', rate: 10, is_inclusive: false },
+        { uuid: '0002', name: 'Tobacco', rate: 15, is_inclusive: false },
+        { uuid: '0003', name: 'Alkohol', rate: 20, is_inclusive: true }
+      ],
+
+      tmpItem: {
+        product: {
+          text: '',
+          value: ''
+        },
+        qty: 1,
+        cost: 0,
+        discount: 0,
+        taxRate: {
+          text: '',
+          value: ''
+        }
       }
     }
   },
 
-  data() {
-    const current = this.data.invoice
+  computed: {
+    form() {
+      return this.$store.state.form.invoice
+    },
 
-    return {
-      clients: [
-        { name: 'Client A' },
-        { name: 'Client B' },
-        { name: 'Client C' },
-        { name: 'Client D' },
-        { name: 'Client E' },
-        { name: 'Client F' },
-        { name: 'Client G' },
-        { name: 'Client H' },
-        { name: 'Client I' },
-        { name: 'Client J' },
-        { name: 'Client K' },
-        { name: 'Client L' },
-        { name: 'Client M' },
-        { name: 'Client N' },
-        { name: 'Client O' },
-        { name: 'Client P' },
-        { name: 'Client Q' },
-        { name: 'Client R' },
-        { name: 'Client S' }
-      ],
+    currency_symbol() {
+      return '$'
+    },
 
-      countries: [
-        { name: 'Country A' },
-        { name: 'Country B' },
-        { name: 'Country C' },
-        { name: 'Country D' },
-        { name: 'Country E' }
-      ],
+    invoice_amount() {
+      return this.form.items.filter((item) => item.cost)
+        .map((item) => parseFloat(item.cost) * parseFloat(item.qty || 1))
+        .reduce((a, b) => a + b, 0)
+    },
 
-      currencies: [
-        { name: 'Currency A' },
-        { name: 'Currency B' },
-        { name: 'Currency C' },
-        { name: 'Currency D' },
-        { name: 'Currency E' }
-      ],
+    subtotal() {
+      return this.invoice_amount
+    },
 
-      languages: [
-        { name: 'Language A' },
-        { name: 'Language B' },
-        { name: 'Language C' },
-        { name: 'Language D' },
-        { name: 'Language E' }
-      ],
+    discount() {
+      return this.form.items.map((item) => parseFloat(item.discount))
+        .reduce((a, b) => a + b, 0)
+    },
 
-      payment_terms: [
-        { name: 'Net 7' },
-        { name: 'Net 14' },
-        { name: 'Net 15' },
-        { name: 'Net 30' },
-        { name: 'Net 60' },
-        { name: 'Net 90' },
-        { name: 'Net 0' }
-      ],
+    taxes() {
+      const items = this.form.items
+      let taxes = 0 // flat
 
-      company_sizes: [
-        { name: 'Company Size A' },
-        { name: 'Company Size B' },
-        { name: 'Company Size C' },
-        { name: 'Company Size D' },
-        { name: 'Company Size E' }
-      ],
+      for (let i = 0; i < items.length; ++i) {
+        if (!items[i].taxRate) {
+          continue
+        }
 
-      industries: [
-        { name: 'Industry A' },
-        { name: 'Industry B' },
-        { name: 'Industry C' },
-        { name: 'Industry D' },
-        { name: 'Industry E' }
-      ],
+        const tax = this.taxRates.find((taxRate) => taxRate.uuid === items[i].taxRate)
 
-      client: current.client,
+        if (!tax) {
+          continue
+        }
 
-      name: current.name,
-      registration_number: current.registration_number,
-      vat_number: current.vat_number,
-      website: current.website,
-      phone: current.phone,
-      address1: current.address1,
-      address2: current.address2,
-      currency: current.currency,
-      postal_code: current.postal_code,
-      area: current.area,
-      country: current.country,
-      taxRate: current.taxRate,
-      city: current.city
+        taxes += parseFloat(tax.rate) * parseFloat(items[i].cost) / 100
+      }
+      return taxes
+    },
+
+    paid_to_date() {
+      return 0.00
+    },
+
+    balance_due() {
+      return this.invoice_amount + this.taxes
     }
-  },
 
-  watch: {
-    name: function (val) {
-      this.data.invoice.name = val
-    },
-    price: function (val) {
-      this.data.invoice.price = val
-    },
-    qty: function (val) {
-      this.data.invoice.qty = val
-    },
-    currency: function (val) {
-      this.data.invoice.currency = val
-    },
-    taxRate: function (val) {
-      this.data.invoice.taxRate = val
-    },
-    description: function (val) {
-      this.data.invoice.description = val
-    }
   },
 
   methods: {
-    showSuccess() {
-      console.log('A file was successfully uploaded')
+    onAdd() {
+      this.tmpItem.product = {
+        text: '',
+        value: ''
+      }
+      this.tmpItem.qty = 1
+      this.tmpItem.cost = 0
+      this.tmpItem.discount = 0
+      this.tmpItem.taxRate = {
+        text: '',
+        value: ''
+      }
     },
 
     save() {
@@ -286,20 +397,43 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .modal-form {
   display: flex;
   height: 617px;
 
   .modal-tabs {
-    width: 865px;
+    width: 990px;
+  }
+}
+.modal-sidebar {
+  width: 397px;
+  border-left: 1px solid #e1e1e1;
+  float: right;
+}
+
+.field--product {
+  width: 30%;
+
+  .list-item__field & {
+    min-width: 39%;
   }
 }
 
-.modal-sidebar {
-  width: 295px;
-  border-left: 1px solid #e1e1e1;
-  float: right;
+.field--cost {
+  width: 15%;
+}
+
+.field--qty {
+  width: 10%;
+}
+
+.field--discount {
+  width: 10%;
+}
+
+.field--tax-rate {
+  width: 20%;
 }
 
 .vue-dropzone {
@@ -317,51 +451,5 @@ export default {
       font-size: 13px;
     }
   }
-}
-
-.vb > .vb-dragger {
-    z-index: 5;
-    width: 12px;
-    right: 0;
-}
-
-.vb > .vb-dragger > .vb-dragger-styler {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-transform: rotate3d(0,0,0,0);
-    transform: rotate3d(0,0,0,0);
-    -webkit-transition:
-        background-color 100ms ease-out,
-        margin 100ms ease-out,
-        height 100ms ease-out;
-    transition:
-        background-color 100ms ease-out,
-        margin 100ms ease-out,
-        height 100ms ease-out;
-    background-color: rgba(48, 121, 244,.1);
-    margin: 5px 5px 5px 0;
-    border-radius: 20px;
-    height: calc(100% - 10px);
-    display: block;
-}
-
-.vb.vb-scrolling-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: rgba(48, 121, 244,.3);
-}
-
-.vb > .vb-dragger:hover > .vb-dragger-styler {
-    background-color: rgba(48, 121, 244,.5);
-    margin: 0px;
-    height: 100%;
-}
-
-.vb.vb-dragging > .vb-dragger > .vb-dragger-styler {
-    background-color: rgba(48, 121, 244,.5);
-    margin: 0px;
-    height: 100%;
-}
-
-.vb.vb-dragging-phantom > .vb-dragger > .vb-dragger-styler {
-    background-color: rgba(48, 121, 244,.5);
 }
 </style>

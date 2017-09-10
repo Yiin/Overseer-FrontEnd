@@ -5,11 +5,13 @@
 </template>
 
 <script>
+import he from 'he'
+
 export default {
   name: 'dropdown-option',
 
   props: {
-    value: String,
+    value: [String, Number, Boolean],
     selected: {
       type: Boolean,
       default: false
@@ -18,14 +20,26 @@ export default {
 
   data() {
     return {
-      isSelected: false,
       isVisible: true
+    }
+  },
+
+  computed: {
+    text() {
+      return he.decode(this.$slots.default[0].text).trim()
+    },
+
+    searchable() {
+      return this.text.toLowerCase()
     }
   },
 
   methods: {
     select() {
-      this.$emit('select', { value: this.value })
+      this.$emit('select', {
+        value: this.value,
+        text: this.text
+      })
     }
   }
 }

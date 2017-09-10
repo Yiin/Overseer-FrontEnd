@@ -10,8 +10,17 @@
              class="mediumjs-input-clear"
         ></div>
       </div>
+      <div v-if="tabular" class="inline-select-head">
+        <inline-select-column></inline-select-column>
+        <slot name="head"></slot>
+      </div>
       <div class="inline-select__options scrollable">
-        <slot></slot>
+        <template v-if="tabular">
+          <slot name="rows"></slot>
+        </template>
+        <template v-else>
+          <slot></slot>
+        </template>
       </div>
   </div>
 </template>
@@ -23,7 +32,14 @@ const Medium = require('@/vendor/medium.js/medium.patched').Medium
 export default {
   name: 'inline-select',
 
-  props: ['placeholder', 'name'],
+  props: {
+    placeholder: String,
+    name: String,
+    tabular: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   data() {
     return {
@@ -41,8 +57,24 @@ export default {
   },
 
   computed: {
+    headColumns() {
+      if (this.tabular) {
+        return this.$slots.head
+          .filter((el) => el.tag && el.tag.indexOf('inline') > -1)
+          .map((column) => column.componentInstance)
+      }
+      return []
+    },
+
     options() {
-      return this.$slots.default.map((option) => option.componentInstance)
+      if (this.tabular) {
+        return this.$slots.rows
+          .filter((el) => el.tag && el.tag.indexOf('inline') > -1)
+          .map((column) => column.componentInstance)
+      }
+      return this.$slots.default
+          .filter((el) => el.tag && el.tag.indexOf('inline') > -1)
+          .map((column) => column.componentInstance)
     },
 
     searchTerms() {
@@ -78,6 +110,19 @@ export default {
         this.$emit('input', e)
       })
     })
+
+    this.headColumns.forEach((column, index) => {
+      this.options.forEach((row) => {
+        let width = column.width
+
+        if (column.width.indexOf('%') > -1) {
+          width = parseFloat(column.width.replace('%', '')) / 100
+          width = `calc(${column.width} - (60px * ${width}))`
+        }
+        row.columns[index].setWidth(width)
+        row.columns[index].setAlign(column.align)
+      })
+    })
   },
 
   methods: {
@@ -110,7 +155,35 @@ export default {
 
 <style lang="scss">
 .inline-select {
-  margin-top: -40px;
+  margin-top: -20px;
+}
+
+.inline-select-head {
+    display: flex;
+    height: 35px;
+    line-height: 35px;
+    border-top: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
+    margin-right: 6px;
+    font-weight: $font-weight-semibold;
+}
+
+.inline-select-column:first-child {
+  width: 60px;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inline-select-column:not(:first-child) {
+    padding: 0 15px;
+}
+
+.inline-select-column {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .inline-select__search-wrapper {
@@ -155,7 +228,6 @@ export default {
 }
 
 .inline-select__options {
-  height: 370px;
-  padding-bottom: 40px;
+    height: 370px;
 }
 </style>

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store'
 import * as Routes from './routes.js'
 
 Vue.use(Router)
@@ -30,7 +31,7 @@ const router = new Router({
       path: '/logout',
       name: Routes.LOGOUT,
       beforeEnter(to, from, next) {
-        Vue.auth.logout()
+        store.dispatch('LOGOUT')
         next('/')
       }
     },
