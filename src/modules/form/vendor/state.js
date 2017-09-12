@@ -1,6 +1,6 @@
 const state = {
   // Organization
-  name: '',
+  company_name: '',
   registration_number: '',
   vat_number: '',
   website: '',
@@ -13,7 +13,7 @@ const state = {
   city: '',
   postal_code: '',
   state: '',
-  country_id: null, // id
+  country: null, // id
 
   // Contacts
   contacts: [
@@ -26,12 +26,12 @@ const state = {
     } */
   ],
 
-  currency_id: null, // id
-  language_id: null, // id
+  currency: null, // id
+  language: null, // id
   payment_terms: null, // integer
-  company_size_id: null, // id
-  industry_id: null, // id
-  notes: '',
+  company_size: null, // id
+  industry: null, // id
+  private_notes: '',
 
   errors: {}
 }

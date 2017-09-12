@@ -4,7 +4,7 @@
 
     <div class="table__heading">
       <a @click="create" class="button button__create">
-        <span class="icon-sidebar-expenses icon-new-expense-btn-icon"></span>
+        <span class="icon-new-expense-btn-icon"></span>
         {{ $t('actions.new_expense') }}
       </a>
 
@@ -16,12 +16,12 @@
 
     <entities-table :data="list">
       <template slot="head">
-        <column width="14%">{{ $t('fields.expense_number') }}</column>
-        <column width="19%">{{ $t('fields.client_name') }}</column>
-        <column width="11%">{{ $t('fields.date') }}</column>
-        <column width="11%">{{ $t('fields.due_date') }}</column>
-        <column width="15%">{{ $t('fields.amount') }}</column>
-        <column width="14%">{{ $t('fields.paid_in') }}</column>
+        <column width="14%">{{ $t('fields.vendor_name') }}</column>
+        <column width="20%">{{ $t('fields.client_name') }}</column>
+        <column width="10%">{{ $t('fields.category') }}</column>
+        <column width="19%">{{ $t('fields.public_notes') }}</column>
+        <column width="11%">{{ $t('fields.expense_date') }}</column>
+        <column width="10%">{{ $t('fields.amount') }}</column>
         <column width="12%">{{ $t('fields.status') }}</column>
       </template>
       <template slot="columns" scope="props">

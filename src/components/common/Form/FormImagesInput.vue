@@ -46,7 +46,7 @@
 import FileUpload from 'vue-upload-component'
 
 export default {
-  name: 'form-dropzone-input',
+  name: 'form-images-input',
 
   components: {
     FileUpload

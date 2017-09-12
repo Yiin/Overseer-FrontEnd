@@ -5,8 +5,8 @@ export default {
     state.errors = errors
   },
 
-  [mutations.SET_NAME](state, name) {
-    state.name = name
+  [mutations.SET_COMPANY_NAME](state, companyName) {
+    state.company_name = companyName
   },
 
   [mutations.SET_REGISTRATION_NUMBER](state, registrationNumber) {
@@ -49,32 +49,32 @@ export default {
     state.state = area
   },
 
-  [mutations.SET_COUNTRY_ID](state, countryId) {
-    state.country_id = countryId
+  [mutations.SET_COUNTRY](state, country) {
+    state.country = country
   },
 
   [mutations.SET_CONTACTS](state, contacts) {
     state.contacts = contacts
   },
 
-  [mutations.SET_CURRENCY_ID](state, currencyId) {
-    state.currency_id = currencyId
+  [mutations.SET_CURRENCY](state, currency) {
+    state.currency = currency
   },
 
-  [mutations.SET_LANGUAGE_ID](state, languageId) {
-    state.language_id = languageId
+  [mutations.SET_LANGUAGE](state, language) {
+    state.language = language
   },
 
   [mutations.SET_PAYMENT_TERMS](state, paymentTerms) {
     state.payment_terms = paymentTerms
   },
 
-  [mutations.SET_COMPANY_SIZE_ID](state, companySizeId) {
-    state.company_size_id = companySizeId
+  [mutations.SET_COMPANY_SIZE](state, companySize) {
+    state.company_size = companySize
   },
 
-  [mutations.SET_INDUSTRY_ID](state, industryId) {
-    state.industry_id = industryId
+  [mutations.SET_INDUSTRY](state, industry) {
+    state.industry = industry
   },
 
   [mutations.SET_PRIVATE_NOTES](state, privateNotes) {

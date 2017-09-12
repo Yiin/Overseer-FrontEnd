@@ -22,15 +22,15 @@
         <column width="14%">{{ $t('fields.stock') }}</column>
       </template>
       <template slot="columns" scope="props">
-        <column>
+        <column width="20%">
           <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.name }}</a>
         </column>
-        <column>{{ props.row.description }}</column>
-        <column>
+        <column width="46%">{{ props.row.description }}</column>
+        <column width="16%">
           <span class="currency">{{ props.row.currency | currencySymbol }}</span>
           <span class="currency currency--primary">{{ props.row.price | currency }}</span>
         </column>
-        <column>{{ props.row.qty }}</column>
+        <column width="14%">{{ props.row.qty }}</column>
       </template>
       <template slot="table-controls-left"></template>
     </entities-table>

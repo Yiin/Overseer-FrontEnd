@@ -6,7 +6,7 @@
           <form-row>
 
             <form-field :label="$t('labels.company_name')">
-              <form-text-input name="company_name"></form-text-input>
+              <form-text-input name="name"></form-text-input>
             </form-field>
 
           </form-row>
@@ -36,7 +36,7 @@
           <form-row>
             <form-field :label="$t('labels.logo')">
 
-              <form-dropzone-input name="logo" multiple>
+              <form-images-input name="logo" multiple>
                 <img slot="icon" src="../../../assets/icons/upload.svg">
                 <template slot="title">
                   {{ $t('placeholders.upload_company_logo_image') }}
@@ -44,7 +44,7 @@
                 <template slot="subtitle">
                   {{ $t('placeholders.drag_and_drop_image_or_click_to_browse') }}
                 </template>
-              </form-dropzone-input>
+              </form-images-input>
 
             </form-field>
           </form-row>
@@ -73,7 +73,7 @@
               <form-text-input name="state"></form-text-input>
             </form-field>
             <form-field :label="$t('labels.country')">
-              <form-dropdown-input name="country">
+              <form-dropdown-input name="country_id">
                 <dropdown-option v-for = "country in countries" :key="country.id"
                                 :value = "country.id"
                                 :selected.once="country.id === form.country">
@@ -113,7 +113,7 @@
         <form-container name="client">
           <form-row>
             <form-field :label="$t('labels.currency')">
-              <form-dropdown-input name="currency">
+              <form-dropdown-input name="currency_id">
                 <dropdown-option v-for="currency in currencies" :key="currency.id"
                                 :value="currency.id"
                                 :selected.once="currency.id === form.currency">
@@ -124,7 +124,7 @@
           </form-row>
           <form-row>
             <form-field :label="$t('labels.language')">
-              <form-dropdown-input name="language">
+              <form-dropdown-input name="language_id">
                 <dropdown-option v-for="language in languages" :key="language.id"
                                 :value="language.id"
                                 :selected.once="language.id === form.language">
@@ -132,19 +132,19 @@
                 </dropdown-option>
               </form-dropdown-input>
             </form-field>
-            <form-field :label="$t('labels.payment_term')">
-              <form-dropdown-input name="payment_term">
-                <dropdown-option v-for="payment_term in payment_terms" :key="payment_term.id"
-                                :value="payment_term.id"
-                                :selected.once="payment_term.id === form.payment_term">
-                  {{ payment_term.name }}
+            <form-field :label="$t('labels.payment_terms')">
+              <form-dropdown-input name="payment_terms">
+                <dropdown-option v-for="pt in payment_terms" :key="pt.id"
+                                :value="pt.id"
+                                :selected.once="pt.id === form.pt">
+                  {{ pt.name }}
                 </dropdown-option>
               </form-dropdown-input>
             </form-field>
           </form-row>
           <form-row>
             <form-field :label="$t('labels.company_size')">
-              <form-dropdown-input name="company_size">
+              <form-dropdown-input name="company_size_id">
                 <dropdown-option v-for="company_size in company_sizes" :key="company_size.id"
                                 :value="company_size.id"
                                 :selected.once="company_size.id === form.company_size">
@@ -153,7 +153,7 @@
               </form-dropdown-input>
             </form-field>
             <form-field :label="$t('labels.industry')">
-              <form-dropdown-input name="industry">
+              <form-dropdown-input name="industry_id">
                 <dropdown-option v-for="industry in industries" :key="industry.id"
                                 :value="industry.id"
                                 :selected.once="industry.id === form.industry">
@@ -164,7 +164,7 @@
           </form-row>
           <form-row>
             <form-field :label="$t('labels.private_notes')">
-              <form-textarea-input name="private_notes" rows="4"></form-textarea-input>
+              <form-textarea-input name="notes" rows="4"></form-textarea-input>
             </form-field>
           </form-row>
         </form-container>
@@ -172,12 +172,18 @@
     </modal-tabs>
     <div class="modal-sidebar">
       <div class="modal-sidebar__title">
-        {{ $t('client.check_your_vat_number') }}
+        {{ $t('sidebar.check_your_vat_number') }}
       </div>
       <div class="form__inline-inputs">
         <div class="form__input-wrapper">
           <label class="form__label">{{ $t('labels.country') }}</label>
-          <input v-model="vat_checker.country" class="form__input" type="text" name="country">
+          <form-dropdown-input v-model="vat_checker.country_id">
+            <dropdown-option v-for = "country in countries" :key="country.id"
+                            :value = "country.id"
+                            :selected.once="country.id === form.country">
+              {{ country.name }}
+            </dropdown-option>
+          </form-dropdown-input>
         </div>
       </div>
       <div class="form__inline-inputs">
@@ -257,11 +263,11 @@ export default {
       ],
 
       currencies: [
-        { id: 1, name: 'Currency A' },
-        { id: 2, name: 'Currency B' },
-        { id: 3, name: 'Currency C' },
-        { id: 4, name: 'Currency D' },
-        { id: 5, name: 'Currency E' }
+        { id: 1, code: 'Currency A' },
+        { id: 2, code: 'Currency B' },
+        { id: 3, code: 'Currency C' },
+        { id: 4, code: 'Currency D' },
+        { id: 5, code: 'Currency E' }
       ],
 
       languages: [

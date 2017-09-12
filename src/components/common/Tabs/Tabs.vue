@@ -46,7 +46,7 @@ export default {
 <style lang="scss">
 .tabs__list {
     display: flex;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     border-bottom: 4px solid #eee;
 }
 

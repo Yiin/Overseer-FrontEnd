@@ -1,11 +1,11 @@
 <template>
   <div>
-    <breadcrumb :path="[ $t('common.recurring-invoices') ]"></breadcrumb>
+    <breadcrumb :path="[ $t('common.recurring_invoices') ]"></breadcrumb>
 
     <div class="table__heading">
       <a @click="create" class="button button__create">
         <span class="icon-new-recurring-btn-icon"></span>
-        {{ $t('actions.new_recurring-invoice') }}
+        {{ $t('actions.new_recurring_invoice') }}
       </a>
 
       <div class="table__dropdowns">
@@ -96,7 +96,7 @@
         searchBy: [
           { type: 'numeric', name: 'start_date', placeholder: this.$t('search_by.start_date') },
           { type: 'numeric', name: 'last_sent', placeholder: this.$t('search_by.last_sent_date') },
-          { type: 'numeric', name: 'recurring-invoice_amount', placeholder: this.$t('search_by.recurring-invoice_amount') },
+          { type: 'numeric', name: 'amount', placeholder: this.$t('search_by.amount') },
           { type: 'separator' },
           { type: 'text', name: 'client_name', placeholder: this.$t('search_by.client_name') },
           { type: 'text', name: 'product_name', placeholder: this.$t('search_by.product_name') }
@@ -137,7 +137,7 @@
       create() {
         this.$store.dispatch('CREATE_MODAL', {
           tableName: 'recurring-invoices',
-          title: this.$t('actions.new_recurring-invoice'),
+          title: this.$t('actions.new_recurring_invoice'),
           component: 'edit-recurring-invoice',
           data: {
             'recurring-invoice': {}
@@ -148,7 +148,7 @@
       edit(data) {
         this.$store.dispatch('OPEN_MODAL', {
           tableName: 'recurring-invoices',
-          title: this.$t('actions.edit_recurring-invoice'),
+          title: this.$t('actions.edit_recurring_invoice'),
           component: 'edit-recurring-invoice',
           data: {
             'recurring-invoice': Object.assign({}, data)

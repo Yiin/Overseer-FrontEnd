@@ -297,12 +297,12 @@
           </tab>
           <tab :title="$t('tabs.terms')">
             <form-container name="recurring_invoice">
-              <form-textarea-input :placeholder="$t('placeholders.recurring_invoice_terms')" name="terms" rows="12"></form-textarea-input>
+              <form-textarea-input :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12"></form-textarea-input>
             </form-container>
           </tab>
           <tab :title="$t('tabs.footer')">
             <form-container name="recurring_invoice">
-              <form-textarea-input :placeholder="$t('placeholders.recurring_invoice_footer')" name="footer" rows="12"></form-textarea-input>
+              <form-textarea-input :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12"></form-textarea-input>
             </form-container>
           </tab>
         </tabs>
@@ -310,7 +310,7 @@
     </modal-tabs>
     <div class="modal-sidebar">
       <div class="modal-sidebar__title">
-        {{ $t('recurring_invoice.recurring_invoice_preview') }}
+        {{ $t('sidebar.recurring_invoice_preview') }}
       </div>
       <div class="recurring_invoice__preview">
         <object type="application/pdf" data="http://localhost:8000/test.pdf#view=Fit&toolbar=0" width="357" height="487"></object>

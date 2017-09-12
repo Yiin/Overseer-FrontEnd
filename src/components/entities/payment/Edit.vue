@@ -80,7 +80,7 @@
               </form-inputs-group>
             </form-field>
             <form-field :label="$t('labels.payment_type')">
-              <form-dropdown-input name="payment_type" :placeholder="$t('label.payment_type')">
+              <form-dropdown-input name="payment_type" :placeholder="$t('labels.payment_type')">
                 <dropdown-option v-for="type in paymentTypes"
                                 :key="type.name"
                                 :value="type.name"

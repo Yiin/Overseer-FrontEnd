@@ -151,7 +151,7 @@
             <template slot="summary">
               <div class="summary-block">
                 <label class="summary-block__title">
-                    Subtotal
+                    {{ $t('labels.subtotal') }}
                 </label>
                 <span class="currency">
                     {{ currency_symbol | currencySymbol }}
@@ -163,7 +163,7 @@
 
               <div class="summary-block">
                 <label class="summary-block__title">
-                    Discount
+                    {{ $t('labels.discount') }}
                 </label>
                 <span class="currency">
                     {{ currency_symbol | currencySymbol }}
@@ -175,7 +175,7 @@
 
               <div class="summary-block">
                 <label class="summary-block__title">
-                    Taxes
+                    {{ $t('labels.taxes') }}
                 </label>
                 <span class="currency">
                     {{ currency_symbol | currencySymbol }}
@@ -187,7 +187,7 @@
 
               <div class="summary-block">
                 <label class="summary-block__title">
-                  Paid to Date
+                  {{ $t('labels.paid_to_date') }}
                 </label>
                 <span class="currency">
                   {{ currency_symbol | currencySymbol }}
@@ -199,7 +199,7 @@
 
               <div class="summary-block">
                 <label class="summary-block__title">
-                  Balance Due
+                  {{ $t('labels.balance_due') }}
                 </label>
                 <span class="currency">
                   {{ currency_symbol | currencySymbol }}
@@ -223,7 +223,7 @@
             Upload Documents
           -->
           <tab :title="$t('tabs.documents')">
-
+            <form-documents-input></form-documents-input>
           </tab>
           <tab :title="$t('tabs.note_to_client')">
             <form-container name="invoice">
@@ -245,10 +245,11 @@
     </modal-tabs>
     <div class="modal-sidebar">
       <div class="modal-sidebar__title">
-        {{ $t('invoice.invoice_preview') }}
+        {{ $t('sidebar.invoice_preview') }}
       </div>
       <div class="invoice__preview">
-        <object type="application/pdf" data="http://localhost:8000/test.pdf#view=Fit&toolbar=0" width="357" height="487"></object>
+        <iframe src="http://localhost:8000/test.pdf#view=Fit&toolbar=0" scrolling="no" width="357" height="487"></iframe>
+        <!-- <object type="application/pdf" data="" ></object> -->
       </div>
     </div>
   </div>
@@ -398,6 +399,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+iframe{
+    overflow:hidden;
+}
+
 .modal-form {
   display: flex;
   height: 617px;

@@ -88,7 +88,7 @@
           <form-row>
             <form-field catch-errors="images" :label="$t('labels.images')">
 
-              <form-dropzone-input name="images" class="product-images-upload-field" box multiple>
+              <form-images-input name="images" class="product-images-upload-field" box multiple>
                 <img slot="icon" src="../../../assets/icons/upload.svg">
                 <template slot="title">
                   {{ $t('placeholders.upload_product_image') }}
@@ -96,7 +96,7 @@
                 <template slot="subtitle">
                   {{ $t('placeholders.drag_and_drop_image_or_click_to_browse') }}
                 </template>
-              </form-dropzone-input>
+              </form-images-input>
 
             </form-field>
           </form-row>

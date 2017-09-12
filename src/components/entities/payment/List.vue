@@ -16,12 +16,12 @@
 
     <entities-table :data="list">
       <template slot="head">
-        <column width="14%">{{ $t('fields.payment_number') }}</column>
-        <column width="19%">{{ $t('fields.client_name') }}</column>
-        <column width="11%">{{ $t('fields.date') }}</column>
-        <column width="11%">{{ $t('fields.due_date') }}</column>
-        <column width="15%">{{ $t('fields.amount') }}</column>
-        <column width="14%">{{ $t('fields.paid_in') }}</column>
+        <column width="14%">{{ $t('fields.invoice') }}</column>
+        <column width="20%">{{ $t('fields.client_name') }}</column>
+        <column width="20%">{{ $t('fields.transaction_reference') }}</column>
+        <column width="9%">{{ $t('fields.methods') }}</column>
+        <column width="10%">{{ $t('fields.amount') }}</column>
+        <column width="11%">{{ $t('fields.date_created') }}</column>
         <column width="12%">{{ $t('fields.status') }}</column>
       </template>
       <template slot="columns" scope="props">

@@ -1,116 +1,148 @@
-.table {
-    display: table;
+.table
+{
     position: relative;
+
+    display: table;
+
     width: 100%;
+
     box-shadow: $box-shadow;
-
-    &__heading {
-        margin-bottom: 37px;
-        margin-top: 26px;
+    &__heading
+    {
         font-size: 0;
+
+        margin-top: 26px;
+        margin-bottom: 37px;
     }
+    &__dropdowns
+    {
+        display: inline-block;
 
-    &__dropdowns {
-      display: inline-block;
-      vertical-align: middle;
-      margin-left: 45px;
+        margin-left: 45px;
 
-      > .dropdown {
-        float: left;
-      }
+        vertical-align: middle;
+        > .dropdown
+        {
+            float: left;
+        }
     }
-
-    &__head {
-        display: table-header-group;
-        background: $table-head-bg;
-        color: $color-text-alt;
+    &__head
+    {
         font-weight: bold;
+
+        display: flex;
+
         user-select: none;
 
-        .column {
+        color: $color-text-alt;
+        background: $table-head-bg;
+        .column
+        {
             height: 50px;
-            border-color: $table-head-border-color;
 
-            &__checkbox {
-                min-width: 50px;
-                max-width: 50px;
-                .checkbox {
-                    &::before {
+            border-color: $table-head-border-color;
+            &__checkbox
+            {
+                .checkbox
+                {
+                    &::before
+                    {
                         border-color: $color-text-alt;
                         background: $color-main-dark;
                     }
-                    &::after {
+                    &::after
+                    {
                         background: $color-text-alt;
                     }
                 }
             }
         }
     }
-
-    &__body {
-        display: table-row-group;
-        background: $table-bg;
+    &__body
+    {
         font-size: 16px;
 
-        .column, span, {
+        display: table-row-group;
+
+        background: $table-bg;
+        .column,
+        span,
+        {
             text-decoration: none;
         }
-
-        .column {
+        .column
+        {
             border-color: $table-border-color;
         }
     }
-
-    &__row {
-        display: table-row;
-
-        &:hover {
+    &__row
+    {
+        display: flex;
+        &:hover
+        {
             background-color: $table-row-hover-bg;
         }
-
-        .column {
+        .column
+        {
             height: $table-row-height;
         }
-
-        &:not(:last-child) {
-            .column {
+        &:not(:last-child)
+        {
+            .column
+            {
                 border-bottom: 1px solid $table-border-color;
             }
         }
-
-        &--full-width {
-            &::after {
-                content: "";
+        &--full-width
+        {
+            &::after
+            {
                 display: table-cell;
-                height: $table-row-height;
-            }
 
-            .column {
+                height: $table-row-height;
+
+                content: '';
+            }
+            .column
+            {
+                line-height: $table-row-height;
+
                 position: absolute;
-                width: 100%;
-                background: $table-bg;
-                text-align: center;
                 top: 50px;
                 left: 0;
-                line-height: $table-row-height;
+
+                width: 100%;
                 padding-left: 0;
+
+                text-align: center;
+
+                background: $table-bg;
             }
         }
     }
+    .column
+    {
+        display: flex;
 
-    .column {
-        display: table-cell;
-        vertical-align: middle;
         padding-left: 21px;
 
-        &:not(:last-child) {
+        vertical-align: middle;
+
+        align-items: center;
+        &__checkbox
+        {
+            width: 63px;
+        }
+        &:not(:last-child)
+        {
             border-right-width: 1px;
             border-right-style: solid;
         }
-
-        &--center {
-            text-align: center;
+        &--center
+        {
             padding: 0;
+
+            text-align: center;
         }
     }
 }

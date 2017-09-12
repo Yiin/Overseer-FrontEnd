@@ -80,7 +80,7 @@ export default {
     },
 
     focus(target, delay = 200) {
-      return setTimeout(() => window.requestAnimationFrame(() => this.$refs[target].focus()), delay)
+      // return setTimeout(() => window.requestAnimationFrame(() => this.$refs[target].focus()), delay)
     },
 
     blur() {
