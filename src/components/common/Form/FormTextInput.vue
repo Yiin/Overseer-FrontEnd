@@ -39,7 +39,7 @@ export default {
   methods: {
     onInput: debounce(function (event) {
       this.$emit('input', event.target.value)
-    }, 300)
+    }, 200)
   }
 }
 </script>

@@ -1,4 +1,6 @@
 const state = {
+  uuid: '',
+
   // Organization
   name: '',
   registration_number: '',
@@ -17,13 +19,13 @@ const state = {
 
   // Contacts
   contacts: [
-    /* {
-      first_name
-      last_name
-      job_position
-      email
-      phone
-    } */
+    {
+      first_name: '',
+      last_name: '',
+      job_position: '',
+      email: '',
+      phone: ''
+    }
   ],
 
   currency_id: null, // id
@@ -31,9 +33,11 @@ const state = {
   payment_terms: null, // integer
   company_size_id: null, // id
   industry_id: null, // id
-  notes: '',
+  // notes: '',
 
   errors: {}
 }
+
+state.__initial = Object.assign({}, state)
 
 export default state

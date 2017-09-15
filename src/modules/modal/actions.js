@@ -5,15 +5,17 @@ import TaskbarItem from '@/modules/taskbar/item-types'
 import * as mutations from './mutation-types'
 
 export default {
-  HANDLE_TASKBAR_OPEN_MODAL: ({ commit }, data) => {
+  [`HANDLE_TASKBAR_OPEN_${TaskbarItem.MODAL}`]: ({ commit, dispatch }, data) => {
     commit(mutations.OPEN_MODAL, data)
   },
 
-  HANDLE_TASKBAR_HIDE_MODAL: ({ commit }) => {
+  [`HANDLE_TASKBAR_HIDE_${TaskbarItem.MODAL}`]: ({ commit, dispatch }, data) => {
+    dispatch(`form/${data.form}/RESET_FORM_DATA`, { root: true })
     commit(mutations.CLOSE_MODAL)
   },
 
-  HANDLE_TASKBAR_CLOSE_MODAL: ({ commit }) => {
+  [`HANDLE_TASKBAR_CLOSE_${TaskbarItem.MODAL}`]: ({ commit, dispatch }, data) => {
+    dispatch(`form/${data.form}/RESET_FORM_DATA`, { root: true })
     commit(mutations.CLOSE_MODAL)
   },
 
@@ -24,14 +26,15 @@ export default {
   CREATE_MODAL: ({ dispatch }, data) => {
     dispatch('ADD_ITEM_TO_TASKBAR', {
       type: TaskbarItem.MODAL,
-      data: Object.assign({ data: {} }, data)
+      data
     })
   },
 
-  OPEN_MODAL: ({ dispatch }, data) => {
+  OPEN_MODAL: ({ dispatch, rootState }, data) => {
     dispatch('ACTIVATE_TASKBAR_ITEM', {
       type: TaskbarItem.MODAL,
-      data
+      data,
+      formData: rootState.form[data.form]
     })
   },
 

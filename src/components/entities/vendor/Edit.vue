@@ -6,29 +6,29 @@
           <form-row>
 
             <form-field :label="$t('labels.company_name')">
-              <form-text-input name="company_name"></form-text-input>
+              <form-text-input v-model="form.company_name" name="company_name"></form-text-input>
             </form-field>
 
           </form-row>
           <form-row>
 
             <form-field :label="$t('labels.registration_number')">
-              <form-text-input name="registration_number"></form-text-input>
+              <form-text-input v-model="form.registration_number" name="registration_number"></form-text-input>
             </form-field>
 
             <form-field :label="$t('labels.vat_number')">
-              <form-text-input name="vat_number"></form-text-input>
+              <form-text-input v-model="form.vat_number" name="vat_number"></form-text-input>
             </form-field>
 
           </form-row>
           <form-row>
 
             <form-field :label="$t('labels.website')">
-              <form-text-input name="website"></form-text-input>
+              <form-text-input v-model="form.website" name="website"></form-text-input>
             </form-field>
 
             <form-field :label="$t('labels.phone')">
-              <form-text-input name="phone"></form-text-input>
+              <form-text-input v-model="form.phone" name="phone"></form-text-input>
             </form-field>
 
           </form-row>
@@ -54,29 +54,29 @@
         <form-container name="vendor">
           <form-row>
             <form-field :label="$t('labels.street')">
-              <form-text-input name="address1"></form-text-input>
+              <form-text-input v-model="form.address1" name="address1"></form-text-input>
             </form-field>
             <form-field :label="$t('labels.apt_suite')">
-              <form-text-input name="address2"></form-text-input>
+              <form-text-input v-model="form.address2" name="address2"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
             <form-field :label="$t('labels.city')">
-              <form-text-input name="city"></form-text-input>
+              <form-text-input v-model="form.city" name="city"></form-text-input>
             </form-field>
             <form-field :label="$t('labels.postal_code')">
-              <form-text-input name="postal_code"></form-text-input>
+              <form-text-input v-model="form.postal_code" name="postal_code"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
             <form-field :label="$t('labels.state')">
-              <form-text-input name="state"></form-text-input>
+              <form-text-input v-model="form.state" name="state"></form-text-input>
             </form-field>
             <form-field :label="$t('labels.country')">
-              <form-dropdown-input name="country">
-                <dropdown-option v-for = "country in countries" :key="country.id"
+              <form-dropdown-input v-model="form.country_id" name="country_id">
+                <dropdown-option v-for = "country in passive.countries" :key="country.id"
                                 :value = "country.id"
-                                :selected.once="country.id === form.country">
+                                :selected="country.id === form.country_id">
                   {{ country.name }}
                 </dropdown-option>
               </form-dropdown-input>
@@ -86,45 +86,48 @@
       </modal-tab>
       <modal-tab :title="$t('tabs.contacts')">
         <form-container name="vendor">
-          <form-row>
-            <form-field :label="$t('labels.first_name')">
-              <form-text-input name="first_name"></form-text-input>
-            </form-field>
-            <form-field :label="$t('labels.last_name')">
-              <form-text-input name="last_name"></form-text-input>
-            </form-field>
-          </form-row>
-          <form-row>
-            <form-field :label="$t('labels.job_position')">
-              <form-text-input name="job_position"></form-text-input>
-            </form-field>
-          </form-row>
-          <form-row>
-            <form-field :label="$t('labels.email')">
-              <form-text-input name="email"></form-text-input>
-            </form-field>
-            <form-field :label="$t('labels.phone')">
-              <form-text-input name="phone"></form-text-input>
-            </form-field>
-          </form-row>
+          <div class="contacts-list scrollable">
+            <div v-for="(contact, index) in form.contacts" :key="index">
+              <hr v-if="index" class="separator">
+              <form-row>
+                <form-field :label="$t('labels.first_name')">
+                  <form-text-input v-model="contact.first_name" :name="`contact_first_name:${index}`"></form-text-input>
+                </form-field>
+                <form-field :label="$t('labels.last_name')">
+                  <form-text-input v-model="contact.last_name" :name="`contact_last_name:${index}`"></form-text-input>
+                </form-field>
+              </form-row>
+              <form-row>
+                <form-field :label="$t('labels.job_position')">
+                  <form-text-input v-model="contact.job_position" :name="`contact_job_position:${index}`"></form-text-input>
+                </form-field>
+              </form-row>
+              <form-row>
+                <form-field :label="$t('labels.email')">
+                  <form-text-input v-model="contact.email" :name="`contact_email:${index}`"></form-text-input>
+                </form-field>
+                <form-field :label="$t('labels.phone')">
+                  <form-text-input v-model="contact.phone" :name="`contact_phone:${index}`"></form-text-input>
+                </form-field>
+              </form-row>
+            </div>
+            <div class="add-new-block" @click="$store.dispatch('form/vendor/ADD_NEW_CONTACT')">
+              {{ $t('actions.add_new_contact') }}
+            </div>
+          </div>
         </form-container>
       </modal-tab>
       <modal-tab :title="$t('tabs.additional_info')">
         <form-container name="vendor">
           <form-row>
             <form-field :label="$t('labels.currency')">
-              <form-dropdown-input name="currency">
-                <dropdown-option v-for="currency in currencies" :key="currency.id"
+              <form-dropdown-input v-model="form.currency_id" name="currency_id">
+                <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
                                 :value="currency.id"
-                                :selected.once="currency.id === form.currency">
+                                :selected="currency.id === form.currency_id">
                   {{ currency.code }}
                 </dropdown-option>
               </form-dropdown-input>
-            </form-field>
-          </form-row>
-          <form-row>
-            <form-field :label="$t('labels.private_notes')">
-              <form-textarea-input name="private_notes" rows="12"></form-textarea-input>
             </form-field>
           </form-row>
         </form-container>
@@ -137,63 +140,27 @@
 export default {
   name: 'edit-vendor',
 
-  data() {
-    return {
-      areas: [
-        { id: 1, name: 'Area A' },
-        { id: 2, name: 'Area B' },
-        { id: 3, name: 'Area C' },
-        { id: 4, name: 'Area D' },
-        { id: 5, name: 'Area E' },
-        { id: 6, name: 'Area F' }
-      ],
-
-      countries: [
-        { id: 7, name: 'Country A' },
-        { id: 8, name: 'Country B' },
-        { id: 9, name: 'Country C' },
-        { id: 10, name: 'Country D' },
-        { id: 11, name: 'Country E' }
-      ],
-
-      currencies: [
-        { id: 1, code: 'Currency A' },
-        { id: 2, code: 'Currency B' },
-        { id: 3, code: 'Currency C' },
-        { id: 4, code: 'Currency D' },
-        { id: 5, code: 'Currency E' }
-      ],
-
-      vat_checker: {
-        country: '',
-        number: ''
-      }
-    }
-  },
-
   computed: {
     form() {
       return this.$store.state.form.vendor
+    },
+
+    passive() {
+      return this.$store.state.passive
     }
   },
 
   methods: {
     save() {
-      if (this.data.vendor.key) {
-        this.$store.dispatch('SAVE_ENTITY', {
-          tableName: 'vendors',
-          data: this.data
-        })
+      if (this.form.uuid) {
+        this.$store.dispatch('form/vendor/SAVE')
       } else {
         this.create()
       }
     },
 
     create() {
-      this.$store.dispatch('CREATE_ENTITY', {
-        tableName: 'vendors',
-        data: this.data
-      })
+      this.$store.dispatch('form/vendor/CREATE')
     },
 
     cancel() {
@@ -213,26 +180,30 @@ export default {
   }
 }
 
-.modal-sidebar {
-  width: 295px;
-  border-left: 1px solid #e1e1e1;
-  float: right;
+.contacts-list {
+  padding-right: 20px;
+  height: 366px;
+
+  .separator {
+    margin: 40px 0;
+  }
 }
 
-.vue-dropzone {
-  border: 2px dashed #e1e1e1;
-  min-height: 126px;
-  .dz-message {
-    color: $color-text;
-    margin: 0 auto;
-    &__title {
-      font-size: 14px;
-      font-weight: bold;
-    }
-    &__sub-title {
-      margin-top: 15px;
-      font-size: 13px;
-    }
+.add-new-block {
+  padding: 20px;
+  position: relative;
+
+  &, &::before {
+    font-weight: $font-weight-semibold;
+    color: $color-main;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  &::before {
+    content: "+";
+    font-weight: bold;
+    position: absolute;
+    left: 0;
   }
 }
 </style>

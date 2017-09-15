@@ -7,7 +7,7 @@
 
     <div class="dropdown-numeric-option__header mediumjs-input"
          :class="{ 'mediumjs-input--empty': isEmpty }"
-         @mousedown="click()">
+         @mousedown.self="click()">
         {{ displayText }}
     </div>
     <div @click="clear"
@@ -80,7 +80,7 @@ export default {
     },
 
     focus(target, delay = 200) {
-      // return setTimeout(() => window.requestAnimationFrame(() => this.$refs[target].focus()), delay)
+      return setTimeout(() => window.requestAnimationFrame(() => this.$refs[target].focus()), delay)
     },
 
     blur() {

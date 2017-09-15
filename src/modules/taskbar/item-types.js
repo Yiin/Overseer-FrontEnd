@@ -1,3 +1,3 @@
 export default {
-  MODAL: 'modal'
+  MODAL: 'MODAL'
 }

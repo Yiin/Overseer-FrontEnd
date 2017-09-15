@@ -38,6 +38,9 @@ export default {
     tabular: {
       type: Boolean,
       default: false
+    },
+    watch: {
+      default: undefined
     }
   },
 
@@ -72,9 +75,9 @@ export default {
           .filter((el) => el.tag && el.tag.indexOf('inline') > -1)
           .map((column) => column.componentInstance)
       }
-      return this.$slots.default
+      return this.$slots.default ? this.$slots.default
           .filter((el) => el.tag && el.tag.indexOf('inline') > -1)
-          .map((column) => column.componentInstance)
+          .map((column) => column.componentInstance) : []
     },
 
     searchTerms() {
@@ -102,30 +105,26 @@ export default {
       }
     })
 
-    // name options and listen to input events
-    this.options.forEach((option) => {
-      option.name = this.name
-
-      option.$on('input', (e) => {
-        this.$emit('input', e)
+    if (this.watch) {
+      this.$watch(() => this.watch, () => {
+        this.recalculateComputedProperty('options')
+        this.$nextTick(() => {
+          this.updateRows()
+        })
       })
-    })
+    }
 
-    this.headColumns.forEach((column, index) => {
-      this.options.forEach((row) => {
-        let width = column.width
-
-        if (column.width.indexOf('%') > -1) {
-          width = parseFloat(column.width.replace('%', '')) / 100
-          width = `calc(${column.width} - (60px * ${width}))`
-        }
-        row.columns[index].setWidth(width)
-        row.columns[index].setAlign(column.align)
-      })
-    })
+    this.updateRows()
   },
 
   methods: {
+    recalculateComputedProperty(property) {
+      this.$nextTick(() => {
+        this._computedWatchers[property].update()
+        this.$forceUpdate()
+      })
+    },
+
     // option should be visible only
     shouldBeVisible(option) {
       // if we're not searching for anything
@@ -143,6 +142,34 @@ export default {
       }
       // else ignore it completely
       return false
+    },
+
+    updateRows() {
+      // name options and listen to input events
+      this.options.forEach((option) => {
+        option.name = this.name
+
+        option.$on('input', (e) => {
+          this.$emit('input', e)
+        })
+
+        if (option.selected && !this.value) {
+          option.$refs.input.click()
+        }
+      })
+
+      this.headColumns.forEach((column, index) => {
+        this.options.forEach((row) => {
+          let width = column.width
+
+          if (column.width.indexOf('%') > -1) {
+            width = parseFloat(column.width.replace('%', '')) / 100
+            width = `calc(${column.width} - (60px * ${width}))`
+          }
+          row.columns[index].setWidth(width)
+          row.columns[index].setAlign(column.align)
+        })
+      })
     },
 
     clear() {

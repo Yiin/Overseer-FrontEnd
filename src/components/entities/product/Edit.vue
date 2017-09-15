@@ -9,8 +9,8 @@
             <!--
               Product Name
             -->
-            <form-field :label="$t('labels.product_name')" catch-errors="product_name">
-              <form-text-input name="product_name"></form-text-input>
+            <form-field :label="$t('labels.product_name')" catch-errors="name">
+              <form-text-input v-model="form.name" name="name"></form-text-input>
             </form-field>
 
             <!--
@@ -22,15 +22,15 @@
                 <!--
                   Amount
                 -->
-                <form-text-input name="price"></form-text-input>
+                <form-text-input v-model="form.price" name="price"></form-text-input>
 
                 <!--
                   Currency
                 -->
-                <form-dropdown-input name="currency" class="dropdown--small" :placeholder="$t('labels.currency')">
-                  <dropdown-option v-for="currency in currencies" :key="currency.id"
+                <form-dropdown-input v-model="form.currency_id" name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
+                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
                                   :value="currency.id"
-                                  :selected.once="currency.id === form.currency">
+                                  :selected="currency.id === form.currency_id">
                     {{ currency.code }}
                   </dropdown-option>
                 </form-dropdown-input>
@@ -45,20 +45,20 @@
             <!--
               Quantity
             -->
-            <form-field :label="$t('labels.quantity')">
-              <form-text-input name="qty"></form-text-input>
+            <form-field catch-errors="qty" :label="$t('labels.quantity')">
+              <form-text-input v-model="form.qty" name="qty"></form-text-input>
             </form-field>
 
             <!--
               Tax Rate
             -->
-            <form-field :label="$t('labels.tax_rate')">
+            <form-field catch-errors="tax_rate_uuid" :label="$t('labels.tax_rate')">
 
-              <form-dropdown-input name="tax_rate" :placeholder="$t('labels.tax_rate')">
+              <form-dropdown-input v-model="form.tax_rate_uuid" name="tax_rate_uuid" scrollable searchable>
                 <dropdown-option v-for         = "taxRate in taxRates"
                                 :key           = "taxRate.uuid"
                                 :value         = "taxRate.uuid"
-                                :selected.once = "taxRate.uuid === form.tax_rate"
+                                :selected.once = "taxRate.uuid === form.tax_rate_uuid"
                 >
                   {{ taxRate.name }}
                 </dropdown-option>
@@ -74,7 +74,7 @@
               Description
             -->
             <form-field :label="$t('labels.description')">
-              <form-textarea-input name="description"></form-textarea-input>
+              <form-textarea-input v-model="form.description" name="description"></form-textarea-input>
             </form-field>
 
           </form-row>
@@ -110,44 +110,37 @@
 export default {
   name: 'edit-product',
 
-  data() {
-    return {
-      currencies: [
-        { id: 1, code: 'EUR' },
-        { id: 2, code: 'USD' }
-      ],
-
-      taxRates: [
-        { name: 'VAT' },
-        { name: 'Alcohol Product' },
-        { name: 'Tobacco Product' }
-      ]
+  props: {
+    data: {
+      default: null
     }
   },
 
   computed: {
     form() {
       return this.$store.state.form.product
+    },
+
+    passive() {
+      return this.$store.state.passive
+    },
+
+    taxRates() {
+      return this.$store.state.table.tax_rates.items
     }
   },
 
   methods: {
     save() {
-      if (this.data.product.key) {
-        this.$store.dispatch('SAVE_ENTITY', {
-          tableName: 'products',
-          data: this.data
-        })
+      if (this.form.uuid) {
+        this.$store.dispatch('form/product/SAVE')
       } else {
         this.create()
       }
     },
 
     create() {
-      this.$store.dispatch('CREATE_ENTITY', {
-        tableName: 'products',
-        data: this.data
-      })
+      this.$store.dispatch('form/product/CREATE')
     },
 
     cancel() {

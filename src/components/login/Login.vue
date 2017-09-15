@@ -1,6 +1,8 @@
 <template>
     <div class="form form__auth">
         <h1>Login</h1>
+        <label>Site adress</label>
+        <input type="text" v-model="site_address">
         <label>Username</label>
         <input type="text" v-model="username">
         <label>Password</label>
@@ -13,6 +15,7 @@
   export default {
     data() {
       return {
+        site_address: '',
         username: '',
         password: ''
       }
@@ -20,8 +23,8 @@
 
     methods: {
       login() {
-        const { username, password } = this
-        this.$store.dispatch('LOGIN', { username, password })
+        const { site_address, username, password } = this
+        this.$store.dispatch('LOGIN', { site_address, username, password })
       }
     }
   }

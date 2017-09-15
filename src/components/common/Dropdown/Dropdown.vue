@@ -83,6 +83,10 @@ export default {
     },
     watch: {
       default: undefined
+    },
+    document: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -102,7 +106,30 @@ export default {
      * @return {Boolean} [description]
      */
     isValueSet() {
-      return typeof this.value !== 'undefined' && this.value !== null && this.value !== ''
+      if (typeof this.value === 'undefined') {
+        return false
+      }
+      if (this.value === null) {
+        return false
+      }
+      if (this.value === '') {
+        return false
+      }
+      if (typeof this.value === 'object') {
+        if (typeof this.value.value === 'undefined') {
+          return false
+        }
+        if (this.value.value === null) {
+          return false
+        }
+        if (this.value.value === '') {
+          return false
+        }
+        if (!this.value.uuid && !this.value.id) {
+          return false
+        }
+      }
+      return true
     },
 
     /**
@@ -217,6 +244,15 @@ export default {
     value: function (value) {
       if (typeof value === 'object' && typeof value.text !== 'undefined') {
         this.valueText = value.text
+      } else {
+        const option = this.options.find((option) => option.value === value)
+
+        if (option) {
+          option.select()
+        }
+      }
+      if (this.searchable) {
+        this.query = this.valueText
       }
     }
   },
@@ -327,22 +363,15 @@ export default {
         this.valueText = option.text
 
         if (this.withText) {
-          console.log('setValue1', {
-            __valueWithText: true,
-            value: option.value,
-            text: option.text
-          })
           this.$emit('input', {
             __valueWithText: true,
             value: option.value,
             text: option.text
           })
         } else {
-          console.log('setValue2', option.value)
           this.$emit('input', option.value)
         }
       } else {
-        console.log('setValue3', option)
         this.$emit('input', option)
       }
     },
@@ -365,6 +394,7 @@ export default {
     },
 
     open() {
+      this.query = ''
       this.isOpen = true
     }
   }

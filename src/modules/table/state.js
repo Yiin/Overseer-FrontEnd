@@ -1,29 +1,13 @@
-const tableState = (state = {}) => {
+export default (state = {}) => {
   return Object.assign({
-    loading: false,
+    state: 'idle',
     page: 0,
-    pages: 1,
-    amount: 10,
-    total: 0,
+    rows_per_page: 10,
     orderBy: 'created_at',
     orderDirection: 'desc',
-    list: [],
+    items: [],
     selection: [],
     filterBy: [],
     searchBy: {}
   }, state)
 }
-
-const state = {
-  products: tableState(),
-  clients: tableState(),
-  invoices: tableState(),
-  recurring_invoices: tableState(),
-  payments: tableState(),
-  expenses: tableState(),
-  credits: tableState(),
-  quotes: tableState(),
-  vendors: tableState()
-}
-
-export default state

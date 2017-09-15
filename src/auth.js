@@ -70,6 +70,7 @@ export default {
    */
   login(creds) {
     const params = {
+      'site_address': creds.site_address,
       'username': creds.username,
       'password': creds.password
     }
@@ -145,6 +146,6 @@ export default {
     const status = response.status
     const error = response.data.message
 
-    return (status === 401 && (error === 'invalid_token' || error === 'expired_token'))
+    return (status === 401 || error === 'invalid_token' || error === 'invalid_credentials')
   }
 }

@@ -1,29 +1,22 @@
-export default {
-  products: (state) => {
-    return state.products
+export default (getters) => Object.assign({
+  isTableIdle(state) {
+    return state.state === 'idle'
   },
-  clients: (state) => {
-    return state.clients
+
+  isTableLoading(state) {
+    return state.state === 'loading'
   },
-  invoices: (state) => {
-    return state.invoices
+
+  pageItems(state) {
+    const items = state.items
+
+    const start = state.page * state.rows_per_page
+    const end = start + state.rows_per_page
+
+    return items.slice(start, end)
   },
-  recurring_invoices: (state) => {
-    return state.recurring_invoices
-  },
-  payments: (state) => {
-    return state.payments
-  },
-  expenses: (state) => {
-    return state.expenses
-  },
-  credits: (state) => {
-    return state.credits
-  },
-  quotes: (state) => {
-    return state.quotes
-  },
-  vendors: (state) => {
-    return state.vendors
+
+  pagesCount(state) {
+    return Math.ceil(state.items.length / state.rows_per_page)
   }
-}
+}, getters)

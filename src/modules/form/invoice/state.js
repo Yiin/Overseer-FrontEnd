@@ -1,21 +1,22 @@
 const state = {
-  client: '', // uuid
+  uuid: '',
+
+  client_uuid: '', // uuid
   invoice_date: '', // YYYY-MM-DD
   due_date: '', // YYYY-MM-DD
   partial: 0, // partial/deposit
   invoice_number: '',
   po_number: '',
-  discount: { // global
-    type: 'percent',
-    value: 0
-  },
+  discount_type: 'percentage',
+  discount_value: 0,
+
   items: [
     /* {
-      product // uuid (products)
+      product_uuid // uuid (products)
       price
       qty
-      discount // flat
-      tax // uuid (tax_rates)
+      discount // %
+      taxRate // uuid (tax_rates)
     } */
   ],
   documents: [
@@ -25,5 +26,7 @@ const state = {
   terms: '',
   footer: ''
 }
+
+export const defaultState = Object.assign({}, state)
 
 export default state

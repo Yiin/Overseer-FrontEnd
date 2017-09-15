@@ -66,18 +66,19 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/client/:id',
-      name: Routes.VIEW_CLIENT,
-      parentName: Routes.LIST_CLIENTS,
-      component: function (resolve) {
-        require(['@/components/entities/client/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/clients/:uuid',
+    //   name: Routes.VIEW_CLIENT,
+    //   parentName: Routes.LIST_CLIENTS,
+    //   beforeEnter: (to, from, next) => {
+    //     // store.dispatch('OPEN_MODAL', {
+    //     //   to.params.uuid
+
+    //     // })
+    //   }
+    // },
     {
       path: '/client/:id/edit',
       name: Routes.EDIT_CLIENT,
@@ -100,18 +101,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/product/:id',
-      name: Routes.VIEW_PRODUCT,
-      parentName: Routes.LIST_PRODUCTS,
-      component: function (resolve) {
-        require(['@/components/entities/product/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/product/:id',
+    //   name: Routes.VIEW_PRODUCT,
+    //   parentName: Routes.LIST_PRODUCTS,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/product/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/product/:id/edit',
       name: Routes.EDIT_PRODUCT,
@@ -134,18 +134,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/invoice/:id',
-      name: Routes.VIEW_INVOICE,
-      parentName: Routes.LIST_INVOICES,
-      component: function (resolve) {
-        require(['@/components/entities/invoice/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/invoice/:id',
+    //   name: Routes.VIEW_INVOICE,
+    //   parentName: Routes.LIST_INVOICES,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/invoice/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/invoice/:id/edit',
       name: Routes.EDIT_INVOICE,
@@ -168,18 +167,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/payment/:id',
-      name: Routes.VIEW_PAYMENT,
-      parentName: Routes.LIST_PAYMENTS,
-      component: function (resolve) {
-        require(['@/components/entities/payment/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/payment/:id',
+    //   name: Routes.VIEW_PAYMENT,
+    //   parentName: Routes.LIST_PAYMENTS,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/payment/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/payment/:id/edit',
       name: Routes.EDIT_PAYMENT,
@@ -202,18 +200,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/recurring-invoice/:id',
-      name: Routes.VIEW_RECURRING_INVOICE,
-      parentName: Routes.LIST_RECURRING_INVOICES,
-      component: function (resolve) {
-        require(['@/components/entities/recurring-invoice/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/recurring-invoice/:id',
+    //   name: Routes.VIEW_RECURRING_INVOICE,
+    //   parentName: Routes.LIST_RECURRING_INVOICES,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/recurring-invoice/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/recurring-invoice/:id/edit',
       name: Routes.EDIT_RECURRING_INVOICE,
@@ -236,18 +233,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/credit/:id',
-      name: Routes.VIEW_CREDIT,
-      parentName: Routes.LIST_CREDITS,
-      component: function (resolve) {
-        require(['@/components/entities/credit/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/credit/:id',
+    //   name: Routes.VIEW_CREDIT,
+    //   parentName: Routes.LIST_CREDITS,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/credit/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/credit/:id/edit',
       name: Routes.EDIT_CREDIT,
@@ -270,18 +266,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/quote/:id',
-      name: Routes.VIEW_QUOTE,
-      parentName: Routes.LIST_QUOTES,
-      component: function (resolve) {
-        require(['@/components/entities/quote/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/quote/:id',
+    //   name: Routes.VIEW_QUOTE,
+    //   parentName: Routes.LIST_QUOTES,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/quote/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/quote/:id/edit',
       name: Routes.EDIT_QUOTE,
@@ -304,18 +299,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/expense/:id',
-      name: Routes.VIEW_EXPENSE,
-      parentName: Routes.LIST_EXPENSES,
-      component: function (resolve) {
-        require(['@/components/entities/expense/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/expense/:id',
+    //   name: Routes.VIEW_EXPENSE,
+    //   parentName: Routes.LIST_EXPENSES,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/expense/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/expense/:id/edit',
       name: Routes.EDIT_EXPENSE,
@@ -338,18 +332,17 @@ const router = new Router({
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
-        preloadList(...params)
       }
     },
-    {
-      path: '/vendor/:id',
-      name: Routes.VIEW_VENDOR,
-      parentName: Routes.LIST_VENDORS,
-      component: function (resolve) {
-        require(['@/components/entities/vendor/View.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    // {
+    //   path: '/vendor/:id',
+    //   name: Routes.VIEW_VENDOR,
+    //   parentName: Routes.LIST_VENDORS,
+    //   component: function (resolve) {
+    //     require(['@/components/entities/vendor/View.vue'], resolve)
+    //   },
+    //   beforeEnter: checkIfLoggedIn
+    // },
     {
       path: '/vendor/:id/edit',
       name: Routes.EDIT_VENDOR,
@@ -385,13 +378,6 @@ function checkIfLoggedIn(to, from, next) {
     })
   } else {
     next()
-  }
-}
-
-function preloadList(to) {
-  const store = router.app.$options.store
-  if (!store.getters[to.name].loading) {
-    store.dispatch('LOAD_TABLE', { name: to.name })
   }
 }
 

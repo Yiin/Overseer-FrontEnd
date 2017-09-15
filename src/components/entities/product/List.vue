@@ -23,7 +23,7 @@
       </template>
       <template slot="columns" scope="props">
         <column width="20%">
-          <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.name }}</a>
+          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
         </column>
         <column width="46%">{{ props.row.description }}</column>
         <column width="16%">
@@ -35,19 +35,18 @@
       <template slot="table-controls-left"></template>
     </entities-table>
 
-<!--
-    <calculator :rows="">
-      <calculator-option :option-key="price">{{ $t('fields.price') }}</calculator-option>
-    </calculator>
--->
     <table-footer :pagination="pagination"></table-footer>
   </div>
 </template>
 
 <script>
-const name = 'products'
+import TableMixin from '@/mixins/TableMixin'
 
 export default {
+  mixins: [
+    TableMixin
+  ],
+
   data() {
     return {
       filterBy: [
@@ -85,56 +84,19 @@ export default {
     }
   },
 
-  watch: {
-    // filterBy: function (val) {
-      //
-    // }
-  },
-
   computed: {
-    table() {
-      return this.$store.getters[name]
-    },
-
-    list() {
-      return {
-        name,
-        pageList: this.table.list,
-        selection: this.table.selection
-      }
-    },
-
-    pagination() {
-      return {
-        page: this.table.page,
-        pages: this.table.pages,
-        amount: this.table.amount,
-        total: this.table.total
-      }
+    name() {
+      return 'products'
     }
   },
 
   methods: {
     create() {
-      this.$store.dispatch('CREATE_MODAL', {
-        tableName: 'products',
-        title: this.$t('actions.new_product'),
-        component: 'edit-product',
-        data: {
-          product: {}
-        }
-      })
+      this.$store.dispatch('form/product/OPEN_CREATE_FORM')
     },
 
     edit(data) {
-      this.$store.dispatch('OPEN_MODAL', {
-        tableName: 'products',
-        title: this.$t('actions.edit_product'),
-        component: 'edit-product',
-        data: {
-          product: Object.assign({}, data)
-        }
-      })
+      this.$store.dispatch('form/product/OPEN_EDIT_FORM', data)
     }
   }
 }

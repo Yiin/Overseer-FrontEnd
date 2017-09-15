@@ -1,5 +1,6 @@
 {
     "actions": {
+        "add_new_contact": "Add New Contact",
         "edit_client": "Edit Client",
         "edit_credit": "Edit Credit",
         "edit_expense": "Edit Expense",

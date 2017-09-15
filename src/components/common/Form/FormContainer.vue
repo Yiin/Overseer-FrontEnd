@@ -17,24 +17,37 @@ export default {
 
   mounted() {
     this.$on('input:field', ({ name, value }) => {
+      let [field, data] = name.split(':')
+
+      if (data) {
+
+      }
+
       this.$store.dispatch(`form/${this.name}/UPDATE_FIELD_VALUE`, {
-        mutation: 'SET_' + name.toUpperCase(),
-        value: value
+        mutation: 'SET_' + field.toUpperCase(),
+        value: value,
+        data
       })
     })
+  },
 
+  updated() {
     this.passDataToFields(this.$slots.default)
   },
 
   methods: {
     passDataToFields(slots) {
-      slots.forEach((slot) => {
-        if (slot.tag && slot.tag.indexOf('form-field') > -1) {
-          slot.stateName = this.name
-        } else if (slot.$slots && slots.$slots.default) {
-          slot.$slots.default.forEach(this.passDataToFields.bind(this))
-        }
-      })
+      if (slots && slots.length) {
+        slots.forEach((slot) => {
+          if (slot.tag && slot.tag.indexOf('form-field') > -1) {
+            slot.componentInstance.stateName = this.name
+          } else {
+            if (slot && slot.componentInstance && slot.componentInstance.$slots && slot.componentInstance.$slots.default) {
+              this.passDataToFields.bind(this)(slot.componentInstance.$slots.default)
+            }
+          }
+        })
+      }
     }
   }
 }

@@ -40,7 +40,7 @@ export default {
     errors() {
       let messages = []
 
-      if (this.stateName) {
+      if (this.stateName && this.catchErrors) {
         const errors = this.$store.state.form[this.stateName].errors
 
         for (let error in errors) {

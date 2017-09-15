@@ -1,9 +1,8 @@
-export default {
-  UPDATE_FIELD_VALUE({ commit }, { mutation, value }) {
-    commit(mutation, value)
-  },
+import FormActions from '@/modules/form/actions'
 
-  DISPLAY_ERRORS({ commit }, errors) {
-    commit('SET_ERRORS', errors)
+export default FormActions({
+  SET_FORM_DATA({ commit }, data) {
+    commit('SET_FORM_DATA', data)
+    commit('SET_ITEMS', data.items)
   }
-}
+})

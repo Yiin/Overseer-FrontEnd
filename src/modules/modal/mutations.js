@@ -8,13 +8,10 @@ export default {
 
   [types.CLOSE_MODAL](state) {
     state.isOpen = false
-    state.data = null
-    state.tabs = []
     state.activeTabIndex = 0
-  },
-
-  [types.UPDATE_MODAL_TABS](state, tabs) {
-    state.tabs = tabs
+    state.data.title = null
+    state.data.component = null
+    state.data.form = ''
   },
 
   [types.UPDATE_ACTIVE_TAB_INDEX](state, index) {

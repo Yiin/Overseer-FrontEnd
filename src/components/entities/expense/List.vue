@@ -25,15 +25,22 @@
         <column width="12%">{{ $t('fields.status') }}</column>
       </template>
       <template slot="columns" scope="props">
-        <column>
-          <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.name }}</a>
+        <column width="14%">
+          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.vendor.name }}</a>
         </column>
-        <column>{{ props.row.description }}</column>
-        <column>
+        <column width="20%">
+          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.client.name }}</a>
+        </column>
+        <column width="10%">
+          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.category.name }}</a>
+        </column>
+        <column width="19%"></column>
+        <column width="11%">{{ props.row.date }}</column>
+        <column width="10%">
           <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.price | currency }}</span>
+          <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
         </column>
-        <column>{{ props.row.qty }}</column>
+        <column width="12%">{{ props.row.status }}</column>
       </template>
       <template slot="table-controls-left"></template>
     </entities-table>
@@ -48,9 +55,13 @@
 </template>
 
 <script>
-const name = 'expenses'
+import TableMixin from '@/mixins/TableMixin'
 
 export default {
+  mixins: [
+    TableMixin
+  ],
+
   data() {
     return {
       filterBy: [
@@ -105,56 +116,19 @@ export default {
     }
   },
 
-  watch: {
-    // filterBy: function (val) {
-      //
-    // }
-  },
-
   computed: {
-    table() {
-      return this.$store.getters[name]
-    },
-
-    list() {
-      return {
-        name,
-        pageList: this.table.list,
-        selection: this.table.selection
-      }
-    },
-
-    pagination() {
-      return {
-        page: this.table.page,
-        pages: this.table.pages,
-        amount: this.table.amount,
-        total: this.table.total
-      }
+    name() {
+      return 'expenses'
     }
   },
 
   methods: {
     create() {
-      this.$store.dispatch('CREATE_MODAL', {
-        tableName: 'expenses',
-        title: this.$t('actions.new_expense'),
-        component: 'edit-expense',
-        data: {
-          expense: {}
-        }
-      })
+      this.$store.dispatch('form/expense/OPEN_CREATE_FORM')
     },
 
     edit(data) {
-      this.$store.dispatch('OPEN_MODAL', {
-        tableName: 'expenses',
-        title: this.$t('actions.edit_expense'),
-        component: 'edit-expense',
-        data: {
-          expense: Object.assign({}, data)
-        }
-      })
+      this.$store.dispatch('form/expense/OPEN_EDIT_FORM', data)
     }
   }
 }

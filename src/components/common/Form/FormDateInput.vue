@@ -1,5 +1,9 @@
 <template>
-  <form-text-input @input="$emit('input', $event)" v-bind="$attrs" v-on="$listeners"></form-text-input>
+  <form-text-input @input  = "$emit('input', $event)"
+                   v-model = "valueProxy"
+                   v-bind  = "$attrs"
+                   v-on    = "$listeners"
+  ></form-text-input>
 </template>
 
 <script>
@@ -13,6 +17,18 @@ export default {
 
     value: {
       default: null
+    }
+  },
+
+  data() {
+    return {
+      valueProxy: this.value
+    }
+  },
+
+  watch: {
+    value: function (value) {
+      this.valueProxy = value
     }
   }
 }

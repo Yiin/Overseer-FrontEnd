@@ -52,9 +52,11 @@ export default {
   },
 
   handleError(response) {
-    if (parseInt(response.code) === 403 && response.body.error.message === 'Invalid token') {
+    if (parseInt(response.status) === 403 && response.body && response.body.error && response.body.error.message === 'Invalid token') {
       Auth.logout()
+      return
     }
+    return Promise.reject(response)
   },
 
   get(...args) {

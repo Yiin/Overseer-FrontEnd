@@ -274,25 +274,24 @@ $thumb-size: 115px;
 }
 
 .uploaded-image-thumb {
-    border-radius: $border-radius;
+    border-radius: 6px;
     position: relative;
     height: $thumb-size;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #efefef;
+    overflow: hidden;
 }
 
 .uploaded-image-thumb > img {
     max-height: $thumb-size;
-    max-width: $thumb-size;
-    border-radius: $border-radius;
 }
 
 $remove-image-icon-size: 36px;
 
 .remove-image {
-    background: url('../../../assets/icons/plus-gray.svg') center center no-repeat;
+    background: url('../../../assets/icons/add.svg') center center no-repeat;
     transform: rotateZ(45deg);
     height: $remove-image-icon-size;
     width: $remove-image-icon-size;

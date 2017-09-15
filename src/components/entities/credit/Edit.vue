@@ -7,11 +7,11 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="credit">
-          <form-inline-select-input name="client" :placeholder="$t('placeholders.type_client_name')">
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
             <inline-option v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
-                          :selected.once="client.uuid === form.client"
+                          :selected.once="client.uuid === form.client_uuid"
             >
               {{ client.name }}
             </inline-option>
@@ -31,15 +31,15 @@
                 <!--
                   Amount
                 -->
-                <form-text-input name="amount"></form-text-input>
+                <form-text-input v-model="form.amount" name="amount"></form-text-input>
 
                 <!--
                   Currency
                 -->
-                <form-dropdown-input name="currency" class="dropdown--small" :placeholder="$t('labels.currency')">
-                  <dropdown-option v-for="currency in currencies" :key="currency.id"
+                <form-dropdown-input v-model="form.currency_id" :watch="passive.currencies" name="currency" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
+                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
                                   :value="currency.id"
-                                  :selected.once="currency.id === form.currency">
+                                  :selected.once="currency.id === form.currency_id">
                     {{ currency.code }}
                   </dropdown-option>
                 </form-dropdown-input>
@@ -57,10 +57,10 @@
             </form-field>
 
             <!--
-              Credit Due Date
+              Credit Number
             -->
-            <form-field catch-errors="credit_due_date" :label="$t('labels.credit_due_date')">
-              <form-date-input name="credit_due_date"></form-date-input>
+            <form-field catch-errors="credit_number" :label="$t('labels.credit_number')">
+              <form-date-input name="credit_number"></form-date-input>
             </form-field>
           </form-row>
         </form-container>
@@ -76,78 +76,35 @@ export default {
 
   props: {
     data: {
-      default: () => {
-        return {}
-      }
-    }
-  },
-
-  data() {
-    // const current = this.data.invoice
-
-    return {
-      clients: [
-        { uuid: '0001', name: 'Client A' },
-        { uuid: '0002', name: 'Client B' },
-        { uuid: '0003', name: 'Client C' },
-        { uuid: '0004', name: 'Client D' },
-        { uuid: '0005', name: 'Client E' }
-      ],
-
-      currencies: [
-        { id: 1, code: 'GEA' },
-        { id: 2, code: 'HFB' },
-        { id: 3, code: 'IGC' },
-        { id: 4, code: 'JHD' },
-        { id: 5, code: 'KIE' }
-      ]
+      default: null
     }
   },
 
   computed: {
     form() {
       return this.$store.state.form.credit
-    }
-  },
+    },
 
-  watch: {
-    name: function (val) {
-      this.data.credit.name = val
+    passive() {
+      return this.$store.state.passive
     },
-    price: function (val) {
-      this.data.credit.price = val
-    },
-    qty: function (val) {
-      this.data.credit.qty = val
-    },
-    currency: function (val) {
-      this.data.credit.currency = val
-    },
-    taxRate: function (val) {
-      this.data.credit.taxRate = val
-    },
-    description: function (val) {
-      this.data.credit.description = val
+
+    clients() {
+      return this.$store.state.table.clients.items
     }
   },
 
   methods: {
     save() {
-      if (this.data.credit.key) {
-        this.$store.dispatch('SAVE_ENTITY', {
-          tableName: 'credits',
-          data: this.data
-        })
+      if (this.form.uuid) {
+        this.$store.dispatch('form/credit/SAVE')
       } else {
         this.create()
       }
     },
 
     create() {
-      this.$store.dispatch('CREATE_ENTITY', {
-        tableName: 'credits',
-        data: this.data
-      })
+      this.$store.dispatch('form/credit/CREATE')
     },
 
     cancel() {
@@ -164,43 +121,6 @@ export default {
 
   .modal-tabs {
     width: 990px;
-  }
-}
-.modal-sidebar {
-  width: 397px;
-  border-left: 1px solid #e1e1e1;
-  float: right;
-}
-
-.field--product {
-  width: 30%;
-
-  .list-item__field & {
-    min-width: 39%;
-  }
-}
-
-.field--cost {
-  width: 15%;
-}
-
-.field--qty {
-  width: 10%;
-}
-
-.field--discount {
-  width: 10%;
-}
-
-.field--tax-rate {
-  width: 20%;
-}
-
-.field--actions {
-  min-width: 15%;
-
-  &.list-item__field {
-    min-width: 10%;
   }
 }
 </style>

@@ -1,48 +1,54 @@
 import Vue from 'vue'
-import * as types from './mutation-types'
 
-export default {
-  [types.PRELOAD_TABLE](state, { name }) {
-    state[name].loading = true
-  },
+export default (mutations = {}) => {
+  return Object.assign({
+    SET_TABLE_STATE(state, tableState) {
+      state.state = tableState
+    },
 
-  [types.UPDATE_TABLE](state, { name, data }) {
-    state[name].loading = false
-    state[name].page = Math.min(Math.max(state[name].page, 0), data.pages)
-    state[name].pages = data.pages
-    state[name].list = data.rows
-    state[name].total = data.total
-  },
+    SET_TABLE_ITEMS(state, items) {
+      state.items = items
+    },
 
-  [types.INSERT_ROW](state, { table, row }) {
-    state[table].list.unshift(row)
-  },
+    NORMALIZE_TABLE(state) {
+      // remove selected items who no longer exists on the table
+      state.selection = state.selection.filter((item) => state.items.indexOf(item) > -1)
 
-  [types.UPDATE_ROW](state, { table, row }) {
-    const list = state[table].list
+      // reset page to last available page, if it's out of bounds
+      const pageCount = Math.ceil(state.items.length / state.rows_per_page)
+      if (state.page >= pageCount) {
+        state.page = pageCount - 1
+      }
+    },
 
-    const index = list.findIndex((_row) => _row.key === row.key)
+    INSERT_ROW(state, row) {
+      if (state.list.indexOf(row) < 0) {
+        state.list.unshift(row)
+      }
+    },
 
-    if (index > -1) {
-      Vue.set(state[table].list, index, row)
+    REMOVE_ROW(state, row) {
+      state.list = state.list.filter((item) => item.uuid !== row.uuid)
+    },
+
+    UPDATE_ROW(state, row) {
+      const list = state.list
+
+      const index = list.findIndex((_row) => _row.uuid === row.uuid)
+
+      if (index > -1) {
+        Vue.set(state.list, index, row)
+      }
+    },
+
+    TOGGLE_ROW(state, row) {
+      const found = state.selection.find((item) => item.uuid === row.uuid)
+
+      if (found) {
+        state.selection = state.selection.filter((item) => item.uuid !== row.uuid)
+      } else {
+        state.selection.push(row)
+      }
     }
-  },
-
-  [types.TOGGLE_FILTER_BY](state, { name, filter }) {
-    console.log('toggle', name, filter)
-  },
-
-  [types.TOGGLE_ROW](state, { name, row }) {
-    const list = state[name]
-
-    const found = list.selection.find((item) => item === row)
-
-    if (found) {
-      list.selection = list.selection.filter((item) => item !== row)
-    } else {
-      list.selection.push(row)
-    }
-
-    state[name] = list
-  }
+  }, mutations)
 }

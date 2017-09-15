@@ -1,7 +1,6 @@
 /* Vue */
 import Vue from 'vue'
 import VueResource from 'vue-resource'
-import Echo from './echo'
 import App from './App'
 import Api from './api'
 import Auth from './auth'
@@ -54,9 +53,9 @@ new Vue({
   components: { App },
 
   mounted() {
-    console.log('mounted')
-    /* Realtime Events */
-    Echo.connect()
+    if (this.$store.state.auth.isLoggedIn) {
+      this.$store.dispatch('INIT')
+    }
   }
 })
 

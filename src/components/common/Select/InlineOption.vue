@@ -13,7 +13,14 @@ import he from 'he'
 export default {
   name: 'inline-option',
 
-  props: ['value', 'selected'],
+  props: {
+    value: {
+      default: null
+    },
+    selected: {
+      default: false
+    }
+  },
 
   data() {
     return {

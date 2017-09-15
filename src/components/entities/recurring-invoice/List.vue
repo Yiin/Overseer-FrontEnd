@@ -43,118 +43,99 @@
 </template>
 
 <script>
-  const name = 'recurring_invoices'
+import TableMixin from '@/mixins/TableMixin'
 
-  export default {
-    data() {
-      return {
-        filterBy: [
-          { name: 'active', placeholder: this.$t('filters.active') },
-          { name: 'archived', placeholder: this.$t('filters.archived') },
-          { name: 'deleted', placeholder: this.$t('filters.deleted') },
-          { type: 'separator' },
-          { name: 'draft', placeholder: this.$t('filters.draft') },
-          { name: 'pending', placeholder: this.$t('filters.pending') },
-          { name: 'overdue', placeholder: this.$t('filters.overdue') },
-          { type: 'separator' },
-          { type: 'list',
-            placeholder: this.$t('filters.frequency'),
-            keyName: 'name',
-            list: [
-              { name: 'Weekly' },
-              { name: 'Monthly' },
-              { name: 'Annualy' }
-            ]
-          },
-          { type: 'separator' },
-          { type: 'list',
-            placeholder: this.$t('filters.clients'),
-            keyName: 'name',
-            list: [
-              { name: 'Client A' },
-              { name: 'Client B' },
-              { name: 'Client C' },
-              { name: 'Client D' },
-              { name: 'Client E' },
-              { name: 'Client F' }
-            ]
-          },
-          { type: 'list',
-            placeholder: this.$t('filters.products'),
-            keyName: 'name',
-            list: [
-              { name: 'Product A' },
-              { name: 'Product B' },
-              { name: 'Product C' },
-              { name: 'Product D' },
-              { name: 'Product E' },
-              { name: 'Product F' }
-            ]
-          }
-        ],
+export default {
+  mixins: [
+    TableMixin
+  ],
 
-        searchBy: [
-          { type: 'numeric', name: 'start_date', placeholder: this.$t('search_by.start_date') },
-          { type: 'numeric', name: 'last_sent', placeholder: this.$t('search_by.last_sent_date') },
-          { type: 'numeric', name: 'amount', placeholder: this.$t('search_by.amount') },
-          { type: 'separator' },
-          { type: 'text', name: 'client_name', placeholder: this.$t('search_by.client_name') },
-          { type: 'text', name: 'product_name', placeholder: this.$t('search_by.product_name') }
-        ]
-      }
-    },
-
-    watch: {
-      // filterBy: function (val) {
-        //
-      // }
-    },
-
-    computed: {
-      table() {
-        return this.$store.getters[name]
-      },
-
-      list() {
-        return {
-          name,
-          pageList: this.table.list,
-          selection: this.table.selection
+  data() {
+    return {
+      filterBy: [
+        { name: 'active', placeholder: this.$t('filters.active') },
+        { name: 'archived', placeholder: this.$t('filters.archived') },
+        { name: 'deleted', placeholder: this.$t('filters.deleted') },
+        { type: 'separator' },
+        { name: 'draft', placeholder: this.$t('filters.draft') },
+        { name: 'pending', placeholder: this.$t('filters.pending') },
+        { name: 'overdue', placeholder: this.$t('filters.overdue') },
+        { type: 'separator' },
+        { type: 'list',
+          placeholder: this.$t('filters.frequency'),
+          keyName: 'name',
+          list: [
+            { name: 'Weekly' },
+            { name: 'Monthly' },
+            { name: 'Annualy' }
+          ]
+        },
+        { type: 'separator' },
+        { type: 'list',
+          placeholder: this.$t('filters.clients'),
+          keyName: 'name',
+          list: [
+            { name: 'Client A' },
+            { name: 'Client B' },
+            { name: 'Client C' },
+            { name: 'Client D' },
+            { name: 'Client E' },
+            { name: 'Client F' }
+          ]
+        },
+        { type: 'list',
+          placeholder: this.$t('filters.products'),
+          keyName: 'name',
+          list: [
+            { name: 'Product A' },
+            { name: 'Product B' },
+            { name: 'Product C' },
+            { name: 'Product D' },
+            { name: 'Product E' },
+            { name: 'Product F' }
+          ]
         }
-      },
+      ],
 
-      pagination() {
-        return {
-          page: this.table.page,
-          pages: this.table.pages,
-          amount: this.table.amount,
-          total: this.table.total
+      searchBy: [
+        { type: 'numeric', name: 'start_date', placeholder: this.$t('search_by.start_date') },
+        { type: 'numeric', name: 'last_sent', placeholder: this.$t('search_by.last_sent_date') },
+        { type: 'numeric', name: 'amount', placeholder: this.$t('search_by.amount') },
+        { type: 'separator' },
+        { type: 'text', name: 'client_name', placeholder: this.$t('search_by.client_name') },
+        { type: 'text', name: 'product_name', placeholder: this.$t('search_by.product_name') }
+      ]
+    }
+  },
+
+  computed: {
+    name() {
+      return 'recurring_invoices'
+    }
+  },
+
+  methods: {
+    create() {
+      this.$store.dispatch('CREATE_MODAL', {
+        tableName: 'recurring-invoices',
+        title: this.$t('actions.new_recurring_invoice'),
+        component: 'edit-recurring-invoice',
+        data: {
+          'recurring-invoice': {}
         }
-      }
+      })
     },
 
-    methods: {
-      create() {
-        this.$store.dispatch('CREATE_MODAL', {
-          tableName: 'recurring-invoices',
-          title: this.$t('actions.new_recurring_invoice'),
-          component: 'edit-recurring-invoice',
-          data: {
-            'recurring-invoice': {}
-          }
-        })
-      },
-
-      edit(data) {
-        this.$store.dispatch('OPEN_MODAL', {
-          tableName: 'recurring-invoices',
-          title: this.$t('actions.edit_recurring_invoice'),
-          component: 'edit-recurring-invoice',
-          data: {
-            'recurring-invoice': Object.assign({}, data)
-          }
-        })
-      }
+    edit(data) {
+      this.$store.dispatch('OPEN_MODAL', {
+        tableName: 'recurring-invoices',
+        title: this.$t('actions.edit_recurring_invoice'),
+        component: 'edit-recurring-invoice',
+        data: {
+          'recurring-invoice': Object.assign({}, data)
+        }
+      })
     }
   }
+}
 </script>

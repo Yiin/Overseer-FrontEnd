@@ -2,63 +2,64 @@
  * Table actions
  */
 import Api from '@/api'
-import * as mutations from './mutation-types'
 
-export default {
+export default (actions = {}) => Object.assign({
   /**
    * Load table data
    */
-  LOAD_TABLE({ commit, getters }, { name }) {
-    commit(mutations.PRELOAD_TABLE, { name })
+  LOAD_TABLE({ commit, state }) {
+    const name = state.name
 
-    const { page, amount, orderBy, orderDirection } = getters[name]
+    commit('SET_TABLE_STATE', 'loading')
 
-    Api.get(name, {
-      params: {
-        p: page,
-        a: amount,
-        ob: orderBy,
-        od: orderDirection
-      }
-    }).then((response) => {
-      commit(mutations.UPDATE_TABLE, { name, data: response })
+    Api.get('all-' + name.replace(/_/g, '-')).then((response) => {
+      commit('SET_TABLE_ITEMS', response)
+      commit('NORMALIZE_TABLE')
+      commit('SET_TABLE_STATE', 'idle')
     })
   },
 
-  FILTER_BY({ commit, state, dispatch }, { name, filter }) {
-    commit(mutations.TOGGLE_FILTER_BY, { name, filter })
+  /**
+   * Send API request to create a document
+   */
+  CREATE_DOCUMENT({ commit, dispatch, state }, data) {
+    const name = state.name
 
-    dispatch('loadTable', { name })
-  },
-
-  CREATE_ENTITY({ commit, dispatch }, { tableName, data }) {
-    Api.post(tableName, data)
+    return Api.post(name.replace(/_/g, '-'), data)
       .then((response) => {
-        dispatch('INSERT_ROW', { table: tableName, row: response })
+        dispatch('INSERT_ROW', response)
         dispatch('CLOSE_MODAL', { root: true })
       })
   },
 
-  SAVE_ENTITY({ commit, dispatch }, { tableName, data }) {
-    Api.put(`${tableName}/${data.product.key}`, data)
+  /**
+   * Send API request to save a document
+   */
+  SAVE_DOCUMENT({ commit, dispatch, state }, { uuid, data }) {
+    const name = state.name
+
+    return Api.put(name.replace(/_/g, '-') + `/${uuid}`, data)
       .then((response) => {
-        dispatch('UPDATE_ROW', { table: tableName, row: response })
+        if (response.error) {
+          return response
+        }
+        dispatch('UPDATE_ROW', response)
         dispatch('CLOSE_MODAL', { root: true })
       })
   },
 
   INSERT_ROW({ commit }, data) {
-    commit(mutations.INSERT_ROW, data)
+    commit('INSERT_ROW', data)
   },
 
   UPDATE_ROW({ commit }, data) {
-    commit(mutations.UPDATE_ROW, data)
+    commit('UPDATE_ROW', data)
   },
 
   /**
    * Toggle table row
    */
   TOGGLE_ROW({ commit }, data) {
-    commit(mutations.TOGGLE_ROW, data)
+    commit('TOGGLE_ROW', data)
   }
-}
+}, actions)

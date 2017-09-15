@@ -6,8 +6,8 @@ export default {
    * @param {string} options.type   Type of the item / Name of the module
    * @param {object} options.item   Item data
    */
-  ADD_ITEM_TO_TASKBAR({ commit, dispatch, state }, { type, data }) {
-    const taskbarItem = { type, data }
+  ADD_ITEM_TO_TASKBAR({ commit, dispatch, state, rootState }, { type, data }) {
+    const taskbarItem = { type, data, savedData: null }
     commit(mutations.ADD_ITEM, taskbarItem)
 
     // new item is always last item
@@ -37,18 +37,29 @@ export default {
     }
     commit(mutations.SET_ACTIVE_ITEM, index)
 
-    const ACTION_PREFIX = state.items[index].type.toUpperCase()
+    // if there is saved data, load it to form
+    if (state.items[index].savedData) {
+      dispatch(`form/${state.items[index].data.form}/SET_FORM_DATA`, state.items[index].savedData)
+    }
+
+    const ACTION_PREFIX = state.items[index].type
     dispatch('HANDLE_TASKBAR_OPEN_' + ACTION_PREFIX, state.items[index].data)
   },
 
-  DEACTIVATE_TASKBAR_ITEM({ commit, dispatch, state }, data) {
+  DEACTIVATE_TASKBAR_ITEM({ commit, dispatch, state, rootState }, data) {
     commit(mutations.RESET_ACTIVE_ITEM)
 
     const index = state.items.findIndex((taskbarItem) => taskbarItem.data === data)
 
     if (index > -1) {
-      const ACTION_PREFIX = state.items[index].type.toUpperCase()
-      dispatch('HANDLE_TASKBAR_HIDE_' + ACTION_PREFIX, state.items[index])
+      commit('SAVE_TASKBAR_ITEM_DATA', index)
+      commit('SAVE_TASKBAR_ITEM_FORM_DATA', {
+        index,
+        formData: rootState.form[data.form]
+      })
+
+      const ACTION_PREFIX = state.items[index].type
+      dispatch('HANDLE_TASKBAR_HIDE_' + ACTION_PREFIX, state.items[index].data)
     }
   },
 
@@ -68,8 +79,8 @@ export default {
     if (index < 0 || index >= state.items.length) {
       return
     }
-    const ACTION_PREFIX = state.items[index].type.toUpperCase()
-    dispatch('HANDLE_TASKBAR_CLOSE_' + ACTION_PREFIX)
+    const ACTION_PREFIX = state.items[index].type
+    dispatch('HANDLE_TASKBAR_CLOSE_' + ACTION_PREFIX, state.items[index].data)
 
     commit(mutations.REMOVE_ITEM_AT_INDEX, index)
   }

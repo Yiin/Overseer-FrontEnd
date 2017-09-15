@@ -1,7 +1,0 @@
-export const SET_PRODUCT_NAME = 'SET_PRODUCT_NAME'
-export const SET_PRICE = 'SET_PRICE'
-export const SET_CURRENCY = 'SET_CURRENCY'
-export const SET_QUANTITY = 'SET_QUANTITY'
-export const SET_TAX_RATE = 'SET_TAX_RATE'
-export const SET_DESCRIPTION = 'SET_DESCRIPTION'
-export const SET_IMAGES = 'SET_IMAGES'

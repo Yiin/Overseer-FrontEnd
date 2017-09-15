@@ -19,38 +19,40 @@
         <column width="14%">{{ $t('fields.invoice') }}</column>
         <column width="20%">{{ $t('fields.client_name') }}</column>
         <column width="20%">{{ $t('fields.transaction_reference') }}</column>
-        <column width="9%">{{ $t('fields.methods') }}</column>
+        <column width="9%">{{ $t('fields.method') }}</column>
         <column width="10%">{{ $t('fields.amount') }}</column>
         <column width="11%">{{ $t('fields.date_created') }}</column>
         <column width="12%">{{ $t('fields.status') }}</column>
       </template>
       <template slot="columns" scope="props">
-        <column>
-          <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.name }}</a>
+        <column width="14%">
+          <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.invoice.name }}</a>
         </column>
-        <column>{{ props.row.description }}</column>
-        <column>
+        <column width="20%">{{ props.row.client.name }}</column>
+        <column width="20%">{{ props.row.transaction_reference }}</column>
+        <column width="9%">{{ props.row.method }}</column>
+        <column width="10%">
           <span class="currency">{{ props.row.currency | currencySymbol }}</span>
           <span class="currency currency--primary">{{ props.row.price | currency }}</span>
         </column>
-        <column>{{ props.row.qty }}</column>
+        <column width="11%">{{ props.row.created_at }}</column>
+        <column width="12%">{{ props.row.status }}</column>
       </template>
       <template slot="table-controls-left"></template>
     </entities-table>
 
-<!--
-    <calculator :rows="">
-      <calculator-option :option-key="price">{{ $t('fields.price') }}</calculator-option>
-    </calculator>
--->
     <table-footer :pagination="pagination"></table-footer>
   </div>
 </template>
 
 <script>
-const name = 'payments'
+import TableMixin from '@/mixins/TableMixin'
 
 export default {
+  mixins: [
+    TableMixin
+  ],
+
   data() {
     return {
       filterBy: [
@@ -108,56 +110,19 @@ export default {
     }
   },
 
-  watch: {
-    // filterBy: function (val) {
-      //
-    // }
-  },
-
   computed: {
-    table() {
-      return this.$store.getters[name]
-    },
-
-    list() {
-      return {
-        name,
-        pageList: this.table.list,
-        selection: this.table.selection
-      }
-    },
-
-    pagination() {
-      return {
-        page: this.table.page,
-        pages: this.table.pages,
-        amount: this.table.amount,
-        total: this.table.total
-      }
+    name() {
+      return 'payments'
     }
   },
 
   methods: {
     create() {
-      this.$store.dispatch('CREATE_MODAL', {
-        tableName: 'payments',
-        title: this.$t('actions.new_payment'),
-        component: 'edit-payment',
-        data: {
-          payment: {}
-        }
-      })
+      this.$store.dispatch('form/payment/OPEN_CREATE_FORM')
     },
 
     edit(data) {
-      this.$store.dispatch('OPEN_MODAL', {
-        tableName: 'payments',
-        title: this.$t('actions.edit_payment'),
-        component: 'edit-payment',
-        data: {
-          payment: Object.assign({}, data)
-        }
-      })
+      this.$store.dispatch('form/payment/OPEN_EDIT_FORM', data)
     }
   }
 }

@@ -2,27 +2,25 @@ const state = {
   client: '', // uuid
 
   // Details
-  invoice_date: '', // YYYY-MM-DD
+  start_date: '', // YYYY-MM-DD
   end_date: '', // YYYY-MM-DD
-  partial: 0, // partial/deposit
-  invoice_number: '',
   po_number: '',
-  discount: { // global
-    type: 'percent',
-    value: 0
-  },
-  frequency: '', // val:type,
+  discount_type: 'percentage',
+  discount_value: 0,
+  frequency_type: '',
+  frequency_value: 0,
   due_date: 0, // 0-31
   autobill: false,
 
   // Items
   items: [
     /* {
-      product // uuid (products)
+      product_uuid // uuid (products)
       price
       qty
       discount // flat
-      tax // uuid (tax_rates)
+      tax_rate_uuid // uuid (tax_rates)
+      index
     } */
   ],
 
@@ -34,5 +32,7 @@ const state = {
   terms: '',
   footer: ''
 }
+
+export const defaultState = Object.assign({}, state)
 
 export default state

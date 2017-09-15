@@ -1,7 +1,8 @@
 <template>
-  <inline-select @input = "onInput"
-                 :name="name"
-                 v-bind = "$attrs"
+  <inline-select @input  = "onInput"
+                 v-model = "proxyValue"
+                 v-bind  = "$attrs"
+                 :name   = "name"
   >
     <template slot="head">
       <slot name="head"></slot>
@@ -28,12 +29,25 @@ export default {
     }
   },
 
+  data() {
+    return {
+      proxyValue: this.value
+    }
+  },
+
+  watch: {
+    value: function (value) {
+      this.proxyValue = value
+    }
+  },
+
   methods: {
     onInput(value) {
       const payload = {
         name: this.name,
         value: value
       }
+      console.log('onInput', payload)
       if (this.$parent) {
         this.$parent.$emit('input:field', payload)
       }

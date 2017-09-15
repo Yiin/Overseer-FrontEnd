@@ -7,11 +7,11 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="payment">
-          <form-inline-select-input name="client" :placeholder="$t('placeholders.type_client_name')">
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
             <inline-option v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
-                          :selected.once="client.uuid === form.client"
+                          :selected.once="client.uuid === form.client_uuid"
             >
               {{ client.name }}
             </inline-option>
@@ -24,7 +24,7 @@
        -->
       <modal-tab :title="$t('tabs.invoice')">
         <form-container name="payment">
-          <form-inline-select-input name="invoice" :placeholder="$t('placeholders.type_invoice_number')" tabular>
+          <form-inline-select-input name="invoice_uuid" :placeholder="$t('placeholders.type_invoice_number')" tabular>
             <template slot="head">
               <inline-select-column width="25%">{{ $t('fields.invoice_number') }}</inline-select-column>
               <inline-select-column width="24%">{{ $t('fields.client_name') }}</inline-select-column>
@@ -36,6 +36,7 @@
             <inline-select-row slot="rows" v-for="invoice in invoices" :key="invoice.uuid"
                               :value="invoice.invoice_number"
                               :searchable="invoice.invoice_number"
+                              :selected.once="invoice.uuid === form.invoice_uuid"
             >
               <inline-select-column>{{ invoice.invoice_number }}</inline-select-column>
               <inline-select-column>{{ invoice.client_name }}</inline-select-column>
@@ -59,32 +60,32 @@
       <modal-tab :title="$t('tabs.details')">
         <form-container name="payment">
           <form-row>
-            <form-field :catch-errors="[ 'price', 'currency' ]" :label="$t('labels.price')">
+            <form-field :catch-errors="[ 'amount', 'currency' ]" :label="$t('labels.amount')">
               <form-inputs-group>
 
                 <!--
                   Price
                 -->
-                <form-text-input name="price"></form-text-input>
+                <form-text-input name="amount"></form-text-input>
 
                 <!--
                   Currency
                 -->
-                <form-dropdown-input name="currency" class="dropdown--small" :placeholder="$t('labels.currency')">
-                  <dropdown-option v-for="currency in currencies" :key="currency.id"
+                <form-dropdown-input name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
+                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
                                   :value="currency.id"
-                                  :selected.once="currency.id === form.currency">
+                                  :selected.once="currency.id === form.currency_id">
                     {{ currency.code }}
                   </dropdown-option>
                 </form-dropdown-input>
               </form-inputs-group>
             </form-field>
             <form-field :label="$t('labels.payment_type')">
-              <form-dropdown-input name="payment_type" :placeholder="$t('labels.payment_type')">
-                <dropdown-option v-for="type in paymentTypes"
+              <form-dropdown-input name="payment_type_id" :placeholder="$t('labels.payment_type')">
+                <dropdown-option v-for="type in passive.paymentTypes"
                                 :key="type.name"
                                 :value="type.name"
-                                :selected.once="type.id === form.payment_type"
+                                :selected.once="type.id === form.payment_type_id"
                 >
                   {{ type.name }}
                 </dropdown-option>
@@ -115,13 +116,6 @@
 </template>
 
 <script>
-import uuidv4 from 'uuid/v4'
-import uuidv5 from 'uuid/v5'
-
-const MY_NAMESPACE = uuidv4()
-
-const getUuid = () => uuidv5(Math.random().toString(), MY_NAMESPACE)
-
 export default {
   name: 'edit-payment',
 
@@ -133,92 +127,35 @@ export default {
     }
   },
 
-  data() {
-    // const current = this.data.invoice
-
-    return {
-      clients: [
-        { uuid: '0001', name: 'Client A' },
-        { uuid: '0002', name: 'Client B' },
-        { uuid: '0003', name: 'Client C' },
-        { uuid: '0004', name: 'Client D' },
-        { uuid: '0005', name: 'Client E' }
-      ],
-
-      invoices: [
-        { uuid: getUuid(), invoice_number: 'IV-10420', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10419', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10418', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10417', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10416', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10415', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10414', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10413', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10412', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' },
-        { uuid: getUuid(), invoice_number: 'IV-10411', client_name: 'UAB "AKA Juventus Panevėžys"', amount: '8,321,456.00', paid_in: '5,000,000.00', status: 'Sent' }
-      ],
-
-      currencies: [
-        { id: 1, code: 'GEA' },
-        { id: 2, code: 'HFB' },
-        { id: 3, code: 'IGC' },
-        { id: 4, code: 'JHD' },
-        { id: 5, code: 'KIE' }
-      ],
-
-      paymentTypes: [
-        { id: 1, name: 'American Express' },
-        { id: 2, name: 'Cash' },
-        { id: 3, name: 'Check' },
-        { id: 4, name: 'PayPal' }
-      ]
-    }
-  },
-
   computed: {
     form() {
       return this.$store.state.form.expense
-    }
-  },
+    },
 
-  watch: {
-    name: function (val) {
-      this.data.payment.name = val
+    passive() {
+      return this.$store.state.passive
     },
-    price: function (val) {
-      this.data.payment.price = val
+
+    clients() {
+      return this.$store.state.table.clients.items
     },
-    qty: function (val) {
-      this.data.payment.qty = val
-    },
-    currency: function (val) {
-      this.data.payment.currency = val
-    },
-    taxRate: function (val) {
-      this.data.payment.taxRate = val
-    },
-    description: function (val) {
-      this.data.payment.description = val
+
+    invoices() {
+      return this.$store.state.table.invoices.items
     }
   },
 
   methods: {
     save() {
-      if (this.data.payment.key) {
-        this.$store.dispatch('SAVE_ENTITY', {
-          tableName: 'payments',
-          data: this.data
-        })
+      if (this.form.uuid) {
+        this.$store.dispatch('form/payment/SAVE')
       } else {
         this.create()
       }
     },
 
     create() {
-      this.$store.dispatch('CREATE_ENTITY', {
-        tableName: 'payments',
-        data: this.data
-      })
+      this.$store.dispatch('form/payment/CREATE')
     },
 
     cancel() {
@@ -235,43 +172,6 @@ export default {
 
   .modal-tabs {
     width: 990px;
-  }
-}
-.modal-sidebar {
-  width: 397px;
-  border-left: 1px solid #e1e1e1;
-  float: right;
-}
-
-.field--product {
-  width: 30%;
-
-  .list-item__field & {
-    min-width: 39%;
-  }
-}
-
-.field--cost {
-  width: 15%;
-}
-
-.field--qty {
-  width: 10%;
-}
-
-.field--discount {
-  width: 10%;
-}
-
-.field--tax-rate {
-  width: 20%;
-}
-
-.field--actions {
-  min-width: 15%;
-
-  &.list-item__field {
-    min-width: 10%;
   }
 }
 </style>

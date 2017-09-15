@@ -13,6 +13,14 @@ export default {
     }
   },
 
+  [types.SAVE_TASKBAR_ITEM_DATA](state, index) {
+    state.items[index].data = Object.assign({}, state.items[index].data)
+  },
+
+  [types.SAVE_TASKBAR_ITEM_FORM_DATA](state, { index, formData }) {
+    state.items[index].savedData = Object.assign({}, formData)
+  },
+
   [types.RESET_ACTIVE_ITEM](state) {
     state.activeIndex = null
   },

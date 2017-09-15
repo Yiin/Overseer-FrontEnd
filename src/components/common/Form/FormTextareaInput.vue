@@ -1,6 +1,7 @@
 <template>
-  <textarea @input = "onInput"
-            class  = "form__input"
+  <textarea @input  = "onInput"
+            v-model = "valueProxy"
+            class   = "form__input"
   ></textarea>
 </template>
 
@@ -18,6 +19,18 @@ export default {
 
     value: {
       default: null
+    }
+  },
+
+  data() {
+    return {
+      valueProxy: this.value
+    }
+  },
+
+  watch: {
+    value: function (value) {
+      this.valueProxy = value
     }
   },
 

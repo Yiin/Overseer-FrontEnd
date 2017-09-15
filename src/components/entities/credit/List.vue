@@ -24,15 +24,20 @@
         <column width="13%">{{ $t('fields.balance') }}</column>
       </template>
       <template slot="columns" scope="props">
-        <column>
-          <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.name }}</a>
+        <column width="21%">
+          <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.client.name }}</a>
         </column>
-        <column>{{ props.row.description }}</column>
-        <column>
+        <column width="19%"></column>
+        <column width="19%"></column>
+        <column width="11%">{{ props.row.credit_date }}</column>
+        <column width="13%">
           <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.price | currency }}</span>
+          <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
         </column>
-        <column>{{ props.row.qty }}</column>
+        <column width="13%">
+          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
+          <span class="currency currency--primary">{{ props.row.balance | currency }}</span>
+        </column>
       </template>
       <template slot="table-controls-left"></template>
     </entities-table>
@@ -47,9 +52,13 @@
 </template>
 
 <script>
-const name = 'credits'
+import TableMixin from '@/mixins/TableMixin'
 
 export default {
+  mixins: [
+    TableMixin
+  ],
+
   data() {
     return {
       filterBy: [
@@ -81,56 +90,19 @@ export default {
     }
   },
 
-  watch: {
-    // filterBy: function (val) {
-      //
-    // }
-  },
-
   computed: {
-    table() {
-      return this.$store.getters[name]
-    },
-
-    list() {
-      return {
-        name,
-        pageList: this.table.list,
-        selection: this.table.selection
-      }
-    },
-
-    pagination() {
-      return {
-        page: this.table.page,
-        pages: this.table.pages,
-        amount: this.table.amount,
-        total: this.table.total
-      }
+    name() {
+      return 'credits'
     }
   },
 
   methods: {
     create() {
-      this.$store.dispatch('CREATE_MODAL', {
-        tableName: 'credits',
-        title: this.$t('actions.new_credit'),
-        component: 'edit-credit',
-        data: {
-          credit: {}
-        }
-      })
+      this.$store.dispatch('form/credit/OPEN_CREATE_FORM')
     },
 
     edit(data) {
-      this.$store.dispatch('OPEN_MODAL', {
-        tableName: 'credits',
-        title: this.$t('actions.edit_credit'),
-        component: 'edit-credit',
-        data: {
-          credit: Object.assign({}, data)
-        }
-      })
+      this.$store.dispatch('form/credit/OPEN_EDIT_FORM', data)
     }
   }
 }

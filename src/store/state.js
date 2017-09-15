@@ -4,6 +4,7 @@ let state = {
     accessToken: null
   },
   user: {
+    uuid: null,
     profile: {
       first_name: null,
       last_name: null,

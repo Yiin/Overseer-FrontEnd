@@ -37,7 +37,8 @@ export default {
 
   computed: {
     tabs() {
-      return this.$store.state.modal.tabs
+      // return this.$store.state.modal.tabs
+      return this.$children
     },
 
     activeTabIndex() {
@@ -54,13 +55,14 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('UPDATE_MODAL_TABS', this.$children)
-
+    // console.log(, this.$slots.default.filter((el) => el && el.componentInstance).map((el) => el.componentInstance))
+    // this.$store.dispatch('UPDATE_MODAL_TABS', this.$children)
     if (this.activeTabIndex >= this.tabs.length) {
       throw new Error(`ModalTabs should contain at least ${this.activeTabIndex} tab(s).`)
     }
 
     this.tabs[this.activeTabIndex].isActive = true
+    this.$forceUpdate()
   },
 
   methods: {

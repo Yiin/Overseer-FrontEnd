@@ -6,6 +6,8 @@
         <input type="text" name="company_name" v-model="form.company_name">
         <label>Company E-Mail</label>
         <input type="text" name="company_email" v-model="form.company_email">
+        <label>Site Address</label>
+        <input type="text" name="site_address" v-model="form.site_address">
         <h3>Your information</h3>
         <label>First Name</label>
         <input type="text" name="first_name" v-model="form.first_name">
@@ -28,6 +30,7 @@
         form: {
           company_name: '',
           company_email: '',
+          site_address: '',
           first_name: '',
           last_name: '',
           email: '',

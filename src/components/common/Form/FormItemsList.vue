@@ -2,7 +2,7 @@
   <div>
     <div class="items-list__new-item">
       <form-inputs-group>
-        <slot name="fields"></slot>
+        <slot name="fields" :form="form"></slot>
         <div class="field--actions">
           <button class="button button--positive" @click="addItem">ADD</button>
         </div>
@@ -13,7 +13,7 @@
       Added items list
     -->
     <div class="items-list scrollable">
-      <div v-for="(item, index) in items" class="items-list__item">
+      <div v-for="(item, index) in items" :key="index" class="items-list__item">
         <slot name="preview" :item="item" :index="index"></slot>
         <div class="list-item__field field--actions">
           <div class="remove-item-btn">
@@ -44,13 +44,14 @@ export default {
     },
 
     value: {
-      default: null
+      default: []
     }
   },
 
   data() {
     return {
-      items: []
+      form: Object.assign({}, this.model),
+      items: this.value
     }
   },
 
@@ -61,8 +62,12 @@ export default {
 
         for (let key in item) {
           if (item.hasOwnProperty(key)) {
-            if (item[key].hasOwnProperty('__valueWithText')) {
-              _item[key] = item[key].value
+            if (typeof item[key] === 'object' && item[key] !== null) {
+              if (typeof item[key].id !== 'undefined') {
+                _item[key + '_id'] = item[key].id
+              } else if (typeof item[key].uuid !== 'undefined') {
+                _item[key + '_uuid'] = item[key].uuid
+              }
             } else {
               _item[key] = item[key]
             }
@@ -86,13 +91,11 @@ export default {
 
   methods: {
     addItem() {
-      const item = Object.assign({}, this.model)
-
-      console.log(item)
+      const item = Object.assign({}, this.form)
 
       this.items.push(item)
 
-      this.$emit('add', item)
+      this.form = Object.assign({}, this.model)
     },
 
     removeItem(item) {
@@ -102,6 +105,10 @@ export default {
         this.items.splice(index, 1)
         this.$forceUpdate()
       }
+    },
+
+    setItemAttribute(key, value) {
+      this.form[key] = value
     }
   }
 }

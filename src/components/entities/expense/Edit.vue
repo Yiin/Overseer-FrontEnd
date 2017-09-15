@@ -7,13 +7,30 @@
        -->
       <modal-tab :title="$t('tabs.vendor')">
         <form-container name="expense">
-          <form-inline-select-input name="vendor" :placeholder="$t('placeholders.type_vendor_name')">
+          <form-inline-select-input :watch="vendors" name="vendor_uuid" :placeholder="$t('placeholders.type_vendor_name')">
             <inline-option v-for="vendor in vendors"
                           :key="vendor.uuid"
                           :value="vendor.uuid"
-                          :selected.once="vendor.uuid === form.vendor"
+                          :selected="vendor.uuid === form.vendor_uuid"
             >
-              {{ vendor.name }}
+              {{ vendor.company_name }}
+            </inline-option>
+          </form-inline-select-input>
+        </form-container>
+      </modal-tab>
+
+      <!--
+        Select client
+       -->
+      <modal-tab :title="$t('tabs.client')">
+        <form-container name="expense">
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
+            <inline-option v-for="client in clients"
+                          :key="client.uuid"
+                          :value="client.uuid"
+                          :selected="client.uuid === form.client_uuid"
+            >
+              {{ client.name }}
             </inline-option>
           </form-inline-select-input>
         </form-container>
@@ -22,19 +39,19 @@
       <!--
         Expenses Category
        -->
-      <modal-tab :title="$t('tabs.category')">
+      <!-- <modal-tab :title="$t('tabs.category')">
         <form-container name="expense">
-          <form-inline-select-input name="category" :placeholder="$t('placeholders.type_category_name')">
+          <form-inline-select-input :watch="categories" name="category_uuid" :placeholder="$t('placeholders.type_category_name')">
             <inline-option v-for="category in categories"
                           :key="category.uuid"
                           :value="category.uuid"
-                          :selected.once="category.uuid === form.category"
+                          :selected.once="category.uuid === form.category_uuid"
             >
               {{ category.name }}
             </inline-option>
           </form-inline-select-input>
         </form-container>
-      </modal-tab>
+      </modal-tab> -->
 
       <modal-tab :title="$t('tabs.details')">
         <form-container name="expense">
@@ -43,7 +60,7 @@
             <!--
               Cost
             -->
-            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency' ]">
+            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency_id' ]">
               <form-inputs-group>
 
                 <!--
@@ -54,10 +71,10 @@
                 <!--
                   Currency
                 -->
-                <form-dropdown-input name="currency" class="dropdown--small" :placeholder="$t('labels.currency')">
-                  <dropdown-option v-for="currency in currencies" :key="currency.id"
+                <form-dropdown-input name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
+                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
                                   :value="currency.id"
-                                  :selected.once="currency.id === form.currency">
+                                  :selected="currency.id === form.currency">
                     {{ currency.code }}
                   </dropdown-option>
                 </form-dropdown-input>
@@ -90,84 +107,43 @@ export default {
 
   props: {
     data: {
-      default: () => {
-        return {}
-      }
-    }
-  },
-
-  data() {
-    return {
-      vendors: [
-        { uuid: '0001', name: 'Vendor A' },
-        { uuid: '0002', name: 'Vendor B' },
-        { uuid: '0003', name: 'Vendor C' },
-        { uuid: '0004', name: 'Vendor D' },
-        { uuid: '0005', name: 'Vendor E' }
-      ],
-
-      currencies: [
-        { id: 1, code: 'GEA' },
-        { id: 2, code: 'HFB' },
-        { id: 3, code: 'IGC' },
-        { id: 4, code: 'JHD' },
-        { id: 5, code: 'KIE' }
-      ],
-
-      categories: [
-        { uuid: '0001', name: 'Category A' },
-        { uuid: '0002', name: 'Category B' },
-        { uuid: '0003', name: 'Category C' },
-        { uuid: '0004', name: 'Category D' },
-        { uuid: '0005', name: 'Category D' }
-      ]
+      default: null
     }
   },
 
   computed: {
     form() {
       return this.$store.state.form.expense
-    }
-  },
+    },
 
-  watch: {
-    name: function (val) {
-      this.data.expense.name = val
+    passive() {
+      return this.$store.state.passive
     },
-    price: function (val) {
-      this.data.expense.price = val
+
+    vendors() {
+      return this.$store.state.table.vendors.items
     },
-    qty: function (val) {
-      this.data.expense.qty = val
+
+    clients() {
+      return this.$store.state.table.clients.items
     },
-    currency: function (val) {
-      this.data.expense.currency = val
-    },
-    taxRate: function (val) {
-      this.data.expense.taxRate = val
-    },
-    description: function (val) {
-      this.data.expense.description = val
+
+    categories() {
+      return this.$store.state.table.expense_categories.items
     }
   },
 
   methods: {
     save() {
-      if (this.data.expense.key) {
-        this.$store.dispatch('SAVE_ENTITY', {
-          tableName: 'expenses',
-          data: this.data
-        })
+      if (this.form.uuid) {
+        this.$store.dispatch('form/expense/SAVE')
       } else {
         this.create()
       }
     },
 
     create() {
-      this.$store.dispatch('CREATE_ENTITY', {
-        tableName: 'expenses',
-        data: this.data
-      })
+      this.$store.dispatch('form/expense/CREATE')
     },
 
     cancel() {
@@ -184,43 +160,6 @@ export default {
 
   .modal-tabs {
     width: 990px;
-  }
-}
-.modal-sidebar {
-  width: 397px;
-  border-left: 1px solid #e1e1e1;
-  float: right;
-}
-
-.field--product {
-  width: 30%;
-
-  .list-item__field & {
-    min-width: 39%;
-  }
-}
-
-.field--cost {
-  width: 15%;
-}
-
-.field--qty {
-  width: 10%;
-}
-
-.field--discount {
-  width: 10%;
-}
-
-.field--tax-rate {
-  width: 20%;
-}
-
-.field--actions {
-  min-width: 15%;
-
-  &.list-item__field {
-    min-width: 10%;
   }
 }
 </style>
