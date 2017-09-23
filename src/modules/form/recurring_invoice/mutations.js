@@ -1,6 +1,10 @@
 import FormMutations from '@/modules/form/mutations'
 
 export default FormMutations({
+  // SET_FREQUENCY(state, frequency) {
+
+  // }
+
   SET_ITEMS(state, items) {
     state.items = items.map((item) => {
       if (!item.product_uuid) {

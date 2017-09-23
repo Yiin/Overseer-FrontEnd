@@ -5,7 +5,7 @@
 
 body
 {
-    font-family: $font-default;
+    font-family: $primary-font-family;
     font-size: 14px;
     line-height: .8;
 
@@ -26,6 +26,13 @@ body
     width: calc(100% - #{$sidebar-width});
     min-height: calc(100vh - #{$height-navbar});
     padding: 20px 28px 200px 30px;
+}
+
+.logo {
+    font-family: 'neon';
+    font-size: 23px;
+    font-weight: 600;
+    color: #455092;
 }
 
 /* Links */
@@ -75,7 +82,8 @@ iframe
     {
         color: $color-blaze-orange;
     }
-    &--primary, &--secondary
+    &--primary,
+    &--secondary
     {
         padding-left: 5px;
     }
@@ -160,42 +168,6 @@ iframe
     {
         background-color: $color-main;
         box-shadow: inset 0 0 0 4.2px $color-white;
-    }
-}
-
-.button__create
-{
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 46px;
-
-    display: inline-flex;
-
-    min-width: 190px;
-    height: 46px;
-    padding: 0 24px 0 15px;
-
-    cursor: pointer;
-    user-select: none;
-    transition: all .15s ease;
-
-    color: $color-text-alt;
-    border-radius: $border-radius;
-    background: $color-main;
-    box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
-    text-shadow: 0 1px 3px rgba(36, 102, 180, .4);
-
-    justify-content: flex-start;
-    align-items: center;
-    > [class^='icon-']
-    {
-        margin-right: 12px;
-    }
-    &:hover
-    {
-        transform: translateY(-1px);
-
-        box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
     }
 }
 
@@ -327,6 +299,7 @@ iframe
 {
     font-size: 18px;
     font-weight: bold;
+    line-height: 20px;
 
     margin-top: 25px;
     margin-left: 10px;

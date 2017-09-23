@@ -1,4 +1,6 @@
 const state = {
+  __name: 'recurring_invoice',
+
   client: '', // uuid
 
   // Details
@@ -30,9 +32,11 @@ const state = {
   ],
   note_to_client: '',
   terms: '',
-  footer: ''
+  footer: '',
+
+  errors: {}
 }
 
-export const defaultState = Object.assign({}, state)
+state.__initial = Object.assign({}, state)
 
 export default state

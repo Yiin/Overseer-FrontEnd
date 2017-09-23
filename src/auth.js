@@ -81,6 +81,10 @@ export default {
       })
   },
 
+  logout() {
+    store.dispatch('LOGOUT')
+  },
+
   /**
    * Set the Authorization header on a Vue-resource Request.
    *

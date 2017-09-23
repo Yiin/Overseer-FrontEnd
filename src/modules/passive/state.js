@@ -5,7 +5,8 @@ const state = {
   industries: [],
   languages: [],
   timezones: [],
-  payment_terms: [
+  paymentTypes: [],
+  paymentTerms: [
     { id: 7, name: 'Net 7' },
     { id: 14, name: 'Net 14' },
     { id: 15, name: 'Net 15' },
@@ -13,6 +14,46 @@ const state = {
     { id: 60, name: 'Net 60' },
     { id: 90, name: 'Net 90' },
     { id: 0, name: 'Net 0' }
+  ],
+  frequencies: [
+    { name: 'weekly', value: 1, type: 'week' },
+    { name: 'two_weeks', value: 2, type: 'week' },
+    { name: 'four_weeks', value: 4, type: 'week' },
+    { name: 'monthly', value: 1, type: 'month' },
+    { name: 'two_months', value: 2, type: 'month' },
+    { name: 'three_months', value: 3, type: 'month' },
+    { name: 'six_months', value: 6, type: 'month' },
+    { name: 'annually', value: 1, type: 'year' }
+  ],
+  member_states: [
+    { 'code': 'AT', 'name': 'AT - Austria' },
+    { 'code': 'BE', 'name': 'BE - Belgium' },
+    { 'code': 'BG', 'name': 'BG - Bulgaria' },
+    { 'code': 'CY', 'name': 'CY - Cyprus' },
+    { 'code': 'CZ', 'name': 'CZ - Czech Republic' },
+    { 'code': 'DE', 'name': 'DE - Germany' },
+    { 'code': 'DK', 'name': 'DK - Denmark' },
+    { 'code': 'EE', 'name': 'EE - Estonia' },
+    { 'code': 'EL', 'name': 'EL - Greece' },
+    { 'code': 'ES', 'name': 'ES - Spain' },
+    { 'code': 'FI', 'name': 'FI - Finland' },
+    { 'code': 'FR', 'name': 'FR - France ' },
+    { 'code': 'GB', 'name': 'GB - United Kingdom' },
+    { 'code': 'HR', 'name': 'HR - Croatia' },
+    { 'code': 'HU', 'name': 'HU - Hungary' },
+    { 'code': 'IE', 'name': 'IE - Ireland' },
+    { 'code': 'IT', 'name': 'IT - Italy' },
+    { 'code': 'LT', 'name': 'LT - Lithuania' },
+    { 'code': 'LU', 'name': 'LU - Luxembourg' },
+    { 'code': 'LV', 'name': 'LV - Latvia' },
+    { 'code': 'MT', 'name': 'MT - Malta' },
+    { 'code': 'NL', 'name': 'NL - The Netherlands' },
+    { 'code': 'PL', 'name': 'PL - Poland' },
+    { 'code': 'PT', 'name': 'PT - Portugal' },
+    { 'code': 'RO', 'name': 'RO - Romania' },
+    { 'code': 'SE', 'name': 'SE - Sweden' },
+    { 'code': 'SI', 'name': 'SI - Slovenia' },
+    { 'code': 'SK', 'name': 'SK - Slovakia' }
   ]
 }
 

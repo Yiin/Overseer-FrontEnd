@@ -41,6 +41,29 @@
     color: #949494;
 }
 
+.icon-prev {
+    background: url('../assets/icons/back.svg');
+    height: 15px;
+    width: 10px;
+}
+
+.icon-next {
+    background: url('../assets/icons/next.svg');
+    height: 15px;
+    width: 10px;
+}
+
+.icon-down, .icon-up {
+    transform: rotateZ(90deg);
+    display: inline-block;
+    &.icon-down {
+        @extend .icon-next;
+    }
+    &.icon-up {
+        @extend .icon-prev;
+    }
+}
+
 .icon-create-btn
 {
     font-size: 18px;

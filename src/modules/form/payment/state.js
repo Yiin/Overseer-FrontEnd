@@ -1,4 +1,6 @@
 const state = {
+  __name: 'payment',
+
   uuid: '',
 
   client_uuid: '', // uuid
@@ -14,6 +16,6 @@ const state = {
   errors: {}
 }
 
-export const defaultState = Object.assign({}, state)
+state.__initial = Object.assign({}, state)
 
 export default state

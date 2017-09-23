@@ -10,11 +10,13 @@ export default {
   },
 
   [`HANDLE_TASKBAR_HIDE_${TaskbarItem.MODAL}`]: ({ commit, dispatch }, data) => {
+    console.log('hide', data)
     dispatch(`form/${data.form}/RESET_FORM_DATA`, { root: true })
     commit(mutations.CLOSE_MODAL)
   },
 
   [`HANDLE_TASKBAR_CLOSE_${TaskbarItem.MODAL}`]: ({ commit, dispatch }, data) => {
+    console.log('close', data)
     dispatch(`form/${data.form}/RESET_FORM_DATA`, { root: true })
     commit(mutations.CLOSE_MODAL)
   },

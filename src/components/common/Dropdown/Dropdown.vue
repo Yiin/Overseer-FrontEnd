@@ -37,13 +37,16 @@
       dropdown list of options
      -->
     <div ref    = "dropdownOptions"
-         v-show = "isOpen && (visibleOptions.length || primary)"
+         v-show = "isOpen && (visibleOptions.length || primary || (document && newEntryValue && query))"
          class  = "dropdown__options"
         :class  = "{
           'scrollable': isOpen && scrollable && visibleOptions.length > 5,
           'dropdown__options--reversed': shouldBeReversed
         }"
     >
+      <dropdown-option v-if="document && newEntryValue && query">
+        {{ query }}
+      </dropdown-option>
       <!--
         user can use whatever dropdown-option components he wants
        -->
@@ -87,6 +90,10 @@ export default {
     document: {
       type: Boolean,
       default: false
+    },
+    newEntryValue: {
+      type: String,
+      default: undefined
     }
   },
 
@@ -173,7 +180,7 @@ export default {
      * Array of values from all checked options
      */
     values() {
-      let values = []
+      const values = []
 
       for (let i = 0; i < this.options.length; ++i) {
         const option = this.options[i]
@@ -191,6 +198,22 @@ export default {
         }
       }
       return values
+    },
+
+    /**
+     * Array of text inputs
+     * @return {[type]} [description]
+     */
+    inputs() {
+      const inputs = {}
+
+      this.options.forEach((option) => {
+        if (option.value) {
+          inputs[option.name] = option.value
+        }
+      })
+
+      return inputs
     },
 
     /**
@@ -230,10 +253,19 @@ export default {
   },
 
   watch: {
-    query: function () {
+    query: function (query) {
       this.options.forEach((option) => {
         option.isVisible = this.shouldBeVisible(option)
       })
+      if (this.document && this.newEntryValue) {
+        // this.setValue({
+        //   text: this.valueText || query,
+        //   value: Object.assign({}, this.value, {
+        //     uuid: null,
+        //     [this.newEntryValue]: query
+        //   })
+        // })
+      }
     },
     isOpen: function () {
       this.recalculateComputedProperty('shouldBeReversed')
@@ -245,11 +277,7 @@ export default {
       if (typeof value === 'object' && typeof value.text !== 'undefined') {
         this.valueText = value.text
       } else {
-        const option = this.options.find((option) => option.value === value)
-
-        if (option) {
-          option.select()
-        }
+        this.findAndSelect(value)
       }
       if (this.searchable) {
         this.query = this.valueText
@@ -262,27 +290,40 @@ export default {
     this.initOptions()
 
     if (this.watch) {
-      this.$watch(() => this.watch, () => {
-        this.recalculateComputedProperty('options')
-        this.$nextTick(() => {
-          this.initOptions()
-          this.recalculateComputedProperty('visibleOptions')
-
-          this.setValue({
-            text: '',
-            value: ''
-          })
-        })
-      })
+      this.$watch(() => this.watch, this.recalculateOptions)
+    }
+    if (this.value) {
+      this.findAndSelect(this.value)
     }
   },
 
   methods: {
+    recalculateOptions() {
+      this.recalculateComputedProperty('options')
+      this.$nextTick(() => {
+        this.initOptions()
+        this.recalculateComputedProperty('visibleOptions')
+
+        this.setValue({
+          text: '',
+          value: ''
+        })
+      })
+    },
+
     recalculateComputedProperty(property) {
       this.$nextTick(() => {
         this._computedWatchers[property].update()
         this.$forceUpdate()
       })
+    },
+
+    findAndSelect(value) {
+      const option = this.options.find((option) => option.value === value)
+
+      if (option) {
+        option.select()
+      }
     },
 
     addOption() {
@@ -347,6 +388,13 @@ export default {
       }))
 
       /**
+       * Text input options
+       */
+      this.options.forEach((option) => option.$on('input-changed', () => {
+        this.$emit('input', this.inputs)
+      }))
+
+      /**
        * Options with children
        *
        * Only single option can be open at any given time.
@@ -355,6 +403,10 @@ export default {
         this.options.forEach((option) => {
           option.isOpen = (e === option)
         })
+      }))
+
+      this.options.forEach((option) => option.$on('change', () => {
+        this.recalculateOptions()
       }))
     },
 
@@ -385,17 +437,20 @@ export default {
 
     toggle() {
       this.isOpen = !this.isOpen
+      this.$refs.dropdownOptions.scrollTop = 0
     },
 
     close(ev) {
       if ((ev && !this.$refs.dd.contains(ev.target)) || !ev) {
         this.isOpen = false
+        this.$refs.dropdownOptions.scrollTop = 0
       }
     },
 
     open() {
       this.query = ''
       this.isOpen = true
+      this.$refs.dropdownOptions.scrollTop = 0
     }
   }
 }

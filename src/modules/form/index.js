@@ -7,6 +7,7 @@ import payment from './payment'
 import credit from './credit'
 import recurringInvoice from './recurring_invoice'
 import vendor from './vendor'
+import project from './project'
 
 export default {
   namespaced: true,
@@ -20,6 +21,7 @@ export default {
     payment,
     credit,
     'recurring_invoice': recurringInvoice,
-    vendor
+    vendor,
+    project
   }
 }

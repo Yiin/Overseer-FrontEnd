@@ -1,4 +1,6 @@
 const state = {
+  __name: 'credit',
+
   uuid: '',
 
   // Client
@@ -13,6 +15,6 @@ const state = {
   errors: {}
 }
 
-export const defaultState = Object.assign({}, state)
+state.__initial = Object.assign({}, state)
 
 export default state

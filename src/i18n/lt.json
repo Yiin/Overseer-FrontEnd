@@ -22,6 +22,7 @@
         "select_to_show": "Parinkti rodyti"
     },
     "common": {
+        "all": "Visi",
         "check": "Check",
         "clients": "Klientai",
         "credits": "Kreditai",

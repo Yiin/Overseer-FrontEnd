@@ -1,17 +1,21 @@
 <template>
-  <form-text-input @input  = "$emit('input', $event)"
-                   v-model = "valueProxy"
-                   v-bind  = "$attrs"
-                   v-on    = "$listeners"
-  ></form-text-input>
+  <input @input  = "onInput"
+         v-model = "valueProxy"
+         class   = "form__input"
+         type    = "text"
+         :name   = "name"
+  >
 </template>
 
 <script>
+import debounce from 'debounce'
+
 export default {
   name: 'form-date-input',
 
   props: {
     name: {
+      type: String,
       default: undefined
     },
 
@@ -30,6 +34,12 @@ export default {
     value: function (value) {
       this.valueProxy = value
     }
+  },
+
+  methods: {
+    onInput: debounce(function (event) {
+      this.$emit('input', event.target.value)
+    }, 200)
   }
 }
 </script>

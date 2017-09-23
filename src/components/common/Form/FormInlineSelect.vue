@@ -47,7 +47,6 @@ export default {
         name: this.name,
         value: value
       }
-      console.log('onInput', payload)
       if (this.$parent) {
         this.$parent.$emit('input:field', payload)
       }

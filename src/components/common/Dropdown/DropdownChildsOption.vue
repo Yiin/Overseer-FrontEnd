@@ -4,7 +4,6 @@
       <slot name="label"></slot>
     </div>
     <div v-show="isOpen" class="dropdown__childs-menu">
-
       <div class="dropdown__child-search-wrapper">
         <div ref="searchInput"
              :data-placeholder="$t('placeholders.type_in_or_select')"
@@ -16,10 +15,9 @@
         ></div>
       </div>
 
-      <div class="dropdown__child-options">
+      <div class="dropdown__child-options" :class="{ scrollable: visibleOptions.length >= 10 }">
         <slot name="options"></slot>
       </div>
-
     </div>
   </div>
 </template>
@@ -30,6 +28,12 @@ const Medium = require('@/vendor/medium.js/medium.patched').Medium
 
 export default {
   name: 'dropdown-childs-option',
+
+  props: {
+    watch: {
+      default: null
+    }
+  },
 
   data() {
     return {
@@ -54,11 +58,66 @@ export default {
 
   computed: {
     options() {
-      return this.$slots.options.map((option) => option.componentInstance)
+      return this.$slots.options
+        .filter((option) => option && option.componentInstance)
+        .map((option) => option.componentInstance)
+    },
+
+    visibleOptions() {
+      return this.options.filter((option) => option && option.isVisible)
     }
   },
 
+  mounted() {
+    // initiate Medium.js object on our search input
+    this.medium = new Medium({
+      element: this.$refs.searchInput,
+      mode: Medium.inlineMode
+    })
+
+    this.$refs.searchInput.addEventListener('input', () => {
+      let value = this.medium.value().trim().toLowerCase()
+
+      if (this.query !== value) {
+        this.query = value
+
+        this.$forceUpdate()
+      }
+    })
+
+    if (this.watch) {
+      this.$watch(() => this.watch, () => {
+        this.recalculateComputedProperty('options')
+        this.recalculateComputedProperty('visibleOptions')
+        this.$nextTick(() => {
+          this.initOptions()
+          this.$emit('changed')
+        })
+      })
+    }
+    this.recalculateComputedProperty('options')
+    this.recalculateComputedProperty('visibleOptions')
+
+    this.$nextTick(() => {
+      this.initOptions()
+    })
+  },
+
   methods: {
+    initOptions() {
+      this.options.forEach((option) => {
+        option.$on('toggle', (e) => {
+          this.$emit('toggle', e)
+        })
+      })
+    },
+
+    recalculateComputedProperty(property) {
+      this.$nextTick(() => {
+        this._computedWatchers[property].update()
+        this.$forceUpdate()
+      })
+    },
 
     // option should be visible only
     shouldBeVisible(option) {
@@ -101,31 +160,13 @@ export default {
     hide() {
       this.isOpen = false
     }
-
-  },
-
-  mounted() {
-    // initiate Medium.js object on our search input
-    this.medium = new Medium({
-      element: this.$refs.searchInput,
-      mode: Medium.inlineMode
-    })
-
-    this.$refs.searchInput.addEventListener('input', () => {
-      let value = this.medium.value().trim().toLowerCase()
-
-      if (this.query !== value) {
-        this.query = value
-
-        this.$forceUpdate()
-      }
-    })
-
-    this.options.forEach((option) => {
-      option.$on('toggle', () => {
-        this.$emit('toggle')
-      })
-    })
   }
 }
 </script>
+
+<style>
+.dropdown__child-options.scrollable {
+  max-height: 310px;
+  margin-right: 10px;
+}
+</style>

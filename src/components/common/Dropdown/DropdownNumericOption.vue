@@ -17,11 +17,11 @@
     <div class="dropdown-numeric-option__body">
       <div class="value-input">
         <label @click="click('from')">{{ $t('labels.range_from') }}</label>
-        <input v-model="from" ref="from" type="text" class="value__input">
+        <input @input="onInput" v-model="from" ref="from" type="text" class="value__input">
       </div>
       <div class="value-input">
         <label @click="click('to')">{{ $t('labels.range_to') }}</label>
-        <input v-model="to" ref="to" type="text" class="value__input">
+        <input @input="onInput" v-model="to" ref="to" type="text" class="value__input">
       </div>
     </div>
   </div>
@@ -38,9 +38,9 @@ export default {
   data() {
     return {
       isOpen: false,
-      from: '',
+      from: null,
       cleaveFrom: null,
-      to: '',
+      to: null,
       cleaveTo: null
     }
   },
@@ -64,6 +64,17 @@ export default {
         }
       }
       return this.placeholder
+    },
+
+    value() {
+      if (this.from || this.to) {
+        return {
+          from: this.from || null,
+          to: this.to || null
+        }
+      } else {
+        return null
+      }
     }
   },
 
@@ -88,9 +99,15 @@ export default {
     },
 
     clear() {
-      this.from = ''
-      this.to = ''
+      this.from = null
+      this.to = null
       this.blur()
+      this.onInput()
+    },
+
+    onInput() {
+      console.log('onInput', this.to, this.value)
+      this.$emit('input-changed')
     }
   }
 }

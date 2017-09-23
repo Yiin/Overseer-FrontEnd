@@ -1,6 +1,8 @@
 <template>
   <div class="column" :style="{ width: cssWidth }">
-    <slot></slot>
+    <span>
+      <slot></slot>
+    </span>
   </div>
 </template>
 

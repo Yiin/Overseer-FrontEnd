@@ -65,6 +65,13 @@
 
             color: $color-red;
         }
+        &--inline
+        {
+            border: none;
+            &:focus {
+                outline: none;
+            }
+        }
     }
     textarea
     {

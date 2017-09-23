@@ -1,6 +1,11 @@
 import * as types from './mutation-types'
+import { DEFAULT_STATE } from './state'
 
 export default {
+  SET_LOADED(state) {
+    state.isLoaded = true
+  },
+
   [types.UPDATE_ACCESS_TOKEN](state, accessToken) {
     state.auth.isLoggedIn = true
     state.auth.accessToken = accessToken
@@ -14,6 +19,7 @@ export default {
     state.user.profile.job_position = user.profile.job_position
     state.user.username = user.username
     state.user.company = user.company
+    state.user.uuid = user.uuid
   },
 
   [types.UPDATE_LOCALE](state, locale) {
@@ -29,17 +35,8 @@ export default {
    * TODO: use a common import of default state to reset these values with.
    */
   [types.CLEAR_ALL_DATA](state) {
-    // Auth
-    state.auth.isLoggedIn = false
-    state.auth.accessToken = null
-
-    // User
-    state.user.profile.first_name = null
-    state.user.profile.last_name = null
-    state.user.profile.email = null
-    state.user.profile.phone = null
-    state.user.profile.job_position = null
-    state.user.username = null
-    state.user.company = null
+    for (let key in state) {
+      state[key] = DEFAULT_STATE[key]
+    }
   }
 }

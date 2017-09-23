@@ -1,4 +1,6 @@
 const state = {
+  __name: 'invoice',
+
   uuid: '',
 
   client_uuid: '', // uuid
@@ -13,6 +15,7 @@ const state = {
   items: [
     /* {
       product_uuid // uuid (products)
+      product_name // new product
       price
       qty
       discount // %
@@ -24,9 +27,11 @@ const state = {
   ],
   note_to_client: '',
   terms: '',
-  footer: ''
+  footer: '',
+
+  errors: {}
 }
 
-export const defaultState = Object.assign({}, state)
+state.__initial = Object.assign({}, state)
 
 export default state

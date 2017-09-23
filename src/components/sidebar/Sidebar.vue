@@ -18,19 +18,19 @@
           <i class="icon-sidebar-overview"></i>
           {{ $t('common.overview') }}
         </nav-link>
-        <nav-link :name="routes.products" :preload="true">
+        <nav-link :name="routes.products">
           <i class="icon-sidebar-products"></i>
           {{ $t('common.products') }}
         </nav-link>
-        <nav-link :name="routes.clients" :preload="true">
+        <nav-link :name="routes.clients">
           <i class="icon-sidebar-clients"></i>
           {{ $t('common.clients') }}
         </nav-link>
-        <nav-link :name="routes.invoices" :preload="true">
+        <nav-link :name="routes.invoices">
           <i class="icon-sidebar-invoices"></i>
           {{ $t('common.invoices') }}
         </nav-link>
-        <nav-link :name="routes.recurring" :preload="true">
+        <nav-link :name="routes.recurring">
           <i class="icon-sidebar-recurring"></i>
           {{ $t('common.recurring') }}
         </nav-link>
@@ -38,15 +38,15 @@
         <div class="sidebar__nav-category">
           Category 1
         </div>
-        <nav-link :name="routes.payments" :preload="true">
+        <nav-link :name="routes.payments">
           <i class="icon-sidebar-payments"></i>
           {{ $t('common.payments') }}
         </nav-link>
-        <nav-link :name="routes.expenses" :preload="true">
+        <nav-link :name="routes.expenses">
           <i class="icon-sidebar-expenses"></i>
           {{ $t('common.expenses') }}
         </nav-link>
-        <nav-link :name="routes.credits" :preload="true">
+        <nav-link :name="routes.credits">
           <i class="icon-sidebar-credits"></i>
           {{ $t('common.credits') }}
         </nav-link>
@@ -54,11 +54,11 @@
         <div class="sidebar__nav-category">
           Category 2
         </div>
-        <nav-link :name="routes.quotes" :preload="true">
+        <nav-link :name="routes.quotes">
           <i class="icon-sidebar-quotes"></i>
           {{ $t('common.quotes') }}
         </nav-link>
-        <nav-link :name="routes.vendors" :preload="true">
+        <nav-link :name="routes.vendors">
           <i class="icon-sidebar-vendors"></i>
           {{ $t('common.vendors') }}
         </nav-link>
@@ -66,6 +66,10 @@
         <div class="sidebar__nav-category">
           Category 3
         </div>
+        <nav-link :name="routes.projects">
+          <i class="icon-sidebar-projects"></i>
+          {{ $t('common.projects') }}
+        </nav-link>
         <div class="sidebar__nav-link">
           <i class="icon-sidebar-reports"></i>
           {{ $t('common.reports') }}
@@ -100,7 +104,8 @@ export default {
         expenses: Routes.LIST_EXPENSES,
         credits: Routes.LIST_CREDITS,
         quotes: Routes.LIST_QUOTES,
-        vendors: Routes.LIST_VENDORS
+        vendors: Routes.LIST_VENDORS,
+        projects: Routes.LIST_PROJECTS
       }
     }
   }

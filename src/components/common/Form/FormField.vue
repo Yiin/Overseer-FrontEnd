@@ -4,10 +4,12 @@
     <label class = "form__label">
       {{ label }}
 
-      <span v-for = "message in errors"
+      <span v-for = "(message, key) in errors"
             class = "form__input-error"
       >
-        {{ $t(message) }}
+        <template v-if="Array.isArray(catchErrors) ? catchErrors.indexOf(key) > -1 : key === catchErrors">
+          {{ $t(message) }}
+        </template>
       </span>
     </label>
     <slot></slot>
@@ -38,24 +40,10 @@ export default {
 
   computed: {
     errors() {
-      let messages = []
-
-      if (this.stateName && this.catchErrors) {
-        const errors = this.$store.state.form[this.stateName].errors
-
-        for (let error in errors) {
-          if (typeof this.catchErrors === 'string') {
-            if (error === this.catchErrors) {
-              messages.push(errors[error])
-            }
-          } else {
-            if (this.catchErrors.indexOf(error) > -1) {
-              messages.push(errors[error])
-            }
-          }
-        }
+      if (!this.stateName) {
+        return {}
       }
-      return messages
+      return this.$store.state.form[this.stateName].errors
     },
 
     inputs() {

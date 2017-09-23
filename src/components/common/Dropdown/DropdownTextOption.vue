@@ -12,12 +12,21 @@
 </template>
 
 <script>
+import he from 'he'
 const Medium = require('@/vendor/medium.js/medium.patched').Medium
 
 export default {
   name: 'dropdown-text-option',
 
-  props: ['placeholder'],
+  props: {
+    placeholder: {
+      type: String
+    },
+    name: {
+      type: String,
+      required: true
+    }
+  },
 
   data() {
     return {
@@ -26,23 +35,21 @@ export default {
     }
   },
 
-  render: function () {
-    console.log(this.$slots)
-  },
-
   methods: {
     clear() {
       this.medium.value('')
-      this.value = ''
+      this.$set(this, 'value', '')
 
-      this.$forceUpdate()
-      this.$emit('changed')
+      this.$emit('input-changed', {
+        name: this.name,
+        value: ''
+      })
     },
 
     setValue(value) {
-      this.value = value
+      value = he.decode(value).trim()
       this.medium.value(value)
-      this.$forceUpdate()
+      this.$set(this, 'value', value)
     }
   },
 
@@ -56,10 +63,12 @@ export default {
       let value = this.medium.value().trim()
 
       if (this.value !== value) {
-        this.value = value
+        this.$set(this, 'value', value)
 
-        this.$forceUpdate()
-        this.$emit('changed')
+        this.$emit('input-changed', {
+          name: this.name,
+          value: he.decode(this.value).trim()
+        })
       }
     })
   }

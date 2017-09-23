@@ -81,20 +81,6 @@ span.caret
     margin-top: 23px !important;
 }
 
-.button__create > [class^='icon-new-']::before
-{
-    position: absolute !important;
-    top: -8px !important;
-    left: 2px !important;
-}
-
-.button__create > [class^='icon-new-']
-{
-    position: relative !important;
-
-    padding-right: 24px !important;
-}
-
 input.table__footer-page-input {
     padding-top: 2px !important;
 }

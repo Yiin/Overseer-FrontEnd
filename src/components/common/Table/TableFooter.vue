@@ -23,30 +23,25 @@
         {{ $t('table.page') }}
       </div>
       <div class="table__footer-page">
-        <div class="nav-page nav-page--left">«</div>
-        <input class="table__footer-page-input" type="text" value="1">
-        <div class="nav-page nav-page--right">»</div>
+        <div @click="prevPage" v-show="!isFirstPage" class="nav-page nav-page--left">«</div>
+        <input v-model="currentPage" class="table__footer-page-input" type="text">
+        <div @click="nextPage" v-show="!isLastPage" class="nav-page nav-page--right">»</div>
       </div>
       <div class="table__footer-text">
         <template v-if="showing_all">
           {{ $t('table.showing_all_entries') }}
         </template>
         <template v-else>
-          {{ $tc('table.showing_some_entries', { from, to, total }) }}
+          {{ $tc('table.showing_some_entries', to - from, { from, to, total }) }}
         </template>
       </div>
-      <dropdown v-model="rows" class="dropdown--primary dropdown--table-footer dropdown--page">
-        <dropdown-option value="10" selected>
-          10
-        </dropdown-option>
-        <dropdown-option value="20">
-          20
-        </dropdown-option>
-        <dropdown-option value="50">
-          50
-        </dropdown-option>
-        <dropdown-option value="All">
-          All
+      <dropdown @input="changeRowsPerPage" class="dropdown--primary dropdown--table-footer dropdown--page">
+        <dropdown-option v-for="rpp in [3, 10, 20, 50, 9007199254740991]"
+                        :key="rpp"
+                        :value="rpp"
+                        :selected="rpp === tableState.rows_per_page"
+        >
+          {{ rpp === 9007199254740991 ? $t('common.all') : rpp }}
         </dropdown-option>
       </dropdown>
       <div class="table__footer-text">
@@ -58,34 +53,94 @@
 
 <script>
 export default {
-  props: ['pagination'],
+  props: {
+    tableName: {
+      type: String,
+      required: true
+    }
+  },
 
   data() {
     return {
       calc: '',
-      rows: 10
+      currentPage: this.$store.state.table[this.tableName].page + 1
+    }
+  },
+
+  watch: {
+    currentPage: function (page) {
+      const _page = parseInt(page)
+      if (_page > 0 && _page <= this.pagesCount) {
+        this.changePage(_page - 1)
+      }
+    },
+
+    page: function (page) {
+      this.currentPage = page
     }
   },
 
   computed: {
+    tableState() {
+      return this.$store.state.table[this.tableName]
+    },
+
     page() {
-      return this.pagination.page + 1
+      return this.tableState.page + 1
+    },
+
+    pagesCount() {
+      return this.$store.getters[`table/${this.tableName}/pagesCount`]
+    },
+
+    isFirstPage() {
+      return this.tableState.page === 0
+    },
+
+    isLastPage() {
+      return this.tableState.page === this.pagesCount - 1
+    },
+
+    rows() {
+      return this.$store.state.table[this.tableName].rows_per_page
     },
 
     from() {
-      return (this.pagination.page * this.pagination.amount) + 1
+      return (this.tableState.page * this.tableState.rows_per_page) + 1
     },
 
     to() {
-      return Math.min(this.pagination.total, this.page * this.pagination.amount)
+      return Math.min(this.total, this.page * this.tableState.rows_per_page)
     },
 
     showing_all() {
-      return this.to === this.total
+      return this.from === 1 && this.to === this.total
     },
 
     total() {
-      return this.pagination.total
+      return this.tableState.items.length
+    }
+  },
+
+  methods: {
+    changeRowsPerPage(rows) {
+      this.$store.dispatch(`table/${this.tableName}/SET_ROWS_PER_PAGE`, rows)
+    },
+
+    changePage(page) {
+      this.$store.dispatch(`table/${this.tableName}/SET_PAGE`, page)
+    },
+
+    nextPage() {
+      if (!this.isLastPage) {
+        this.changePage(this.tableState.page + 1)
+      }
+    },
+
+    prevPage() {
+      if (!this.isFirstPage) {
+        this.changePage(this.tableState.page - 1)
+      }
     }
   }
 }
@@ -125,11 +180,15 @@ export default {
 }
 
 .nav-page {
-    font-size: 30px;
-    color: $color-dusty-gray;
-    font-weight: 600;
-    margin-top: -4px;
-    user-select: none;
+  font-size: 30px;
+  color: $color-dusty-gray;
+  font-weight: 600;
+  margin-top: -4px;
+  user-select: none;
+  cursor: pointer;
+  &:hover {
+    color: $color-main-dark;
+  }
 }
 
 .nav-page--left {
@@ -152,6 +211,7 @@ export default {
     color: $color-dusty-gray;
     display: inline-block;
     user-select: none;
+    cursor: default;
 }
 
 .table__footer {

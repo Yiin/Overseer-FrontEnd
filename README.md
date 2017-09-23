@@ -1,6 +1,20 @@
-# salespal
+# Overseer
 
-> A Vue.js project
+> Front-End
+
+## Naming rules:
+
+### Api request
+some-documents
+
+### Resource name
+some-document
+
+### Table Module
+some_documents
+
+### Form Module
+some_document
 
 ## Build Setup
 

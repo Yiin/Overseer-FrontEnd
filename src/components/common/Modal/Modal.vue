@@ -3,7 +3,7 @@
     <div v-if="isOpen" class="background-dim">
       <div v-clickaway="closeOrHide" class="modal-background">
         <div class="modal__title">
-          {{ title }}
+          {{ $t(title) }}
         </div>
         <div class="modal__controls">
           <div class="modal-icon modal-icon__hide" @click="hide"></div>

@@ -211,6 +211,12 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &--center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .inline-select__search-wrapper {

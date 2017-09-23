@@ -4,17 +4,31 @@ import i18n from '@/i18n'
 import Auth from '@/auth'
 import { OVERVIEW } from '@/router/routes'
 import router from '@/router'
+import { getTableName } from '@/modules/documents/helpers'
+import DocumentsList from '@/modules/documents/list'
 
-export const INIT = ({ dispatch, state }) => {
+export const INIT = ({ dispatch }) => {
   /* Static Data */
   dispatch('LOAD_STATIC_DATA')
 
   /* Documents */
-  for (let key in state.table) {
-    if (typeof state.table[key].name !== 'undefined') {
-      dispatch(`table/${key}/LOAD_TABLE`)
-    }
-  }
+  const promises = []
+
+  DocumentsList.forEach((key) => {
+    const tableName = getTableName(key)
+    promises.push(dispatch(`table/${tableName}/LOAD_TABLE`))
+  })
+
+  // once all documents are loaded, link relationships
+  Promise.all(promises).then(() => {
+    DocumentsList.forEach((key) => {
+      const tableName = getTableName(key)
+      dispatch(`table/${tableName}/UPDATE_RELATIONS`)
+    })
+  })
+
+  /* Features */
+  dispatch(`features/vat_checker/LOAD_RESULTS`)
 
   /* Real time */
   Echo.connect()
@@ -52,6 +66,7 @@ export const AUTHENTICATE = ({ commit, state, dispatch }, { accessToken, user })
 
   dispatch('INIT')
 
+  console.log('goto overview')
   router.push({
     name: OVERVIEW
   })

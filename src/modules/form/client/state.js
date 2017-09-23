@@ -1,4 +1,6 @@
 const state = {
+  __name: 'client',
+
   uuid: '',
 
   // Organization

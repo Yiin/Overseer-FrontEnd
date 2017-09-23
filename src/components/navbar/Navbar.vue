@@ -5,7 +5,8 @@
         <i class="fa fa-bars"></i>
       </div>
       <div class="logo-holder">
-        <img class="logo" src="../../assets/images/logo.svg">
+        <!-- <img class="logo" src="/static/overseer_logo_small_first_letter.svg"> -->
+        <div class="logo">Overseer</div>
       </div>
     </div>
     <div class="navbar__content navbar__content--right">

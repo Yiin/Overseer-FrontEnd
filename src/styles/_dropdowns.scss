@@ -50,6 +50,7 @@
         // overflow: hidden;
 
         padding: 0 15px 0 26px;
+        margin-right: 1px;
 
         cursor: default;
         user-select: none;
@@ -318,6 +319,12 @@
     &--small
     {
         min-width: 140px;
+    }
+    &--hide-overflow
+    {
+        .dropdown__option {
+            overflow: hidden;
+        }
     }
 }
 

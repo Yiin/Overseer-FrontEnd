@@ -1,7 +1,9 @@
 const state = {
+  __name: 'product',
+
   uuid: '',
 
-  product_name: '',
+  name: '',
   price: 0,
   currency_id: '', // id
   qty: 1,
@@ -13,6 +15,6 @@ const state = {
   errors: {}
 }
 
-export const defaultState = Object.assign({}, state)
+state.__initial = Object.assign({}, state)
 
 export default state

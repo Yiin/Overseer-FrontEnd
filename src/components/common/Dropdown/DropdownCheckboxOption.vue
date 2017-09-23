@@ -8,6 +8,8 @@
 </template>
 
 <script>
+import he from 'he'
+
 export default {
   name: 'dropdown-checkbox-option',
 
@@ -17,22 +19,23 @@ export default {
     },
     checked: {
       default: false
-    },
-    searchable: {
-      default: ''
     }
   },
 
   data() {
     return {
       isVisible: true,
-      isChecked: false
+      isChecked: this.checked
     }
   },
 
-  mounted() {
-    if (this.checked) {
-      this.check()
+  computed: {
+    text() {
+      return he.decode(this.$slots.default[0].text).trim()
+    },
+
+    searchable() {
+      return this.text.toLowerCase()
     }
   },
 
@@ -46,7 +49,9 @@ export default {
     },
 
     uncheck() {
-      this.isChecked = false
+      if (this.isChecked) {
+        this.check()
+      }
     }
   }
 }

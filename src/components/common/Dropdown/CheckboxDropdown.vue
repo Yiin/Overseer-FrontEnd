@@ -1,5 +1,5 @@
 <template>
-  <dropdown ref="dropdown" @input="onInput" :placeholder="placeholder">
+  <dropdown :watch="watch" ref="dropdown" v-model="value" @input="onInput" :placeholder="placeholder">
     <dropdown-checkbox-option ref="checkboxShowAll" @toggle="handleAll" value="__ALL__" :checked="true">
       {{ $t('filters.show_all') }}
     </dropdown-checkbox-option>
@@ -12,7 +12,22 @@
 export default {
   name: 'checkbox-dropdown',
 
-  props: ['placeholder'],
+  props: {
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    watch: {
+      default: null
+    }
+  },
+
+  data() {
+    return {
+      ignoreReset: false,
+      value: []
+    }
+  },
 
   computed: {
     dropdown() {
@@ -38,8 +53,12 @@ export default {
       this.$emit('input', e)
     },
 
-    handleAll() {
-      this.dropdown.resetValue()
+    handleAll(e) {
+      if (e.isChecked) {
+        this.dropdown.resetValue()
+      } else if (!this.value.length) {
+        this.checkboxAll.check()
+      }
     }
   }
 }

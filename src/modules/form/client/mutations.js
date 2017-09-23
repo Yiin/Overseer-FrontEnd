@@ -11,10 +11,6 @@ export default FormMutations({
     })
   },
 
-  SET_CONTACTS(state, contacts) {
-    state.contacts = contacts
-  },
-
   SET_CONTACT_FIRST_NAME(state, { value, data }) {
     state.contacts[data].first_name = value
   },

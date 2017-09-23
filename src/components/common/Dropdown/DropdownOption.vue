@@ -11,7 +11,9 @@ export default {
   name: 'dropdown-option',
 
   props: {
-    value: [String, Number, Boolean, Object],
+    value: {
+      type: [String, Number, Boolean, Object]
+    },
     selected: {
       type: Boolean,
       default: false
@@ -31,6 +33,12 @@ export default {
 
     searchable() {
       return this.text.toLowerCase()
+    }
+  },
+
+  mounted() {
+    if (this.selected) {
+      this.select()
     }
   },
 

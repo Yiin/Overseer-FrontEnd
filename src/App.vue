@@ -1,22 +1,18 @@
 <template>
-  <div id="app">
+  <div id="app" v-show="isLoaded">
     <template v-if="isLoggedIn">
       <navbar></navbar>
       <sidebar ></sidebar>
     </template>
-    <drag-select-container selectorClass="itemToBeSelected">
-      <template scope="{ selectedItems }">
-        <div class="page-content">
-          <router-view></router-view>
-        </div>
-      </template>
-    </drag-select-container>
+    <div class="page-content">
+      <router-view></router-view>
+    </div>
     <taskbar></taskbar>
+    <popup></popup>
   </div>
 </template>
 
 <script>
-import DragSelect from 'vue-drag-select/src/DragSelect.vue'
 import NavBar from '@/components/navbar/Navbar.vue'
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import Taskbar from '@/components/taskbar/Taskbar.vue'
@@ -25,7 +21,6 @@ export default {
   name: 'app',
 
   components: {
-    'drag-select-container': DragSelect,
     'navbar': NavBar,
     'sidebar': Sidebar,
     'taskbar': Taskbar
@@ -34,9 +29,30 @@ export default {
   computed: {
     isLoggedIn() {
       return this.$store.state.auth.isLoggedIn
+    },
+
+    isLoaded() {
+      return true // this.$store.state.isLoaded
     }
   }
 }
 </script>
 
 <style lang="scss" src="@/styles/app.scss"></style>
+
+<style lang="scss">
+.vue-drag-select {
+  position: relative;
+  user-select: none;
+}
+
+.vue-drag-select-box {
+  position: absolute;
+  background: rgba(132, 142, 210, 0.4);
+  z-index: 99;
+}
+
+.disable-selection {
+  user-select: none;
+}
+</style>

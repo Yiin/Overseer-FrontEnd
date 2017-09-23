@@ -1,4 +1,6 @@
 const state = {
+  __name: 'quote',
+
   uuid: '',
 
   client_uuid: '', // uuid
@@ -24,9 +26,11 @@ const state = {
   ],
   note_to_client: '',
   terms: '',
-  footer: ''
+  footer: '',
+
+  errors: {}
 }
 
-export const defaultState = Object.assign({}, state)
+state.__initial = Object.assign({}, state)
 
 export default state

@@ -1,8 +1,14 @@
 let state = {
+  // is app loaded?
+  isLoaded: false,
+
+  // user authentication data
   auth: {
     isLoggedIn: false,
     accessToken: null
   },
+
+  // user data
   user: {
     uuid: null,
     profile: {
@@ -15,8 +21,12 @@ let state = {
     username: null,
     company: null
   },
+
+  // current locale
   locale: 'en'
 }
+
+export const DEFAULT_STATE = Object.assign({}, state)
 
 // Sync with local storage.
 if (localStorage.getItem('state')) {

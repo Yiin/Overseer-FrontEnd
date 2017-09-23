@@ -55,6 +55,21 @@ const router = new Router({
     },
 
     /**
+     * CRM
+     *
+     * Projects
+     */
+    {
+      path: '/projects',
+      name: Routes.LIST_PROJECTS,
+      parentName: Routes.OVERVIEW,
+      component(resolve) {
+        require(['@/components/crm/project/List.vue'], resolve)
+      },
+      beforeEnter: checkIfLoggedIn
+    },
+
+    /**
      * Client
      */
     {
@@ -62,7 +77,7 @@ const router = new Router({
       name: Routes.LIST_CLIENTS,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/client/List.vue'], resolve)
+        require(['@/components/documents/client/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -84,7 +99,7 @@ const router = new Router({
       name: Routes.EDIT_CLIENT,
       parentName: Routes.LIST_CLIENTS,
       component: function (resolve) {
-        require(['@/components/entities/client/Edit.vue'], resolve)
+        require(['@/components/documents/client/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -97,7 +112,7 @@ const router = new Router({
       name: Routes.LIST_PRODUCTS,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/product/List.vue'], resolve)
+        require(['@/components/documents/product/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -108,7 +123,7 @@ const router = new Router({
     //   name: Routes.VIEW_PRODUCT,
     //   parentName: Routes.LIST_PRODUCTS,
     //   component: function (resolve) {
-    //     require(['@/components/entities/product/View.vue'], resolve)
+    //     require(['@/components/documents/product/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -117,7 +132,7 @@ const router = new Router({
       name: Routes.EDIT_PRODUCT,
       parentName: Routes.LIST_PRODUCTS,
       component: function (resolve) {
-        require(['@/components/entities/product/Edit.vue'], resolve)
+        require(['@/components/documents/product/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -130,7 +145,7 @@ const router = new Router({
       name: Routes.LIST_INVOICES,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/invoice/List.vue'], resolve)
+        require(['@/components/documents/invoice/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -141,7 +156,7 @@ const router = new Router({
     //   name: Routes.VIEW_INVOICE,
     //   parentName: Routes.LIST_INVOICES,
     //   component: function (resolve) {
-    //     require(['@/components/entities/invoice/View.vue'], resolve)
+    //     require(['@/components/documents/invoice/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -150,7 +165,7 @@ const router = new Router({
       name: Routes.EDIT_INVOICE,
       parentName: Routes.LIST_INVOICES,
       component: function (resolve) {
-        require(['@/components/entities/invoice/Edit.vue'], resolve)
+        require(['@/components/documents/invoice/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -163,7 +178,7 @@ const router = new Router({
       name: Routes.LIST_PAYMENTS,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/payment/List.vue'], resolve)
+        require(['@/components/documents/payment/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -174,7 +189,7 @@ const router = new Router({
     //   name: Routes.VIEW_PAYMENT,
     //   parentName: Routes.LIST_PAYMENTS,
     //   component: function (resolve) {
-    //     require(['@/components/entities/payment/View.vue'], resolve)
+    //     require(['@/components/documents/payment/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -183,7 +198,7 @@ const router = new Router({
       name: Routes.EDIT_PAYMENT,
       parentName: Routes.LIST_PAYMENTS,
       component: function (resolve) {
-        require(['@/components/entities/payment/Edit.vue'], resolve)
+        require(['@/components/documents/payment/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -196,7 +211,7 @@ const router = new Router({
       name: Routes.LIST_RECURRING_INVOICES,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/recurring-invoice/List.vue'], resolve)
+        require(['@/components/documents/recurring-invoice/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -207,7 +222,7 @@ const router = new Router({
     //   name: Routes.VIEW_RECURRING_INVOICE,
     //   parentName: Routes.LIST_RECURRING_INVOICES,
     //   component: function (resolve) {
-    //     require(['@/components/entities/recurring-invoice/View.vue'], resolve)
+    //     require(['@/components/documents/recurring-invoice/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -216,7 +231,7 @@ const router = new Router({
       name: Routes.EDIT_RECURRING_INVOICE,
       parentName: Routes.LIST_RECURRING_INVOICES,
       component: function (resolve) {
-        require(['@/components/entities/recurring-invoice/Edit.vue'], resolve)
+        require(['@/components/documents/recurring-invoice/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -229,7 +244,7 @@ const router = new Router({
       name: Routes.LIST_CREDITS,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/credit/List.vue'], resolve)
+        require(['@/components/documents/credit/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -240,7 +255,7 @@ const router = new Router({
     //   name: Routes.VIEW_CREDIT,
     //   parentName: Routes.LIST_CREDITS,
     //   component: function (resolve) {
-    //     require(['@/components/entities/credit/View.vue'], resolve)
+    //     require(['@/components/documents/credit/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -249,7 +264,7 @@ const router = new Router({
       name: Routes.EDIT_CREDIT,
       parentName: Routes.LIST_CREDITS,
       component: function (resolve) {
-        require(['@/components/entities/credit/Edit.vue'], resolve)
+        require(['@/components/documents/credit/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -262,7 +277,7 @@ const router = new Router({
       name: Routes.LIST_QUOTES,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/quote/List.vue'], resolve)
+        require(['@/components/documents/quote/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -273,7 +288,7 @@ const router = new Router({
     //   name: Routes.VIEW_QUOTE,
     //   parentName: Routes.LIST_QUOTES,
     //   component: function (resolve) {
-    //     require(['@/components/entities/quote/View.vue'], resolve)
+    //     require(['@/components/documents/quote/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -282,7 +297,7 @@ const router = new Router({
       name: Routes.EDIT_QUOTE,
       parentName: Routes.LIST_QUOTES,
       component: function (resolve) {
-        require(['@/components/entities/quote/Edit.vue'], resolve)
+        require(['@/components/documents/quote/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -295,7 +310,7 @@ const router = new Router({
       name: Routes.LIST_EXPENSES,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/expense/List.vue'], resolve)
+        require(['@/components/documents/expense/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -306,7 +321,7 @@ const router = new Router({
     //   name: Routes.VIEW_EXPENSE,
     //   parentName: Routes.LIST_EXPENSES,
     //   component: function (resolve) {
-    //     require(['@/components/entities/expense/View.vue'], resolve)
+    //     require(['@/components/documents/expense/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -315,7 +330,7 @@ const router = new Router({
       name: Routes.EDIT_EXPENSE,
       parentName: Routes.LIST_EXPENSES,
       component: function (resolve) {
-        require(['@/components/entities/expense/Edit.vue'], resolve)
+        require(['@/components/documents/expense/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     },
@@ -328,7 +343,7 @@ const router = new Router({
       name: Routes.LIST_VENDORS,
       parentName: Routes.OVERVIEW,
       component: function (resolve) {
-        require(['@/components/entities/vendor/List.vue'], resolve)
+        require(['@/components/documents/vendor/List.vue'], resolve)
       },
       beforeEnter: (...params) => {
         checkIfLoggedIn(...params)
@@ -339,7 +354,7 @@ const router = new Router({
     //   name: Routes.VIEW_VENDOR,
     //   parentName: Routes.LIST_VENDORS,
     //   component: function (resolve) {
-    //     require(['@/components/entities/vendor/View.vue'], resolve)
+    //     require(['@/components/documents/vendor/View.vue'], resolve)
     //   },
     //   beforeEnter: checkIfLoggedIn
     // },
@@ -348,7 +363,7 @@ const router = new Router({
       name: Routes.EDIT_VENDOR,
       parentName: Routes.LIST_VENDORS,
       component: function (resolve) {
-        require(['@/components/entities/vendor/Edit.vue'], resolve)
+        require(['@/components/documents/vendor/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
     }

@@ -1,14 +1,16 @@
+import Vue from 'vue'
+
 export default (mutations = {}) => Object.assign({
   SET_FORM_DATA(state, data) {
     for (let field in data) {
-      state[field] = data[field]
+      Vue.set(state, field, data[field])
 
       if (data[field] && typeof data[field] === 'object') {
         if (typeof data[field].id !== 'undefined') {
-          state[field + '_id'] = data[field].id
+          Vue.set(state, field + '_id', data[field].id)
         }
         if (typeof data[field].uuid !== 'undefined') {
-          state[field + '_uuid'] = data[field].uuid
+          Vue.set(state, field + '_uuid', data[field].uuid)
         }
       }
     }
@@ -18,11 +20,21 @@ export default (mutations = {}) => Object.assign({
     const copy = Object.assign({}, state.__initial)
 
     for (let field in copy) {
-      state[field] = copy[field]
+      Vue.set(state, field, copy[field])
     }
   },
 
   SET_ERRORS(state, errors) {
-    state.errors = errors
+    let err = {}
+
+    for (let key in errors) {
+      let field = key.split('.').slice(1).join('.')
+
+      if (field.trim().length) {
+        err[field] = errors[key]
+      }
+    }
+
+    state.errors = err
   }
 }, mutations)

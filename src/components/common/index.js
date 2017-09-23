@@ -3,11 +3,13 @@
  */
 export { default as Breadcrumb } from './Breadcrumb.vue'
 
-export { default as EntitiesTable } from './Table/EntitiesTable.vue'
+export { default as DocumentsTable } from './Table/DocumentsTable.vue'
 export { default as TableColumn } from './Table/TableColumn.vue'
 export { default as TableFooter } from './Table/TableFooter.vue'
 export { default as FilterBy } from './Table/partials/FilterBy.vue'
 export { default as SearchBy } from './Table/partials/SearchBy.vue'
+export { default as StatusesList } from './Table/partials/StatusesList.vue'
+export { default as StatusConflictsResolutionWindow } from './Table/partials/StatusConflictsResolutionWindow.vue'
 
 export { default as Modal } from './Modal/Modal.vue'
 export { default as ModalTabs } from './Modal/ModalTabs.vue'
@@ -44,15 +46,18 @@ export { default as FormDocumentsInput } from './Form/FormDocumentsInput.vue'
 export { default as FormInlineSelect } from './Form/FormInlineSelect.vue'
 export { default as FormItemsList } from './Form/FormItemsList.vue'
 
+export { default as Popup } from './Popup/Popup.vue'
+
 /**
  * Components
  */
-export { default as EditProduct } from '@/components/entities/product/Edit.vue'
-export { default as EditClient } from '@/components/entities/client/Edit.vue'
-export { default as EditInvoice } from '@/components/entities/invoice/Edit.vue'
-export { default as EditRecurringInvoice } from '@/components/entities/recurring-invoice/Edit.vue'
-export { default as EditPayment } from '@/components/entities/payment/Edit.vue'
-export { default as EditExpenses } from '@/components/entities/expense/Edit.vue'
-export { default as EditCredits } from '@/components/entities/credit/Edit.vue'
-export { default as EditQuote } from '@/components/entities/quote/Edit.vue'
-export { default as EditVendor } from '@/components/entities/vendor/Edit.vue'
+export { default as EditProduct } from '@/components/documents/product/Edit.vue'
+export { default as EditClient } from '@/components/documents/client/Edit.vue'
+export { default as EditInvoice } from '@/components/documents/invoice/Edit.vue'
+export { default as EditRecurringInvoice } from '@/components/documents/recurring-invoice/Edit.vue'
+export { default as EditPayment } from '@/components/documents/payment/Edit.vue'
+export { default as EditExpenses } from '@/components/documents/expense/Edit.vue'
+export { default as EditCredits } from '@/components/documents/credit/Edit.vue'
+export { default as EditQuote } from '@/components/documents/quote/Edit.vue'
+export { default as EditVendor } from '@/components/documents/vendor/Edit.vue'
+export { default as EditProject } from '@/components/crm/project/Edit.vue'

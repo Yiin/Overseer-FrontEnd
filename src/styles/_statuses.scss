@@ -1,0 +1,77 @@
+.status
+{
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 24px;
+
+    display: block;
+
+    min-width: 103px;
+    height: 24px;
+    margin: 0 auto;
+
+    text-transform: uppercase;
+
+    color: #fff;
+    border-radius: 2px;
+    &--archived
+    {
+        background-color: #373737;
+    }
+    &--deleted
+    {
+        background-color: #fb3580;
+    }
+    &--viewed
+    {
+        background-color: #01a7fd;
+    }
+    &--draft
+    {
+        background-color: #767676;
+    }
+    &--sent
+    {
+        background-color: #5bc0de;
+    }
+    &--paid
+    {
+        background-color: #4ecd09;
+    }
+    &--active
+    {
+        background-color: #4ecd09;
+    }
+    &--overdue
+    {
+        background-color: #e2492f;
+    }
+    &--pending
+    {
+        background-color: #5bc0de;
+    }
+    &--completed
+    {
+        background-color: #4fcd09;
+    }
+    &--partially-refunded, &--partial
+    {
+        background-color: #ff6c11;
+    }
+    &--refunded
+    {
+        background-color: #373737;
+    }
+    &--invoiced
+    {
+        background-color: #940e96;
+    }
+    &--logged
+    {
+        background-color: #337ab7;
+    }
+    &--approved
+    {
+        background-color: #4fcd09;
+    }
+}

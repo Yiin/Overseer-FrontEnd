@@ -38,3 +38,5 @@ export const EDIT_EXPENSE = 'edit_expense'
 export const LIST_VENDORS = 'vendors'
 export const VIEW_VENDOR = 'view_vendor'
 export const EDIT_VENDOR = 'edit_vendor'
+
+export const LIST_PROJECTS = 'projects'

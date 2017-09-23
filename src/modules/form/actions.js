@@ -15,11 +15,11 @@ export default (actions = {}) => Object.assign({
 
     dispatch('CREATE_MODAL', {
       // meta data
-      title: 'actions.new_' + state.name,
+      title: 'actions.new_' + state.__name,
       // form component we're rendering when modal is open
-      component: 'edit-' + S(state.name).slugify().s,
+      component: 'edit-' + S(state.__name).slugify().s,
       // namespace to current form's state
-      form: state.name
+      form: state.__name
     }, { root: true })
   },
 
@@ -28,19 +28,18 @@ export default (actions = {}) => Object.assign({
 
     return dispatch('OPEN_MODAL', {
       // meta data
-      title: 'actions.edit_' + state.name,
+      title: 'actions.edit_' + state.__name,
       // form component we're rendering when modal is open
-      component: 'edit-' + S(state.name).slugify().s,
+      component: 'edit-' + S(state.__name).slugify().s,
       // namespace to current form's state
-      form: state.name
+      form: state.__name
     }, { root: true })
   },
 
   CREATE({ dispatch, commit, state }) {
-    return dispatch('CREATE_DOCUMENT', {
-      table: pluralize(state.name),
+    return dispatch(`table/${pluralize(state.__name)}/CREATE_DOCUMENT`, {
       data: {
-        [S(state.name).slugify().s]: state
+        [S(state.__name).slugify().s]: state
       }
     }, {
       root: true
@@ -53,10 +52,10 @@ export default (actions = {}) => Object.assign({
   },
 
   SAVE({ dispatch, commit, state }) {
-    dispatch(`table/${pluralize(state.name)}/SAVE_DOCUMENT`, {
+    dispatch(`table/${pluralize(state.__name)}/SAVE_DOCUMENT`, {
       uuid: state.uuid,
       data: {
-        [S(state.name).slugify().s]: state
+        [S(state.__name).slugify().s]: state
       }
     }, {
       root: true

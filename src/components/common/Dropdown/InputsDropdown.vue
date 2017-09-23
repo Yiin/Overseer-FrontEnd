@@ -1,5 +1,5 @@
 <template>
-  <dropdown ref="dropdown" @input="onInput" :placeholder="placeholder" :primary="primary">
+  <dropdown :watch="watch" ref="dropdown" v-model="value" @input="onInput" :placeholder="placeholder">
     <slot></slot>
   </dropdown>
 </template>
@@ -8,11 +8,25 @@
 export default {
   name: 'inputs-dropdown',
 
-  props: ['placeholder', 'primary'],
+  props: {
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    watch: {
+      default: null
+    }
+  },
+
+  data() {
+    return {
+      value: {}
+    }
+  },
 
   methods: {
-    onInput() {
-
+    onInput(e) {
+      this.$emit('input', e)
     }
   }
 }

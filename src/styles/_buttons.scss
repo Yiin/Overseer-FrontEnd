@@ -1,0 +1,183 @@
+$button-text-color: $color-white;
+
+@mixin rounded($radius: $border-radius)
+{
+    border-radius: $radius;
+}
+
+/**
+ * Smooth hover animation with shadows n shit
+ */
+@mixin smooth($color: $color-main)
+{
+    transition: all .15s ease;
+
+    box-shadow: 0 4px 6px rgba(0, 0, 0, .11), 0 1px 3px rgba(0, 0, 0, .08);
+    text-shadow: 0 1px 3px hsla(hue($color) + 5, saturation($color) + 7, lightness($color) - 11, .4);
+    &:hover,
+    &:focus
+    {
+        transform: translateY(-1px);
+
+        outline: none;
+        box-shadow: 0 7px 14px rgba(0, 0, 0, .1), 0 3px 6px rgba(0, 0, 0, .08);
+    }
+}
+
+@mixin small
+{
+    font-size: 14px;
+    line-height: 40px;
+
+    height: 40px;
+}
+
+@mixin medium
+{
+    font-size: 16px;
+    line-height: 44px;
+
+    height: 44px;
+}
+
+@mixin big
+{
+    font-size: 18px;
+    line-height: 46px;
+
+    height: 46px;
+}
+
+@mixin strong
+{
+    font-weight: 600;
+}
+
+/**
+ * Basic button
+ */
+.button
+{
+    font-family: $primary-font-family;
+    font-size: 16px;
+
+    cursor: pointer;
+    user-select: none;
+
+    color: $button-text-color;
+    border: none;
+    background: $color-main;
+
+    display: inline-block;
+
+    @include rounded;
+    /**
+     * One of the main project buttons, special
+     * snowflake which requires custom styling...
+     */
+    &--create
+    {
+        display: inline-flex;
+
+        min-width: 190px;
+        padding: 0 24px 0 15px;
+
+        align-items: center;
+        @include smooth;
+        @include big;
+        /**
+         * Make distance between icon and text
+         */
+        > [class^='icon-']
+        {
+            position: relative !important;
+
+            margin-right: 12px;
+            padding-right: 24px !important;
+            &::before
+            {
+                position: absolute !important;
+                top: -8px !important;
+                left: 2px !important;
+            }
+        }
+    }
+    /**
+     * Buttons in modals
+     */
+    &__modal
+    {
+        // center text inside button
+        display: inline-flex;
+
+        @include medium;
+        @include strong;
+        @include rounded(0);
+        justify-content: center;
+        align-items: center;
+        &--back
+        {
+            width: 51px;
+
+            background: $color-main-dark;
+
+            &:not(.button__modal--disabled) {
+                @include smooth($color-main-dark);
+            }
+        }
+        &--cancel
+        {
+            width: 135px;
+            margin-left: 20px;
+
+            background: $color-main-dark;
+
+            @include smooth($color-main-dark);
+        }
+        &--save
+        {
+            width: 119px;
+
+            background: $color-forest-green;
+
+            @include smooth($color-forest-green);
+        }
+        &--next
+        {
+            width: 132px;
+            margin-left: 20px;
+
+            background: $color-main;
+
+            &:not(.button__modal--disabled) {
+                @include smooth($color-main);
+            }
+        }
+        &--disabled
+        {
+            cursor: default;
+
+            background: $color-main-dark;
+
+            filter: opacity(.5);
+        }
+    }
+    &--task
+    {
+        padding: 0 20px;
+
+        @include small;
+        @include smooth;
+    }
+    &__toggle {
+        height: 40px;
+        width: 40px;
+        text-align: center;
+        &--hidden {
+            visibility: none;
+        }
+        &:focus {
+            outline: none;
+        }
+    }
+}

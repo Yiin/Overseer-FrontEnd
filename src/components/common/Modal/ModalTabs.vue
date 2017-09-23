@@ -19,12 +19,16 @@
       <slot></slot>
       <div slot="nav-buttons" class="modal-buttons">
         <div class="modal-buttons-group modal-buttons-group--left">
-          <div @click="showTab(activeTabIndex - 1)" class="modal-button modal-button__back" :class="{ 'modal-button--disabled': isFirstTabActive }"><</div>
-          <div @click="$emit('cancel')" class="modal-button modal-button__cancel">Cancel</div>
+          <div @click="showTab(activeTabIndex - 1)" class="button button__modal button__modal--back" :class="{ 'button__modal--disabled': isFirstTabActive }">
+            <i class="icon-prev"></i>
+          </div>
+          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
         </div>
         <div class="modal-buttons-group modal-buttons-group--right">
-          <div @click="$emit('save')" class="modal-button modal-button__save">Save</div>
-          <div @click="showTab(activeTabIndex + 1)" class="modal-button modal-button__next" :class="{ 'modal-button--disabled': isLastTabActive }">Next ></div>
+          <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>
+          <div @click="showTab(activeTabIndex + 1)" class="button button__modal button__modal--next" :class="{ 'button__modal--disabled': isLastTabActive }">
+            Next <i class="icon-next"></i>
+          </div>
         </div>
       </div>
     </div>
