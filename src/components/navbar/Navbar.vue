@@ -6,7 +6,9 @@
       </div>
       <div class="logo-holder">
         <!-- <img class="logo" src="/static/overseer_logo_small_first_letter.svg"> -->
-        <div class="logo">Overseer</div>
+        <div class="logo">
+          <span>Over</span><span>seer</span>
+        </div>
       </div>
     </div>
     <div class="navbar__content navbar__content--right">
@@ -37,6 +39,10 @@ export default {
   background: white;
   border: none;
   box-shadow: $box-shadow;
+}
+
+.navbar {
+  display: none;
 }
 </style>
 

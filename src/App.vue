@@ -2,11 +2,18 @@
   <div id="app" v-show="isLoaded">
     <template v-if="isLoggedIn">
       <navbar></navbar>
-      <sidebar ></sidebar>
+      <sidebar></sidebar>
+      <div class="page-content">
+        <transition name="fade">
+          <router-view class="router-view"></router-view>
+        </transition>
+      </div>
     </template>
-    <div class="page-content">
-      <router-view></router-view>
-    </div>
+    <template v-else>
+      <div class="page-content">
+        <router-view class="router-view"></router-view>
+      </div>
+    </template>
     <taskbar></taskbar>
     <popup></popup>
   </div>
@@ -39,6 +46,28 @@ export default {
 </script>
 
 <style lang="scss" src="@/styles/app.scss"></style>
+
+<style>
+.router-view {
+    position: absolute;
+    width: calc(100% - 76px);
+}
+
+/* Fade out */
+.fade-enter-active {
+  transition: opacity .3s ease-in-out;
+  transition-delay: .1s;
+}
+
+/* Fade In */
+.fade-leave-active {
+  transition: opacity .3s ease-out;
+}
+
+.fade-enter, .fade-leave-active {
+  opacity: 0;
+}
+</style>
 
 <style lang="scss">
 .vue-drag-select {

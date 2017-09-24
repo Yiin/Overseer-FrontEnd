@@ -34,6 +34,7 @@ $box-shadow: $box-shadow-3;
 
 // Borders
 $border-radius: 3px;
+$table-border-radius: 4px;
 
 /**
  * Variables
@@ -70,6 +71,7 @@ $height-navbar: 50px;
 $sidebar-width: 220px;
 
 // - Table
+$table-shadow: $box-shadow;
 $table-head-bg: $color-mine-shaft;
 $table-bg: $color-white;
 // $table-head-border-color: $color-dove-gray;

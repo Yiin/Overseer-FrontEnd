@@ -112,7 +112,7 @@ $button-text-color: $color-white;
 
         @include medium;
         @include strong;
-        @include rounded(0);
+        @include rounded;
         justify-content: center;
         align-items: center;
         &--back

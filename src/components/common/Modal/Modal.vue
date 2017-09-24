@@ -1,19 +1,21 @@
 <template>
   <transition name="fade">
-    <div v-if="isOpen" class="background-dim">
-      <div v-clickaway="closeOrHide" class="modal-background">
-        <div class="modal__title">
-          {{ $t(title) }}
+    <div v-show="isOpen" class="background-dim">
+      <transition name="move">
+        <div v-if="isOpen" v-clickaway="closeOrHide" class="modal-background">
+          <div class="modal__title">
+            {{ $t(title) }}
+          </div>
+          <div class="modal__controls">
+            <div class="modal-icon modal-icon__hide" @click="hide"></div>
+            <div class="modal-icon modal-icon__full"></div>
+            <div class="modal-icon modal-icon__close" @click="close"></div>
+          </div>
+          <div class="modal__body">
+            <component :is="component" :data="data.data" @cancel="close"></component>
+          </div>
         </div>
-        <div class="modal__controls">
-          <div class="modal-icon modal-icon__hide" @click="hide"></div>
-          <div class="modal-icon modal-icon__full"></div>
-          <div class="modal-icon modal-icon__close" @click="close"></div>
-        </div>
-        <div class="modal__body">
-          <component :is="component" :data="data.data" @cancel="close"></component>
-        </div>
-      </div>
+      </transition>
     </div>
   </transition>
 </template>
@@ -67,3 +69,29 @@ export default {
 </script>
 
 <style lang="scss" src="@/styles/modal.scss"></style>
+
+<style lang="scss">
+.move-enter {
+  transform: translate(-50%, 600) !important;
+}
+
+.move-enter-active {
+  transition: all 0.4s;
+}
+
+.move-enter-to {
+  transform: translate(-50%, 0) !important;
+}
+
+.move-leave {
+  transform: translate(-50%, 0) !important;
+}
+
+.move-leave-active {
+  transition: all 0.4s;
+}
+
+.move-leave-to {
+  transform: translate(-50%, 600px) !important;
+}
+</style>

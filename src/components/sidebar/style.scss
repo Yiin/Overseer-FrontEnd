@@ -1,8 +1,9 @@
 .sidebar
 {
-    float: left;
-
     width: $sidebar-width;
+    position: fixed;
+    left: calc(50vw - 1450px / 2);
+
     &__content
     {
         margin-top: 40px;

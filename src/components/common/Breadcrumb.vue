@@ -36,6 +36,7 @@
     color: $color-mine-shaft;
     font-size: 18px;
     user-select: none;
+    visibility: hidden;
 
     &__path {
       display: inline;

@@ -9,10 +9,10 @@ body
     font-size: 14px;
     line-height: .8;
 
-    overflow-y: scroll;
+    // overflow-y: scroll;
 
     margin: 0;
-    padding: $height-navbar 0 0 0;
+    // padding: $height-navbar 0 0 0;
 
     background: $color-page-bg;
 }
@@ -21,18 +21,23 @@ body
 {
     position: relative;
 
-    float: left;
-
-    width: calc(100% - #{$sidebar-width});
-    min-height: calc(100vh - #{$height-navbar});
-    padding: 20px 28px 200px 30px;
+    width: 1200px;
+    min-height: calc(100vh - 50px);
+    padding: 20px 28px 200px 0;
+    margin-left: calc(50vw - 1390px / 2 + 272px);
 }
 
 .logo {
-    font-family: 'neon';
-    font-size: 23px;
-    font-weight: 600;
+    font-family: 'overseer';
+    font-size: 26px;
     color: #455092;
+    text-transform: lowercase;
+    > span:nth-child(1) {
+        color: #414c8e;
+    }
+    > span:nth-child(2) {
+        color: #6372ca;
+    }
 }
 
 /* Links */

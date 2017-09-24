@@ -1,22 +1,17 @@
 <template>
   <div class="sidebar">
     <div class="sidebar__content">
-      <div class="profile-area">
-        <img class="profile-picture" src="https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAANPAAAAJGNlYzQzNzZiLTcwZDgtNDcxMC04ZmE0LWUyNDhkY2I4ZWEyMg.jpg">
-        <div class="profile-name">
-          Stanislovas Janonis
-          <span class="caret"></span>
-        </div>
-        <div v-show="0" class="profile-options">
-          <div class="profile-option">
-            Log Out
-          </div>
-        </div>
+      <div class="logo">
+        <span>Over</span><span>seer</span>
       </div>
       <div class="sidebar__nav">
         <nav-link :name="routes.overview">
           <i class="icon-sidebar-overview"></i>
           {{ $t('common.overview') }}
+        </nav-link>
+        <nav-link name="appointments">
+          <i class="icon-sidebar-vendors"></i>
+          Appointments
         </nav-link>
         <nav-link :name="routes.products">
           <i class="icon-sidebar-products"></i>
@@ -26,6 +21,10 @@
           <i class="icon-sidebar-clients"></i>
           {{ $t('common.clients') }}
         </nav-link>
+        <hr>
+        <div class="sidebar__nav-category">
+          Category 1
+        </div>
         <nav-link :name="routes.invoices">
           <i class="icon-sidebar-invoices"></i>
           {{ $t('common.invoices') }}
@@ -34,17 +33,9 @@
           <i class="icon-sidebar-recurring"></i>
           {{ $t('common.recurring') }}
         </nav-link>
-        <hr>
-        <div class="sidebar__nav-category">
-          Category 1
-        </div>
         <nav-link :name="routes.payments">
           <i class="icon-sidebar-payments"></i>
           {{ $t('common.payments') }}
-        </nav-link>
-        <nav-link :name="routes.expenses">
-          <i class="icon-sidebar-expenses"></i>
-          {{ $t('common.expenses') }}
         </nav-link>
         <nav-link :name="routes.credits">
           <i class="icon-sidebar-credits"></i>
@@ -58,9 +49,21 @@
           <i class="icon-sidebar-quotes"></i>
           {{ $t('common.quotes') }}
         </nav-link>
+        <nav-link :name="routes.expenses">
+          <i class="icon-sidebar-expenses"></i>
+          {{ $t('common.expenses') }}
+        </nav-link>
         <nav-link :name="routes.vendors">
           <i class="icon-sidebar-vendors"></i>
           {{ $t('common.vendors') }}
+        </nav-link>
+        <nav-link name="personnel">
+          <i class="icon-sidebar-clients"></i>
+          Personnel
+        </nav-link>
+        <nav-link name="finances">
+          <i class="icon-sidebar-credits"></i>
+          Finances
         </nav-link>
         <hr>
         <div class="sidebar__nav-category">

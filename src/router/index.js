@@ -53,6 +53,18 @@ const router = new Router({
       },
       beforeEnter: checkIfLoggedIn
     },
+    {
+      path: '/appointments',
+      name: 'appointments'
+    },
+    {
+      path: '/personnel',
+      name: 'personnel'
+    },
+    {
+      path: '/finances',
+      name: 'finances'
+    },
 
     /**
      * CRM
