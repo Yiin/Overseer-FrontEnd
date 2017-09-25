@@ -4,7 +4,7 @@ let state = {
 
   // user authentication data
   auth: {
-    isLoggedIn: false,
+    isLoggedIn: true,
     accessToken: null
   },
 
