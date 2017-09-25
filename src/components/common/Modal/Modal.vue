@@ -2,7 +2,7 @@
   <transition name="fade">
     <div v-show="isOpen" class="background-dim">
       <transition name="move">
-        <div v-if="isOpen" v-clickaway="closeOrHide" class="modal-background">
+        <div v-show="isOpen" v-clickaway="closeOrHide" class="modal-background">
           <div class="modal__title">
             {{ $t(title) }}
           </div>
@@ -72,7 +72,7 @@ export default {
 
 <style lang="scss">
 .move-enter {
-  transform: translate(-50%, 600) !important;
+  transform: translate(-50%, 600px) !important;
 }
 
 .move-enter-active {
