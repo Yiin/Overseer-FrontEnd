@@ -1,20 +1,34 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel">
+    <modal-tabs @save="save" @cancel="cancel" :hide-buttons="preview">
 
       <!--
         Select vendor
        -->
       <modal-tab :title="$t('tabs.vendor')">
         <form-container name="expense">
-          <form-inline-select-input :watch="vendors" name="vendor_uuid" :placeholder="$t('placeholders.type_vendor_name')">
-            <inline-option v-for="vendor in vendors"
+          <form-inline-select-input :watch="vendors" v-model="form.vendor_uuid" name="vendor_uuid" :placeholder="$t('placeholders.type_vendor_name')" :readonly="preview">
+            <inline-option v-if="preview" selected>
+              {{ form.vendor.company_name }}
+            </inline-option>
+            <inline-option v-else v-for="vendor in vendors"
                           :key="vendor.uuid"
                           :value="vendor.uuid"
                           :selected="vendor.uuid === form.vendor_uuid"
             >
               {{ vendor.company_name }}
             </inline-option>
+            <div slot="placeholder" class="placeholder-area">
+              <div class="placeholder placeholder--vendors"></div>
+              <div class="placeholder placeholder--line"></div>
+              <div class="placeholder__text">
+                Add a new vendor by pressing the button below.
+              </div>
+              <a @click="createVendor" class="button button--create">
+                <span class="icon-new-vendor-btn-icon"></span>
+                {{ $t('actions.new_vendor') }}
+              </a>
+            </div>
           </form-inline-select-input>
         </form-container>
       </modal-tab>
@@ -24,14 +38,28 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="expense">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
-            <inline-option v-for="client in clients"
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+            <inline-option v-if="preview" selected>
+              {{ form.client.name }}
+            </inline-option>
+            <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
                           :selected="client.uuid === form.client_uuid"
             >
               {{ client.name }}
             </inline-option>
+            <div slot="placeholder" class="placeholder-area">
+              <div class="placeholder placeholder--clients"></div>
+              <div class="placeholder placeholder--line"></div>
+              <div class="placeholder__text">
+                Add a new client by pressing the button below.
+              </div>
+              <a @click="createClient" class="button button--create">
+                <span class="icon-new-client-btn-icon"></span>
+                {{ $t('actions.new_client') }}
+              </a>
+            </div>
           </form-inline-select-input>
         </form-container>
       </modal-tab>
@@ -60,50 +88,55 @@
             <!--
               Cost
             -->
-            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency_id' ]">
+            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency_id' ]" :readonly="preview">
               <form-inputs-group>
 
                 <!--
                   Amount
                 -->
-                <form-text-input v-model="form.amount" name="amount"></form-text-input>
+                <form-text-input v-model="form.amount" name="amount" :readonly="preview"></form-text-input>
 
                 <!--
                   Currency
                 -->
-                <form-dropdown-input name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
-                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
-                                  :value="currency.id"
-                                  :selected="currency.id === form.currency_id">
-                    {{ currency.code }}
-                  </dropdown-option>
-                </form-dropdown-input>
+                <form-currency-dropdown v-model="form.currency_id" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
 
               </form-inputs-group>
             </form-field>
+          </form-row>
+          <form-row>
 
             <!--
               Date
             -->
             <form-field catch-errors="date" :label="$t('labels.date')">
-              <form-date-input v-model="form.date" name="date"></form-date-input>
+              <form-date-input current-date v-model="form.date" name="date" :readonly="preview"></form-date-input>
             </form-field>
+
+            <form-field></form-field>
 
           </form-row>
         </form-container>
       </modal-tab>
 
-      <modal-tab :title="$t('tabs.documents')">
+      <!-- <modal-tab :title="$t('tabs.documents')">
 
-      </modal-tab>
+      </modal-tab> -->
 
     </modal-tabs>
   </div>
 </template>
 
 <script>
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+import { createDocument } from '@/modules/documents/actions'
+
 export default {
   name: 'edit-expense',
+
+  components: {
+    FormCurrencyDropdown
+  },
 
   props: {
     data: {
@@ -116,24 +149,46 @@ export default {
       return this.$store.state.form.expense
     },
 
+    preview() {
+      return this.form.__preview
+    },
+
     passive() {
       return this.$store.state.passive
     },
 
     vendors() {
-      return this.$store.state.table.vendors.items
+      return this.$store.getters['table/vendors/activeItems']
     },
 
     clients() {
-      return this.$store.state.table.clients.items
+      return this.$store.getters['table/clients/activeItems']
     },
 
     categories() {
-      return this.$store.state.table.expense_categories.items
+      return this.$store.getters['table/expense_categories/activeItems']
     }
   },
 
   methods: {
+    createVendor() {
+      createDocument('vendor').then((vendor) => {
+        this.$store.dispatch('form/expense/SET_FORM_DATA', {
+          vendor_uuid: vendor.uuid
+        })
+        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 0)
+      })
+    },
+
+    createClient() {
+      createDocument('client').then((client) => {
+        this.$store.dispatch('form/expense/SET_FORM_DATA', {
+          client_uuid: client.uuid
+        })
+        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      })
+    },
+
     save() {
       if (this.form.uuid) {
         this.$store.dispatch('form/expense/SAVE')
@@ -159,7 +214,7 @@ export default {
   height: 617px;
 
   .modal-tabs {
-    width: 990px;
+    width: 590px;
   }
 }
 </style>

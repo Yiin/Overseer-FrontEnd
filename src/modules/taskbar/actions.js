@@ -1,6 +1,21 @@
-import * as mutations from './mutation-types'
-
 export default {
+  /**
+   * Save reference to specifix taskbar item,
+   * so we can get back to it later.
+   */
+  SAVE_TASKBAR_ITEM({ commit, state }, item) {
+    const index = state.items.findIndex((taskbarItem) => taskbarItem.data === item.data)
+
+    commit('SAVE_TASKBAR_ITEM', index)
+  },
+
+  /**
+   * Activate previously used taskbar item
+   */
+  ACTIVATE_SAVED_TASKBAR_ITEM({ dispatch, state }, index = 0) {
+    dispatch('ACTIVATE_TASKBAR_ITEM_AT_INDEX', state.savedTasks[index])
+  },
+
   /**
    * Add new item to taskbar, and activate after
    * @param {string} options.type   Type of the item / Name of the module
@@ -8,7 +23,7 @@ export default {
    */
   ADD_ITEM_TO_TASKBAR({ commit, dispatch, state, rootState }, { type, data }) {
     const taskbarItem = { type, data, savedData: null }
-    commit(mutations.ADD_ITEM, taskbarItem)
+    commit('ADD_ITEM', taskbarItem)
 
     // new item is always last item
     dispatch('ACTIVATE_TASKBAR_ITEM_AT_INDEX', state.items.length - 1)
@@ -35,7 +50,7 @@ export default {
     if (index < 0 || index >= state.items.length) {
       return
     }
-    commit(mutations.SET_ACTIVE_ITEM, index)
+    commit('SET_ACTIVE_ITEM', index)
 
     // if there is saved data, load it to form
     if (state.items[index].savedData) {
@@ -47,7 +62,7 @@ export default {
   },
 
   DEACTIVATE_TASKBAR_ITEM({ commit, dispatch, state, rootState }, data) {
-    commit(mutations.RESET_ACTIVE_ITEM)
+    commit('RESET_ACTIVE_ITEM')
 
     const index = state.items.findIndex((taskbarItem) => taskbarItem.data === data)
 
@@ -82,7 +97,10 @@ export default {
     const ACTION_PREFIX = state.items[index].type
     dispatch('HANDLE_TASKBAR_CLOSE_' + ACTION_PREFIX, state.items[index].data)
 
-    commit(mutations.REMOVE_ITEM_AT_INDEX, index)
+    commit('REMOVE_ITEM_AT_INDEX', index)
+    if (state.activeIndex !== null) {
+      dispatch('ACTIVATE_TASKBAR_ITEM_AT_INDEX', state.activeIndex)
+    }
   }
 
 }

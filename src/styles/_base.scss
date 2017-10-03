@@ -24,7 +24,8 @@ body
     width: 1200px;
     min-height: calc(100vh - 50px);
     padding: 20px 28px 200px 0;
-    margin-left: calc(50vw - 1390px / 2 + 272px);
+    margin-left: calc(50vw - 1390px / 2 + 167px);
+    padding-left: 105px;
 }
 
 .logo {
@@ -38,6 +39,12 @@ body
     > span:nth-child(2) {
         color: #6372ca;
     }
+}
+
+span.highlight__text {
+    font-weight: bold;
+    color: $color-main;
+    cursor: pointer;
 }
 
 /* Links */
@@ -336,4 +343,12 @@ span.result-detail__value
 .result--failure .result-detail--highlight .result-detail__value
 {
     color: $color-red;
+}
+
+.ui.popup {
+    border: none !important;
+    box-shadow: $box-shadow !important;
+    &::before {
+        box-shadow: -1px 1px 1px rgba(186, 186, 188, 0.3) !important;
+    }
 }

@@ -1,0 +1,69 @@
+.placeholder-area {
+  text-align: center;
+  max-width: 900px;
+  width: 100%;
+  .button {
+    margin-top: 30px;
+  }
+}
+
+.placeholder {
+  width: 550px;
+  height: 450px;
+  margin: 0 auto;
+
+  &__text {
+    font-size: 18px;
+    color: #8f8f8f;
+    margin-top: 30px;
+    line-height: 150%;
+  }
+
+  &--line {
+    width: 492px;
+    height: 3px;
+    background: url(../assets/images/placeholders/Line.svg);
+    margin-top: -18px;
+    opacity: 0.7;
+  }
+
+  &--clients {
+    background: url(../assets/images/placeholders/Clients.svg);
+  }
+
+  &--products {
+    background: url(../assets/images/placeholders/Products.svg);
+  }
+
+  &--credits {
+    background: url(../assets/images/placeholders/Credits.svg);
+  }
+
+  &--expenses {
+    background: url(../assets/images/placeholders/Expenses.svg);
+  }
+
+  &--images {
+    background: url(../assets/images/placeholders/Image.svg);
+  }
+
+  &--invoices {
+    background: url(../assets/images/placeholders/Invoice.svg);
+  }
+
+  &--payments {
+    background: url(../assets/images/placeholders/Payments.svg);
+  }
+
+  &--projects {
+    background: url(../assets/images/placeholders/Projects.svg);
+  }
+
+  &--quotes {
+    background: url(../assets/images/placeholders/Quotes.svg);
+  }
+
+  &--vendors {
+    background: url(../assets/images/placeholders/Vendors.svg);
+  }
+}

@@ -13,7 +13,7 @@
             Create New Task List
            -->
           <div v-if="creatingNewTaskList" class="list__item">
-            <div class="list__item--column">
+            <div class="list-item__column">
               <button @click="toggleColorPicker()"
                       :style="{ 'background-color': newTaskList.color }"
                       class="button button__toggle"
@@ -27,7 +27,7 @@
                 ></button>
               </template>
             </div>
-            <div class="list__item--column" :style="{ 'border-color': newTaskList.color }">
+            <div class="list-item__column" :style="{ 'border-color': newTaskList.color }">
               <div class="task-list task-list--new">
                 <div class="task-list__title">
                   <input
@@ -49,7 +49,7 @@
             List of Task Lists
            -->
           <div v-for="taskList in taskLists" class="list__item">
-            <div class="list__item--column">
+            <div class="list-item__column">
               <button @click="toggleTaskList(taskList)"
                       :style="{ 'background-color': taskList.color }"
                       class="button button__toggle button__toggle--down"
@@ -60,7 +60,7 @@
                   }"></i>
               </button>
             </div>
-            <div class="list__item--column" :style="{ 'border-color': taskList.color }">
+            <div class="list-item__column" :style="{ 'border-color': taskList.color }">
               <div class="task-list__title">
                 {{ taskList.name }}
               </div>
@@ -275,21 +275,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.list__item--column:nth-child(2) {
-    margin-left: 20px;
-    padding-left: 20px;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 40px;
-    border-left: 3px solid #5867c2;
-    width: 100%;
-}
-
-.list__item {
-    display: flex;
-    margin: 20px 0;
-}
-
 .task-list {
     display: flex;
     padding: 15px 0;

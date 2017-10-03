@@ -1,5 +1,5 @@
 <template>
-  <div ref="table" class="table" @dragselect-stop="dsstop">
+  <div ref="table" class="table" :class="{ 'table--simple': simple }" @dragselect-stop="dsstop">
     <!-- Table head -->
     <div class="table__head">
       <!-- Checkbox for page-wide rows toggling at once -->
@@ -18,7 +18,20 @@
         class="table__row table__row--full-width"
       >
         <div class="column">
-          No data available in table
+          <span>
+            Hmm, it seems like there is nothing to display.
+            <template v-if="hiddenEntries.length && !simple">
+              However,
+              <span @click="applyFiltersToShowAllResults" class="highlight__text">
+                {{ hiddenEntries }}
+              </span>
+              entries were found under
+              <span @click="applyFiltersToShowAllResults" class="highlight__text">
+                these
+              </span>
+              filters.
+            </template>
+          </span>
         </div>
       </div>
       <!-- Else show current page rows -->
@@ -84,7 +97,7 @@
           <!-- Displays how many rows are selected -->
           <template v-if="action.isStatic && action.isSelectedRowsCounter">
             <i18n path="table.selected_rows">
-              <span class="highlight">{{ data.selection.length }}</span>
+              <span class="highlight">{{ selectedRows }}</span>
             </i18n>
           </template>
 
@@ -109,6 +122,7 @@
 <script>
 import TableMixin from '@/mixins/TableMixin'
 import DragSelectMixin from '@/mixins/DragSelect'
+import { Delete } from '@/modules/table/cm-actions'
 
 export default {
   name: 'documents-table',
@@ -123,6 +137,13 @@ export default {
       type: Object
     },
     contextMenuActions: {
+      type: Array
+    },
+    simple: {
+      type: Boolean,
+      default: false
+    },
+    documents: {
       type: Array
     }
   },
@@ -158,6 +179,14 @@ export default {
       return this.pageRows.length === 0
     },
 
+    selectedRows() {
+      return this.data.selection.length + (
+        this.data.selection.find((row) => {
+          return this.contextMenu.selectedRow.uuid === row.uuid
+        }) ? 0 : 1
+      )
+    },
+
     /**
      * Are all rows in current page selected?
      * @return {Boolean}
@@ -171,12 +200,25 @@ export default {
      */
     isDragSelectDisabled() {
       return this.contextMenu.isOpen
+    },
+
+    /**
+     * Hidden enttries count
+     */
+    hiddenEntries() {
+      if (!this.data) {
+        return []
+      }
+      return this.$store.state.table[this.data.name].items.filter((item) => {
+        return !this.pageRows.find((row) => row.uuid === item.uuid)
+      }).length
     }
   },
 
   mounted() {
     this.initDragSelect() // TableMixin
     this.initContextMenu()
+    this.listenForHotkeys()
 
     this.$on('toggle-details', (row) => {
       if (this.showDetailsOf === row) {
@@ -188,6 +230,14 @@ export default {
   },
 
   methods: {
+    listenForHotkeys() {
+      window.addEventListener('keydown', (e) => {
+        if (e.keyCode === 46) {
+          Delete.handler(this.data.name, this.$store)
+        }
+      })
+    },
+
     initContextMenu() {
       document.getElementsByClassName('page-content')[0].addEventListener('contextmenu', (e) => {
         e.preventDefault()
@@ -197,10 +247,21 @@ export default {
     },
 
     /**
+     * Some documents may not be visible, because required filters are not set.
+     * Apply these filters automatically for user.
+     */
+    applyFiltersToShowAllResults() {
+      this.$emit('apply-filters-to-show-hidden-results')
+    },
+
+    /**
      * Select or unselect all rows in current page at once
      * @return {void}
      */
     togglePageRows() {
+      if (false && this.simple) { // eslint-disable-line
+        return
+      }
       if (this.isWholePageSelected) {
         this.pageRows.forEach((row) => this.toggle(row))
       } else {
@@ -215,8 +276,14 @@ export default {
      * @return {void}
      */
     toggle(row, event = null) {
+      if (false && this.simple) { // eslint-disable-line
+        return
+      }
       if (event) {
         if (['a'].indexOf(event.target.nodeName.toLowerCase()) > -1) {
+          return
+        }
+        if (event.target.classList.contains('--do-not-toggle-row')) {
           return
         }
         if (typeof window.getSelection !== 'undefined') {
@@ -238,6 +305,9 @@ export default {
      * @return {Boolean}     Is row selected
      */
     isRowSelected(row) {
+      if (false && this.simple) { // eslint-disable-line
+        return false
+      }
       return this.data.selection.indexOf(row) > -1 || this.contextMenu.selectedRow === row
     },
 
@@ -248,10 +318,16 @@ export default {
      * dsleave() is called when selection box leaves row
      */
     dsenter(row) {
+      if (false && this.simple) { // eslint-disable-line
+        return
+      }
       this.$store.dispatch(`table/${this.data.name}/TOGGLE_ROW`, row)
     },
 
     dsleave(row) {
+      if (false && this.simple) { // eslint-disable-line
+        return
+      }
       this.$store.dispatch(`table/${this.data.name}/TOGGLE_ROW_OFF`, row)
     },
 
@@ -263,7 +339,7 @@ export default {
      * Context menu
      */
     openContextMenu(event, row = undefined) {
-      if (this.contextMenuActions.length === 0) {
+      if (!this.contextMenuActions || this.contextMenuActions.length === 0) {
         return
       }
       this.contextMenu.isOpen = true
@@ -342,15 +418,12 @@ export default {
 <style lang="scss">
 .context-menu {
   background: $color-white;
-  box-shadow: -3px 2px rgba(0, 0, 0, 0.05),
-              3px 2px 5px rgba(0, 0, 0, 0.05),
-              0px 5px 5px rgba(0, 0, 0, 0.05),
-              0px -2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: $box-shadow-context-menu;
   position: absolute;
   width: 320px;
   z-index: 10;
   padding: 6px 0 17px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .context-menu__list-item {

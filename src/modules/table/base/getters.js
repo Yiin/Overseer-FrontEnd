@@ -9,12 +9,20 @@ export default (getters) => Object.assign({
     return state.state === 'loading'
   },
 
-  filteredItems(state) {
+  items(state) {
     if (!state.itemsRelationsAreUpdated) {
       return []
     }
 
-    let items = state.items
+    return state.items
+  },
+
+  activeItems(state, getters) {
+    return getters.items.filter(filters.IsActiveFilter.filter)
+  },
+
+  filteredItems(state, getters) {
+    let items = getters.items
 
     /**
      * Filter items by specified filters
@@ -28,7 +36,7 @@ export default (getters) => Object.assign({
 
     /**
      * First we need to group filters by their scope,
-     * so matching algorythm becomes
+     * so matching algorithm becomes
      * (a1 OR a2) AND (b1) AND (c1 OR c2)
      * instead of
      * a1 AND a2 AND b1 AND c1 AND c2

@@ -1,42 +1,58 @@
 <template>
   <div>
-    <breadcrumb :path="[ $t('common.projects') ]"></breadcrumb>
-
-    <div class="table__heading">
-      <a @click="create" class="button button--create">
-        <span class="icon-new-project-btn-icon"></span>
-        {{ $t('actions.new_project') }}
-      </a>
-
-      <div class="table__dropdowns">
-        <filter-by :watch="{ clients }" :name="name" :options="filterBy"></filter-by>
-        <search-by :name="name" :options="searchBy"></search-by>
+    <template v-if="!state.items || !state.items.length">
+      <div class="placeholder-area">
+        <div class="placeholder placeholder--projects"></div>
+        <div class="placeholder placeholder--line"></div>
+        <div class="placeholder__text">
+          Here you can start and manage projects,<br>
+          create task-lists, and convert them to invoices.
+        </div>
+        <a @click="create" class="button button--create">
+          <span class="icon-new-project-btn-icon"></span>
+          {{ $t('actions.new_project') }}
+        </a>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <breadcrumb :path="[ $t('common.projects') ]"></breadcrumb>
 
-    <documents-table ref="table" :data="list" :context-menu-actions="contextMenuActions">
-      <template slot="head">
-        <column width="20%">Project Name</column>
-        <column width="20%">Progress</column>
-        <column width="60%">Description</column>
-      </template>
-      <template slot="columns" scope="props">
-        <column width="20%">
-          <a href="#" @click="open(props.row)">
-            {{ props.row.name }}
-          </a>
-        </column>
-        <column width="20%">
-          {{ props.row.tasks | projectProgress }}
-        </column>
-        <column width="60%">
-          {{ props.row.description }}
-        </column>
-      </template>
-      <template slot="details" scope="props">
-        <project-details :project="props.row"></project-details>
-      </template>
-    </documents-table>
+      <div class="table__heading">
+        <a @click="create" class="button button--create">
+          <span class="icon-new-project-btn-icon"></span>
+          {{ $t('actions.new_project') }}
+        </a>
+
+        <div class="table__dropdowns">
+          <filter-by :watch="{ clients }" :name="name" :options="filterBy"></filter-by>
+          <search-by :name="name" :options="searchBy"></search-by>
+        </div>
+      </div>
+
+      <documents-table ref="table" :data="list" :context-menu-actions="contextMenuActions">
+        <template slot="head">
+          <column width="20%">Project Name</column>
+          <column width="20%">Progress</column>
+          <column width="60%">Description</column>
+        </template>
+        <template slot="columns" scope="props">
+          <column width="20%">
+            <a href="#" @click="open(props.row)">
+              {{ props.row.name }}
+            </a>
+          </column>
+          <column width="20%">
+            {{ props.row.tasks | projectProgress }}
+          </column>
+          <column width="60%">
+            {{ props.row.description }}
+          </column>
+        </template>
+        <template slot="details" scope="props">
+          <project-details :project="props.row"></project-details>
+        </template>
+      </documents-table>
+    </template>
   </div>
 </template>
 
@@ -62,6 +78,7 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Restore,
   Preview,
   EditDocument
 } from '@/modules/table/cm-actions'
@@ -75,19 +92,6 @@ export default {
 
   components: {
     ProjectDetails
-  },
-
-  filters: {
-    projectProgress(tasks) {
-      const total = tasks.length
-      const completed = tasks.filter((task) => task.is_completed).length
-
-      return `${completed} / ${total}`
-    },
-
-    json(obj) {
-      return JSON.stringify(obj, null, 4)
-    }
   },
 
   computed: {
@@ -121,19 +125,20 @@ export default {
         Delete.isVisible(whenMoreThanOneRowIsSelected),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
-          title: 'common.client_table'
+          title: 'common.project_table'
         }),
         CreateDocument.extend({
-          documentType: 'client',
-          title: 'actions.new_client',
-          icon: 'icon-new-client-btn-icon'
+          documentType: 'project',
+          title: 'actions.new_project',
+          icon: 'icon-new-project-btn-icon'
         }),
-        SELECTED_DOCUMENT.extend({ documentType: 'client' }),
+        SELECTED_DOCUMENT.extend({ documentType: 'project' }),
         Preview,
-        EditDocument.extend({ title: 'actions.edit_client' }),
+        EditDocument.extend({ title: 'actions.edit_project' }),
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Delete,
+        Restore
       ]
     },
 

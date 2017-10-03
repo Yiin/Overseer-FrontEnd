@@ -9,10 +9,10 @@
           <i class="icon-sidebar-overview"></i>
           {{ $t('common.overview') }}
         </nav-link>
-        <nav-link name="appointments">
+        <div class="sidebar__nav-link sidebar__nav-link--disabled">
           <i class="icon-sidebar-vendors"></i>
           Appointments
-        </nav-link>
+        </div>
         <nav-link :name="routes.products">
           <i class="icon-sidebar-products"></i>
           {{ $t('common.products') }}
@@ -28,10 +28,6 @@
         <nav-link :name="routes.invoices">
           <i class="icon-sidebar-invoices"></i>
           {{ $t('common.invoices') }}
-        </nav-link>
-        <nav-link :name="routes.recurring">
-          <i class="icon-sidebar-recurring"></i>
-          {{ $t('common.recurring') }}
         </nav-link>
         <nav-link :name="routes.payments">
           <i class="icon-sidebar-payments"></i>
@@ -57,23 +53,23 @@
           <i class="icon-sidebar-vendors"></i>
           {{ $t('common.vendors') }}
         </nav-link>
-        <nav-link name="personnel">
+        <div class="sidebar__nav-link sidebar__nav-link--disabled">
           <i class="icon-sidebar-clients"></i>
           Personnel
-        </nav-link>
-        <nav-link name="finances">
+        </div>
+        <div class="sidebar__nav-link sidebar__nav-link--disabled">
           <i class="icon-sidebar-credits"></i>
-          Finances
-        </nav-link>
+          Currency
+        </div>
         <hr>
         <div class="sidebar__nav-category">
           Category 3
         </div>
         <nav-link :name="routes.projects">
-          <i class="icon-sidebar-projects"></i>
+          <i class="icon-sidebar-quotes"></i>
           {{ $t('common.projects') }}
         </nav-link>
-        <div class="sidebar__nav-link">
+        <div class="sidebar__nav-link sidebar__nav-link--disabled">
           <i class="icon-sidebar-reports"></i>
           {{ $t('common.reports') }}
         </div>

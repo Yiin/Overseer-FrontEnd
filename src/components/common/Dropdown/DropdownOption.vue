@@ -1,6 +1,8 @@
 <template>
-  <div v-show="isVisible" @click="select" class="dropdown__option">
-    <slot></slot>
+  <div v-show="isVisible" @click="select" class="dropdown__option" v-tooltip="tooltip">
+    <div class="dropdown-option__content">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -17,6 +19,10 @@ export default {
     selected: {
       type: Boolean,
       default: false
+    },
+    tooltip: {
+      type: Object,
+      default: undefined
     }
   },
 

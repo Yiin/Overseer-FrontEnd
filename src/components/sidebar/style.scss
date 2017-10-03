@@ -48,7 +48,7 @@
             cursor: pointer;
             text-decoration: none;
 
-            color: #373737;
+            color: $color-mine-shaft;
             &:hover
             {
                 font-weight: $font-weight-semibold;
@@ -62,6 +62,17 @@
 
                 color: $color-navbar-link-active;
                 background-color: $color-main;
+            }
+            &--disabled
+            {
+                color: $color-dusty-gray;
+                &:hover
+                {
+                    color: $color-dusty-gray;
+                    background: none;
+                    cursor: default;
+                    font-weight: normal;
+                }
             }
             i
             {

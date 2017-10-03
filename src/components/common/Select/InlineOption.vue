@@ -1,6 +1,6 @@
 <template>
   <div v-show="isVisible" class="inline-option" @click="$refs.input.click()">
-    <input :name="name" ref="input" @click="click" :value="value" type="radio" class="radio-option">
+    <input :readonly="readonly" :name="name" ref="input" @click="click" :value="value" type="radio" class="radio-option">
     <div class="inline-option__label">
       <slot></slot>
     </div>
@@ -19,6 +19,10 @@ export default {
     },
     selected: {
       default: false
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -26,6 +30,14 @@ export default {
     return {
       name: '',
       isVisible: true
+    }
+  },
+
+  watch: {
+    selected(val) {
+      if (val) {
+        this.$refs.input.click()
+      }
     }
   },
 

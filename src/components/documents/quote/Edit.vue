@@ -7,14 +7,28 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="quote">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
-            <inline-option v-for="client in clients"
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+            <inline-option v-if="preview" selected>
+              {{ form.client.name }}
+            </inline-option>
+            <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
                           :selected="client.uuid === form.client_uuid"
             >
               {{ client.name }}
             </inline-option>
+            <div slot="placeholder" class="placeholder-area">
+              <div class="placeholder placeholder--clients"></div>
+              <div class="placeholder placeholder--line"></div>
+              <div class="placeholder__text">
+                Add a new client by pressing the button below.
+              </div>
+              <a @click="createClient" class="button button--create">
+                <span class="icon-new-client-btn-icon"></span>
+                {{ $t('actions.new_client') }}
+              </a>
+            </div>
           </form-inline-select-input>
         </form-container>
       </modal-tab>
@@ -26,30 +40,75 @@
         <form-container name="quote">
           <form-row>
             <form-field :label="$t('labels.quote_date')">
-              <form-date-input v-model="form.quote_date" name="quote_date"></form-date-input>
+              <form-date-input current-date v-model="form.quote_date" name="quote_date" :readonly="preview"></form-date-input>
             </form-field>
             <form-field :label="$t('labels.quote_number')">
-              <form-text-input v-model="form.quote_number" name="quote_number"></form-text-input>
+              <form-text-input v-model="form.quote_number" name="quote_number" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
-            <form-field :label="$t('labels.quote_due_date')">
-              <form-date-input v-model="form.due_date" name="due_date"></form-date-input>
+            <form-field :label="$t('labels.due_date')">
+              <form-date-input v-model="dueDate" name="due_date" :readonly="preview"></form-date-input>
             </form-field>
             <form-field :label="$t('labels.po_number')">
-              <form-text-input v-model="form.po_number" name="po_number"></form-text-input>
+              <form-text-input v-model="form.po_number" name="po_number" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
-            <form-field :label="$t('labels.partial')">
-              <form-date-input v-model="form.partial" name="partial"></form-date-input>
+            <!--
+              Partial Deposit
+            -->
+            <form-field catch-errors="partial" :label="$t('labels.partial')">
+              <form-inputs-group>
+                <form-formatted-input
+                  type="number"
+                  :label="currencyCode"
+                  v-model="form.partial"
+                  name="partial"
+                  :readonly="preview"
+                ></form-formatted-input>
+
+                <!--
+                  Currency
+                -->
+                <form-currency-dropdown v-model="form.currency_id" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+              </form-inputs-group>
             </form-field>
+
+
+            <!--
+              Discount
+            -->
             <form-field :label="$t('labels.discount')">
               <form-inputs-group>
-                <form-text-input v-model="form.discount_value" name="discount_value"></form-text-input>
-                <form-dropdown-input v-model="form.discount_type" name="discount_type" class="dropdown--small">
-                  <dropdown-option value="percentage" :selected="form.discount_type === 'percentage'">{{ $t('discount_type.percent') }}</dropdown-option>
-                  <dropdown-option value="flat" :selected="form.discount_type === 'flat'">{{ $t('discount_type.flat') }}</dropdown-option>
+                <!--
+                  Discount value
+                -->
+                <form-formatted-input
+                  type="number"
+                  :label="form.discount_type === 'percentage' ? '%' : currencyCode"
+                  :label-position="form.discount_type === 'percentage' ? 'right' : 'left'"
+                  v-model="form.discount_value"
+                  name="discount_value"
+                  :readonly="preview"
+                ></form-formatted-input>
+
+                <!--
+                  Discount Type
+                -->
+                <form-dropdown-input v-model="form.discount_type" name="discount_type" class="dropdown--small" :readonly="preview">
+                  <dropdown-option
+                    value="percentage"
+                    :selected="form.discount_type === 'percentage'"
+                  >
+                    {{ $t('discount_type.percent') }}
+                  </dropdown-option>
+                  <dropdown-option
+                    value="flat"
+                    :selected="form.discount_type === 'flat'"
+                  >
+                    {{ $t('discount_type.flat') }}
+                  </dropdown-option>
                 </form-dropdown-input>
               </form-inputs-group>
             </form-field>
@@ -63,7 +122,7 @@
       <modal-tab :title="$t('tabs.items')">
         <form-container name="quote">
 
-          <form-items-list ref="itemsList" v-model="form.items" :model="itemModel" name="items">
+          <form-items-list ref="itemsList" v-model="form.items" :model="itemModel" name="items" :readonly="preview">
 
             <!--
               New item form
@@ -74,7 +133,7 @@
                 Product
               -->
               <form-field class="field--product" :label="$t('labels.item')">
-                <form-dropdown-input @input="itemsListProductChange" :watch="products" v-model="props.form.product" :placeholder="$t('placeholders.please_select_a_product')" document searchable scrollable>
+                <form-dropdown-input @input="itemsListProductChange" :watch="products" v-model="props.form.product" :placeholder="$t('placeholders.please_select_a_product')" document searchable scrollable :readonly="preview">
                   <dropdown-option v-for="(product, index) in products" :key="index" :value="product">
                     {{ product.name }}
                   </dropdown-option>
@@ -85,28 +144,28 @@
                 Unit Cost
               -->
               <form-field class="field--cost" :label="$t('labels.unit_cost')">
-                <form-text-input v-model="props.form.cost" name="cost"></form-text-input>
+                <form-text-input v-model="props.form.cost" name="cost" :readonly="preview"></form-text-input>
               </form-field>
 
               <!--
                 Quantity
               -->
               <form-field class="field--qty" :label="$t('labels.qty')">
-                <form-text-input v-model="props.form.qty" name="qty"></form-text-input>
+                <form-text-input v-model="props.form.qty" name="qty" :readonly="preview"></form-text-input>
               </form-field>
 
               <!--
                 Discount
               -->
               <form-field class="field--discount" :label="$t('labels.discount')">
-                <form-text-input v-model="props.form.discount" name="discount"></form-text-input>
+                <form-text-input v-model="props.form.discount" name="discount" :readonly="preview"></form-text-input>
               </form-field>
 
               <!--
                 Tax Rate
               -->
               <form-field class="field--tax-rate" :label="$t('labels.tax_rate')">
-                <form-dropdown-input v-model="props.form.tax_rate" document searchable scrollable>
+                <form-dropdown-input v-model="props.form.tax_rate" document searchable scrollable :readonly="preview">
                   <dropdown-option v-for="(tr, index) in taxRates" :key="index" :value="tr">
                     {{ tr.name }}
                   </dropdown-option>
@@ -223,21 +282,21 @@
             Upload Documents
           -->
           <tab :title="$t('tabs.documents')">
-            <form-documents-input></form-documents-input>
+            <form-documents-input :readonly="preview"></form-documents-input>
           </tab>
           <tab :title="$t('tabs.note_to_client')">
             <form-container name="quote">
-              <form-textarea-input v-model="form.note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12"></form-textarea-input>
+              <form-textarea-input v-model="form.note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
           <tab :title="$t('tabs.terms')">
             <form-container name="quote">
-              <form-textarea-input v-model="form.terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12"></form-textarea-input>
+              <form-textarea-input v-model="form.terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
           <tab :title="$t('tabs.footer')">
             <form-container name="quote">
-              <form-textarea-input v-model="form.footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12"></form-textarea-input>
+              <form-textarea-input v-model="form.footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
         </tabs>
@@ -256,8 +315,18 @@
 </template>
 
 <script>
+import moment from 'moment'
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+import FormFormattedInput from '@/components/common/Form/FormFormattedInput'
+import { createDocument } from '@/modules/documents/actions'
+
 export default {
   name: 'edit-quote',
+
+  components: {
+    FormCurrencyDropdown,
+    FormFormattedInput
+  },
 
   data() {
     return {
@@ -276,15 +345,26 @@ export default {
       return this.$store.state.form.quote
     },
 
-    currency_symbol() {
-      if (this.form.client_uuid) {
+    preview() {
+      return this.form.__preview
+    },
+
+    dueDate: {
+      get() {
+        // if document is already created, leave due date as it is
+        if (this.form.uuid) {
+          return this.form.due_date
+        }
+
         const client = this.clients.find((client) => client.uuid === this.form.client_uuid)
 
-        if (client && client.currency) {
-          return client.currency.symbol
+        if (client) {
+          if (client.payment_terms) {
+            return moment(this.form.quote_date).add(client.payment_terms, 'days')
+          }
         }
-      }
-      return '$'
+      },
+      set() {}
     },
 
     subtotal() {
@@ -335,6 +415,39 @@ export default {
       return this.subtotal - this.discount + this.taxes - this.paid_to_date
     },
 
+    currency() {
+      let currency = null
+
+      if (this.form.currency_id) {
+        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      }
+      if (!currency) {
+        let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)
+
+        if (client) {
+          currency = client.currency
+        }
+      }
+      if (!currency) {
+        currency = this.$store.state.settings.currency
+      }
+      return currency
+    },
+
+    currency_symbol() {
+      if (this.currency) {
+        return this.currency.symbol
+      }
+      return '€'
+    },
+
+    currencyCode() {
+      if (this.currency) {
+        return this.currency.code
+      }
+      return 'EUR'
+    },
+
     passive() {
       return this.$store.state.passive
     },
@@ -359,6 +472,15 @@ export default {
         return
       }
       this.$refs.itemsList.setItemAttribute('cost', product.price)
+    },
+
+    createClient() {
+      createDocument('client').then((client) => {
+        this.$store.dispatch('SET_FORM_DATA', {
+          client_uuid: client.uuid
+        })
+        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      })
     },
 
     save() {

@@ -1,12 +1,15 @@
-const state = {
+import FormState from '@/modules/form/state'
+
+const state = FormState({
   __name: 'quote',
 
   uuid: '',
 
   client_uuid: '', // uuid
-  quote_date: '', // YYYY-MM-DD
-  due_date: '', // YYYY-MM-DD
+  quote_date: null, // YYYY-MM-DD
+  due_date: null, // YYYY-MM-DD
   partial: 0, // partial/deposit
+  currency_id: null,
   quote_number: '',
   po_number: '',
   discount_type: 'percentage',
@@ -28,9 +31,33 @@ const state = {
   terms: '',
   footer: '',
 
-  errors: {}
-}
+  tabs: [
+    [
+      'client_uuid'
+    ],
+    [
+      'quote_date',
+      'due_date',
+      'quote_number',
+      'po_number',
+      'deposit',
+      'currency_id',
+      'discount_type',
+      'discount_value'
+    ],
+    [
+      'items'
+    ],
+    [
+      'note_to_client',
+      'terms',
+      'footer'
+    ]
+  ],
 
-state.__initial = Object.assign({}, state)
+  errors: {}
+})
+
+state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

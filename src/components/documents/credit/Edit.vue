@@ -1,20 +1,34 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel">
+    <modal-tabs @save="save" @cancel="cancel" :hide-buttons="preview">
 
       <!--
         Select client
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="credit">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
-            <inline-option v-for="client in clients"
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+            <inline-option v-if="preview" selected>
+              {{ form.client.name }}
+            </inline-option>
+            <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
                           :selected="client.uuid === form.client_uuid"
             >
               {{ client.name }}
             </inline-option>
+            <div slot="placeholder" class="placeholder-area">
+              <div class="placeholder placeholder--clients"></div>
+              <div class="placeholder placeholder--line"></div>
+              <div class="placeholder__text">
+                Add a new client by pressing the button below.
+              </div>
+              <a @click="createClient" class="button button--create">
+                <span class="icon-new-client-btn-icon"></span>
+                {{ $t('actions.new_client') }}
+              </a>
+            </div>
           </form-inline-select-input>
         </form-container>
       </modal-tab>
@@ -26,26 +40,22 @@
         <form-container name="credit">
           <form-row>
             <form-field :label="$t('labels.amount')">
-              <form-inputs-group>
-
-                <!--
-                  Amount
-                -->
-                <form-text-input v-model="form.amount" name="amount"></form-text-input>
-
-                <!--
-                  Currency
-                -->
-                <!-- <form-dropdown-input :watch="passive.currencies" name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
-                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
-                                  :value="currency.id"
-                                  :selected="currency.id === form.currency_id">
-                    {{ currency.code }}
-                  </dropdown-option>
-                </form-dropdown-input> -->
-
-              </form-inputs-group>
+              <!--
+                Amount
+              -->
+              <form-formatted-input
+                type="number"
+                :label="currencyCode"
+                v-model="form.amount"
+                name="amount"
+                :readonly="preview"
+              ></form-formatted-input>
             </form-field>
+
+            <!--
+              Currency
+            -->
+            <form-currency-dropdown v-model="form.currency_id" :readonly="preview"></form-currency-dropdown>
           </form-row>
           <form-row>
 
@@ -53,15 +63,16 @@
               Credit Date
             -->
             <form-field catch-errors="credit_date" :label="$t('labels.credit_date')">
-              <form-date-input v-model="form.credit_date" name="credit_date"></form-date-input>
+              <form-date-input current-date v-model="form.credit_date" name="credit_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Credit Number
             -->
             <form-field catch-errors="credit_number" :label="$t('labels.credit_number')">
-              <form-date-input v-model="form.credit_number" name="credit_number"></form-date-input>
+              <form-text-input v-model="form.credit_number" name="credit_number" :readonly="preview"></form-text-input>
             </form-field>
+
           </form-row>
         </form-container>
       </modal-tab>
@@ -71,8 +82,17 @@
 </template>
 
 <script>
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
+import { createDocument } from '@/modules/documents/actions'
+
 export default {
   name: 'edit-credit',
+
+  components: {
+    FormCurrencyDropdown,
+    FormFormattedInput
+  },
 
   props: {
     data: {
@@ -85,8 +105,38 @@ export default {
       return this.$store.state.form.credit
     },
 
+    preview() {
+      return this.form.__preview
+    },
+
     passive() {
       return this.$store.state.passive
+    },
+
+    currency() {
+      let currency = null
+
+      if (this.form.currency_id) {
+        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      }
+      if (!currency) {
+        let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)
+
+        if (client) {
+          currency = client.currency
+        }
+      }
+      if (!currency) {
+        currency = this.$store.state.settings.currency
+      }
+      return currency
+    },
+
+    currencyCode() {
+      if (this.currency) {
+        return this.currency.code
+      }
+      return 'EUR'
     },
 
     clients() {
@@ -95,6 +145,15 @@ export default {
   },
 
   methods: {
+    createClient() {
+      createDocument('client').then((client) => {
+        this.$store.dispatch('SET_FORM_DATA', {
+          client_uuid: client.uuid
+        })
+        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      })
+    },
+
     save() {
       if (this.form.uuid) {
         this.$store.dispatch('form/credit/SAVE')
@@ -120,7 +179,7 @@ export default {
   height: 617px;
 
   .modal-tabs {
-    width: 990px;
+    width: 590px;
   }
 }
 </style>

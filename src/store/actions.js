@@ -1,23 +1,58 @@
 import * as types from './mutation-types'
 import Echo from '@/echo'
-import i18n from '@/i18n'
+import Api from '@/api'
 import Auth from '@/auth'
 import { OVERVIEW } from '@/router/routes'
 import router from '@/router'
 import { getTableName } from '@/modules/documents/helpers'
 import DocumentsList from '@/modules/documents/list'
 
-export const INIT = ({ dispatch }) => {
-  /* Static Data */
-  dispatch('LOAD_STATIC_DATA')
-
-  /* Documents */
+export const INIT = ({ dispatch, commit, state }, preloadedData = null) => {
   const promises = []
 
-  DocumentsList.forEach((key) => {
-    const tableName = getTableName(key)
-    promises.push(dispatch(`table/${tableName}/LOAD_TABLE`))
-  })
+  // Use preloaded data if possible, load everything if not
+  const preloadedJsonEl = document.getElementById('preloaded_json')
+  if (!preloadedData && preloadedJsonEl) {
+    preloadedData = JSON.parse(preloadedJsonEl.innerHTML)
+    preloadedJsonEl.parentNode.removeChild(preloadedJsonEl)
+  }
+  if (preloadedData) {
+    dispatch('SET_STATIC_DATA', preloadedData.passive)
+    dispatch('settings/SET_SETTINGS', state.user.settings)
+
+    /* Documents */
+    for (let key in preloadedData.documents) {
+      const tableName = getTableName(key)
+      commit(`table/${tableName}/SET_TABLE_ITEMS`, preloadedData.documents[key])
+      commit(`table/${tableName}/NORMALIZE_TABLE`)
+    }
+    DocumentsList.forEach((key) => {
+      const tableName = getTableName(key)
+      dispatch(`table/${tableName}/UPDATE_RELATIONS`)
+    })
+
+    console.log(preloadedData.system.activityLog)
+
+    dispatch('system/SET_ACTIVITY_LOG', preloadedData.system.activityLog)
+
+    // dispatch('system/UPDATE_ACTIVITY_LOG', preloadedData.)
+  } else {
+    /* Static Data */
+    dispatch('LOAD_STATIC_DATA').then(() => {
+      dispatch('settings/SET_SETTINGS', state.user.settings)
+    })
+
+    dispatch('system/UPDATE_ACTIVITY_LOG')
+
+    /* Documents */
+    DocumentsList.forEach((key) => {
+      const tableName = getTableName(key)
+      promises.push(dispatch(`table/${tableName}/LOAD_TABLE`))
+    })
+
+    /* Features */
+    dispatch(`features/vat_checker/LOAD_RESULTS`)
+  }
 
   // once all documents are loaded, link relationships
   Promise.all(promises).then(() => {
@@ -26,9 +61,6 @@ export const INIT = ({ dispatch }) => {
       dispatch(`table/${tableName}/UPDATE_RELATIONS`)
     })
   })
-
-  /* Features */
-  dispatch(`features/vat_checker/LOAD_RESULTS`)
 
   /* Real time */
   Echo.connect()
@@ -39,8 +71,9 @@ export const LOGIN = ({ dispatch }, creds) => {
     .then((response) => {
       const accessToken = response.body.access_token
       const user = response.body.user
+      const preloadedData = response.body.preloadedData
 
-      dispatch('AUTHENTICATE', { accessToken, user })
+      dispatch('AUTHENTICATE', { accessToken, user, preloadedData })
     })
 }
 
@@ -49,39 +82,35 @@ export const REGISTER = ({ dispatch }, data) => {
     .then((response) => {
       const accessToken = response.body.access_token
       const user = response.body.user
+      const preloadedData = response.body.preloadedData
 
-      dispatch('AUTHENTICATE', { accessToken, user })
+      dispatch('AUTHENTICATE', { accessToken, user, preloadedData })
     })
 }
 
-export const AUTHENTICATE = ({ commit, state, dispatch }, { accessToken, user }) => {
+export const AUTHENTICATE = ({ commit, state, dispatch }, { accessToken, user, preloadedData }) => {
   commit(types.UPDATE_ACCESS_TOKEN, accessToken)
   commit(types.UPDATE_USER, user)
 
   localStorage.setItem('state', JSON.stringify({
     auth: state.auth,
-    user: state.user,
-    locale: state.locale
+    user: state.user
   }))
 
-  dispatch('INIT')
+  dispatch('INIT', preloadedData)
 
-  console.log('goto overview')
   router.push({
     name: OVERVIEW
   })
 }
 
 export const LOGOUT = ({ commit }) => {
+  Api.post('logout')
+
   commit(types.CLEAR_ALL_DATA)
 
   localStorage.removeItem('state')
   Echo.disconnect()
 
   router.push({ name: 'login' })
-}
-
-export const CHANGE_LOCALE = ({ commit, store }, locale) => {
-  i18n.locale = locale
-  commit(types.UPDATE_LOCALE, locale)
 }

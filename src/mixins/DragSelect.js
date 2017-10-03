@@ -57,7 +57,7 @@ export default {
     onMouseDown(event) {
       // if clicked element is a link or inside a span container
       // do not interfere with user action
-      if (['span', 'a', 'input', 'select', 'textarea', 'button'].indexOf(event.target.tagName.toLowerCase()) > -1) {
+      if (['a', 'input', 'select', 'textarea', 'button'].indexOf(event.target.tagName.toLowerCase()) > -1) {
         return
       }
       const hasParentWithClass = (element, classname) => {
@@ -117,19 +117,21 @@ export default {
           y: event.pageY
         }
 
-        this.$refs.rows.forEach((child) => {
-          if (this.isItemSelected(child)) {
-            if (this.selected.indexOf(child) < 0) {
-              this.selected.push(child)
-              child.dispatchEvent(new Event('dragselect-enter'))
+        if (this.$refs.rows) {
+          this.$refs.rows.forEach((child) => {
+            if (this.isItemSelected(child)) {
+              if (this.selected.indexOf(child) < 0) {
+                this.selected.push(child)
+                child.dispatchEvent(new Event('dragselect-enter'))
+              }
+            } else {
+              if (this.selected.indexOf(child) > -1) {
+                this.selected = this.selected.filter((el) => el !== child)
+                child.dispatchEvent(new Event('dragselect-leave'))
+              }
             }
-          } else {
-            if (this.selected.indexOf(child) > -1) {
-              this.selected = this.selected.filter((el) => el !== child)
-              child.dispatchEvent(new Event('dragselect-leave'))
-            }
-          }
-        })
+          })
+        }
       }
     },
 

@@ -22,6 +22,9 @@ export const restoreDocument = (document, documentType) => {
 }
 
 export const patchDocument = (document, documentType, changes) => {
+  if (typeof document === 'undefined' || !document) {
+    return
+  }
   const tableName = getTableName(documentType)
   const resourceName = getResourceName(documentType)
 
@@ -35,16 +38,21 @@ export const patchDocument = (document, documentType, changes) => {
 
 export const createDocument = (documentType, prefilledData = {}, tabIndex = null) => {
   const formName = getFormName(documentType)
-  store.dispatch(`form/${formName}/OPEN_CREATE_FORM`)
+
+  const promise = store.dispatch(`form/${formName}/OPEN_CREATE_FORM`)
+
   store.dispatch(`form/${formName}/SET_FORM_DATA`, prefilledData)
   if (tabIndex !== null) {
     store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', tabIndex)
   }
+  return promise
 }
 
 export const editDocument = (document, documentType, tabIndex = null) => {
+  if (typeof document === 'undefined' || !document) {
+    return
+  }
   const formName = getFormName(documentType)
-  console.log(formName, document)
   store.dispatch(`form/${formName}/OPEN_EDIT_FORM`, document)
   if (tabIndex !== null) {
     store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', tabIndex)

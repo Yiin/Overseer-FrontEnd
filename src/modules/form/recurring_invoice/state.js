@@ -1,11 +1,15 @@
-const state = {
+import FormState from '@/modules/form/state'
+
+const state = FormState({
   __name: 'recurring_invoice',
 
-  client: '', // uuid
+  uuid: '',
+
+  client_uuid: '', // uuid
 
   // Details
-  start_date: '', // YYYY-MM-DD
-  end_date: '', // YYYY-MM-DD
+  start_date: null, // YYYY-MM-DD
+  end_date: null, // YYYY-MM-DD
   po_number: '',
   discount_type: 'percentage',
   discount_value: 0,
@@ -34,9 +38,33 @@ const state = {
   terms: '',
   footer: '',
 
-  errors: {}
-}
+  tabs: [
+    [
+      'client_uuid'
+    ],
+    [
+      'start_date',
+      'end_date',
+      'frequency_type',
+      'frequency_value',
+      'po_number',
+      'autobill',
+      'discount_value',
+      'discount_type'
+    ],
+    [
+      'items'
+    ],
+    [
+      'note_to_client',
+      'terms',
+      'footer'
+    ]
+  ],
 
-state.__initial = Object.assign({}, state)
+  errors: {}
+})
+
+state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

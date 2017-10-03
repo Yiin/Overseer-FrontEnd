@@ -3,35 +3,25 @@
        v-clickaway = "close"
        class       = "dropdown"
        tabindex    = "0"
-      :class       = "{ 'dropdown--open': isOpen, 'dropdown--primary': primary }"
+      :class       = "{
+        'dropdown--open': isOpen,
+        'dropdown--primary': primary,
+        'dropdown--reversed': shouldBeReversed
+      }"
       @keydown.self.enter.space = "toggle"
   >
-    <!--
-      If dropdown is searchable, let user input search query
-    -->
-    <div v-if  = "searchable"
-         class = "dropdown__input-wrapper"
-    >
-      <input :placeholder   = "displayText"
-              v-model       = "query"
-              class         = "dropdown__input"
-              type          = "text"
-             @focus         = "open"
-             @blur          = "close"
-             @keydown.enter = "addOption"
-      ></input>
-    </div>
-
-    <!--
-      else just show simple div with current value or placeholder text
-     -->
-    <div v-else
-         @click = "toggle"
-          class = "dropdown__input"
-         :class = "{ '--placeholder': !isValueSet }"
-    >
-      {{ displayText }}
-    </div>
+    <dropdown-input
+      v-if="!shouldBeReversed"
+      :searchable="searchable"
+      :display-text="displayText"
+      :is-value-set="isValueSet"
+      :readonly="readonly"
+      v-model="query"
+      @focus="open"
+      @blur="close"
+      @keydown.enter="addOption"
+      @click="toggle"
+    ></dropdown-input>
 
     <!--
       dropdown list of options
@@ -52,14 +42,32 @@
        -->
       <slot></slot>
     </div>
+
+    <dropdown-input
+      v-if="shouldBeReversed"
+      :display-text="displayText"
+      :is-value-set="isValueSet"
+      :readonly="readonly"
+      v-model="query"
+      @focus="open"
+      @blur="close"
+      @keydown.enter="addOption"
+      @click="toggle"
+      :class="{ '--focus': isOpen }"
+    ></dropdown-input>
   </div>
 </template>
 
 <script>
 import he from 'he'
+import DropdownInput from './DropdownInput.vue'
 
 export default {
   name: 'dropdown',
+
+  components: {
+    DropdownInput
+  },
 
   props: {
     placeholder: {
@@ -94,6 +102,10 @@ export default {
     newEntryValue: {
       type: String,
       default: undefined
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -221,7 +233,7 @@ export default {
      * @return {[type]} [description]
      */
     searchQuery() {
-      return he.decode(this.query)
+      return he.decode(this.query || '')
           .trim()
           .toLowerCase()
     },
@@ -253,7 +265,7 @@ export default {
   },
 
   watch: {
-    query: function (query) {
+    query: function () {
       this.options.forEach((option) => {
         option.isVisible = this.shouldBeVisible(option)
       })
@@ -280,7 +292,8 @@ export default {
         this.findAndSelect(value)
       }
       if (this.searchable) {
-        this.query = this.valueText
+        console.log(this.displayText)
+        this.query = this.displayText
       }
     }
   },
@@ -304,10 +317,12 @@ export default {
         this.initOptions()
         this.recalculateComputedProperty('visibleOptions')
 
-        this.setValue({
-          text: '',
-          value: ''
-        })
+        if (this.value) {
+          this.setValue({
+            text: '',
+            value: ''
+          })
+        }
       })
     },
 
@@ -436,6 +451,9 @@ export default {
     },
 
     toggle() {
+      if (this.readonly) {
+        return
+      }
       this.isOpen = !this.isOpen
       this.$refs.dropdownOptions.scrollTop = 0
     },
@@ -448,6 +466,9 @@ export default {
     },
 
     open() {
+      if (this.readonly) {
+        return
+      }
       this.query = ''
       this.isOpen = true
       this.$refs.dropdownOptions.scrollTop = 0

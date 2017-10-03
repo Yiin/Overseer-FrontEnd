@@ -47,13 +47,13 @@ export default {
     },
 
     inputs() {
-      return this.$slots.default
+      return !this.$slots.default ? [] : this.$slots.default
         .filter((el) => el.tag && el.tag.indexOf('input') > -1 && el.tag.indexOf('form-inputs-group') < 0)
         .map((el) => el.componentInstance)
     },
 
     groups() {
-      return this.$slots.default
+      return !this.$slots.default ? [] : this.$slots.default
         .filter((el) => el.tag && el.tag.indexOf('form-inputs-group') > -1)
         .map((el) => el.componentInstance)
     }

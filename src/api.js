@@ -16,7 +16,8 @@ export default {
    * @return {void}
    */
   install(Vue) {
-    Vue.http.options.root = process.env.API_ROOT
+    Vue.http.options.root = 'http://' + window.location.hostname + '/api'
+    console.log(Vue.http.options.root)
 
     Vue.http.interceptors.push((request, next) => {
       request.credentials = true

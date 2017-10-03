@@ -649,7 +649,7 @@ const Statuses = {
       priority: 2,
 
       meetsCondition(document) {
-        return document.invoice !== null
+        return document.invoice
       }
     },
     pending: {
@@ -727,6 +727,32 @@ const Statuses = {
   vendor: {
     //
   }
+}
+
+export const is = (type, document, statuses) => {
+  statuses = [].concat(statuses)
+
+  for (let i = 0; i < statuses.length; ++i) {
+    const status = statuses[i]
+
+    if (Statuses[type][status].meetsCondition(document)) {
+      return true
+    }
+  }
+  return false
+}
+
+export const isNot = (type, document, statuses) => {
+  statuses = [].concat(statuses)
+
+  for (let i = 0; i < statuses.length; ++i) {
+    const status = statuses[i]
+
+    if (Statuses[type][status].meetsCondition(document)) {
+      return false
+    }
+  }
+  return true
 }
 
 export default Statuses

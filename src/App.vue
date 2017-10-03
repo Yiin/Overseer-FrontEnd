@@ -51,21 +51,7 @@ export default {
 .router-view {
     position: absolute;
     width: calc(100% - 76px);
-}
-
-/* Fade out */
-.fade-enter-active {
-  transition: opacity .3s ease-in-out;
-  transition-delay: .1s;
-}
-
-/* Fade In */
-.fade-leave-active {
-  transition: opacity .3s ease-out;
-}
-
-.fade-enter, .fade-leave-active {
-  opacity: 0;
+    padding-bottom: 90px;
 }
 </style>
 

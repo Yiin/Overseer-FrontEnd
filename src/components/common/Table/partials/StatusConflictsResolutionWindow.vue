@@ -122,6 +122,10 @@ export default {
           if (this.conflictState && this.conflictState.solve) {
             // solve final conflicts
             this.conflictState = this.conflictState.solve(this.data.document)
+
+            if (this.conflictState.solution) {
+              return
+            }
           }
           // close the popup, we're done
           this.$store.dispatch('popup/CLOSE_POPUP')

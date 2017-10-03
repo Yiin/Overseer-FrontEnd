@@ -1,20 +1,34 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel">
+    <modal-tabs @save="save" @cancel="cancel" :hide-buttons="preview">
 
       <!--
         Select client who made the payment
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="payment">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
-            <inline-option v-for="client in clients"
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+            <inline-option v-if="preview" selected>
+              {{ form.client.name }}
+            </inline-option>
+            <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
                           :selected="client.uuid === form.client_uuid"
             >
               {{ client.name }}
             </inline-option>
+            <div slot="placeholder" class="placeholder-area">
+              <div class="placeholder placeholder--clients"></div>
+              <div class="placeholder placeholder--line"></div>
+              <div class="placeholder__text">
+                Add a new client by pressing the button below.
+              </div>
+              <a @click="createClient" class="button button--create">
+                <span class="icon-new-client-btn-icon"></span>
+                {{ $t('actions.new_client') }}
+              </a>
+            </div>
           </form-inline-select-input>
         </form-container>
       </modal-tab>
@@ -24,7 +38,7 @@
        -->
       <modal-tab :title="$t('tabs.invoice')">
         <form-container name="payment">
-          <form-inline-select-input name="invoice_uuid" :placeholder="$t('placeholders.type_invoice_number')" tabular>
+          <form-inline-select-input :watch="invoices" name="invoice_uuid" :placeholder="$t('placeholders.type_invoice_number')" tabular :readonly="preview">
             <template slot="head">
               <inline-select-column width="25%">{{ $t('fields.invoice_number') }}</inline-select-column>
               <inline-select-column width="24%">{{ $t('fields.client_name') }}</inline-select-column>
@@ -38,22 +52,34 @@
                               :searchable="invoice.invoice_number"
                               :selected.once="invoice.uuid === form.invoice_uuid"
             >
-              <inline-select-column>{{ invoice.invoice_number }}</inline-select-column>
-              <inline-select-column>{{ invoice.client.name }}</inline-select-column>
-              <inline-select-column>
+              <inline-select-column width="25%">{{ invoice.invoice_number }}</inline-select-column>
+              <inline-select-column width="24%">{{ invoice.client.name }}</inline-select-column>
+              <inline-select-column width="18%">
                 <span class="currency">€</span>
                 <span class="currency currency--primary">{{ invoice.amount }}</span>
               </inline-select-column>
-              <inline-select-column>
+              <inline-select-column width="18%">
                 <span class="currency">€</span>
                 <span class="currency currency--secondary">{{ invoice.paid_in }}</span>
-              </inline-select-column>
+              </inline-select-column width="15%">
               <inline-select-column class="inline-select-column--center">
                 <span class="status" :class="[ 'status--' + $options.filters.invoiceStatus(invoice) ]">
                   {{ invoice | invoiceStatus }}
                 </span>
               </inline-select-column>
             </inline-select-row>
+
+            <div slot="placeholder" class="placeholder-area">
+              <div class="placeholder placeholder--invoices"></div>
+              <div class="placeholder placeholder--line"></div>
+              <div class="placeholder__text">
+                Add a new invoice by pressing the button below.
+              </div>
+              <a @click="createInvoice" class="button button--create">
+                <span class="icon-new-invoice-btn-icon"></span>
+                {{ $t('actions.new_invoice') }}
+              </a>
+            </div>
           </form-inline-select-input>
         </form-container>
       </modal-tab>
@@ -70,23 +96,17 @@
                 <!--
                   Price
                 -->
-                <form-text-input v-model="form.amount" name="amount"></form-text-input>
+                <form-text-input v-model="form.amount" name="amount" :readonly="preview"></form-text-input>
 
                 <!--
                   Currency
                 -->
-                <form-dropdown-input :watch="passive.currencies" name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
-                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
-                                  :value="currency.id"
-                                  :selected.once="currency.id === form.currency_id">
-                    {{ currency.code }}
-                  </dropdown-option>
-                </form-dropdown-input>
+                <form-currency-dropdown v-model="form.currency_id" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
               </form-inputs-group>
             </form-field>
             <form-field :label="$t('labels.payment_type')">
-              <form-dropdown-input :watch="passive.paymentTypes" name="payment_type_id" :placeholder="$t('labels.payment_type')" scrollable searchable>
-                <dropdown-option v-for="type in passive.paymentTypes"
+              <form-dropdown-input :watch="passive.paymentTypes" name="payment_type_id" :placeholder="$t('labels.payment_type')" scrollable searchable :readonly="preview">
+                <dropdown-option v-for="type in paymentTypes"
                                 :key="type.name"
                                 :value="type.id"
                                 :selected.once="type.id === form.method_id"
@@ -102,14 +122,14 @@
               Payment Date
             -->
             <form-field catch-errors="payment_date" :label="$t('labels.payment_date')">
-              <form-date-input v-model="form.payment_date" name="payment_date"></form-date-input>
+              <form-date-input current-date v-model="form.payment_date" name="payment_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Payment Reference
             -->
             <form-field catch-errors="payment_reference" :label="$t('labels.payment_reference')">
-              <form-text-input v-model="form.payment_reference" name="payment_reference"></form-text-input>
+              <form-text-input v-model="form.payment_reference" name="payment_reference" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
         </form-container>
@@ -120,8 +140,15 @@
 </template>
 
 <script>
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+import { createDocument } from '@/modules/documents/actions'
+
 export default {
   name: 'edit-payment',
+
+  components: {
+    FormCurrencyDropdown
+  },
 
   props: {
     data: {
@@ -136,8 +163,20 @@ export default {
       return this.$store.state.form.payment
     },
 
+    preview() {
+      return this.form.__preview
+    },
+
     passive() {
       return this.$store.state.passive
+    },
+
+    credits() {
+      return this.$store.getters['table/credits/activeItems']
+    },
+
+    paymentTypes() {
+      return this.passive.paymentTypes
     },
 
     clients() {
@@ -145,11 +184,64 @@ export default {
     },
 
     invoices() {
+      if (this.form.client_uuid) {
+        return this.$store.state.table.invoices.items.filter((invoice) => {
+          return invoice.client && invoice.client.uuid === this.form.client_uuid
+        })
+      }
       return this.$store.state.table.invoices.items
     }
   },
 
+  watch: {
+    'form.client_uuid': function (clientUuid) {
+      if (clientUuid) {
+        if (!this.invoices.find((invoice) => invoice.uuid === this.form.invoice_uuid)) {
+          this.$store.dispatch('form/payment/SET_FORM_DATA', {
+            invoice_uuid: null
+          })
+        }
+      }
+    },
+
+    'form.invoice_uuid': function (invoiceUuid) {
+      if (invoiceUuid && !this.form.client_uuid) {
+        const invoice = this.invoices.find((invoice) => invoice.uuid === invoiceUuid)
+
+        if (invoice && invoice.client) {
+          this.$store.dispatch('form/payment/SET_FORM_DATA', {
+            client_uuid: invoice.client.uuid
+          })
+        } else {
+          this.$store.dispatch('form/payment/SET_FORM_DATA', {
+            invoice_uuid: null
+          })
+        }
+      }
+    }
+  },
+
   methods: {
+    createClient() {
+      createDocument('client').then((client) => {
+        this.$store.dispatch('SET_FORM_DATA', {
+          client_uuid: client.uuid
+        })
+        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      })
+    },
+
+    createInvoice() {
+      createDocument('invoice', {
+        client_uuid: this.form.client_uuid
+      }, this.form.client_uuid ? 1 : 0).then((invoice) => {
+        this.$store.dispatch('SET_FORM_DATA', {
+          invoice_uuid: invoice.uuid
+        })
+        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 2)
+      })
+    },
+
     save() {
       if (this.form.uuid) {
         this.$store.dispatch('form/payment/SAVE')

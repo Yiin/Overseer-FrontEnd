@@ -1,5 +1,9 @@
 export default {
-  CHANGE_CURRENCY(state, currencyId) {
-    state.currencyId = currencyId
+  SET_CURRENCY(state, currency) {
+    state.currency = currency
+  },
+
+  SET_LOCALE(state, locale) {
+    state.locale = locale
   }
 }

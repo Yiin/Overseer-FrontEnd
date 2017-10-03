@@ -25,7 +25,7 @@
 
       </template>
 
-      <dropdown-checkbox-option v-else :value="option.name">
+      <dropdown-checkbox-option ref="checkboxOption" v-else :value="option.name">
         {{ $t(option.placeholder) }}
       </dropdown-checkbox-option>
     </template>

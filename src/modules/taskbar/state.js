@@ -1,6 +1,7 @@
 let state = {
   items: [/* { type: 'modal', data } */],
-  activeIndex: null
+  activeIndex: null,
+  savedTasks: []
 }
 
 export default state

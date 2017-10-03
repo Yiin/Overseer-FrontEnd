@@ -1,45 +1,63 @@
 <template>
   <div>
-    <breadcrumb :path="[ $t('common.products') ]"></breadcrumb>
-
-    <div class="table__heading">
-      <a @click="create" class="button button--create">
-        <span class="icon-new-product-btn-icon"></span>
-        {{ $t('actions.new_product') }}
-      </a>
-
-      <div class="table__dropdowns">
-        <filter-by :name="name" :options="filterBy"></filter-by>
-        <search-by :name="name" :options="searchBy"></search-by>
+    <template v-if="!state.items || !state.items.length">
+      <div class="placeholder-area">
+        <div class="placeholder placeholder--products"></div>
+        <div class="placeholder placeholder--line"></div>
+        <div class="placeholder__text">
+          Here you can add products.<br>
+          Both physical stock or services.
+        </div>
+        <a @click="create" class="button button--create">
+          <span class="icon-new-product-btn-icon"></span>
+          {{ $t('actions.new_product') }}
+        </a>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <breadcrumb :path="[ $t('common.products') ]"></breadcrumb>
 
-    <documents-table :data="list" :context-menu-actions="contextMenuActions">
-      <template slot="head">
-        <column width="21%">{{ $t('fields.product_name') }}</column>
-        <column width="47%">{{ $t('fields.description') }}</column>
-        <column width="17%">{{ $t('fields.price') }}</column>
-        <column width="15%">{{ $t('fields.stock') }}</column>
-      </template>
-      <template slot="columns" scope="props">
-        <column width="21%">
-          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
-        </column>
-        <column width="47%">
-          <span>{{ props.row.description }}</span>
-        </column>
-        <column width="17%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.price | currency }}</span>
-        </column>
-        <column width="15%">
-          <span>{{ props.row.qty }}</span>
-        </column>
-      </template>
-      <template slot="table-controls-left"></template>
-    </documents-table>
+      <div class="table__heading">
+        <a @click="create" class="button button--create">
+          <span class="icon-new-product-btn-icon"></span>
+          {{ $t('actions.new_product') }}
+        </a>
 
-    <table-footer :table-name="name"></table-footer>
+        <div class="table__dropdowns">
+          <filter-by :name="name" :options="filterBy"></filter-by>
+          <search-by :name="name" :options="searchBy"></search-by>
+        </div>
+      </div>
+
+      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+        <template slot="head">
+          <column width="21%">{{ $t('fields.product_name') }}</column>
+          <column width="47%">{{ $t('fields.description') }}</column>
+          <column width="17%">{{ $t('fields.price') }}</column>
+          <column width="15%">{{ $t('fields.stock') }}</column>
+        </template>
+        <template slot="columns" scope="props">
+          <column width="21%">
+            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
+          </column>
+          <column width="47%">
+            <span>{{ props.row.description }}</span>
+          </column>
+          <column width="17%">
+            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ props.row.price | currency }}</span>
+          </column>
+          <column width="15%">
+            <span v-if="props.row.is_service" class="product-qty product-qty--service">Service</span>
+            <span v-else-if="props.row.qty <= 0" class="product-qty product-qty--out-of-stock">Out of Stock</span>
+            <span v-else class="product-qty">{{ props.row.qty }}</span>
+          </column>
+        </template>
+        <template slot="table-controls-left"></template>
+      </documents-table>
+
+      <table-footer :table-name="name"></table-footer>
+    </template>
   </div>
 </template>
 
@@ -69,6 +87,7 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Preview,
   EditDocument
 } from '@/modules/table/cm-actions'
 
@@ -106,6 +125,7 @@ export default {
           icon: 'icon-new-product-btn-icon'
         }),
         SELECTED_DOCUMENT.extend({ documentType: 'product' }),
+        Preview.extend({ title: 'actions.preview' }),
         EditDocument.extend({ title: 'actions.edit_product' }),
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
@@ -139,5 +159,15 @@ export default {
 </script>
 
 <style lang="scss">
+.product-qty {
+  font-weight: bold;
+}
 
+.product-qty--service {
+  color: #940e96;
+}
+
+.product-qty--out-of-stock {
+  color: $color-red;
+}
 </style>

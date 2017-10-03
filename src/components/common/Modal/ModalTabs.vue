@@ -3,6 +3,7 @@
     <div class="modal-tabs__list">
       <div
         v-for="(tab, index) in tabs"
+        v-if="tab.$vnode && tab.$vnode.tag && tab.$vnode.tag.indexOf('modal-tab') > -1"
         @mousedown="showTab(index)"
         class="modal__tab"
         :class="{ 'modal__tab--active': tab.isActive }"
@@ -17,18 +18,15 @@
     </div>
     <div class="modal-tabs__content">
       <slot></slot>
-      <div slot="nav-buttons" class="modal-buttons">
+      <div v-if="!hideButtons" slot="nav-buttons" class="modal-buttons">
         <div class="modal-buttons-group modal-buttons-group--left">
-          <div @click="showTab(activeTabIndex - 1)" class="button button__modal button__modal--back" :class="{ 'button__modal--disabled': isFirstTabActive }">
-            <i class="icon-prev"></i>
-          </div>
-          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
+          <div @click="$emit('fill')" class="button button__modal button__modal--cancel">Test Data</div>
         </div>
         <div class="modal-buttons-group modal-buttons-group--right">
-          <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>
-          <div @click="showTab(activeTabIndex + 1)" class="button button__modal button__modal--next" :class="{ 'button__modal--disabled': isLastTabActive }">
-            Next <i class="icon-next"></i>
-          </div>
+          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
+          <slot name="right-buttons">
+            <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>
+          </slot>
         </div>
       </div>
     </div>
@@ -38,6 +36,13 @@
 <script>
 export default {
   name: 'modal-tabs',
+
+  props: {
+    hideButtons: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   computed: {
     tabs() {
@@ -55,6 +60,12 @@ export default {
 
     isLastTabActive() {
       return this.activeTabIndex === this.tabs.length - 1
+    }
+  },
+
+  watch: {
+    activeTabIndex(index) {
+      this.showTab(index)
     }
   },
 

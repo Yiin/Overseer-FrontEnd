@@ -3,7 +3,7 @@ export default (state = {}) => {
     state: 'idle',
     itemsRelationsAreUpdated: false,
     page: 0,
-    rows_per_page: 3,
+    rows_per_page: 10,
     orderBy: 'created_at',
     orderDirection: 'desc',
     items: [],

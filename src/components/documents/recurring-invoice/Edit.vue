@@ -1,14 +1,17 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel">
+    <modal-tabs @save="save" @cancel="cancel" :hide-buttons="preview">
 
       <!--
         Select client we're sending recurring invoice to
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="recurring_invoice">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')">
-            <inline-option v-for="client in clients"
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :hide-buttons="preview"
+            <inline-option v-if="preview" selected>
+              {{ form.client.name }}
+            </inline-option>
+            <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
                           :selected="client.uuid === form.client_uuid"
@@ -30,14 +33,14 @@
               Start Date
             -->
             <form-field :label="$t('labels.start_date')">
-              <form-date-input v-model="form.start_date" name="start_date"></form-date-input>
+              <form-date-input :current-date="!form.uuid" v-model="form.start_date" name="start_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Frequency
             -->
             <form-field :label="$t('labels.frequency')">
-              <form-dropdown-input v-model="form.frequency" :watch="frequencies" name="frequency_value:frequency_type" scrollable>
+              <form-dropdown-input v-model="form.frequency" :watch="frequencies" name="frequency_value:frequency_type" scrollable :hide-buttons="preview">
                 <dropdown-option v-for="(frequency, index) in frequencies" :key="index" :value="`${frequency.value}:${frequency.type}`">
                   {{ $t('frequency.' + frequency.name) }}
                 </dropdown-option>
@@ -51,14 +54,14 @@
               End Date
             -->
             <form-field :label="$t('labels.end_date')">
-              <form-date-input v-model="form.end_date" name="end_date"></form-date-input>
+              <form-date-input v-model="form.end_date" name="end_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Due Date
             -->
             <form-field :label="$t('labels.due_date')">
-              <form-dropdown-input v-model="form.due_date" name="due_date" :watch="dueDates" scrollable>
+              <form-dropdown-input v-model="form.due_date" name="due_date" :watch="dueDates" scrollable :hide-buttons="preview">
                 <dropdown-option v-for="(dueDate, index) in dueDates" :key="index" :value="dueDate.value" :selected="form.due_date === dueDate.value">
                   {{ $t(`due_date.${dueDate.name}`) }}
                 </dropdown-option>
@@ -72,14 +75,14 @@
               PO Number
             -->
             <form-field :label="$t('labels.po_number')">
-              <form-text-input v-model="form.po_number" name="po_number"></form-text-input>
+              <form-text-input v-model="form.po_number" name="po_number" :readonly="preview"></form-text-input>
             </form-field>
 
             <!--
               Autobill
             -->
             <form-field :label="$t('labels.autobill')">
-              <form-dropdown-input v-model="form.autobill" name="autobill">
+              <form-dropdown-input v-model="form.autobill" name="autobill" :hide-buttons="preview">
                 <dropdown-option :value="false" :selected="true">{{ $t('common.off') }}</dropdown-option>
                 <dropdown-option :value="true">{{ $t('common.on') }}</dropdown-option>
               </form-dropdown-input>
@@ -93,7 +96,7 @@
               Partial
             -->
             <form-field :label="$t('labels.partial')">
-              <form-date-input v-model="form.partial" name="partial" disabled></form-date-input>
+              <form-text-input v-model="form.partial" name="partial" disabled :readonly="preview"></form-text-input>
             </form-field>
 
             <!--
@@ -101,8 +104,8 @@
             -->
             <form-field :label="$t('labels.discount')">
               <form-inputs-group>
-                <form-text-input v-model="form.discount_value" name="discount_value"></form-text-input>
-                <form-dropdown-input v-model="form.discount_type" name="discount_type">
+                <form-text-input v-model="form.discount_value" name="discount_value" :readonly="preview"></form-text-input>
+                <form-dropdown-input v-model="form.discount_type" name="discount_type" :readonly="preview">
                   <dropdown-option value="percentage" :selected="form.discount_type === 'percentage'">{{ $t('discount_type.percent') }}</dropdown-option>
                   <dropdown-option value="flat" :selected="form.discount_type === 'flat'">{{ $t('discount_type.flat') }}</dropdown-option>
                 </form-dropdown-input>
@@ -124,6 +127,7 @@
                            v-model="form.items"
                            :model="itemModel"
                            name="items"
+                           :readonly="preview"
           >
 
             <!--
@@ -284,21 +288,21 @@
             Upload Documents
           -->
           <tab :title="$t('tabs.documents')">
-            <form-documents-input></form-documents-input>
+            <form-documents-input:readonly="preview"></form-documents-input>
           </tab>
           <tab :title="$t('tabs.note_to_client')">
             <form-container name="recurring_invoice">
-              <form-textarea-input v-model="form.note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12"></form-textarea-input>
+              <form-textarea-input v-model="form.note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
           <tab :title="$t('tabs.terms')">
             <form-container name="recurring_invoice">
-              <form-textarea-input v-model="form.terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12"></form-textarea-input>
+              <form-textarea-input v-model="form.terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
           <tab :title="$t('tabs.footer')">
             <form-container name="recurring_invoice">
-              <form-textarea-input v-model="form.footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12"></form-textarea-input>
+              <form-textarea-input v-model="form.footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
         </tabs>
@@ -334,6 +338,10 @@ export default {
   computed: {
     form() {
       return this.$store.state.form.recurring_invoice
+    },
+
+    preview() {
+      return this.form.__preview
     },
 
     frequencies() {

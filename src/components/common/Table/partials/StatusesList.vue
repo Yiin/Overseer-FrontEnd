@@ -143,46 +143,51 @@ export default {
 
 <style lang="scss">
 .status__list {
-    color: $color-main-dark;
-    background: $color-white;
-    z-index: 1;
-    position: absolute;
-    width: 100%;
-    font-size: 13px;
-    left: 0;
-    box-shadow: $box-shadow;
+  color: $color-main-dark;
+  background: $color-white;
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  font-size: 13px;
+  top: 28px;
+  left: 0;
+  box-shadow: $box-shadow;
 }
 
 .statuses-list {
-    position: relative;
-    cursor: pointer;
-    text-align: left;
-    padding-left: 12px;
-    padding-right: 28px;
+  position: relative;
+  cursor: pointer;
+  text-align: left;
+  padding-left: 0;
+  padding-right: 18px;
 
-    &--open {
-      box-shadow: $box-shadow;
-    }
-    &::before {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        content: '';
-        border-top: 4px solid;
-        border-right: 4px solid transparent;
-        border-left: 4px solid transparent;
-    }
+  &--open {
+    box-shadow: $box-shadow;
+  }
+  &::before {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    content: '';
+    border-top: 4px solid;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+  }
+  .current-status {
+      text-align: center;
+  }
 }
 
 .status__item:hover {
-    background: #f0f0f0;
+  background: #f0f0f0;
 }
 
 .status__item {
-    padding: 1px 0;
-    font-weight: normal;
-    text-align: left;
-    padding-left: 12px;
-    text-transform: capitalize;
+  padding: 1px 0;
+  font-weight: normal;
+  text-align: left;
+  padding: 6px 0 6px 12px;
+  text-transform: capitalize;
+  line-height: initial;
 }
 </style>

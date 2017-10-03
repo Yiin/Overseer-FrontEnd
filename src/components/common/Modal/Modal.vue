@@ -1,8 +1,8 @@
 <template>
   <transition name="fade">
-    <div v-show="isOpen" class="background-dim">
+    <div v-show="isOpen" @mousedown.self="closeOrHide" class="background-dim">
       <transition name="move">
-        <div v-show="isOpen" v-clickaway="closeOrHide" class="modal-background">
+        <div v-show="isOpen" class="modal-background">
           <div class="modal__title">
             {{ $t(title) }}
           </div>
@@ -61,7 +61,9 @@ export default {
       if (this.hasChanges) {
         this.hide()
       } else {
-        this.close()
+        // yeah just hide
+        this.hide()
+        // this.close()
       }
     }
   }

@@ -13,6 +13,13 @@
     {
         outline: none;
     }
+    &--reversed
+    {
+        .dropdown__input
+        {
+            border-radius: 0 0 3px 3px !important;
+        }
+    }
     /**
      * List of dropdown options
      */
@@ -37,8 +44,11 @@
         &--reversed
         {
             bottom: 44px;
+            z-index: 0;
 
-            box-shadow: 0 -2px 5px rgba(0, 0, 0, .02);
+            border-top: none;
+            border-bottom: 1px solid #ebebeb !important;
+            border-radius: 3px 3px 0 0 !important;
         }
     }
     /**
@@ -47,20 +57,23 @@
     &__option
     {
         line-height: 34px;
-        // overflow: hidden;
+
+        user-select: none;
 
         padding: 0 15px 0 26px;
 
         cursor: default;
-        user-select: none;
-        white-space: nowrap;
-        text-overflow: ellipsis;
         /**
          * Slight shade on hover
          */
         &:hover
         {
             background: $color-wild-sand;
+        }
+        .dropdown-option__content {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
         /**
          * This options is checkable, a.k.a it has checkbox
@@ -117,6 +130,7 @@
             position: relative;
 
             padding-left: 26px;
+            overflow: visible;
             /**
              * Label of this nested option
              */
@@ -228,28 +242,34 @@
 
         line-height: 44px;
 
-        background: $color-white;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
         padding: 0 35px 0 15px;
 
+        background: $color-white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
+        &:focus
+        {
+            outline: none;
+        }
         &.--placeholder
         {
             // color: $color-text-placeholder;
         }
-        // caret
-        &::before,
-        &-wrapper::before
-        {
-            position: absolute;
-            top: 19px;
-            right: 15px;
+        // &:not(.--datepicker) {
+            // caret
+            &::before,
+            &-wrapper::before
+            {
+                position: absolute;
+                top: 20px;
+                right: 15px;
 
-            content: '';
+                content: '';
 
-            border-top: 4px solid;
-            border-right: 4px solid transparent;
-            border-left: 4px solid transparent;
-        }
+                border-top: 4px solid $color-mine-shaft;
+                border-right: 4px solid transparent;
+                border-left: 4px solid transparent;
+            }
+        // }
         &-wrapper
         {
             position: relative;
@@ -262,10 +282,10 @@
         &::before,
         &-wrapper::before
         {
-            top: 15px;
+            top: 16px;
 
             border-top: 4px solid transparent;
-            border-bottom: 4px solid;
+            border-bottom: 4px solid $color-mine-shaft;
             border-left: 4px solid transparent;
         }
     }
@@ -296,6 +316,7 @@
             line-height: 44px;
 
             height: 44px;
+            position: relative;
 
             border: none;
             box-shadow: $box-shadow;
@@ -312,7 +333,7 @@
             border-right: none;
             border-bottom: none;
             border-left: none;
-            box-shadow: $box-shadow;
+            box-shadow: $box-shadow-primary-dropdown-options;
         }
     }
     &--small
@@ -321,7 +342,8 @@
     }
     &--hide-overflow
     {
-        .dropdown__option {
+        .dropdown__option
+        {
             overflow: hidden;
         }
     }
@@ -407,7 +429,8 @@
     /**
      * Base style
      */
-    .mediumjs-input + &
+    .mediumjs-input + &,
+    .dropdown__option--date-range &
     {
         position: absolute;
 
@@ -430,6 +453,14 @@
     .dropdown__option--text-input:focus + &
     {
         background-image: url(../assets/icons/cross-white.svg);
+    }
+    /**
+     * Ranged date option input
+     */
+    .dropdown__option--date-range &
+    {
+        top: 11px;
+        right: 15px;
     }
     /**
      * Dropdown nested option search input

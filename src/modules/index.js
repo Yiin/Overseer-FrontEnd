@@ -5,6 +5,10 @@ import form from './form'
 import passive from './passive'
 import features from './features'
 import popup from './popup'
+import dashboard from './dashboard'
+import settings from './settings'
+import system from './system'
+import documents from './documents'
 
 export default {
   modal,
@@ -13,5 +17,9 @@ export default {
   form,
   passive,
   features,
-  popup
+  popup,
+  dashboard,
+  settings,
+  system,
+  documents
 }

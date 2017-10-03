@@ -1,58 +1,82 @@
 <template>
   <div>
-    <breadcrumb :path="[ $t('common.clients') ]"></breadcrumb>
+    <template v-if="!state.items || !state.items.length">
+      <div class="placeholder-area">
+        <div class="placeholder placeholder--clients"></div>
+        <div class="placeholder placeholder--line"></div>
+        <div class="placeholder__text">
+          Here you can add customers<br>
+          whom you will offer services to.
 
-    <div class="table__heading">
-      <a @click="create" class="button button--create">
-        <span class="icon-new-client-btn-icon"></span>
-        {{ $t('actions.new_client') }}
-      </a>
-
-      <div class="table__dropdowns">
-        <filter-by :watch="{ 'countries': countries, 'currencies': currencies }" :name="name" :options="filterBy"></filter-by>
-        <search-by :name="name" :options="searchBy"></search-by>
+        </div>
+        <a @click="create" class="button button--create">
+          <span class="icon-new-client-btn-icon"></span>
+          {{ $t('actions.new_client') }}
+        </a>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <breadcrumb :path="[ $t('common.clients') ]"></breadcrumb>
 
-    <documents-table :data="list" :context-menu-actions="contextMenuActions">
-      <template slot="head">
-        <column width="20%">{{ $t('fields.client_name') }}</column>
-        <column width="20%">{{ $t('fields.vat_number') }}</column>
-        <column width="15%">{{ $t('fields.phone_number') }}</column>
-        <column width="20%">{{ $t('fields.email') }}</column>
-        <column width="11%">{{ $t('fields.date_created') }}</column>
-        <column width="14%">{{ $t('fields.balance') }}</column>
-      </template>
-      <template slot="columns" scope="props">
-        <column width="20%">
-          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
-        </column>
-        <column width="20%">
-          <span>{{ props.row.vat_number }}</span>
-        </column>
-        <column width="15%">
-          <span>{{ props.row.phone }}</span>
-        </column>
-        <column width="20%">
-          <span>{{ props.row.email }}</span>
-        </column>
-        <column width="11%">
-          <span>{{ props.row.created_at | date }}</span>
-        </column>
-        <column width="14%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.balance | currency }}</span>
-        </column>
-      </template>
-      <template slot="table-controls-left"></template>
-    </documents-table>
+      <div class="table__heading">
+        <a @click="create" class="button button--create">
+          <span class="icon-new-client-btn-icon"></span>
+          {{ $t('actions.new_client') }}
+        </a>
 
-    <table-footer :table-name="name"></table-footer>
+        <div class="table__dropdowns">
+          <filter-by ref="filterByComponent" :watch="{ 'countries': countries, 'currencies': currencies }" :name="name" :options="filterBy"></filter-by>
+          <search-by :name="name" :options="searchBy"></search-by>
+        </div>
+      </div>
+
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
+        <template slot="head">
+          <column width="17%">{{ $t('fields.client_name') }}</column>
+          <column width="23%">{{ $t('fields.vat_number') }}</column>
+          <column width="15%">{{ $t('fields.phone_number') }}</column>
+          <column width="20%">{{ $t('fields.email') }}</column>
+          <column width="11%">{{ $t('fields.date_created') }}</column>
+          <column width="14%">{{ $t('fields.balance') }}</column>
+        </template>
+        <template slot="columns" scope="props">
+          <column width="17%">
+            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
+          </column>
+          <column width="23%" :copy="props.row.vat_number">
+            <span v-tooltip="'Click to Copy'">{{ props.row.vat_number }}</span>
+            <vat-info :vat="props.row.vat_number"></vat-info>
+          </column>
+          <column width="15%">
+            <span>{{ props.row.phone }}</span>
+          </column>
+          <column width="20%">
+            <span>{{ props.row.email }}</span>
+          </column>
+          <column width="11%">
+            <span>{{ props.row.created_at | date }}</span>
+          </column>
+          <column width="14%">
+            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ props.row.balance | currency }}</span>
+          </column>
+        </template>
+        <template slot="table-controls-left"></template>
+      </documents-table>
+
+      <table-footer :table-name="name"></table-footer>
+    </template>
   </div>
 </template>
 
 <script>
 import TableMixin from '@/mixins/TableMixin'
+import VatInfo from '@/components/vat-checker/VatInfo.vue'
+
 import {
   IsActiveFilter,
   IsArchivedFilter,
@@ -79,6 +103,7 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Restore,
   Preview,
   EditDocument,
   NewInvoice,
@@ -92,6 +117,10 @@ export default {
   mixins: [
     TableMixin
   ],
+
+  components: {
+    VatInfo
+  },
 
   computed: {
     searchBy() {
@@ -110,6 +139,7 @@ export default {
         SELECTED_ROWS,
         Archive.isVisible(whenMoreThanOneRowIsSelected),
         Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Restore.isVisible(whenMoreThanOneRowIsSelected),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.client_table'
@@ -131,7 +161,8 @@ export default {
         EnterCredit,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Delete,
+        Restore
       ]
     },
 
@@ -178,6 +209,29 @@ export default {
   },
 
   methods: {
+    applyFiltersToShowHiddenResults() {
+      this.$refs.filterByComponent.$children[0].$children[0].open()
+
+      setTimeout(() => {
+        const check = (i) => {
+          if (i >= 3) {
+            return
+          }
+          const option = this.$refs.filterByComponent.$refs.checkboxOption[i]
+
+          if (option) {
+            if (option.isChecked) {
+              check(i + 1)
+            } else {
+              this.$nextTick(() => option.check())
+              setTimeout(() => check(i + 1), 370)
+            }
+          }
+        }
+        setTimeout(() => check(0), 200)
+      }, 100)
+    },
+
     create() {
       this.$store.dispatch('form/client/OPEN_CREATE_FORM')
     },

@@ -36,7 +36,7 @@
         </template>
       </div>
       <dropdown @input="changeRowsPerPage" class="dropdown--primary dropdown--table-footer dropdown--page">
-        <dropdown-option v-for="rpp in [3, 10, 20, 50, 9007199254740991]"
+        <dropdown-option v-for="rpp in [10, 20, 50, 9007199254740991]"
                         :key="rpp"
                         :value="rpp"
                         :selected="rpp === tableState.rows_per_page"
@@ -98,7 +98,7 @@ export default {
     },
 
     isLastPage() {
-      return this.tableState.page === this.pagesCount - 1
+      return this.tableState.page === this.pagesCount - 1 || this.pagesCount === 0
     },
 
     rows() {
@@ -206,7 +206,7 @@ export default {
 }
 
 .table__footer-text {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: $font-weight-semibold;
     color: $color-dusty-gray;
     display: inline-block;

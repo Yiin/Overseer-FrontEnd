@@ -4,16 +4,21 @@ export default {
   LOAD_RESULTS({ commit }) {
     Api.get('feature/vat-checker/results')
       .then((response) => {
-        commit('SET_RESULTS', response)
+        // commit('SET_RESULTS', response)
       })
   },
 
   CHECK_VAT({ commit }, { country_code, number }) {
-    Api.post('feature/vat-checker/check', {
+    return Api.post('feature/vat-checker/check', {
       cc: country_code,
       vn: number
     }).then((response) => {
       commit('ADD_RESULT', response)
+      return response
     })
+  },
+
+  REMOVE_CHECKS({ commit }, { country_code, number }) {
+    commit('REMOVE_RESULTS', { country_code, number })
   }
 }

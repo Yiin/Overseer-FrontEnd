@@ -1,4 +1,6 @@
-const state = {
+import FormState from '@/modules/form/state'
+
+const state = FormState({
   __name: 'client',
 
   uuid: '',
@@ -35,11 +37,39 @@ const state = {
   payment_terms: null, // integer
   company_size_id: null, // id
   industry_id: null, // id
-  // notes: '',
+
+  tabs: [
+    [
+      'name',
+      'registration_number',
+      'vat_number',
+      'website',
+      'phone',
+      'logo'
+    ],
+    [
+      'address1',
+      'address2',
+      'city',
+      'postal_code',
+      'state',
+      'country_id'
+    ],
+    [
+      'contacts'
+    ],
+    [
+      'currency_id',
+      'language_id',
+      'payment_terms',
+      'company_size_id',
+      'industry_id'
+    ]
+  ],
 
   errors: {}
-}
+})
 
-state.__initial = Object.assign({}, state)
+state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

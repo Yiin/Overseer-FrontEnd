@@ -2,13 +2,13 @@
 {
     font-size: 14px;
     font-weight: bold;
-    line-height: 24px;
+    line-height: 28px;
 
     display: block;
 
     min-width: 103px;
-    height: 24px;
     margin: 0 auto;
+    padding: 0 8px;
 
     text-transform: uppercase;
 
@@ -54,7 +54,8 @@
     {
         background-color: #4fcd09;
     }
-    &--partially-refunded, &--partial
+    &--partially-refunded,
+    &--partial
     {
         background-color: #ff6c11;
     }

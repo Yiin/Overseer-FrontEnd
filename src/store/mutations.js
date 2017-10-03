@@ -17,25 +17,19 @@ export default {
     state.user.profile.email = user.profile.email
     state.user.profile.phone = user.profile.phone
     state.user.profile.job_position = user.profile.job_position
+    state.user.settings = user.settings
     state.user.username = user.username
     state.user.company = user.company
     state.user.uuid = user.uuid
   },
 
-  [types.UPDATE_LOCALE](state, locale) {
-    state.locale = locale
-  },
-
   /**
-   * Clear each property, one by one, so reactivity still works.
+   * Resets main state
    *
-   * (ie. clear out state.auth.isLoggedIn so Navbar component automatically reacts to logged out state,
-   * and the Navbar menu adjusts accordingly)
-   *
-   * TODO: use a common import of default state to reset these values with.
+   * TODO: Reset modules state also
    */
   [types.CLEAR_ALL_DATA](state) {
-    for (let key in state) {
+    for (let key in DEFAULT_STATE) {
       state[key] = DEFAULT_STATE[key]
     }
   }

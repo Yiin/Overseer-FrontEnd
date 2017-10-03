@@ -4,7 +4,7 @@ let state = {
 
   // user authentication data
   auth: {
-    isLoggedIn: true,
+    isLoggedIn: false,
     accessToken: null
   },
 
@@ -20,10 +20,7 @@ let state = {
     },
     username: null,
     company: null
-  },
-
-  // current locale
-  locale: 'en'
+  }
 }
 
 export const DEFAULT_STATE = Object.assign({}, state)

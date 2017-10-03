@@ -1,4 +1,6 @@
-const state = {
+import FormState from '@/modules/form/state'
+
+const state = FormState({
   __name: 'project',
 
   uuid: '',
@@ -8,8 +10,8 @@ const state = {
   client_uuid: null,
 
   errors: {}
-}
+})
 
-state.__initial = Object.assign({}, state)
+state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

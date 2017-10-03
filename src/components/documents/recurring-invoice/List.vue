@@ -1,194 +1,36 @@
 <template>
   <div>
-    <breadcrumb :path="[ $t('common.recurring_invoices') ]"></breadcrumb>
 
-    <div class="table__heading">
-      <a @click="create" class="button button--create">
-        <span class="icon-new-recurring-btn-icon"></span>
-        {{ $t('actions.new_recurring_invoice') }}
-      </a>
 
-      <div class="table__dropdowns">
-        <filter-by :watch="{ frequencies, clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
-        <search-by :name="name" :options="searchBy"></search-by>
-      </div>
-    </div>
 
-    <documents-table :data="list" :context-menu-actions="contextMenuActions">
-      <template slot="head">
-        <column width="16%">{{ $t('fields.frequency') }}</column>
-        <column width="20%">{{ $t('fields.client_name') }}</column>
-        <column width="11%">{{ $t('fields.start_date') }}</column>
-        <column width="11%">{{ $t('fields.last_sent') }}</column>
-        <column width="15%">{{ $t('fields.end_date') }}</column>
-        <column width="15%">{{ $t('fields.amount') }}</column>
-        <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
-      </template>
-      <template slot="columns" scope="props">
-        <column width="16%">
-          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">
-            {{ $t('frequency.' + frequencies.find((frequency) => frequency.key === props.row.frequency).name) }}
-          </a>
-        </column>
-        <column width="20%">
-          <span>{{ props.row.client ? props.row.client.name : '' }}</span>
-        </column>
-        <column width="11%">
-          <span>{{ props.row.start_date | date }}</span>
-        </column>
-        <column width="11%">
-          <span>{{ props.row.last_sent | date }}</span>
-        </column>
-        <column width="15%">
-          <span>{{ props.row.end_date | date }}</span>
-        </column>
-        <column width="15%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
-        </column>
-        <column width="12%" class="column--center">
-          <statuses-list type="recurring_invoice" :document="props.row"></statuses-list>
-        </column>
-      </template>
-      <template slot="table-controls-left"></template>
-    </documents-table>
-
-    <table-footer :table-name="name"></table-footer>
   </div>
 </template>
 
 <script>
-import TableMixin from '@/mixins/TableMixin'
-import {
-  IsActiveFilter,
-  IsArchivedFilter,
-  IsDeletedFilter,
-  IsDraftFilter,
-  IsPendingFilter,
-  IsOverdueFilter,
-  FrequenciesFilter,
-  ClientsFilter,
-  InvoiceProductsFilter,
 
-  // Search By
-  SearchByText,
-  SearchByValue,
-  SearchByDate,
-  SearchByItemsProduct
-} from '@/modules/table/filters'
-
-import {
-  whenMoreThanOneRowIsSelected,
-  whenSpecificRowIsSelected,
-  __SEPARATOR__,
-  SELECTED_ROWS,
-  SELECTED_DOCUMENT,
-  TableName,
-  CreateDocument,
-  Archive,
-  Delete,
-  EditDocument,
-  CloneDocument
-} from '@/modules/table/cm-actions'
-
-export default {
-  mixins: [
-    TableMixin
-  ],
-
-  computed: {
-    name() {
-      return 'recurring_invoices'
-    },
-
-    searchBy() {
-      return [
-        SearchByDate.extend({ key: 'start_date', name: 'start_date', placeholder: this.$t('search_by.start_date') }),
-        SearchByDate.extend({ key: 'last_sent', name: 'last_sent', placeholder: this.$t('search_by.last_sent_date') }),
-        SearchByValue.extend({ key: 'amount', name: 'amount', placeholder: this.$t('search_by.amount') }),
-        { type: 'separator' },
-        SearchByText.extend({ key: 'client.name', name: 'client_name', placeholder: this.$t('search_by.client_name') }),
-        SearchByItemsProduct.extend({ name: 'product_name', placeholder: this.$t('search_by.product_name') })
-      ]
-    },
-
-    contextMenuActions() {
-      return [
-        SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
-        __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
-        TableName.extend({
-          title: 'common.recurring_invoice_table'
-        }),
-        CreateDocument.extend({
-          documentType: 'recurring_invoice',
-          title: 'actions.new_recurring_invoice',
-          icon: 'icon-new-recurring-btn-icon'
-        }),
-        SELECTED_DOCUMENT.extend({ documentType: 'invoice' }),
-        EditDocument.extend({ title: 'actions.edit_invoice' }),
-        CloneDocument.extend({ title: 'actions.clone_invoice' }),
-        __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
-        Archive,
-        Delete
-      ]
-    },
-
-    filterBy() {
-      return [
-        IsActiveFilter,
-        IsArchivedFilter,
-        IsDeletedFilter,
-        { type: 'separator' },
-        IsDraftFilter,
-        IsPendingFilter,
-        IsOverdueFilter,
-        { type: 'separator' },
-        FrequenciesFilter.make(this.frequencies),
-        { type: 'separator' },
-        ClientsFilter.make(this.clients),
-        InvoiceProductsFilter.make(this.products)
-      ]
-    },
-
-    frequencies() {
-      return this.$store.state.passive.frequencies
-    },
-
-    clients() {
-      const clients = this.$store.getters[`table/${this.name}/filteredItems`].map((invoice) => invoice.client)
-      return this.filterAndOrder(clients, {
-        filterBy: 'uuid',
-        orderBy: 'name'
-      })
-    },
-
-    products() {
-      let products = []
-
-      // Get all invoices products
-      this.$store.getters[`table/${this.name}/filteredItems`].forEach((invoice) => {
-        invoice.items.forEach((item) => {
-          products.push(item.product)
-        })
-      })
-
-      return this.filterAndOrder(products, {
-        filterBy: 'uuid',
-        orderBy: 'name'
-      })
-    }
-  },
-
-  methods: {
-    create() {
-      this.$store.dispatch('form/recurring_invoice/OPEN_CREATE_FORM')
-    },
-
-    edit(data) {
-      this.$store.dispatch('form/recurring_invoice/OPEN_EDIT_FORM', data)
-    }
-  }
-}
 </script>
+
+<style lang="scss">
+
+
+// Settings icon
+.tab .db-ContentTabs-tab-link--icon-settings {
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-position: 13px 3px;
+    padding-left: 39px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48cGF0aCBmaWxsPSIjNDI0NzcwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNi4xOTcgOS4wMTdjLS4yMyAwLTEuNjA3IDAtMi4xOC0uNjk1IDAtLjExNS0uMTE1LS4xMTUtLjExNS0uMjMxLS4xMTUtLjgxLjkxOC0xLjg1MSAxLjAzMi0xLjk2Ny4yMy0uMjMxLjIzLS41NzkuMTE1LS42OTQtLjExNS0uMTE2LS41NzQtLjU3OS0uNjg4LS44MS0uMTE1LS4yMzItLjQ2LS4xMTYtLjY4OS4xMTYtLjIzLjIzLTEuMTQ3IDEuMTU3LTEuOTUgMS4wNC0uMTE1IDAtLjExNS0uMTE1LS4yMy0uMTE1LS42ODktLjQ2My0uNjg5LTEuODUxLS42ODktMi4wODIgMC0uMzQ4LS4xMTQtLjU3OS0uMzQ0LS41NzlIOS4zMTFjLS4yMjkgMC0uMzQ0LjIzMS0uMzQ0LjU3OSAwIC4yMyAwIDEuNjItLjY4OCAyLjE5OC0uMTE1IDAtLjExNS4xMTYtLjIzLjExNi0uODAzIDAtMS43MjEtLjkyNi0xLjk1LTEuMTU3LS4yMy0uMjMyLS41NzQtLjIzMi0uNjktLjExNi0uMTE0LjIzMS0uNTczLjY5NC0uODAyLjgxLS4xMTUuMTE1LS4xMTUuNDYzLjExNC42OTQuMjMuMjMxIDEuMTQ4IDEuMTU3IDEuMDMzIDEuOTY3IDAgLjExNi0uMTE1LjExNi0uMTE1LjIzMS0uNDU5LjY5NS0xLjgzNi42OTUtMi4wNjUuNjk1LS4zNDQgMC0uNTc0LjExNS0uNTc0LjM0N3YxLjA0MWMwIC4yMzEuMjMuNDYzLjU3NC40NjMuMjMgMCAxLjYwNiAwIDIuMTguNjk0IDAgLjExNi4xMTUuMTE2LjExNS4yMzEuMTE1LjgxLS45MTggMS44NTItMS4wMzMgMS45NjctLjIzLjIzMi0uMjMuNTc5LS4xMTUuNjk1LjExNS4xMTUuNTc0LjU3OC42ODkuODEuMTE1LjExNS40NTkuMTE1LjY4OC0uMTE2LjIzLS4yMzIgMS4xNDgtMS4xNTcgMS45NTEtMS4wNDIuMTE1IDAgLjExNS4xMTYuMjMuMTE2LjY4OC41NzkuNjg4IDEuODUxLjY4OCAyLjE5OCAwIC4yMzIuMjMuNTc5LjQ2LjU3OWgxLjAzMmMuMjMgMCAuNDU5LS4yMzEuNDU5LS41NzkgMC0uMjMgMC0xLjYyLjY4OS0yLjE5OC4xMTQgMCAuMTE0LS4xMTYuMjMtLjExNi44MDItLjExNSAxLjgzNS45MjYgMS45NSAxLjA0Mi4yMy4yMzEuNTc0LjIzMS42ODguMTE1bC44MDQtLjgxYy4xMTQtLjExNS4xMTQtLjQ2Mi0uMTE1LS42OTQtLjIzLS4yMzEtMS4xNDgtMS4xNTctMS4wMzMtMS45NjcgMC0uMTE1LjExNS0uMTE1LjExNS0uMjMxLjU3NC0uNjk0IDEuODM2LS42OTQgMi4xOC0uNjk0LjIzIDAgLjU3NC0uMjMyLjU3NC0uNDYzVjkuMzY0Yy0uMjMtLjIzMi0uNDU5LS4zNDctLjgwMy0uMzQ3em0tNi4zMTIgMy40N2MtMS4zNzcgMC0yLjUyNC0xLjE1Ni0yLjUyNC0yLjU0NSAwLTEuMzg4IDEuMTQ3LTIuNTQ1IDIuNTI0LTIuNTQ1czIuNTI1IDEuMTU3IDIuNTI1IDIuNTQ1YzAgMS4zODktMS4xNDggMi41NDYtMi41MjUgMi41NDZ2LS4wMDF6Ii8+PC9zdmc+")
+}
+
+.db-ContentTabs-tab .db-ContentTabs-tab-link--icon-settings:hover {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48cGF0aCBmaWxsPSIjMzIzMjVEIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNi4xOTcgOS4wMTdjLS4yMyAwLTEuNjA3IDAtMi4xOC0uNjk1IDAtLjExNS0uMTE1LS4xMTUtLjExNS0uMjMxLS4xMTUtLjgxLjkxOC0xLjg1MSAxLjAzMi0xLjk2Ny4yMy0uMjMxLjIzLS41NzkuMTE1LS42OTQtLjExNS0uMTE2LS41NzQtLjU3OS0uNjg4LS44MS0uMTE1LS4yMzItLjQ2LS4xMTYtLjY4OS4xMTYtLjIzLjIzLTEuMTQ3IDEuMTU3LTEuOTUgMS4wNC0uMTE1IDAtLjExNS0uMTE1LS4yMy0uMTE1LS42ODktLjQ2My0uNjg5LTEuODUxLS42ODktMi4wODIgMC0uMzQ4LS4xMTQtLjU3OS0uMzQ0LS41NzlIOS4zMTFjLS4yMjkgMC0uMzQ0LjIzMS0uMzQ0LjU3OSAwIC4yMyAwIDEuNjItLjY4OCAyLjE5OC0uMTE1IDAtLjExNS4xMTYtLjIzLjExNi0uODAzIDAtMS43MjEtLjkyNi0xLjk1LTEuMTU3LS4yMy0uMjMyLS41NzQtLjIzMi0uNjktLjExNi0uMTE0LjIzMS0uNTczLjY5NC0uODAyLjgxLS4xMTUuMTE1LS4xMTUuNDYzLjExNC42OTQuMjMuMjMxIDEuMTQ4IDEuMTU3IDEuMDMzIDEuOTY3IDAgLjExNi0uMTE1LjExNi0uMTE1LjIzMS0uNDU5LjY5NS0xLjgzNi42OTUtMi4wNjUuNjk1LS4zNDQgMC0uNTc0LjExNS0uNTc0LjM0N3YxLjA0MWMwIC4yMzEuMjMuNDYzLjU3NC40NjMuMjMgMCAxLjYwNiAwIDIuMTguNjk0IDAgLjExNi4xMTUuMTE2LjExNS4yMzEuMTE1LjgxLS45MTggMS44NTItMS4wMzMgMS45NjctLjIzLjIzMi0uMjMuNTc5LS4xMTUuNjk1LjExNS4xMTUuNTc0LjU3OC42ODkuODEuMTE1LjExNS40NTkuMTE1LjY4OC0uMTE2LjIzLS4yMzIgMS4xNDgtMS4xNTcgMS45NTEtMS4wNDIuMTE1IDAgLjExNS4xMTYuMjMuMTE2LjY4OC41NzkuNjg4IDEuODUxLjY4OCAyLjE5OCAwIC4yMzIuMjMuNTc5LjQ2LjU3OWgxLjAzMmMuMjMgMCAuNDU5LS4yMzEuNDU5LS41NzkgMC0uMjMgMC0xLjYyLjY4OS0yLjE5OC4xMTQgMCAuMTE0LS4xMTYuMjMtLjExNi44MDItLjExNSAxLjgzNS45MjYgMS45NSAxLjA0Mi4yMy4yMzEuNTc0LjIzMS42ODguMTE1bC44MDQtLjgxYy4xMTQtLjExNS4xMTQtLjQ2Mi0uMTE1LS42OTQtLjIzLS4yMzEtMS4xNDgtMS4xNTctMS4wMzMtMS45NjcgMC0uMTE1LjExNS0uMTE1LjExNS0uMjMxLjU3NC0uNjk0IDEuODM2LS42OTQgMi4xOC0uNjk0LjIzIDAgLjU3NC0uMjMyLjU3NC0uNDYzVjkuMzY0Yy0uMjMtLjIzMi0uNDU5LS4zNDctLjgwMy0uMzQ3em0tNi4zMTIgMy40N2MtMS4zNzcgMC0yLjUyNC0xLjE1Ni0yLjUyNC0yLjU0NSAwLTEuMzg4IDEuMTQ3LTIuNTQ1IDIuNTI0LTIuNTQ1czIuNTI1IDEuMTU3IDIuNTI1IDIuNTQ1YzAgMS4zODktMS4xNDggMi41NDYtMi41MjUgMi41NDZ2LS4wMDF6Ii8+PC9zdmc+")
+}
+
+.db-ContentTabs-tab .db-ContentTabs-tab-link--icon-settings.db-is-selected {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48cGF0aCBmaWxsPSIjNjc3MkU1IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNi4xOTcgOS4wMTdjLS4yMyAwLTEuNjA3IDAtMi4xOC0uNjk1IDAtLjExNS0uMTE1LS4xMTUtLjExNS0uMjMxLS4xMTUtLjgxLjkxOC0xLjg1MSAxLjAzMi0xLjk2Ny4yMy0uMjMxLjIzLS41NzkuMTE1LS42OTQtLjExNS0uMTE2LS41NzQtLjU3OS0uNjg4LS44MS0uMTE1LS4yMzItLjQ2LS4xMTYtLjY4OS4xMTYtLjIzLjIzLTEuMTQ3IDEuMTU3LTEuOTUgMS4wNC0uMTE1IDAtLjExNS0uMTE1LS4yMy0uMTE1LS42ODktLjQ2My0uNjg5LTEuODUxLS42ODktMi4wODIgMC0uMzQ4LS4xMTQtLjU3OS0uMzQ0LS41NzlIOS4zMTFjLS4yMjkgMC0uMzQ0LjIzMS0uMzQ0LjU3OSAwIC4yMyAwIDEuNjItLjY4OCAyLjE5OC0uMTE1IDAtLjExNS4xMTYtLjIzLjExNi0uODAzIDAtMS43MjEtLjkyNi0xLjk1LTEuMTU3LS4yMy0uMjMyLS41NzQtLjIzMi0uNjktLjExNi0uMTE0LjIzMS0uNTczLjY5NC0uODAyLjgxLS4xMTUuMTE1LS4xMTUuNDYzLjExNC42OTQuMjMuMjMxIDEuMTQ4IDEuMTU3IDEuMDMzIDEuOTY3IDAgLjExNi0uMTE1LjExNi0uMTE1LjIzMS0uNDU5LjY5NS0xLjgzNi42OTUtMi4wNjUuNjk1LS4zNDQgMC0uNTc0LjExNS0uNTc0LjM0N3YxLjA0MWMwIC4yMzEuMjMuNDYzLjU3NC40NjMuMjMgMCAxLjYwNiAwIDIuMTguNjk0IDAgLjExNi4xMTUuMTE2LjExNS4yMzEuMTE1LjgxLS45MTggMS44NTItMS4wMzMgMS45NjctLjIzLjIzMi0uMjMuNTc5LS4xMTUuNjk1LjExNS4xMTUuNTc0LjU3OC42ODkuODEuMTE1LjExNS40NTkuMTE1LjY4OC0uMTE2LjIzLS4yMzIgMS4xNDgtMS4xNTcgMS45NTEtMS4wNDIuMTE1IDAgLjExNS4xMTYuMjMuMTE2LjY4OC41NzkuNjg4IDEuODUxLjY4OCAyLjE5OCAwIC4yMzIuMjMuNTc5LjQ2LjU3OWgxLjAzMmMuMjMgMCAuNDU5LS4yMzEuNDU5LS41NzkgMC0uMjMgMC0xLjYyLjY4OS0yLjE5OC4xMTQgMCAuMTE0LS4xMTYuMjMtLjExNi44MDItLjExNSAxLjgzNS45MjYgMS45NSAxLjA0Mi4yMy4yMzEuNTc0LjIzMS42ODguMTE1bC44MDQtLjgxYy4xMTQtLjExNS4xMTQtLjQ2Mi0uMTE1LS42OTQtLjIzLS4yMzEtMS4xNDgtMS4xNTctMS4wMzMtMS45NjcgMC0uMTE1LjExNS0uMTE1LjExNS0uMjMxLjU3NC0uNjk0IDEuODM2LS42OTQgMi4xOC0uNjk0LjIzIDAgLjU3NC0uMjMyLjU3NC0uNDYzVjkuMzY0Yy0uMjMtLjIzMi0uNDU5LS4zNDctLjgwMy0uMzQ3em0tNi4zMTIgMy40N2MtMS4zNzcgMC0yLjUyNC0xLjE1Ni0yLjUyNC0yLjU0NSAwLTEuMzg4IDEuMTQ3LTIuNTQ1IDIuNTI0LTIuNTQ1czIuNTI1IDEuMTU3IDIuNTI1IDIuNTQ1YzAgMS4zODktMS4xNDggMi41NDYtMi41MjUgMi41NDZ2LS4wMDF6Ii8+PC9zdmc+")
+}
+
+.db-ContentTabs-tab .db-ContentTabs-tab-link--icon-settings.db-is-disabled {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48cGF0aCBmaWxsPSIjODg5OEFBIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNi4xOTcgOS4wMTdjLS4yMyAwLTEuNjA3IDAtMi4xOC0uNjk1IDAtLjExNS0uMTE1LS4xMTUtLjExNS0uMjMxLS4xMTUtLjgxLjkxOC0xLjg1MSAxLjAzMi0xLjk2Ny4yMy0uMjMxLjIzLS41NzkuMTE1LS42OTQtLjExNS0uMTE2LS41NzQtLjU3OS0uNjg4LS44MS0uMTE1LS4yMzItLjQ2LS4xMTYtLjY4OS4xMTYtLjIzLjIzLTEuMTQ3IDEuMTU3LTEuOTUgMS4wNC0uMTE1IDAtLjExNS0uMTE1LS4yMy0uMTE1LS42ODktLjQ2My0uNjg5LTEuODUxLS42ODktMi4wODIgMC0uMzQ4LS4xMTQtLjU3OS0uMzQ0LS41NzlIOS4zMTFjLS4yMjkgMC0uMzQ0LjIzMS0uMzQ0LjU3OSAwIC4yMyAwIDEuNjItLjY4OCAyLjE5OC0uMTE1IDAtLjExNS4xMTYtLjIzLjExNi0uODAzIDAtMS43MjEtLjkyNi0xLjk1LTEuMTU3LS4yMy0uMjMyLS41NzQtLjIzMi0uNjktLjExNi0uMTE0LjIzMS0uNTczLjY5NC0uODAyLjgxLS4xMTUuMTE1LS4xMTUuNDYzLjExNC42OTQuMjMuMjMxIDEuMTQ4IDEuMTU3IDEuMDMzIDEuOTY3IDAgLjExNi0uMTE1LjExNi0uMTE1LjIzMS0uNDU5LjY5NS0xLjgzNi42OTUtMi4wNjUuNjk1LS4zNDQgMC0uNTc0LjExNS0uNTc0LjM0N3YxLjA0MWMwIC4yMzEuMjMuNDYzLjU3NC40NjMuMjMgMCAxLjYwNiAwIDIuMTguNjk0IDAgLjExNi4xMTUuMTE2LjExNS4yMzEuMTE1LjgxLS45MTggMS44NTItMS4wMzMgMS45NjctLjIzLjIzMi0uMjMuNTc5LS4xMTUuNjk1LjExNS4xMTUuNTc0LjU3OC42ODkuODEuMTE1LjExNS40NTkuMTE1LjY4OC0uMTE2LjIzLS4yMzIgMS4xNDgtMS4xNTcgMS45NTEtMS4wNDIuMTE1IDAgLjExNS4xMTYuMjMuMTE2LjY4OC41NzkuNjg4IDEuODUxLjY4OCAyLjE5OCAwIC4yMzIuMjMuNTc5LjQ2LjU3OWgxLjAzMmMuMjMgMCAuNDU5LS4yMzEuNDU5LS41NzkgMC0uMjMgMC0xLjYyLjY4OS0yLjE5OC4xMTQgMCAuMTE0LS4xMTYuMjMtLjExNi44MDItLjExNSAxLjgzNS45MjYgMS45NSAxLjA0Mi4yMy4yMzEuNTc0LjIzMS42ODguMTE1bC44MDQtLjgxYy4xMTQtLjExNS4xMTQtLjQ2Mi0uMTE1LS42OTQtLjIzLS4yMzEtMS4xNDgtMS4xNTctMS4wMzMtMS45NjcgMC0uMTE1LjExNS0uMTE1LjExNS0uMjMxLjU3NC0uNjk0IDEuODM2LS42OTQgMi4xOC0uNjk0LjIzIDAgLjU3NC0uMjMyLjU3NC0uNDYzVjkuMzY0Yy0uMjMtLjIzMi0uNDU5LS4zNDctLjgwMy0uMzQ3em0tNi4zMTIgMy40N2MtMS4zNzcgMC0yLjUyNC0xLjE1Ni0yLjUyNC0yLjU0NSAwLTEuMzg4IDEuMTQ3LTIuNTQ1IDIuNTI0LTIuNTQ1czIuNTI1IDEuMTU3IDIuNTI1IDIuNTQ1YzAgMS4zODktMS4xNDggMi41NDYtMi41MjUgMi41NDZ2LS4wMDF6Ii8+PC9zdmc+")
+}
+</style>

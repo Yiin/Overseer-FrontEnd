@@ -362,8 +362,8 @@ export const SearchByDate = {
   searchBy: function (document, key, value) {
     const val = _.get(document, key)
 
-    const higherThanMin = value.from === null || moment(val.date).isSameOrAfter(moment(value.from))
-    const lowerThanMax = value.to === null || moment(val.date).isSameOrBefore(moment(value.to))
+    const higherThanMin = value.start === null || moment(val.date).isSameOrAfter(moment(value.start), 'day')
+    const lowerThanMax = value.end === null || moment(val.date).isSameOrBefore(moment(value.end), 'day')
 
     return higherThanMin && lowerThanMax
   },

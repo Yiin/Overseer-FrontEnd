@@ -3,8 +3,12 @@ import pluralize from 'pluralize'
 import moment from 'moment'
 
 // visibility filters
-export const whenMoreThanOneRowIsSelected = (tableName, { state }) => {
-  return state.table[tableName].selection.length > 1
+export const whenMoreThanOneRowIsSelected = (tableName, { state }, row) => {
+  return state.table[tableName].selection.length + (
+    state.table[tableName].selection.find((r) => r.uuid === row.uuid)
+      ? 0
+      : 1
+  ) > 1
 }
 
 export const whenSpecificRowIsSelected = (tableName, store, row) => {
@@ -22,8 +26,12 @@ export const SELECTED_ROWS = ContextMenuAction({
   isSelectedRowsCounter: true,
   class: 'heading',
 
-  visible(tableName, { state }) {
-    return state.table[tableName].selection.length > 1
+  visible(tableName, { state }, row) {
+    return state.table[tableName].selection.length + (
+      state.table[tableName].selection.find((r) => r.uuid === row.uuid)
+        ? 0
+        : 1
+    ) > 1
   }
 })
 
@@ -39,9 +47,14 @@ export const SELECTED_DOCUMENT = ContextMenuAction({
 
   documentName: function (document) {
     switch (this.documentType) {
-    case 'client':
-      return document.name
+    case 'invoice':
+      return document.invoice_number
+    case 'quote':
+      return document.quote_number
+    case 'vendor':
+      return document.company_name
     }
+    return document.name || 'Null'
   }
 })
 
@@ -73,7 +86,7 @@ export const Archive = ContextMenuAction({
   icon: 'icon-dropdown-archive',
 
   visible(tableName, store, row) {
-    return row
+    return row && !row.deleted_at && !row.archived_at
   },
 
   handler(tableName, { dispatch, state }, row) {
@@ -102,7 +115,7 @@ export const Delete = ContextMenuAction({
   icon: 'icon-dropdown-delete',
 
   visible(tableName, store, row) {
-    return row && !row.deleted_at
+    return row && !row.deleted_at && !row.archived_at
   },
 
   handler(tableName, { dispatch, state }, row) {
@@ -131,7 +144,7 @@ export const Restore = ContextMenuAction({
   icon: 'icon-dropdown-restore',
 
   visible(tableName, store, row) {
-    return row && row.deleted_at
+    return row && (row.deleted_at || row.archived_at)
   },
 
   handler(tableName, { dispatch, state }, row) {
@@ -144,10 +157,15 @@ export const Restore = ContextMenuAction({
       const uuids = rows.map((row) => row.uuid)
 
       dispatch(`table/${tableName}/RESTORE_DOCUMENTS`, uuids)
+      dispatch(`table/${tableName}/UNARCHIVE_DOCUMENTS`, uuids)
     } else {
       const row = rows[0]
 
-      dispatch(`table/${tableName}/RESTORE_DOCUMENT`, row)
+      if (row.deleted_at) {
+        dispatch(`table/${tableName}/RESTORE_DOCUMENT`, row)
+      } else {
+        dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+      }
     }
   }
 })
@@ -163,8 +181,9 @@ export const Preview = ContextMenuAction({
     return !!row
   },
 
-  handler() {
-    console.log('preview')
+  handler(tableName, { dispatch }, row) {
+    const formName = pluralize.singular(tableName)
+    dispatch(`form/${formName}/OPEN_PREVIEW_FORM`, row)
   }
 })
 
@@ -476,6 +495,35 @@ export const RefundPayment = ContextMenuAction({
         payment: state.form.payment
       }
     })
+  }
+})
+
+export const ConvertToInvoice = ContextMenuAction({
+  title: 'actions.convert_to_invoice',
+  icon: 'icon-dropdown-convert',
+
+  visible(tableName, { state }, quote) {
+    return quote && !quote.invoice
+  },
+
+  handler(tableName, { dispatch, state }, quote) {
+    if (!quote) {
+      return
+    }
+
+    dispatch('form/invoice/OPEN_CREATE_FORM')
+    dispatch('form/invoice/SET_FORM_DATA', {
+      client_uuid: quote.client ? quote.client.uuid : null,
+      items: quote.items.slice(),
+      partial: quote.partial,
+      currency_id: quote.currency ? quote.currency.id : null,
+      discount_type: quote.discount_type,
+      discount_value: quote.discount_value,
+      note_to_client: quote.note_to_client,
+      terms: quote.terms,
+      footer: quote.footer
+    })
+    dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
   }
 })
 

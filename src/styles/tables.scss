@@ -1,11 +1,16 @@
 .table
 {
     position: relative;
+    // z-index: -1; /* so reversed dropdowns at the bottom of the table won't end up overlaped by the table */
 
     width: 100%;
 
-    box-shadow: $table-shadow;
     border-radius: $table-border-radius;
+    box-shadow: $box-shadow-4;
+    &--simple
+    {
+        box-shadow: none;
+    }
     &__heading
     {
         font-size: 0;
@@ -33,27 +38,33 @@
 
         user-select: none;
 
-        color: $color-text-alt;
-        background: $table-head-bg;
+        color: $color-main-dark;
+        //border-top: 1px solid #e6ebf1;
+        border-bottom: 1px solid #e6ebf1;
         border-radius: $table-border-radius $table-border-radius 0 0;
+        background: #f7f8fc; //$table-head-bg;
+        .table--simple &
+        {
+            border-right: 1px solid #e6ebf1;
+            border-left: 1px solid #e6ebf1;
+        }
         .column
         {
-            height: 50px;
+            height: 46px;
 
             border-color: $table-head-border-color;
-
             &__checkbox
             {
                 .checkbox
                 {
                     &::before
                     {
-                        border-color: $color-text-alt;
-                        background: $color-main-dark;
+                        border-color: $color-main-dark;
+                        background: #f6f9fc;
                     }
                     &::after
                     {
-                        background: $color-text-alt;
+                        background: $color-main;
                     }
                 }
             }
@@ -61,10 +72,10 @@
     }
     &__body
     {
-        font-size: 16px;
+        font-size: 14px;
 
-        background: $table-bg;
         border-radius: 0 0 $table-border-radius $table-border-radius;
+        background: $table-bg;
         .column,
         span,
         {
@@ -73,11 +84,7 @@
         .column
         {
             border-color: $table-border-color;
-            &,
-            a
-            {
-                // user-select: none;
-            }
+            position: relative;
         }
     }
     &__row
@@ -92,11 +99,14 @@
         {
             height: $table-row-height;
         }
-        &:last-child {
-            .column:first-child {
+        &:last-child
+        {
+            .column:first-child
+            {
                 border-bottom-left-radius: $table-border-radius;
             }
-            .column:last-child {
+            .column:last-child
+            {
                 border-bottom-right-radius: $table-border-radius;
             }
         }
@@ -122,7 +132,6 @@
                 line-height: $table-row-height;
 
                 position: absolute;
-                top: 50px;
                 left: 0;
 
                 width: 100%;
@@ -136,16 +145,18 @@
                 justify-content: center;
             }
         }
-        &--open {
-            &:hover {
+        &--open
+        {
+            &:hover
+            {
                 background: none;
             }
-
-            > .column {
+            > .column
+            {
                 border-color: transparent !important;
             }
-
-            > .column:nth-child(n+3) {
+            > .column:nth-child(n+3)
+            {
                 display: none;
             }
         }
@@ -153,15 +164,22 @@
     .column
     {
         display: flex;
-
         // padding-left: 21px;
 
         vertical-align: middle;
 
         align-items: center;
-        &:not(.column--center) {
-            > span, > a {
+        &:not(.column--center)
+        {
+            > span, > a
+            {
+                overflow: hidden;
+
+                margin-top: -1px;
                 padding: 15px 21px;
+                white-space: nowrap;
+
+                text-overflow: ellipsis;
             }
         }
         &__checkbox
@@ -170,8 +188,8 @@
         }
         &:not(:last-child)
         {
-            border-right-width: 1px;
-            border-right-style: solid;
+            // border-right-width: 1px;
+            // border-right-style: solid;
         }
         &--center
         {
@@ -182,4 +200,20 @@
             justify-content: center;
         }
     }
+}
+
+.status--dropdown {
+    position: relative;
+    text-align: center;
+    padding-right: 15px;
+}
+
+.status--dropdown::before {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    content: '';
+    border-top: 4px solid;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
 }

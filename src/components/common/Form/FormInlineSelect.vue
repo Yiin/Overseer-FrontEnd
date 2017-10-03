@@ -1,16 +1,20 @@
 <template>
-  <inline-select @input  = "onInput"
-                 v-model = "proxyValue"
-                 v-bind  = "$attrs"
-                 :name   = "name"
+  <inline-select @input    = "onInput"
+                 v-model   = "proxyValue"
+                 v-bind    = "$attrs"
+                 :readonly = "readonly"
+                 :name     = "name"
   >
-    <template slot="head">
+    <template v-if="!readonly" slot="head">
       <slot name="head"></slot>
     </template>
     <template slot="rows">
       <slot name="rows"></slot>
     </template>
     <slot></slot>
+    <template slot="placeholder">
+      <slot name="placeholder"></slot>
+    </template>
   </inline-select>
 </template>
 
@@ -26,6 +30,11 @@ export default {
 
     value: {
       default: null
+    },
+
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -50,7 +59,7 @@ export default {
       if (this.$parent) {
         this.$parent.$emit('input:field', payload)
       }
-      this.$emit('input', payload)
+      // this.$emit('input', payload)
     }
   }
 }

@@ -1,5 +1,11 @@
 export default {
-  currencyId: 1,
+  currency: {
+    id: 3,
+    code: 'EUR',
+    symbol: '€',
+    name: 'Euro',
+    precision: 2
+  },
 
-  language: 'en'
+  locale: 'en'
 }

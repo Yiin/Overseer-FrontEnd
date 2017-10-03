@@ -10,7 +10,7 @@ export default (actions = {}) => Object.assign({
     commit('RESET_FORM_DATA')
   },
 
-  OPEN_CREATE_FORM({ dispatch, state }) {
+  OPEN_CREATE_FORM({ commit, dispatch, state }) {
     dispatch('RESET_FORM_DATA')
 
     dispatch('CREATE_MODAL', {
@@ -21,6 +21,11 @@ export default (actions = {}) => Object.assign({
       // namespace to current form's state
       form: state.__name
     }, { root: true })
+
+    return new Promise((resolve) => {
+      console.log('adding listener')
+      commit('ADD_CREATE_LISTENER', resolve)
+    })
   },
 
   OPEN_EDIT_FORM({ dispatch, state }, data) {
@@ -36,35 +41,75 @@ export default (actions = {}) => Object.assign({
     }, { root: true })
   },
 
-  CREATE({ dispatch, commit, state }) {
+  OPEN_PREVIEW_FORM({ dispatch }, data) {
+    dispatch('SET_FORM_DATA', {
+      __preview: true
+    })
+    return dispatch('OPEN_EDIT_FORM', data)
+  },
+
+  FILL({ dispatch, commit, state }) {
+    return dispatch(`table/${pluralize(state.__name)}/FILL`, null, { root: true })
+      .then((data) => {
+        delete data.uuid
+        commit('SET_FORM_DATA', data)
+      })
+  },
+
+  CREATE({ dispatch, state }) {
+    const listeners = state.listeners.create.slice()
+
     return dispatch(`table/${pluralize(state.__name)}/CREATE_DOCUMENT`, {
-      data: {
-        [S(state.__name).slugify().s]: state
-      }
+      data: state
     }, {
       root: true
     })
+    .then((response) => {
+      listeners.forEach((fn) => {
+        fn(response)
+      })
+    })
     .catch((response) => {
       if (parseInt(response.status) === 422) {
-        commit('SET_ERRORS', response.body.messages)
+        dispatch('SET_ERRORS', response.body.messages)
       }
     })
   },
 
-  SAVE({ dispatch, commit, state }) {
+  SAVE({ dispatch, state }) {
     dispatch(`table/${pluralize(state.__name)}/SAVE_DOCUMENT`, {
       uuid: state.uuid,
-      data: {
-        [S(state.__name).slugify().s]: state
-      }
+      data: state
     }, {
       root: true
     })
+    .then((response) => {
+      state.listeners.update.forEach((fn) => {
+        fn(response)
+      })
+    })
     .catch((response) => {
       if (parseInt(response.status) === 422) {
-        commit('SET_ERRORS', response.body.messages)
+        dispatch('SET_ERRORS', response.body.messages)
       }
     })
+  },
+
+  SET_ERRORS({ dispatch, commit, state }, errors) {
+    commit('SET_ERRORS', errors)
+
+    for (let key in errors) {
+      const field = key.split('.').slice(1, 2)[0]
+
+      const tabIndex = state.tabs.findIndex((tab) => {
+        return tab.indexOf(field) > -1
+      })
+      console.log(field, tabIndex)
+
+      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', tabIndex, { root: true })
+
+      break
+    }
   },
 
   UPDATE_FIELD_VALUE({ commit }, { field, value }) {

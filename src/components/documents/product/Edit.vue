@@ -1,6 +1,6 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel">
+    <modal-tabs @save="save" @cancel="cancel" @fill="fill" :hide-buttons="preview">
       <modal-tab :title="$t('tabs.details')">
 
         <form-container name="product">
@@ -10,7 +10,56 @@
               Product Name
             -->
             <form-field :label="$t('labels.product_name')" catch-errors="name">
-              <form-text-input v-model="form.name" name="name"></form-text-input>
+              <form-text-input v-model="form.name" name="name" :readonly="preview"></form-text-input>
+            </form-field>
+
+            <form-field :label="$t('labels.identification_number')">
+              <form-inputs-group>
+                <form-text-input v-model="form.identification_number" name="identification_number" :readonly="preview"></form-text-input>
+
+                <!--
+                  Tax Rate
+                -->
+                <form-field catch-errors="tax_rate_uuid" :label="$t('labels.tax_rate')">
+
+                  <form-dropdown-input v-model="form.tax_rate_uuid" name="tax_rate_uuid" scrollable searchable :readonly="preview">
+                    <dropdown-option v-for         = "taxRate in taxRates"
+                                    :key           = "taxRate.uuid"
+                                    :value         = "taxRate.uuid"
+                                    :selected.once = "taxRate.uuid === form.tax_rate_uuid"
+                    >
+                      {{ taxRate.name }}
+                    </dropdown-option>
+                  </form-dropdown-input>
+
+                </form-field>
+
+              </form-inputs-group>
+
+            </form-field>
+
+          </form-row>
+
+          <form-row>
+
+            <!--
+              Quantity
+            -->
+            <form-field catch-errors="is_service" :label="$t('labels.product_type')">
+              <form-inputs-group>
+                <form-dropdown-input v-model="form.is_service" class="--service-dropdown">
+                  <dropdown-option :value="false" :selected="!form.is_service">
+                    Physical
+                  </dropdown-option>
+                  <dropdown-option :value="true" :selected="form.is_service">
+                    Service
+                  </dropdown-option>
+                </form-dropdown-input>
+
+                <form-field v-if="!form.is_service" catch-errors="qty" :label="$t('labels.quantity')">
+                  <form-text-input v-model="form.qty" name="qty" :readonly="preview"></form-text-input>
+                </form-field>
+              </form-inputs-group>
             </form-field>
 
             <!--
@@ -22,48 +71,14 @@
                 <!--
                   Amount
                 -->
-                <form-text-input v-model="form.price" name="price"></form-text-input>
+                <form-text-input v-model="form.price" name="price" :readonly="preview"></form-text-input>
 
                 <!--
                   Currency
                 -->
-                <form-dropdown-input v-model="form.currency_id" name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
-                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
-                                  :value="currency.id"
-                                  :selected="currency.id === form.currency_id">
-                    {{ currency.code }}
-                  </dropdown-option>
-                </form-dropdown-input>
+                <form-currency-dropdown v-model="form.currency_id" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
 
               </form-inputs-group>
-            </form-field>
-
-          </form-row>
-
-          <form-row>
-
-            <!--
-              Quantity
-            -->
-            <form-field catch-errors="qty" :label="$t('labels.quantity')">
-              <form-text-input v-model="form.qty" name="qty"></form-text-input>
-            </form-field>
-
-            <!--
-              Tax Rate
-            -->
-            <form-field catch-errors="tax_rate_uuid" :label="$t('labels.tax_rate')">
-
-              <form-dropdown-input v-model="form.tax_rate_uuid" name="tax_rate_uuid" scrollable searchable>
-                <dropdown-option v-for         = "taxRate in taxRates"
-                                :key           = "taxRate.uuid"
-                                :value         = "taxRate.uuid"
-                                :selected.once = "taxRate.uuid === form.tax_rate_uuid"
-                >
-                  {{ taxRate.name }}
-                </dropdown-option>
-              </form-dropdown-input>
-
             </form-field>
 
           </form-row>
@@ -74,7 +89,7 @@
               Description
             -->
             <form-field :label="$t('labels.description')">
-              <form-textarea-input v-model="form.description" name="description"></form-textarea-input>
+              <form-textarea-input v-model="form.description" name="description" :readonly="preview"></form-textarea-input>
             </form-field>
 
           </form-row>
@@ -83,10 +98,10 @@
 
       </modal-tab>
 
-      <modal-tab :title="$t('tabs.images')">
+      <modal-tab :title="$t('tabs.images')" class="product__images">
         <form-container name="product">
           <form-row>
-            <form-field catch-errors="images" :label="$t('labels.images')">
+            <form-field catch-errors="images">
 
               <form-images-input name="images" class="product-images-upload-field" box multiple>
                 <img slot="icon" src="../../../assets/icons/upload.svg">
@@ -107,8 +122,14 @@
 </template>
 
 <script>
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+
 export default {
   name: 'edit-product',
+
+  components: {
+    FormCurrencyDropdown
+  },
 
   props: {
     data: {
@@ -121,6 +142,14 @@ export default {
       return this.$store.state.form.product
     },
 
+    preview() {
+      return this.form.__preview
+    },
+
+    settings() {
+      return this.$store.state.settings
+    },
+
     passive() {
       return this.$store.state.passive
     },
@@ -131,6 +160,10 @@ export default {
   },
 
   methods: {
+    fill() {
+      this.$store.dispatch('form/product/FILL')
+    },
+
     save() {
       if (this.form.uuid) {
         this.$store.dispatch('form/product/SAVE')
@@ -151,21 +184,39 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.--service-dropdown {
+  width: 100%;
+}
 .modal-form {
     width: 866px;
+    height: 530px;
 }
-
 textarea {
     height: 124px !important;
+}
+.product__images {
+  padding-bottom: 20px;
+  position: relative;
+  height: 332px;
+  .form__inline-inputs:last-child {
+    margin: 0;
+  }
+  .form {
+    height: 312px;
+    padding-bottom: 19px;
+    position: absolute;
+    width: 100%;
+    top: -19px;
+  }
 }
 </style>
 
 <style lang="scss">
 .product-images-upload-field > .form__input--file-upload {
-    height: 287px !important;
+    height: 311px !important;
 
     .uploaded-images {
-      height: 287px !important;
+      height: 311px !important;
     }
 }
 </style>

@@ -1,6 +1,8 @@
 /* Vue */
 import Vue from 'vue'
 import VueResource from 'vue-resource'
+import { VTooltip } from 'v-tooltip'
+import VueClipboard from 'vue-clipboard2'
 import App from './App'
 import Api from './api'
 import Auth from './auth'
@@ -12,8 +14,16 @@ import * as filters from './filters'
 import * as components from './components/common'
 import * as directives from './directives'
 
+// Options
 Vue.config.productionTip = false
 
+/* Tooltips */
+Vue.directive('tooltip', VTooltip)
+
+/* Clipboard */
+Vue.use(VueClipboard)
+
+/* Http Client */
 Vue.use(VueResource)
 
 /* API plugin */
@@ -54,9 +64,10 @@ new Vue({
 
   mounted() {
     if (this.$store.state.auth.isLoggedIn) {
+      console.log('another init')
       this.$store.dispatch('INIT')
     }
   }
 })
 
-i18n.locale = store.state.locale
+i18n.locale = store.state.settings.locale

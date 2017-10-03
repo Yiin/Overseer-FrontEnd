@@ -58,11 +58,15 @@ span.caret
 {
     position: absolute !important;
     top: 9px !important;
+    width: 17px;
+    text-align: center;
+    left: 10px;
 }
 
 .sidebar__nav-link
 {
     position: relative !important;
+    padding-left: 5px !important;
 }
 
 .breadcrumb

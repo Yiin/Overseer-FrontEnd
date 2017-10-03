@@ -1,4 +1,12 @@
 {
+    "datetime": {
+        "custom_range": "Custom Range",
+        "last7": "Last 7 Days",
+        "last30": "Last 30 Days",
+        "month": "This Month",
+        "year": "This Year",
+        "lastyear": "Last Year"
+    },
     "actions": {
         "add_new_contact": "Add New Contact",
         "archive": "Archive",
@@ -12,8 +20,9 @@
         "edit_payment": "Edit Payment",
         "edit_product": "Edit Product",
         "edit_quote": "Edit Quote",
-        "edit_recurring_invoice": "Edit Invoice",
+        "edit_recurring_invoice": "Edit Recurring Invoice",
         "edit_vendor": "Edit Vendor",
+        "convert_to_invoice": "Convert to Invoice",
         "clone_invoice": "Clone Invoice",
         "new_client": "New Client",
         "new_credit": "New Credit",
@@ -22,7 +31,7 @@
         "new_payment": "New Payment",
         "new_product": "New Product",
         "new_quote": "New Quote",
-        "new_recurring_invoice": "New Invoice",
+        "new_recurring_invoice": "New Recurring Invoice",
         "new_vendor": "New Vendor",
         "new_project": "New Project",
         "search_by": "Search by",
@@ -39,6 +48,9 @@
         "enter_credit": "Enter Credit"
     },
     "common": {
+        "day": "Day",
+        "week": "Week",
+        "month": "Month",
         "all": "All",
         "check": "Check",
         "client": "Client",
@@ -77,12 +89,12 @@
         "amount": "Amount",
         "balance": "Balance",
         "category": "Category",
-        "client_name": "Name",
+        "client_name": "Client Name",
         "credit_date": "Credit Date",
         "city": "City",
         "expenses": "Expenses",
         "date": "Date",
-        "date_created": "Date Created",
+        "date_created": "Created",
         "description": "Description",
         "due_date": "Due Date",
         "email": "Email",
@@ -90,7 +102,7 @@
         "expense_date": "Expense Date",
         "frequency": "Frequency",
         "invoice": "Invoice",
-        "invoice_number": "Invoice #",
+        "invoice_number": "Invoice Number",
         "last_sent": "Last Sent",
         "methods": "Methods",
         "paid_in": "Paid In",
@@ -107,7 +119,8 @@
         "transaction_reference": "Transaction Reference",
         "valid_until": "Valid Until",
         "vat_number": "VAT Number",
-        "vendor_name": "Vendor Name"
+        "vendor_name": "Vendor Name",
+        "name": "Name"
     },
     "filters": {
         "active": "Active",
@@ -125,6 +138,7 @@
         "invoiced": "Invoiced",
         "logged": "Logged",
         "method": "Method",
+        "methods": "Methods",
         "out_of_stock": "Out Of Stock",
         "overdue": "Overdue",
         "paid": "Paid",
@@ -142,6 +156,12 @@
         "viewed": "Viewed"
     },
     "labels": {
+        "date": "Date",
+        "credit_date": "Credit Date",
+        "credit_number": "Credit Note Number",
+        "product_type": "Product Type",
+        "identification_number": "Product ID Number",
+        "amount": "Amount",
         "apt_suite": "Apt. Suite",
         "autobill": "Autobill",
         "balance_due": "Balance Due",
@@ -161,20 +181,20 @@
         "industry": "Industry",
         "invoice_date": "Invoice Date",
         "invoice_due_date": "Due Date",
-        "invoice_number": "Invoice #",
+        "invoice_number": "Invoice Number",
         "item": "Item",
         "job_position": "Job Position",
         "language": "Language",
         "last_name": "Last Name",
         "logo": "Logo",
         "paid_to_date": "Paid to Date",
-        "partial": "Partial",
+        "partial": "Partial Deposit",
         "payment_date": "Payment Date",
         "payment_reference": "Payment Reference",
         "payment_terms": "Payment Terms",
         "payment_type": "Payment Type",
         "phone": "Phone",
-        "po_number": "PO #",
+        "po_number": "PO Number",
         "postal_code": "Postal code",
         "price": "Price",
         "private_notes": "Private Notes",
@@ -183,7 +203,7 @@
         "qty": "Qty.",
         "quantity": "Quantity",
         "quote_date": "Quote Date",
-        "quote_number": "Quote #",
+        "quote_number": "Quote Number",
         "range_from": "From",
         "range_to": "To",
         "registration_number": "Registration number",
@@ -203,6 +223,7 @@
         "invoice_terms": "",
         "note_to_client": "",
         "type_client_name": "Type Client Name",
+        "type_vendor_name": "Type Vendor Name",
         "type_in_or_select": "Type In Or Select",
         "type_invoice_number": "Type Invoice Number",
         "upload_company_logo_image": "Upload Company Logo Image",
@@ -216,7 +237,7 @@
         "client_name": "Client Name",
         "contact_number": "Contact Number",
         "credit_date": "Credit Date",
-        "date_created": "Date Created",
+        "date_created": "Created",
         "due_date": "Due Date",
         "expense_amount": "Expense Amount",
         "expense_date": "Expense Date",
@@ -252,7 +273,7 @@
         "showing_some_entries": "There are no entries | Showing {from} to {to} out of {total} entry | Showing {from} to {to} out of {total} entries",
         "total": "Total",
         "selected_rows": "Multi - Selected: {0}",
-        "selected_document": "{0}: {1}"
+        "selected_document": "{0} - {1}"
     },
     "tabs": {
         "additional_info": "Additional info",
@@ -379,5 +400,14 @@
         "29_day_of_the_month": "29th day of the month",
         "30_day_of_the_month": "30th day of the month",
         "last_day_of_the_month": "Last day of the month"
+    },
+    "weekdays": {
+        "su": "Su",
+        "mo": "Mo",
+        "tu": "Tu",
+        "we": "We",
+        "th": "Th",
+        "fr": "Fr",
+        "sa": "Sa"
     }
 }

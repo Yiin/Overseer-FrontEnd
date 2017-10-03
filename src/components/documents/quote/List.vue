@@ -1,53 +1,69 @@
 <template>
   <div>
-    <breadcrumb :path="[ $t('common.quotes') ]"></breadcrumb>
-
-    <div class="table__heading">
-      <a @click="create" class="button button--create">
-        <span class="icon-new-quote-btn-icon"></span>
-        {{ $t('actions.new_quote') }}
-      </a>
-
-      <div class="table__dropdowns">
-        <filter-by :watch="{ clients, products }" :name="name" :options="filterBy"></filter-by>
-        <search-by :name="name" :options="searchBy"></search-by>
+    <template v-if="!state.items || !state.items.length">
+      <div class="placeholder-area">
+        <div class="placeholder placeholder--quotes"></div>
+        <div class="placeholder placeholder--line"></div>
+        <div class="placeholder__text">
+          Here you can create quotes for clients.<br>
+          Quotes can be converted to invoices.
+        </div>
+        <a @click="create" class="button button--create">
+          <span class="icon-new-quote-btn-icon"></span>
+          {{ $t('actions.new_quote') }}
+        </a>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <breadcrumb :path="[ $t('common.quotes') ]"></breadcrumb>
 
-    <documents-table :data="list" :context-menu-actions="contextMenuActions">
-      <template slot="head">
-        <column width="25%">{{ $t('fields.quote_number') }}</column>
-        <column width="25%">{{ $t('fields.client_name') }}</column>
-        <column width="12%">{{ $t('fields.date') }}</column>
-        <column width="12%">{{ $t('fields.valid_until') }}</column>
-        <column width="15%">{{ $t('fields.amount') }}</column>
-        <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
-      </template>
-      <template slot="columns" scope="props">
-        <column width="25%">
-          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.quote_number }}</a>
-        </column>
-        <column width="25%">
-          <span>{{ props.row.client.name }}</span>
-        </column>
-        <column width="12%">
-          <span>{{ props.row.quote_date | date }}</span>
-        </column>
-        <column width="12%">
-          <span>{{ props.row.due_date | date }}</span>
-        </column>
-        <column width="15%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
-        </column>
-        <column width="12%" class="column--center">
-          <statuses-list type="quote" :document="props.row"></statuses-list>
-        </column>
-      </template>
-      <template slot="table-controls-left"></template>
-    </documents-table>
+      <div class="table__heading">
+        <a @click="create" class="button button--create">
+          <span class="icon-new-quote-btn-icon"></span>
+          {{ $t('actions.new_quote') }}
+        </a>
 
-    <table-footer :table-name="name"></table-footer>
+        <div class="table__dropdowns">
+          <filter-by :watch="{ clients, products }" :name="name" :options="filterBy"></filter-by>
+          <search-by :name="name" :options="searchBy"></search-by>
+        </div>
+      </div>
+
+      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+        <template slot="head">
+          <column width="20%">{{ $t('fields.quote_number') }}</column>
+          <column width="20%">{{ $t('fields.client_name') }}</column>
+          <column width="15%">{{ $t('fields.date') }}</column>
+          <column width="15%">{{ $t('fields.valid_until') }}</column>
+          <column width="18%">{{ $t('fields.amount') }}</column>
+          <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
+        </template>
+        <template slot="columns" scope="props">
+          <column width="20%">
+            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.quote_number }}</a>
+          </column>
+          <column width="20%">
+            <span>{{ props.row.client.name }}</span>
+          </column>
+          <column width="15%">
+            <span>{{ props.row.quote_date | date }}</span>
+          </column>
+          <column width="15%">
+            <span>{{ props.row.due_date | date }}</span>
+          </column>
+          <column width="18%">
+            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+          </column>
+          <column width="12%" class="column--center">
+            <statuses-list type="quote" :document="props.row"></statuses-list>
+          </column>
+        </template>
+        <template slot="table-controls-left"></template>
+      </documents-table>
+
+      <table-footer :table-name="name"></table-footer>
+    </template>
   </div>
 </template>
 
@@ -81,10 +97,12 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Preview,
   EditDocument,
   CloneDocument,
   ViewHistory,
   MarkSent,
+  ConvertToInvoice,
   ViewInvoice
 } from '@/modules/table/cm-actions'
 
@@ -125,11 +143,13 @@ export default {
           icon: 'icon-new-quote-btn-icon'
         }),
         SELECTED_DOCUMENT.extend({ documentType: 'quote' }),
+        Preview.extend({ title: 'actions.preview' }),
         EditDocument.extend({ title: 'actions.edit_quote' }),
         CloneDocument.extend({ title: 'actions.clone_quote' }),
         ViewHistory,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         MarkSent,
+        ConvertToInvoice,
         ViewInvoice,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,

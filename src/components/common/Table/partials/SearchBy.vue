@@ -4,7 +4,12 @@
     <template v-for="option in options">
       <dropdown-separator v-if="option.type === 'separator'"></dropdown-separator>
 
-      <dropdown-numeric-option v-else-if="option.type === 'numeric' || option.type === 'date'"
+      <dropdown-date-range-option v-if="option.type === 'date'"
+        :name="option.name"
+        :placeholder="option.placeholder">
+      </dropdown-date-range-option>
+
+      <dropdown-numeric-option v-else-if="option.type === 'numeric'"
         :name="option.name"
         :placeholder="option.placeholder">
       </dropdown-numeric-option>
@@ -20,9 +25,18 @@
 
 <script>
 import he from 'he'
+import DropdownDateRangeOption from '@/components/common/Dropdown/DropdownDateRangeOption.vue'
+import DropdownNumericOption from '@/components/common/Dropdown/DropdownNumericOption.vue'
+import DropdownTextOption from '@/components/common/Dropdown/DropdownTextOption.vue'
 
 export default {
   name: 'search-by',
+
+  components: {
+    DropdownDateRangeOption,
+    DropdownNumericOption,
+    DropdownTextOption
+  },
 
   props: {
     options: Array,
@@ -33,7 +47,6 @@ export default {
     onInput(e) {
       for (let name in e) {
         const option = this.options.find((option) => option.name === name)
-        console.log('id', option.id, option)
         e[name] = {
           key: option.key,
           id: option.id,

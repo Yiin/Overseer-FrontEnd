@@ -1,53 +1,66 @@
 <template>
   <div>
-    <breadcrumb :path="[ $t('common.vendors') ]"></breadcrumb>
+    <template v-if="!state.items || !state.items.length">
+      <div class="placeholder-area">
+        <div class="placeholder placeholder--vendors"></div>
+        <div class="placeholder placeholder--line"></div>
+        <div class="placeholder__text">
+          Here you can add vendors, <br>
+          whom you will purchase from.
 
-    <div class="table__heading">
-      <a @click="create" class="button button--create">
-        <span class="icon-new-vendor-btn-icon"></span>
-        {{ $t('actions.new_vendor') }}
-      </a>
-
-      <div class="table__dropdowns">
-        <filter-by :watch="{ countries, currencies }" :name="name" :options="filterBy"></filter-by>
-        <search-by :name="name" :options="searchBy"></search-by>
+        </div>
+        <a @click="create" class="button button--create">
+          <span class="icon-new-vendor-btn-icon"></span>
+          {{ $t('actions.new_vendor') }}
+        </a>
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <breadcrumb :path="[ $t('common.vendors') ]"></breadcrumb>
 
-    <documents-table :data="list" :context-menu-actions="contextMenuActions">
-      <template slot="head">
-        <column width="15%">{{ $t('fields.vendor_name') }}</column>
-        <column width="15%">{{ $t('fields.city') }}</column>
-        <column width="12%">{{ $t('fields.phone_number') }}</column>
-        <column width="30%">{{ $t('fields.email') }}</column>
-        <column width="12%">{{ $t('fields.date_created') }}</column>
-        <column width="13%">{{ $t('fields.expenses') }}</column>
-      </template>
-      <template slot="columns" scope="props">
-        <column width="15%">
-          <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.company_name }}</a>
-        </column>
-        <column width="15%">
-          <span>{{ props.row.city }}</span>
-        </column>
-        <column width="12%">
-          <span>{{ props.row.phone }}</span>
-        </column>
-        <column width="30%">
-          <span>{{ props.row.email }}</span>
-        </column>
-        <column width="12%">
-          <span>{{ props.row.created_at | date }}</span>
-        </column>
-        <column width="13%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.expenses | currency }}</span>
-        </column>
-      </template>
-      <template slot="table-controls-left"></template>
-    </documents-table>
+      <div class="table__heading">
+        <a @click="create" class="button button--create">
+          <span class="icon-new-vendor-btn-icon"></span>
+          {{ $t('actions.new_vendor') }}
+        </a>
 
-    <table-footer :table-name="name"></table-footer>
+        <div class="table__dropdowns">
+          <filter-by :watch="{ countries, currencies }" :name="name" :options="filterBy"></filter-by>
+          <search-by :name="name" :options="searchBy"></search-by>
+        </div>
+      </div>
+
+      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+        <template slot="head">
+          <column width="23%">{{ $t('fields.vendor_name') }}</column>
+          <column width="25%">{{ $t('fields.phone_number') }}</column>
+          <column width="25%">{{ $t('fields.email') }}</column>
+          <column width="15%">{{ $t('fields.expenses') }}</column>
+          <column width="12%">{{ $t('fields.date_created') }}</column>
+        </template>
+        <template slot="columns" scope="props">
+          <column width="23%">
+            <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.company_name }}</a>
+          </column>
+          <column width="25%">
+            <span>{{ props.row.phone }}</span>
+          </column>
+          <column width="25%">
+            <span>{{ props.row.email }}</span>
+          </column>
+          <column width="15%">
+            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ props.row.expenses | currency }}</span>
+          </column>
+          <column width="12%">
+            <span>{{ props.row.created_at | date }}</span>
+          </column>
+        </template>
+        <template slot="table-controls-left"></template>
+      </documents-table>
+
+      <table-footer :table-name="name"></table-footer>
+    </template>
   </div>
 </template>
 

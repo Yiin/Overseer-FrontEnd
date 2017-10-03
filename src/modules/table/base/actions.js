@@ -2,7 +2,8 @@
  * Table actions
  */
 import Api from '@/api'
-import { getTableName } from '@/modules/documents/helpers'
+import { getTableName, getFormName } from '@/modules/documents/helpers'
+import transformers from '@/modules/documents/transformers'
 
 export default (actions = {}) => Object.assign({
   /**
@@ -21,6 +22,14 @@ export default (actions = {}) => Object.assign({
       commit('SET_TABLE_STATE', 'idle')
       return response
     })
+  },
+
+  FILL({ state }) {
+    const name = state.name
+
+    const prefix = (state.apiPrefix ? state.apiPrefix + '/' : '')
+
+    return Api.get(prefix + 'dummy-' + name.replace(/_/g, '-'))
   },
 
   UPDATE_RELATIONS({ dispatch, commit, state }) {
@@ -54,8 +63,8 @@ export default (actions = {}) => Object.assign({
           })
         }
       }
-      commit('UPDATE_ROW', document)
     }
+    commit('UPDATE_ROW', document)
   },
 
   SET_ROWS_PER_PAGE({ commit }, rows) {
@@ -73,8 +82,9 @@ export default (actions = {}) => Object.assign({
   CREATE_DOCUMENT({ commit, dispatch, state }, { data }) {
     const name = state.name
     const prefix = (state.apiPrefix ? state.apiPrefix + '/' : '')
+    const transformedData = transformers[getFormName(name)](data)
 
-    return Api.post(prefix + name.replace(/_/g, '-'), data)
+    return Api.post(prefix + name.replace(/_/g, '-'), transformedData)
       .then((response) => {
         dispatch('INSERT_ROW', response)
         dispatch('CLOSE_MODAL', null, { root: true })
@@ -88,8 +98,9 @@ export default (actions = {}) => Object.assign({
   SAVE_DOCUMENT({ dispatch, state }, { uuid, data }) {
     const name = state.name
     const prefix = (state.apiPrefix ? state.apiPrefix + '/' : '')
+    const transformedData = transformers[getFormName(name)](data)
 
-    return Api.put(prefix + name.replace(/_/g, '-') + `/${uuid}`, data)
+    return Api.put(prefix + name.replace(/_/g, '-') + `/${uuid}`, transformedData)
       .then((response) => {
         dispatch('UPDATE_ROW', response)
         dispatch('CLOSE_MODAL', null, { root: true })
@@ -139,7 +150,7 @@ export default (actions = {}) => Object.assign({
 
     return Api.delete(prefix + name.replace(/_/g, '-') + `/${uuid}`)
       .then((response) => {
-        dispatch('UPDATE_ROW', response)
+        dispatch('REMOVE_ROW', response)
         return response
       })
   },
@@ -151,7 +162,7 @@ export default (actions = {}) => Object.assign({
     return Api.post(prefix + name.replace(/_/g, '-') + '-delete', { uuids })
       .then((response) => {
         response.forEach((row) => {
-          dispatch('UPDATE_ROW', row)
+          dispatch('REMOVE_ROW', row)
         })
         return response
       })
@@ -199,6 +210,10 @@ export default (actions = {}) => Object.assign({
 
   UPDATE_ROW({ dispatch }, data) {
     dispatch('UPDATE_ITEM_RELATIONS', data)
+  },
+
+  REMOVE_ROW({ commit }, data) {
+    commit('REMOVE_ROW', data)
   },
 
   /**

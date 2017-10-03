@@ -1,6 +1,6 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel">
+    <modal-tabs @save="save" @cancel="cancel" :hide-buttons="preview">
       <modal-tab :title="$t('tabs.details')">
 
         <form-container name="project">
@@ -9,7 +9,7 @@
               project Name
             -->
             <form-field :label="$t('labels.project_name')" catch-errors="name">
-              <form-text-input v-model="form.name" name="name"></form-text-input>
+              <form-text-input v-model="form.name" name="name" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
@@ -17,7 +17,7 @@
               Description
             -->
             <form-field :label="$t('labels.description')">
-              <form-textarea-input v-model="form.description" name="description"></form-textarea-input>
+              <form-textarea-input v-model="form.description" name="description" :readonly="preview"></form-textarea-input>
             </form-field>
           </form-row>
         </form-container>
@@ -40,6 +40,10 @@ export default {
   computed: {
     form() {
       return this.$store.state.form.project
+    },
+
+    preview() {
+      return this.form.__preview
     },
 
     passive() {

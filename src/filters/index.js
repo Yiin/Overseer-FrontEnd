@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import numeral from 'numeral'
 import moment from 'moment'
-import Currency from '@/services/currency'
+import i18n from '@/i18n'
+import store from '@/store'
 
 export const currencySymbol = (val) => {
-  return (val !== null && typeof val === 'object' ? val.symbol : val) || Currency.DEFAULT_SYMBOL
+  return (val !== null && typeof val === 'object' ? val.symbol : val) || store.state.settings.currency.symbol
 }
 
 export const currency = (val) => {
@@ -102,4 +103,20 @@ export const quoteStatus = (document) => {
   }
 
   return document.status
+}
+
+export const frequencyName = (val) => {
+  const frequency = store.state.passive.frequencies.find((f) => val === f.value + ':' + f.type)
+
+  if (frequency) {
+    return i18n.t(`frequency.${frequency.name}`)
+  }
+  return i18n.t('frequency.use_client_terms')
+}
+
+export const projectProgress = (tasks) => {
+  const total = tasks.length
+  const completed = tasks.filter((task) => task.is_completed).length
+
+  return `${completed} / ${total}`
 }

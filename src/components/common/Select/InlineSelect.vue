@@ -1,6 +1,7 @@
 <template>
   <div class="inline-select">
-      <div class="inline-select__search-wrapper">
+    <template v-if="watch && watch.length">
+      <div v-if="!readonly" class="inline-select__search-wrapper">
         <div ref="searchInput"
              :data-placeholder="placeholder"
              class="inline-select__search-input mediumjs-input"></div>
@@ -10,7 +11,7 @@
              class="mediumjs-input-clear"
         ></div>
       </div>
-      <div v-if="tabular" class="inline-select-head">
+      <div v-if="!readonly && tabular" class="inline-select-head">
         <inline-select-column></inline-select-column>
         <slot name="head"></slot>
       </div>
@@ -22,6 +23,10 @@
           <slot></slot>
         </template>
       </div>
+    </template>
+    <template v-else>
+      <slot name="placeholder"></slot>
+    </template>
   </div>
 </template>
 
@@ -41,6 +46,10 @@ export default {
     },
     watch: {
       default: undefined
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -148,12 +157,17 @@ export default {
       // name options and listen to input events
       this.options.forEach((option) => {
         option.name = this.name
+        option.readonly = this.readonly
+
+        console.log('readonly', this.readonly)
 
         option.$on('input', (e) => {
-          this.$emit('input', e)
+          if (!this.readonly) {
+            this.$emit('input', e)
+          }
         })
 
-        if (option.selected && !this.value) {
+        if (option.selected && (!this.value || this.readonly)) {
           option.$refs.input.click()
         }
       })
@@ -183,6 +197,20 @@ export default {
 <style lang="scss">
 .inline-select {
   margin-top: -20px;
+
+  .placeholder-area {
+    width: 100%;
+  }
+
+  .placeholder:not(.placeholder--line) {
+    width: 352px;
+    height: 288px;
+    margin: 0 auto;
+    margin-top: -35px;
+  }
+  .placeholder--line {
+    transform: scale(0.7);
+  }
 }
 
 .inline-select-head {

@@ -20,8 +20,9 @@ var port = process.env.PORT || config.dev.port
 var autoOpenBrowser = !!config.dev.autoOpenBrowser
 // Define HTTP proxies to your custom API backend
 // https://github.com/chimurai/http-proxy-middleware
-var proxyTable = config.dev.proxyTable
+// var proxyTable = config.dev.proxyTable
 
+var cors = require('cors')
 var app = express()
 var compiler = webpack(webpackConfig)
 
@@ -43,13 +44,31 @@ compiler.plugin('compilation', function (compilation) {
 })
 
 // proxy api requests
-Object.keys(proxyTable).forEach(function (context) {
-  var options = proxyTable[context]
-  if (typeof options === 'string') {
-    options = { target: options }
-  }
-  app.use(proxyMiddleware(options.filter || context, options))
-})
+// Object.keys(proxyTable).forEach(function (context) {
+//   var options = proxyTable[context]
+//   if (typeof options === 'string') {
+//     options = { target: options }
+//   }
+//   app.use(proxyMiddleware(options.filter || context, options))
+// })
+// app.use(
+//   proxyMiddleware({
+//     ''
+//   })
+// )
+// app.use(
+//   proxyMiddleware((pathname) => {
+//     return !(pathname.match(/\.(js|css|svg|json|png|ttf|ico)/)) &&
+//       [
+//         '/__webpack_hmr'
+//       ].indexOf(pathname) === -1
+//   }, {
+//     target: 'http://overseer.api/api/web'
+//   }
+// ))
+
+// cors
+app.use(cors())
 
 // handle fallback for HTML5 history API
 app.use(require('connect-history-api-fallback')())
@@ -65,7 +84,7 @@ app.use(hotMiddleware)
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
 
-var uri = 'http://overseer.dev:' + port
+var uri = 'http://localhost:8080'
 
 var _resolve
 var readyPromise = new Promise((resolve) => {
@@ -82,7 +101,7 @@ devMiddleware.waitUntilValid(() => {
   _resolve()
 })
 
-var server = app.listen(port)
+var server = app.listen(8080)
 
 module.exports = {
   ready: readyPromise,

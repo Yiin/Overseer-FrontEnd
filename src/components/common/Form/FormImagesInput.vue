@@ -173,6 +173,9 @@ $thumb-size: 115px;
   justify-content: center;
   align-items: center;
 
+  background: none;
+
+  border-style: solid;
   border-image-source: url('../../../assets/icons/upload-border.svg');
   border-image-slice: 13;
   border-image-width: 3px;

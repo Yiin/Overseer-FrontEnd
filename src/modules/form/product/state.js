@@ -1,20 +1,46 @@
-const state = {
-  __name: 'product',
+import {
+  default as FormState,
+  parseDefinition
+} from '@/modules/form/state'
 
-  uuid: '',
+import Product from '@/definitions/product'
 
-  name: '',
-  price: 0,
-  currency_id: '', // id
-  qty: 1,
-  tax_rate_uuid: '', // uuid
-  description: '',
+// const state = FormState({
+//   __name: 'product',
 
-  images: [],
+//   uuid: '',
 
-  errors: {}
-}
+//   name: '',
+//   price: 0,
+//   currency_id: '', // id
+//   qty: 1,
+//   is_service: false,
+//   tax_rate_uuid: '', // uuid
+//   description: '',
+//   identification_number: '',
 
-state.__initial = Object.assign({}, state)
+//   images: [],
+
+//   tabs: [
+//     [
+//       'name',
+//       'price',
+//       'currency_id',
+//       'qty',
+//       'tax_rate_uuid',
+//       'description',
+//       'identification_number'
+//     ],
+//     [
+//       'images'
+//     ]
+//   ],
+
+//   errors: {}
+// })
+
+const state = FormState(parseDefinition(Product))
+
+state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

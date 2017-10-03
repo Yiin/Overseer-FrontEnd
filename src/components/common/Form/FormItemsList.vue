@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="items-list__new-item">
+    <div v-if="!readonly" class="items-list__new-item">
       <form-inputs-group>
         <slot name="fields" :form="form"></slot>
         <div class="field--actions">
@@ -12,10 +12,10 @@
     <!--
       Added items list
     -->
-    <div class="items-list scrollable">
+    <div class="items-list" :class="{ scrollable: items.length > 5 }">
       <div v-for="(item, index) in items" :key="index" class="items-list__item">
         <slot name="preview" :item="item" :index="index"></slot>
-        <div class="list-item__field field--actions">
+        <div v-if="!readonly" class="list-item__field field--actions">
           <div class="remove-item-btn">
             <div class="remove-item-btn__icon" @click="removeItem(item)"></div>
           </div>
@@ -45,6 +45,11 @@ export default {
 
     value: {
       default: []
+    },
+
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -95,7 +100,7 @@ export default {
 
       this.items.push(item)
 
-      this.form = Object.assign({}, this.model)
+      // this.form = Object.assign({}, this.model)
     },
 
     removeItem(item) {
@@ -122,5 +127,18 @@ export default {
     margin-top: 0;
     min-width: 10%;
   }
+}
+.form__inputs-group {
+  display: flex;
+  align-items: center;
+  .field--actions {
+    margin-top: 0;
+  }
+}
+.items-list__new-item {
+    margin-top: 1px;
+}
+.items-list.scrollable {
+    padding-right: 14px;
 }
 </style>

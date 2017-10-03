@@ -29,7 +29,12 @@ $font-weight-bold: bold;
 // Shadows
 $box-shadow-1: 0 2px 5px 0 rgba(161, 161, 161, 0.3);//, -1px 0px 5px 0 rgba(161, 161, 161, 0.3), 1px 0px 5px 0 rgba(161, 161, 161, 0.3);
 $box-shadow-2: 0 2px 5px rgba(0, 0, 0, .2);
-$box-shadow-3: -3px 2px rgba(0, 0, 0, 0.05), 3px 2px 5px rgba(0, 0, 0, 0.05), 0px 5px 5px rgba(0, 0, 0, 0.05);
+$box-shadow-3: -3px 2px 5px rgba(0, 0, 0, 0.05), 3px 2px 5px rgba(0, 0, 0, 0.05), 0px 0px 5px rgba(0, 0, 0, 0.05);
+$box-shadow-primary-dropdown-options: -3px 2px 5px rgba(0, 0, 0, 0.05), 3px 2px 5px rgba(0, 0, 0, 0.05);
+$box-shadow-4: -3px 2px rgba(0, 0, 0, .05), 3px 2px 5px rgba(0, 0, 0, .05), 0 5px 5px rgba(0, 0, 0, .05), 0 -3px 10px rgba(0, 0, 0, .03);
+$box-shadow-5: 0 0 7px rgba(0, 0, 0, .25);
+$box-shadow-context-menu: -3px 2px rgba(0, 0, 0, .05), 3px 2px 5px rgba(0, 0, 0, .05), 0 5px 5px rgba(0, 0, 0, .05), 0 -3px 10px rgba(0, 0, 0, .04);
+$box-shadow-modal-body: -3px 2px 4px rgba(0, 0, 0, 0.05), 3px 2px 4px rgba(0, 0, 0, 0.05), 0 5px 5px rgba(0, 0, 0, 0.05), 0 -3px 10px rgba(0, 0, 0, 0.03);
 $box-shadow: $box-shadow-3;
 
 // Borders

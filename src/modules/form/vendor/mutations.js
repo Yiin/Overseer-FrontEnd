@@ -11,6 +11,10 @@ export default FormMutations({
     })
   },
 
+  REMOVE_CONTACT(state, index) {
+    state.contacts.splice(index, 1)
+  },
+
   SET_CONTACT_FIRST_NAME(state, { value, data }) {
     state.contacts[data].first_name = value
   },
