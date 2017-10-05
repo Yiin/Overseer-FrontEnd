@@ -1,6 +1,16 @@
 <template>
-  <div v-show="isActive" class="tab">
-    <div ref="activityLogList" class="list scrollable">
+  <div v-show="isActive" class="tab tab--dashboard">
+    <template v-if="!activityLog || !activityLog.length">
+      <div class="placeholder-area">
+        <div class="placeholder placeholder--activity"></div>
+        <div class="placeholder placeholder--line"></div>
+        <div class="placeholder__text">
+          Here you can see all the things<br>
+          that happened recently.
+        </div>
+      </div>
+    </template>
+    <div v-show="activityLog && activityLog.length" ref="activityLogList" class="list scrollable">
       <div v-for="loggedActivities in activityLog" class="list__item">
         <div class="list-item__column">
           <div class="list-item__something">

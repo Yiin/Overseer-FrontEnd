@@ -7,7 +7,7 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="invoice">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+          <form-inline-select-input :watch="clients" v-model="form.client_uuid" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
             <inline-option v-if="preview" selected>
               {{ form.client.name }}
             </inline-option>
@@ -315,13 +315,16 @@
       </modal-tab>
       <template slot="right-buttons">
         <dropdown @input="save" placeholder="Finish" class="dropdown--primary dropdown--invoice">
-          <dropdown-option value="draft" :tooltip="{ content: 'Save Draft', position: 'right center' }">
+          <dropdown-option v-if="!form.uuid" value="draft" :tooltip="{ content: 'Save Draft', placement: 'right' }">
             Save Draft
           </dropdown-option>
-          <dropdown-option value="sent" :tooltip="{ content: 'Mark Sent', position: 'right center' }">
+          <dropdown-option v-if="form.uuid" value="save" :tooltip="{ content: 'Save Invoice', placement: 'right' }">
+            Save Invoice
+          </dropdown-option>
+          <dropdown-option value="sent" :tooltip="{ content: 'Mark Sent', placement: 'right' }">
             Mark Sent
           </dropdown-option>
-          <dropdown-option value="email" :tooltip="{ content: 'Email To Client', position: 'right center' }">
+          <dropdown-option value="email" :tooltip="{ content: 'Email To Client', placement: 'right' }">
             Email To Client
           </dropdown-option>
         </dropdown>
@@ -501,9 +504,10 @@ export default {
 
     createClient() {
       createDocument('client').then((client) => {
-        this.$store.dispatch('SET_FORM_DATA', {
+        this.$store.dispatch('form/invoice/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
+        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 0)
       })
     },
 

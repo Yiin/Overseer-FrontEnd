@@ -414,7 +414,6 @@ export default {
 }
 </script>
 
-<style lang="scss" src="@/styles/tables.scss"></style>
 <style lang="scss">
 .context-menu {
   background: $color-white;

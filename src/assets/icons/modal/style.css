@@ -1,0 +1,44 @@
+@font-face {
+  font-family: 'modal-icons';
+  src:  url('../assets/icons/modal/icons.eot?tv2wcx');
+  src:  url('../assets/icons/modal/icons.eot?tv2wcx#iefix') format('embedded-opentype'),
+    url('../assets/icons/modal/icons.ttf?tv2wcx') format('truetype'),
+    url('../assets/icons/modal/icons.woff?tv2wcx') format('woff'),
+    url('../assets/icons/modal/icons.svg?tv2wcx#icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="modal-icon-"], [class*=" modal-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'modal-icons' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.modal-icon-close:before {
+  content: "\e900";
+  color: #989898;
+}
+.modal-icon-close_hover:before {
+  content: "\e901";
+}
+.modal-icon-fullscreen:before {
+  content: "\e902";
+  color: #989898;
+}
+.modal-icon-hide:before {
+  content: "\e903";
+  color: #989898;
+}
+.modal-icon-hide_hover:before {
+  content: "\e904";
+}

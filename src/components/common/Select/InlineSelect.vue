@@ -117,9 +117,9 @@ export default {
     if (this.watch) {
       this.$watch(() => this.watch, () => {
         this.recalculateComputedProperty('options')
-        this.$nextTick(() => {
-          this.updateRows()
-        })
+          .then(() => {
+            this.$nextTick(this.updateRows)
+          })
       })
     }
 
@@ -128,9 +128,12 @@ export default {
 
   methods: {
     recalculateComputedProperty(property) {
-      this.$nextTick(() => {
-        this._computedWatchers[property].update()
-        this.$forceUpdate()
+      return new Promise((resolve) => {
+        this.$nextTick(() => {
+          this._computedWatchers[property].update()
+          this.$forceUpdate()
+          resolve()
+        })
       })
     },
 
@@ -154,23 +157,35 @@ export default {
     },
 
     updateRows() {
+      let selected = false
+
       // name options and listen to input events
       this.options.forEach((option) => {
         option.name = this.name
         option.readonly = this.readonly
 
-        console.log('readonly', this.readonly)
-
         option.$on('input', (e) => {
           if (!this.readonly) {
+            if (this.$parent) {
+              this.$parent.$emit('input:field', {
+                name: option.name,
+                value: e
+              })
+            }
             this.$emit('input', e)
           }
         })
 
         if (option.selected && (!this.value || this.readonly)) {
           option.$refs.input.click()
+          selected = true
         }
       })
+
+      // Select first option, if no one is selected
+      if (!selected && this.options.length) {
+        this.options[0].$refs.input.click()
+      }
 
       this.headColumns.forEach((column, index) => {
         this.options.forEach((row) => {

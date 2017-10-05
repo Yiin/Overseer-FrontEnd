@@ -87,6 +87,7 @@ $button-text-color: $color-white;
         align-items: center;
         @include smooth;
         @include big;
+        // @include gradient-background;
         /**
          * Make distance between icon and text
          */

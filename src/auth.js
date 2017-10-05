@@ -151,6 +151,6 @@ export default {
     const status = response.status
     const error = response.data.message
 
-    return (status === 401 || error === 'invalid_token' || error === 'invalid_credentials')
+    return ((status === 401 || error === 'invalid_token') && error !== 'invalid_credentials')
   }
 }

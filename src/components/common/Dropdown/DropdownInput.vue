@@ -34,7 +34,7 @@ export default {
       type: Boolean
     },
     displayText: {
-      type: [String, Number]
+      type: [String, Number, Boolean]
     },
     isValueSet: {
       type: Boolean

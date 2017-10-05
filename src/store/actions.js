@@ -66,8 +66,20 @@ export const INIT = ({ dispatch, commit, state }, preloadedData = null) => {
   Echo.connect()
 }
 
+export const LOGIN_DEMO = ({ dispatch, state }) => {
+  return Api.post('demo', {
+    guest_key: state.user.guest_key
+  }).then((response) => {
+    const accessToken = response.access_token
+    const user = response.user
+    const preloadedData = response.preloadedData
+
+    dispatch('AUTHENTICATE', { accessToken, user, preloadedData })
+  })
+}
+
 export const LOGIN = ({ dispatch }, creds) => {
-  Auth.login(creds)
+  return Auth.login(creds)
     .then((response) => {
       const accessToken = response.body.access_token
       const user = response.body.user
@@ -106,6 +118,11 @@ export const AUTHENTICATE = ({ commit, state, dispatch }, { accessToken, user, p
 
 export const LOGOUT = ({ commit }) => {
   Api.post('logout')
+
+  const preloadedJsonEl = document.getElementById('preloaded_json')
+  if (preloadedJsonEl) {
+    preloadedJsonEl.parentNode.removeChild(preloadedJsonEl)
+  }
 
   commit(types.CLEAR_ALL_DATA)
 

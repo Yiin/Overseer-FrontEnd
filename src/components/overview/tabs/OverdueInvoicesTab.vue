@@ -5,7 +5,7 @@
         <div class="placeholder placeholder--invoices"></div>
         <div class="placeholder placeholder--line"></div>
         <div class="placeholder__text">
-          There are no overdue invoices. :)
+          There are no overdue invoices.
         </div>
       </div>
     </template>

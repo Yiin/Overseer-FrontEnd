@@ -71,7 +71,13 @@
                 <!--
                   Amount
                 -->
-                <form-text-input v-model="form.price" name="price" :readonly="preview"></form-text-input>
+                <form-formatted-input
+                  type="number"
+                  :label="currencyCode"
+                  v-model="form.price"
+                  name="price"
+                  :readonly="preview"
+                ></form-formatted-input>
 
                 <!--
                   Currency
@@ -123,12 +129,14 @@
 
 <script>
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 
 export default {
   name: 'edit-product',
 
   components: {
-    FormCurrencyDropdown
+    FormCurrencyDropdown,
+    FormFormattedInput
   },
 
   props: {
@@ -140,6 +148,25 @@ export default {
   computed: {
     form() {
       return this.$store.state.form.product
+    },
+
+    currency() {
+      let currency = null
+
+      if (this.form.currency_id) {
+        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      }
+      if (!currency) {
+        currency = this.$store.state.settings.currency
+      }
+      return currency
+    },
+
+    currencyCode() {
+      if (this.currency) {
+        return this.currency.code
+      }
+      return 'EUR'
     },
 
     preview() {

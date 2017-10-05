@@ -2,6 +2,7 @@ export const LOGIN = 'login'
 export const REGISTER = 'register'
 export const LOGOUT = 'logout'
 export const OVERVIEW = 'overview'
+export const CURRENCY = 'currency'
 
 export const LIST_CLIENTS = 'clients'
 export const VIEW_CLIENT = 'view_client'

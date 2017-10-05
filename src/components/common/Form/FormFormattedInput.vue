@@ -59,7 +59,11 @@ export default {
 
   watch: {
     value: function (value) {
-      this.localValue = value
+      this.onChange({
+        target: {
+          value
+        }
+      })
     }
   },
 
@@ -89,7 +93,8 @@ export default {
     }, 200),
 
     onChange(e) {
-      const val = e.target.value
+      const val = e.target.value.toString()
+      console.log('onChange', val)
 
       if (!val) {
         this.localValue = '0.00'

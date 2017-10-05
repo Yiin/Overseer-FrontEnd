@@ -334,6 +334,9 @@
             border-bottom: none;
             border-left: none;
             box-shadow: $box-shadow-primary-dropdown-options;
+            &.dropdown__options--reversed {
+                box-shadow: $box-shadow;
+            }
         }
     }
     &--small

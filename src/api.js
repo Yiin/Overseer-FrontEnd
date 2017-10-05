@@ -16,8 +16,7 @@ export default {
    * @return {void}
    */
   install(Vue) {
-    Vue.http.options.root = 'http://' + window.location.hostname + '/api'
-    console.log(Vue.http.options.root)
+    Vue.http.options.root = '/api'
 
     Vue.http.interceptors.push((request, next) => {
       request.credentials = true
@@ -38,7 +37,7 @@ export default {
         request.headers.set('X-Socket-ID', socketId)
       }
 
-      if (request.url === 'login/refresh') {
+      if (request.url === 'login/refresh' || request.url === 'logout') {
         next()
       } else {
         next((response) => {
@@ -53,7 +52,7 @@ export default {
   },
 
   handleError(response) {
-    if (parseInt(response.status) === 403 && response.body && response.body.error && response.body.error.message === 'Invalid token') {
+    if (parseInt(response.status) === 403 && response.body && response.body.error && response.body.error.message === 'invalid_token') {
       Auth.logout()
       return
     }

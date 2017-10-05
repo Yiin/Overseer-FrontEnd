@@ -17,6 +17,7 @@ export default {
 
   mounted() {
     this.$on('input:field', ({ name, value }) => {
+      console.log('wtf', name, value)
       // find index if array
       let matches = name.match(/(.*)\[(.*?)\]/)
 

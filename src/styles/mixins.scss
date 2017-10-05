@@ -1,0 +1,9 @@
+
+@mixin gradient-background()
+{
+  background: #5866c2;
+  background: -moz-linear-gradient(-45deg, #5866c2 0%, #723be1 100%);
+  background: -webkit-linear-gradient(-45deg, #5866c2 0%,#723be1 100%);
+  background: linear-gradient(135deg, #5866c2 0%,#723be1 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5866c2', endColorstr='#723be1',GradientType=1 );
+}

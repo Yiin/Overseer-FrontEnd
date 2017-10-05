@@ -7,9 +7,13 @@
             {{ $t(title) }}
           </div>
           <div class="modal__controls">
-            <div class="modal-icon modal-icon__hide" @click="hide"></div>
+            <div class="modal-icon modal-icon__hide" @click="hide">
+              <i class="modal-icon-hide"></i>
+            </div>
             <div class="modal-icon modal-icon__full"></div>
-            <div class="modal-icon modal-icon__close" @click="close"></div>
+            <div class="modal-icon modal-icon__close" @click="close">
+              <i class="modal-icon-close"></i>
+            </div>
           </div>
           <div class="modal__body">
             <component :is="component" :data="data.data" @cancel="close"></component>
@@ -78,7 +82,7 @@ export default {
 }
 
 .move-enter-active {
-  transition: all 0.4s;
+  transition: all 0.6s;
 }
 
 .move-enter-to {

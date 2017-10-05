@@ -7,7 +7,7 @@
        -->
       <modal-tab :title="$t('tabs.vendor')">
         <form-container name="expense">
-          <form-inline-select-input :watch="vendors" v-model="form.vendor_uuid" name="vendor_uuid" :placeholder="$t('placeholders.type_vendor_name')" :readonly="preview">
+          <form-inline-select-input :watch="vendors" name="vendor_uuid" :placeholder="$t('placeholders.type_vendor_name')" :readonly="preview">
             <inline-option v-if="preview" selected>
               {{ form.vendor.company_name }}
             </inline-option>

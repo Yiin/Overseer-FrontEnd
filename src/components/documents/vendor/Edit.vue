@@ -113,9 +113,9 @@
                 </form-field>
               </form-row>
             </div>
-            <div v-if="!preview" class="add-new-block" @click="addNewContact">
-              {{ $t('actions.add_new_contact') }}
-            </div>
+          </div>
+          <div v-if="!preview" class="add-new-block" @click="addNewContact">
+            {{ $t('actions.add_new_contact') }}
           </div>
         </form-container>
       </modal-tab>

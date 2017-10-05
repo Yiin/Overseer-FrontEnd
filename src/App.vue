@@ -1,6 +1,6 @@
 <template>
-  <div id="app" v-show="isLoaded">
-    <template v-if="isLoggedIn">
+  <div id="app" :class="{ transitioning: isTransitioning }">
+    <template v-if="isAuthenticated">
       <navbar></navbar>
       <sidebar></sidebar>
       <div class="page-content">
@@ -8,14 +8,12 @@
           <router-view class="router-view"></router-view>
         </transition>
       </div>
+      <taskbar></taskbar>
+      <popup></popup>
     </template>
-    <template v-else>
-      <div class="page-content">
-        <router-view class="router-view"></router-view>
-      </div>
+    <template v-if="!isAuthenticated || isTransitioning">
+      <login @start-transition="startTransition" @end-transition="endTransition"></login>
     </template>
-    <taskbar></taskbar>
-    <popup></popup>
   </div>
 </template>
 
@@ -23,6 +21,7 @@
 import NavBar from '@/components/navbar/Navbar.vue'
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import Taskbar from '@/components/taskbar/Taskbar.vue'
+import Login from '@/components/login/Login.vue'
 
 export default {
   name: 'app',
@@ -30,16 +29,29 @@ export default {
   components: {
     'navbar': NavBar,
     'sidebar': Sidebar,
-    'taskbar': Taskbar
+    'taskbar': Taskbar,
+    'login': Login
+  },
+
+  data() {
+    return {
+      isTransitioning: false
+    }
   },
 
   computed: {
-    isLoggedIn() {
+    isAuthenticated() {
       return this.$store.state.auth.isLoggedIn
+    }
+  },
+
+  methods: {
+    startTransition() {
+      this.isTransitioning = true
     },
 
-    isLoaded() {
-      return true // this.$store.state.isLoaded
+    endTransition() {
+      this.isTransitioning = false
     }
   }
 }
@@ -48,6 +60,10 @@ export default {
 <style lang="scss" src="@/styles/app.scss"></style>
 
 <style>
+.transitioning {
+  overflow: hidden;
+}
+
 .router-view {
     position: absolute;
     width: calc(100% - 76px);

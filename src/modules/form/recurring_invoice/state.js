@@ -13,8 +13,8 @@ const state = FormState({
   po_number: '',
   discount_type: 'percentage',
   discount_value: 0,
-  frequency_type: '',
-  frequency_value: 0,
+  frequency_type: 'week',
+  frequency_value: 1,
   due_date: 0, // 0-31
   autobill: false,
 

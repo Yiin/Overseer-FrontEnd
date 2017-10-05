@@ -141,6 +141,11 @@ export default {
       EventBus.$emit('disable-tooltips')
       this.disabled = false
 
+      if (this.status === 'valid') {
+        this.$el._tooltip.show()
+        this.trigger = 'manual'
+      }
+
       this.$store.dispatch('features/vat_checker/CHECK_VAT', {
         country_code: this.vatNumber.substr(0, 2),
         number: this.vatNumber.substr(2)
@@ -217,6 +222,7 @@ export default {
   }
   &--pending {
     background: $color-main;
+    // @include gradient-background;
   }
   &--invalid {
     background: #000000;

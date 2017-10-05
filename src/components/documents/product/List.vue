@@ -6,7 +6,7 @@
         <div class="placeholder placeholder--line"></div>
         <div class="placeholder__text">
           Here you can add products.<br>
-          Both physical stock or services.
+          Both physical stock and services.
         </div>
         <a @click="create" class="button button--create">
           <span class="icon-new-product-btn-icon"></span>

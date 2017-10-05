@@ -7,7 +7,7 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container name="recurring_invoice">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :hide-buttons="preview"
+          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :hide-buttons="preview">
             <inline-option v-if="preview" selected>
               {{ form.client.name }}
             </inline-option>
@@ -41,7 +41,7 @@
             -->
             <form-field :label="$t('labels.frequency')">
               <form-dropdown-input v-model="form.frequency" :watch="frequencies" name="frequency_value:frequency_type" scrollable :hide-buttons="preview">
-                <dropdown-option v-for="(frequency, index) in frequencies" :key="index" :value="`${frequency.value}:${frequency.type}`">
+                <dropdown-option v-for="(frequency, index) in frequencies" :key="index" :value="`${frequency.value}:${frequency.type}`" :selected="frequency_type === form.frequency_type && frequency_value === form.frequency_value">
                   {{ $t('frequency.' + frequency.name) }}
                 </dropdown-option>
               </form-dropdown-input>
@@ -72,6 +72,52 @@
           <form-row>
 
             <!--
+              Currency
+            -->
+            <form-currency-dropdown v-model="form.currency_id" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+
+            <!--
+              Discount
+            -->
+            <form-field :label="$t('labels.discount')">
+              <form-inputs-group>
+                <!--
+                  Discount value
+                -->
+                <form-formatted-input
+                  type="number"
+                  :label="form.discount_type === 'percentage' ? '%' : currencyCode"
+                  :label-position="form.discount_type === 'percentage' ? 'right' : 'left'"
+                  v-model="form.discount_value"
+                  name="discount_value"
+                  :readonly="preview"
+                ></form-formatted-input>
+
+                <!--
+                  Discount Type
+                -->
+                <form-dropdown-input v-model="form.discount_type" name="discount_type" class="dropdown--small" :readonly="preview">
+                  <dropdown-option
+                    value="percentage"
+                    :selected="form.discount_type === 'percentage'"
+                  >
+                    {{ $t('discount_type.percent') }}
+                  </dropdown-option>
+                  <dropdown-option
+                    value="flat"
+                    :selected="form.discount_type === 'flat'"
+                  >
+                    {{ $t('discount_type.flat') }}
+                  </dropdown-option>
+                </form-dropdown-input>
+              </form-inputs-group>
+            </form-field>
+
+          </form-row>
+
+          <form-row>
+
+            <!--
               PO Number
             -->
             <form-field :label="$t('labels.po_number')">
@@ -86,30 +132,6 @@
                 <dropdown-option :value="false" :selected="true">{{ $t('common.off') }}</dropdown-option>
                 <dropdown-option :value="true">{{ $t('common.on') }}</dropdown-option>
               </form-dropdown-input>
-            </form-field>
-
-          </form-row>
-
-          <form-row>
-
-            <!--
-              Partial
-            -->
-            <form-field :label="$t('labels.partial')">
-              <form-text-input v-model="form.partial" name="partial" disabled :readonly="preview"></form-text-input>
-            </form-field>
-
-            <!--
-              Discount
-            -->
-            <form-field :label="$t('labels.discount')">
-              <form-inputs-group>
-                <form-text-input v-model="form.discount_value" name="discount_value" :readonly="preview"></form-text-input>
-                <form-dropdown-input v-model="form.discount_type" name="discount_type" :readonly="preview">
-                  <dropdown-option value="percentage" :selected="form.discount_type === 'percentage'">{{ $t('discount_type.percent') }}</dropdown-option>
-                  <dropdown-option value="flat" :selected="form.discount_type === 'flat'">{{ $t('discount_type.flat') }}</dropdown-option>
-                </form-dropdown-input>
-              </form-inputs-group>
             </form-field>
 
           </form-row>
@@ -320,8 +342,16 @@
 </template>
 
 <script>
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
+
 export default {
   name: 'edit-recurring-invoice',
+
+  components: {
+    FormCurrencyDropdown,
+    FormFormattedInput
+  },
 
   data() {
     return {
@@ -386,15 +416,37 @@ export default {
       return dates
     },
 
-    currency_symbol() {
-      if (this.form.client_uuid) {
-        const client = this.clients.find((client) => client.uuid === this.form.client_uuid)
+    currency() {
+      let currency = null
 
-        if (client && client.currency) {
-          return client.currency.symbol
+      if (this.form.currency_id) {
+        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      }
+      if (!currency) {
+        let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)
+
+        if (client) {
+          currency = client.currency
         }
       }
-      return '$'
+      if (!currency) {
+        currency = this.$store.state.settings.currency
+      }
+      return currency
+    },
+
+    currency_symbol() {
+      if (this.currency) {
+        return this.currency.symbol
+      }
+      return '€'
+    },
+
+    currencyCode() {
+      if (this.currency) {
+        return this.currency.code
+      }
+      return 'EUR'
     },
 
     subtotal() {

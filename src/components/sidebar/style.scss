@@ -61,7 +61,8 @@
                 font-weight: $font-weight-semibold;
 
                 color: $color-navbar-link-active;
-                background-color: $color-main;
+                // @include gradient-background;
+                background: $color-main;
             }
             &--disabled
             {

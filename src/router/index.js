@@ -14,9 +14,9 @@ const router = new Router({
     {
       path: '/login',
       name: Routes.LOGIN,
-      component: function (resolve) {
-        require(['@/components/login/Login.vue'], resolve)
-      },
+      // component: function (resolve) {
+      //   require(['@/components/login/Login.vue'], resolve)
+      // },
       beforeEnter: checkIfGuest
     },
     {
@@ -64,6 +64,14 @@ const router = new Router({
     {
       path: '/finances',
       name: 'finances'
+    },
+    {
+      path: '/currency',
+      name: Routes.CURRENCY,
+      component: function (resolve) {
+        require(['@/pages/currency/Index.vue'], resolve)
+      },
+      beforeEnter: checkIfLoggedIn
     },
 
     /**

@@ -57,10 +57,10 @@
           <i class="icon-sidebar-clients"></i>
           Personnel
         </div>
-        <div class="sidebar__nav-link sidebar__nav-link--disabled">
+        <nav-link :name="routes.currency">
           <i class="icon-sidebar-credits"></i>
           Currency
-        </div>
+        </nav-link>
         <hr>
         <div class="sidebar__nav-category">
           Category 3
@@ -104,7 +104,8 @@ export default {
         credits: Routes.LIST_CREDITS,
         quotes: Routes.LIST_QUOTES,
         vendors: Routes.LIST_VENDORS,
-        projects: Routes.LIST_PROJECTS
+        projects: Routes.LIST_PROJECTS,
+        currency: Routes.CURRENCY
       }
     }
   }

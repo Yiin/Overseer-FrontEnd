@@ -26,7 +26,7 @@ export default {
     if (store.state.auth.accessToken) {
       this.echo = new Echo({
         broadcaster: 'socket.io',
-        host: `http://overseer.api:6001`,
+        host: `http://${window.location.host}:6001`,
         auth: {
           headers: {
             Authorization: 'Bearer ' + store.state.auth.accessToken

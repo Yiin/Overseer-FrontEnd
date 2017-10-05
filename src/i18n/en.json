@@ -156,6 +156,7 @@
         "viewed": "Viewed"
     },
     "labels": {
+        "project_name": "Project name",
         "date": "Date",
         "credit_date": "Credit Date",
         "credit_number": "Credit Note Number",
