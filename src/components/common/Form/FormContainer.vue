@@ -16,8 +16,17 @@ export default {
   },
 
   mounted() {
-    this.$on('input:field', ({ name, value }) => {
-      console.log('wtf', name, value)
+    console.log('container mounted')
+
+    this.$on('input:field', (event) => {
+      const { name = null, value = null } = event
+
+      console.log('event', event)
+
+      if (!name) {
+        return
+      }
+
       // find index if array
       let matches = name.match(/(.*)\[(.*?)\]/)
 

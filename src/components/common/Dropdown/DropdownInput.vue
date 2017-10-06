@@ -63,7 +63,6 @@ export default {
     },
 
     localValue(val) {
-      console.log(val, this.value)
       if (this.value === val) {
         return
       }

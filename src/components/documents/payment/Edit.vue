@@ -224,7 +224,7 @@ export default {
   methods: {
     createClient() {
       createDocument('client').then((client) => {
-        this.$store.dispatch('SET_FORM_DATA', {
+        this.$store.dispatch('form/payment/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
         this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
@@ -235,7 +235,7 @@ export default {
       createDocument('invoice', {
         client_uuid: this.form.client_uuid
       }, this.form.client_uuid ? 1 : 0).then((invoice) => {
-        this.$store.dispatch('SET_FORM_DATA', {
+        this.$store.dispatch('form/payment/SET_FORM_DATA', {
           invoice_uuid: invoice.uuid
         })
         this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 2)

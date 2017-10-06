@@ -47,7 +47,7 @@
             -->
             <form-field catch-errors="is_service" :label="$t('labels.product_type')">
               <form-inputs-group>
-                <form-dropdown-input v-model="form.is_service" class="--service-dropdown">
+                <form-dropdown-input v-model="form.is_service" name="is_service" class="--service-dropdown">
                   <dropdown-option :value="false" :selected="!form.is_service">
                     Physical
                   </dropdown-option>

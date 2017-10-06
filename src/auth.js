@@ -17,6 +17,7 @@ const REGISTRATION_URL = 'register'
  *    by Webpack dev server and maybe nginx in production (cleaner calls and avoids CORS issues).
  */
 const REFRESH_TOKEN_URL = 'login/refresh'
+// const HEARTBEAT_URL = 'heartbeat'
 
 /**
  * @var{Object} AUTH_BASIC_HEADERS The options to pass into a Vue-resource http call. Includes
@@ -77,7 +78,6 @@ export default {
 
     return Vue.http.post(LOGIN_URL, params, AUTH_BASIC_HEADERS)
       .catch((e) => {
-        console.log('FAILED LOGIN')
         throw e
       })
   },

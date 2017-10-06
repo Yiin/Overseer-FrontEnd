@@ -40,7 +40,6 @@ export default {
       if (!this.$slots.default[0].elm) {
         return
       }
-      console.log(this.$slots.default[0].elm.textContent)
       return this.$slots.default[0].elm.textContent
     },
 
@@ -53,7 +52,6 @@ export default {
 
     onError: function (e) {
       alert('Failed to copy texts')
-      console.log(e)
     }
   }
 }

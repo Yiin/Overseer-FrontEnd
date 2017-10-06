@@ -6,7 +6,7 @@
              :data-placeholder="placeholder"
              class="inline-select__search-input mediumjs-input"></div>
 
-        <div v-show="query && query.length"
+        <div v-if="query && query.length"
              @click="clear"
              class="mediumjs-input-clear"
         ></div>
@@ -100,11 +100,13 @@ export default {
   },
 
   mounted() {
-    // initiate Medium.js object on our search input
-    this.medium = new Medium({
-      element: this.$refs.searchInput,
-      mode: Medium.inlineMode
-    })
+    if (this.$refs.searchInput) {
+      // initiate Medium.js object on our search input
+      this.medium = new Medium({
+        element: this.$refs.searchInput,
+        mode: Medium.inlineMode
+      })
+    }
 
     this.$refs.searchInput.addEventListener('input', () => {
       let value = this.medium.value().trim().toLowerCase()
@@ -176,7 +178,7 @@ export default {
           }
         })
 
-        if (option.selected && (!this.value || this.readonly)) {
+        if (option.selected || this.readonly) {
           option.$refs.input.click()
           selected = true
         }
@@ -184,6 +186,7 @@ export default {
 
       // Select first option, if no one is selected
       if (!selected && this.options.length) {
+        console.log('select first')
         this.options[0].$refs.input.click()
       }
 

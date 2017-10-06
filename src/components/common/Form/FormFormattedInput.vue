@@ -57,13 +57,21 @@ export default {
     }
   },
 
+  computed: {
+    normalizedValue() {
+      return this.localValue ? parseFloat(this.localValue.replace(/,/g, '')) : 0
+    }
+  },
+
   watch: {
     value: function (value) {
-      this.onChange({
-        target: {
-          value
-        }
-      })
+      if (value !== this.normalizedValue) {
+        this.onChange({
+          target: {
+            value
+          }
+        })
+      }
     }
   },
 
@@ -88,13 +96,12 @@ export default {
   },
 
   methods: {
-    onInput: debounce(function (event) {
-      this.$emit('input', event.target.value)
+    onInput: debounce(function () {
+      this.$emit('input', this.normalizedValue)
     }, 200),
 
     onChange(e) {
       const val = e.target.value.toString()
-      console.log('onChange', val)
 
       if (!val) {
         this.localValue = '0.00'
@@ -108,7 +115,7 @@ export default {
 
         let missing = 3 - suffix.length
 
-        while (missing--) {
+        while (missing-- > 0) {
           fixedVal += '0'
         }
       } else {

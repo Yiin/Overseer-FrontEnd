@@ -36,7 +36,7 @@
                   Create Account
                 </div>
                 <div class="auth__link auth__link--password-recovery">
-                  Password Recovery
+                  Forgot password?
                 </div>
               </div>
             </div>
@@ -69,17 +69,11 @@
 
         this.$emit('start-transition')
         this.$store.dispatch('LOGIN_DEMO').then(() => {
-          this.step = 1
-
+          this.step = 2
           setTimeout(() => {
-            window.requestAnimationFrame(() => {
-              this.step = 2
-              setTimeout(() => {
-                this.$emit('end-transition')
-                this.step = 3
-              }, 800)
-            })
-          }, 600)
+            this.$emit('end-transition')
+            this.step = 3
+          }, 1000)
         })
       },
 
@@ -119,31 +113,19 @@
   width: 100vw;
   height: 100vh;
   padding: 0;
+  transition: all 1s;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  &__left {
-    background: url(../../assets/images/background/left.svg);
-    left: -1px;
-    .background--active & {
-      transform: translateX(-50vw);
-    }
-  }
-  &__right {
-    background: url(../../assets/images/background/right.svg);
-    left: calc(50vw - 1px);
-    .background--active & {
-      transform: translateX(50vw);
-    }
-  }
+  background: #5866c2;
+  background: -moz-linear-gradient(-45deg, #5866c2 0%, #723be1 100%);
+  background: -webkit-linear-gradient(-45deg, #5866c2 0%,#723be1 100%);
+  background: linear-gradient(135deg, #5866c2 0%,#723be1 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#5866c2', endColorstr='#723be1',GradientType=1 );
 
-  &__left, &__right {
-    position: absolute;
-    background-size: cover;
-    width: calc(50vw + 2px);
-    height: 100vh;
-    transition: all 0.8s linear;
+  &--active {
+    filter: opacity(0);
   }
 }
 

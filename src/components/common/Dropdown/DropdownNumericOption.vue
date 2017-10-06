@@ -106,7 +106,6 @@ export default {
     },
 
     onInput() {
-      console.log('onInput', this.to, this.value)
       this.$emit('input-changed')
     }
   }

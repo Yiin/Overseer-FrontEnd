@@ -98,7 +98,6 @@ export default (getters) => Object.assign({
         const filter = filters[filterName]
 
         if (typeof filter.searchBy !== 'undefined') {
-          console.log(filter.id, id)
           if (filter.id === id) {
             items = items.filter((item) => filter.searchBy(item, key, value))
             break

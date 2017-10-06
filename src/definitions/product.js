@@ -1,8 +1,6 @@
 import { id, text, float } from '@/modules/documents/transformers/data-types'
 import store from '@/store'
 
-// console.log('store', store)
-
 export default {
   name: 'product',
 

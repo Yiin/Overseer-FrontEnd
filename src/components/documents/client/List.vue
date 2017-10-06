@@ -47,8 +47,8 @@
           <column width="17%">
             <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
           </column>
-          <column width="23%" :copy="props.row.vat_number">
-            <span v-tooltip="'Click to Copy'">{{ props.row.vat_number }}</span>
+          <column width="23%">
+            <span>{{ props.row.vat_number }}</span>
             <vat-info :vat="props.row.vat_number"></vat-info>
           </column>
           <column width="15%">

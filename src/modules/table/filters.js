@@ -344,8 +344,6 @@ export const SearchByValue = {
   searchBy: function (document, key, value) {
     const val = _.get(document, key)
 
-    console.log(key, document, document[key], val)
-
     const higherThanMin = value.from === null || val >= parseFloat(value.from)
     const lowerThanMax = value.to === null || val <= parseFloat(value.to)
 

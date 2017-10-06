@@ -147,7 +147,7 @@ export default {
   methods: {
     createClient() {
       createDocument('client').then((client) => {
-        this.$store.dispatch('SET_FORM_DATA', {
+        this.$store.dispatch('form/credit/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
         this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)

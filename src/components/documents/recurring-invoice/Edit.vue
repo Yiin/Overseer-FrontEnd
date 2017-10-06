@@ -332,11 +332,9 @@
     </modal-tabs>
     <div class="modal-sidebar">
       <div class="modal-sidebar__title">
-        {{ $t('sidebar.recurring_invoice_preview') }}
+        {{ $t('sidebar.invoice_preview') }}
       </div>
-      <div class="invoice__preview">
-        <!-- <object type="application/pdf" data="http://localhost:8000/test.pdf#view=Fit&toolbar=0" width="357" height="487"></object> -->
-      </div>
+      <div class="invoice__preview"></div>
     </div>
   </div>
 </template>

@@ -57,7 +57,10 @@ export default {
         value: value
       }
       if (this.$parent) {
-        this.$parent.$emit('input:field', payload)
+        setTimeout(() => {
+          console.log('call parent from inline form select')
+          this.$parent.$emit('input:field', payload)
+        }, 100)
       }
       // this.$emit('input', payload)
     }

@@ -334,10 +334,7 @@
       <div class="modal-sidebar__title">
         {{ $t('sidebar.invoice_preview') }}
       </div>
-      <div class="invoice__preview">
-        <iframe src="http://localhost:8000/test.pdf#view=Fit&toolbar=0" scrolling="no" width="357" height="487"></iframe>
-        <!-- <object type="application/pdf" data="" ></object> -->
-      </div>
+      <div class="invoice__preview"></div>
     </div>
   </div>
 </template>

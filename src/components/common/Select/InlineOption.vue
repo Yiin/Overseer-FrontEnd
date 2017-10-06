@@ -41,14 +41,6 @@ export default {
     }
   },
 
-  mounted() {
-    if (this.selected) {
-      this.$nextTick(() => {
-        this.$refs.input.click()
-      })
-    }
-  },
-
   computed: {
     searchable() {
       return he.decode(this.$slots.default[0].text).trim()
@@ -57,6 +49,7 @@ export default {
 
   methods: {
     click() {
+      console.log('click handled')
       this.$emit('input', this.value)
     }
   }

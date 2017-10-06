@@ -200,7 +200,6 @@ export default {
           if (expenseDate === date) {
             data[date] += parseFloat(expense.amount)
           } else {
-            console.log(expenseDate, expense.amount)
           }
         })
         startDate.add(1, this.graphInterval)

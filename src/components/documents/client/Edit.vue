@@ -182,7 +182,7 @@
       <div class="form__inline-inputs">
         <div class="form__input-wrapper form">
           <label class="form__label">{{ $t('labels.country') }}</label>
-          <form-dropdown-input :watch="passive.countries" v-model="vat_checker.country_code" class="dropdown--member-states dropdown--hide-overflow" scrollable>
+          <form-dropdown-input :watch="passive.countries" v-model="vat_checker.country_code" class="dropdown--member-states dropdown--hide-overflow" scrollable searchable>
             <dropdown-option v-for = "country in passive.member_states" :key="country.id"
                             :value = "country.code"
                             :title = "country.name">
@@ -256,8 +256,8 @@ export default {
 
   watch: {
     'vat_checker.number': function (number) {
-      const cc = number.slice(0, 2)
-      const memberState = this.passive.member_states.find((state) => state.code === cc)
+      const cc = number.slice(0, 2).toUpperCase()
+      const memberState = this.passive.member_states.find((state) => state.code.toUpperCase() === cc)
 
       if (memberState) {
         this.vat_checker.country_code = cc

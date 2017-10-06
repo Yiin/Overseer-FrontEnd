@@ -64,7 +64,6 @@ new Vue({
 
   mounted() {
     if (this.$store.state.auth.isLoggedIn) {
-      console.log('another init')
       this.$store.dispatch('INIT')
     }
   }

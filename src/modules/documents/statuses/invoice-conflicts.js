@@ -62,8 +62,6 @@ export const checkForInvoiceMailingConflicts = (invoice) => {
 export const checkForOverdueConflict = (invoice, status) => {
   const conflicts = []
 
-  console.log('checkForOverdueConflict', status)
-
   if (status !== 'overdue' && Statuses.invoice.overdue.meetsCondition(invoice)) {
     conflicts.push({
       type: 'error',

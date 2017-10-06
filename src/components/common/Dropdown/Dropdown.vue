@@ -292,7 +292,6 @@ export default {
         this.findAndSelect(value)
       }
       if (this.searchable) {
-        console.log(this.displayText)
         this.query = this.displayText
       }
     }

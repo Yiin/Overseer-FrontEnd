@@ -23,7 +23,6 @@ export default (actions = {}) => Object.assign({
     }, { root: true })
 
     return new Promise((resolve) => {
-      console.log('adding listener')
       commit('ADD_CREATE_LISTENER', resolve)
     })
   },
@@ -104,7 +103,6 @@ export default (actions = {}) => Object.assign({
       const tabIndex = state.tabs.findIndex((tab) => {
         return tab.indexOf(field) > -1
       })
-      console.log(field, tabIndex)
 
       dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', tabIndex, { root: true })
 

@@ -10,7 +10,6 @@ let state = {
 
   // user data
   user: {
-    isDemo: true,
     guest_key: null,
     uuid: null,
     profile: {

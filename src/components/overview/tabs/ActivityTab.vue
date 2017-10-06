@@ -138,10 +138,8 @@ export default {
 
     loadMore() {
       this.$store.dispatch('system/LOAD_MORE_ACTIVITIES').then(() => {
-        console.log('setTimeout')
         setTimeout(() => {
           const el = document.getElementsByClassName('router-view')[0]
-          console.log(el, el.getBoundingClientRect())
           smoothScrollToBottom(el)
         }, 1000)
       })

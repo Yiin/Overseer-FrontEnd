@@ -136,7 +136,6 @@ export default {
       if (!oldFile) {
         // Filter non-image file
         if (!/(jpeg|jpe|jpg|gif|png|webp)$/i.test(newFile.file.type)) {
-          console.log('Filter non-image file', newFile)
           return prevent()
         }
       }

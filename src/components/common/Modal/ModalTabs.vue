@@ -70,8 +70,6 @@ export default {
   },
 
   mounted() {
-    // console.log(, this.$slots.default.filter((el) => el && el.componentInstance).map((el) => el.componentInstance))
-    // this.$store.dispatch('UPDATE_MODAL_TABS', this.$children)
     if (this.activeTabIndex >= this.tabs.length) {
       throw new Error(`ModalTabs should contain at least ${this.activeTabIndex} tab(s).`)
     }

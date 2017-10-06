@@ -306,10 +306,7 @@
       <div class="modal-sidebar__title">
         {{ $t('sidebar.quote_preview') }}
       </div>
-      <div class="invoice__preview">
-        <iframe src="http://localhost:8000/test.pdf#view=Fit&toolbar=0" scrolling="no" width="357" height="487"></iframe>
-        <!-- <object type="application/pdf" data="" ></object> -->
-      </div>
+      <div class="invoice__preview"></div>
     </div>
   </div>
 </template>
@@ -476,7 +473,7 @@ export default {
 
     createClient() {
       createDocument('client').then((client) => {
-        this.$store.dispatch('SET_FORM_DATA', {
+        this.$store.dispatch('form/quote/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
         this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)

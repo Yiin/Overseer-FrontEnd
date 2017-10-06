@@ -16,14 +16,16 @@ export const INIT = ({ dispatch, commit, state }, preloadedData = null) => {
     preloadedData = JSON.parse(preloadedJsonEl.innerHTML)
     preloadedJsonEl.parentNode.removeChild(preloadedJsonEl)
   }
-  if (preloadedData) {
-    dispatch('SET_STATIC_DATA', preloadedData.passive)
+  if (preloadedData && preloadedData.data) {
+    const data = preloadedData.data
+
+    dispatch('SET_STATIC_DATA', data.passive)
     dispatch('settings/SET_SETTINGS', state.user.settings)
 
     /* Documents */
-    for (let key in preloadedData.documents) {
+    for (let key in data.documents) {
       const tableName = getTableName(key)
-      commit(`table/${tableName}/SET_TABLE_ITEMS`, preloadedData.documents[key])
+      commit(`table/${tableName}/SET_TABLE_ITEMS`, data.documents[key])
       commit(`table/${tableName}/NORMALIZE_TABLE`)
     }
     DocumentsList.forEach((key) => {
@@ -31,11 +33,7 @@ export const INIT = ({ dispatch, commit, state }, preloadedData = null) => {
       dispatch(`table/${tableName}/UPDATE_RELATIONS`)
     })
 
-    console.log(preloadedData.system.activityLog)
-
-    dispatch('system/SET_ACTIVITY_LOG', preloadedData.system.activityLog)
-
-    // dispatch('system/UPDATE_ACTIVITY_LOG', preloadedData.)
+    dispatch('system/SET_ACTIVITY_LOG', data.system.activityLog)
   } else {
     /* Static Data */
     dispatch('LOAD_STATIC_DATA').then(() => {
@@ -66,10 +64,8 @@ export const INIT = ({ dispatch, commit, state }, preloadedData = null) => {
   Echo.connect()
 }
 
-export const LOGIN_DEMO = ({ dispatch, state }) => {
-  return Api.post('demo', {
-    guest_key: state.user.guest_key
-  }).then((response) => {
+export const LOGIN_DEMO = ({ dispatch }) => {
+  return Api.post('demo').then((response) => {
     const accessToken = response.access_token
     const user = response.user
     const preloadedData = response.preloadedData
@@ -104,10 +100,12 @@ export const AUTHENTICATE = ({ commit, state, dispatch }, { accessToken, user, p
   commit(types.UPDATE_ACCESS_TOKEN, accessToken)
   commit(types.UPDATE_USER, user)
 
-  localStorage.setItem('state', JSON.stringify({
-    auth: state.auth,
-    user: state.user
-  }))
+  if (!user.guest_key) {
+    localStorage.setItem('state', JSON.stringify({
+      auth: state.auth,
+      user: state.user
+    }))
+  }
 
   dispatch('INIT', preloadedData)
 
