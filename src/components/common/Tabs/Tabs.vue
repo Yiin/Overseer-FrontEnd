@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs" :class="{ 'tabs--labeled': labels, 'tabs--no-tabs': noTabs }">
+  <div class="tabs tabs--with-overflow" :class="{ 'tabs--labeled': labels, 'tabs--no-tabs': noTabs }">
     <div v-if="!noTabs" class="tabs__list">
       <div v-for="tab in tabs"
           @mousedown="selectTab(tab)"
@@ -101,6 +101,9 @@ export default {
 
 <style lang="scss">
 
+.tabs--with-overflow {
+  overflow: visible !important;
+}
 .tabs:not(.tabs--labeled) {
   > .tabs__list {
     display: flex;

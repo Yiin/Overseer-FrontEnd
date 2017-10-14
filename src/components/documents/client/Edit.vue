@@ -123,13 +123,7 @@
         <form-container name="client">
           <form-row>
             <form-field catch-errors="currenty_id" :label="$t('labels.currency')">
-              <form-dropdown-input v-model="form.currency_id" :watch="passive.currencies" name="currency_id" scrollable searchable :readonly="preview">
-                <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
-                                :value="currency.id"
-                                :selected.once="currency.id === form.currency_id">
-                  {{ currency.code }} - {{ currency.name }}
-                </dropdown-option>
-              </form-dropdown-input>
+              <form-currency-dropdown v-model="form.currency_code" :readonly="preview"></form-currency-dropdown>
             </form-field>
           </form-row>
           <form-row>

@@ -206,10 +206,12 @@ export default (actions = {}) => Object.assign({
   INSERT_ROW({ commit, dispatch }, data) {
     commit('INSERT_ROW', data)
     dispatch('UPDATE_ITEM_RELATIONS', data)
+    commit('ITEMS_RELATIONS_ARE_UPDATED')
   },
 
-  UPDATE_ROW({ dispatch }, data) {
+  UPDATE_ROW({ commit, dispatch }, data) {
     dispatch('UPDATE_ITEM_RELATIONS', data)
+    commit('ITEMS_RELATIONS_ARE_UPDATED')
   },
 
   REMOVE_ROW({ commit }, data) {

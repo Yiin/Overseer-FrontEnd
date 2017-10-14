@@ -8,20 +8,20 @@
           Here you can create quotes for clients.<br>
           Quotes can be converted to invoices.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-quote-btn-icon"></span>
           {{ $t('actions.new_quote') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.quotes') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-quote-btn-icon"></span>
           {{ $t('actions.new_quote') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :watch="{ clients, products }" :name="name" :options="filterBy"></filter-by>

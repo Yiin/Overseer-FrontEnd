@@ -1,4 +1,4 @@
 module.exports = {
   NODE_ENV: '"production"',
-  API_ROOT: '"http://api.yiin.lt/api"'
+  WS_SERVER: '"overseer.io:6001"'
 }

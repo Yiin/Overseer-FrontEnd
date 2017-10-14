@@ -7,10 +7,10 @@
         <div class="placeholder__text">
           Add a new invoice by pressing the button below.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-invoice-btn-icon"></span>
           {{ $t('actions.new_invoice') }}
-        </a>
+        </button>
       </div>
     </template>
     <documents-table v-else simple

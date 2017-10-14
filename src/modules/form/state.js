@@ -27,11 +27,12 @@ export function parseDefinition(definition) {
 
 // export default transformForm
 
-export default (state = {}) => JSON.parse(JSON.stringify(Object.assign({
+export default (name, state = {}) => JSON.parse(JSON.stringify(Object.assign({
+  __name: typeof name === 'string' ? name : '',
   __preview: false,
   listeners: {
     create: [],
     update: []
   },
   errors: {}
-}, state)))
+}, typeof name === 'object' ? name : state)))

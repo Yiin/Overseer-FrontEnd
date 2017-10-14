@@ -8,7 +8,7 @@ export default (quote) => {
       quote_date: date(quote.quote_date),
       due_date: date(quote.due_date),
       partial: float(quote.partial),
-      currency_id: float(quote.currency_id),
+      currency_code: float(quote.currency_code),
       quote_number: text(quote.quote_number),
       po_number: text(quote.po_number),
       discount_type: text(quote.discount_type),

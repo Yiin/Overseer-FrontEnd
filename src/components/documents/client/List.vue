@@ -9,20 +9,20 @@
           whom you will offer services to.
 
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-client-btn-icon"></span>
           {{ $t('actions.new_client') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.clients') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-client-btn-icon"></span>
           {{ $t('actions.new_client') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by ref="filterByComponent" :watch="{ 'countries': countries, 'currencies': currencies }" :name="name" :options="filterBy"></filter-by>

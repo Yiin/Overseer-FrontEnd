@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
 import * as Routes from './routes.js'
+import Overview from '@/components/overview/Overview.vue'
 
 Vue.use(Router)
 
@@ -22,17 +23,24 @@ const router = new Router({
     {
       path: '/register',
       name: Routes.REGISTER,
-      component: function (resolve) {
-        require(['@/components/register/Register.vue'], resolve)
-      },
+      // component: function (resolve) {
+      //   require(['@/components/register/Register.vue'], resolve)
+      // },
       beforeEnter: checkIfGuest
+    },
+    {
+      path: '/demo',
+      name: Routes.REGISTER,
+      beforeEnter(to, from, next) {
+        next('/overview')
+      }
     },
     {
       path: '/logout',
       name: Routes.LOGOUT,
       beforeEnter(to, from, next) {
-        store.dispatch('LOGOUT')
-        next('/')
+        store.dispatch('auth/LOGOUT', { redirect: false })
+        next('/login')
       }
     },
 
@@ -48,9 +56,7 @@ const router = new Router({
     {
       path: '/overview',
       name: Routes.OVERVIEW,
-      component: function (resolve) {
-        require(['@/components/overview/Overview.vue'], resolve)
-      },
+      component: Overview,
       beforeEnter: checkIfLoggedIn
     },
     {

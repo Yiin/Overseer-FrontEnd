@@ -24,10 +24,10 @@
               <div class="placeholder__text">
                 Add a new client by pressing the button below.
               </div>
-              <a @click="createClient" class="button button--create">
+              <button @click="createClient" class="button button--create">
                 <span class="icon-new-client-btn-icon"></span>
                 {{ $t('actions.new_client') }}
-              </a>
+              </button>
             </div>
           </form-inline-select-input>
         </form-container>
@@ -75,10 +75,10 @@
               <div class="placeholder__text">
                 Add a new invoice by pressing the button below.
               </div>
-              <a @click="createInvoice" class="button button--create">
+              <button @click="createInvoice" class="button button--create">
                 <span class="icon-new-invoice-btn-icon"></span>
                 {{ $t('actions.new_invoice') }}
-              </a>
+              </button>
             </div>
           </form-inline-select-input>
         </form-container>
@@ -101,7 +101,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="form.currency_id" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown v-model="form.currency_code" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
               </form-inputs-group>
             </form-field>
             <form-field :label="$t('labels.payment_type')">

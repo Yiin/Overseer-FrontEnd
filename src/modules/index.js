@@ -1,3 +1,4 @@
+import auth from './auth'
 import modal from './modal'
 import taskbar from './taskbar'
 import table from './table'
@@ -11,6 +12,7 @@ import system from './system'
 import documents from './documents'
 
 export default {
+  auth,
   modal,
   taskbar,
   table,

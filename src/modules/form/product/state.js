@@ -1,45 +1,36 @@
-import {
-  default as FormState,
-  parseDefinition
-} from '@/modules/form/state'
+import FormState from '@/modules/form/state'
 
-import Product from '@/definitions/product'
+const state = FormState('product', {
+  uuid: '',
 
-// const state = FormState({
-//   __name: 'product',
+  name: '',
+  qty: 1,
+  description: '',
+  identification_number: '',
 
-//   uuid: '',
+  price: '',
+  currency_code: '',
+  tax_rate_uuid: '',
 
-//   name: '',
-//   price: 0,
-//   currency_id: '', // id
-//   qty: 1,
-//   is_service: false,
-//   tax_rate_uuid: '', // uuid
-//   description: '',
-//   identification_number: '',
+  is_service: false,
 
-//   images: [],
+  images: [],
 
-//   tabs: [
-//     [
-//       'name',
-//       'price',
-//       'currency_id',
-//       'qty',
-//       'tax_rate_uuid',
-//       'description',
-//       'identification_number'
-//     ],
-//     [
-//       'images'
-//     ]
-//   ],
-
-//   errors: {}
-// })
-
-const state = FormState(parseDefinition(Product))
+  tabs: [
+    [
+      'name',
+      'qty',
+      'description',
+      'identification_number',
+      'price',
+      'currency_code',
+      'tax_rate_uuid'
+    ],
+    [
+      'images'
+    ]
+  ]
+})
 
 state.__initial = JSON.parse(JSON.stringify(state))
 

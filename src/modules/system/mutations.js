@@ -4,13 +4,13 @@ export default {
       if (Array.isArray(log)) {
         state.activityLog = log
       } else {
-        state.activityLog.unshift(log)
+        state.activityLog = [log].concat(state.activityLog)
       }
     } else {
       if (Array.isArray(log)) {
         state.activityLog = state.activityLog.concat(log)
       } else {
-        state.activityLog.unshift(log)
+        state.activityLog = [log].concat(state.activityLog)
       }
     }
     state.allActivityLoaded = all

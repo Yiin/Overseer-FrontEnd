@@ -9,7 +9,7 @@ const state = FormState({
   quote_date: null, // YYYY-MM-DD
   due_date: null, // YYYY-MM-DD
   partial: 0, // partial/deposit
-  currency_id: null,
+  currency_code: '',
   quote_number: '',
   po_number: '',
   discount_type: 'percentage',
@@ -41,7 +41,7 @@ const state = FormState({
       'quote_number',
       'po_number',
       'deposit',
-      'currency_id',
+      'currency_code',
       'discount_type',
       'discount_value'
     ],

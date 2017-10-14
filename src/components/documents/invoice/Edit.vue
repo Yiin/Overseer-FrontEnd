@@ -24,10 +24,10 @@
               <div class="placeholder__text">
                 Add a new client by pressing the button below.
               </div>
-              <a @click="createClient" class="button button--create">
+              <button @click="createClient" class="button button--create">
                 <span class="icon-new-client-btn-icon"></span>
                 {{ $t('actions.new_client') }}
-              </a>
+              </button>
             </div>
           </form-inline-select-input>
         </form-container>
@@ -71,7 +71,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="form.currency_id" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown v-model="form.currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
               </form-inputs-group>
             </form-field>
 
@@ -357,6 +357,7 @@ export default {
     return {
       itemModel: {
         product: {},
+        product_name: '',
         qty: 1,
         cost: 0,
         discount: 0,
@@ -395,8 +396,8 @@ export default {
     currency() {
       let currency = null
 
-      if (this.form.currency_id) {
-        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      if (this.form.currency_code) {
+        currency = this.passive.currencies.find((c) => c.code === this.form.currency_code)
       }
       if (!currency) {
         let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)
@@ -488,15 +489,34 @@ export default {
     taxRates() {
       return this.$store.state.table.tax_rates.items
     }
+  },
 
+  mounted() {
+    // Creating new invoice
+    if (!this.form.uuid) {
+      // const pattern = this.$store.state.user.preferences.invoice_number_pattern
+
+      // const counter = this.$store.state.table.invoices.filter((invoice) => )
+
+      // const invoice_number = pattern.replace()
+      // this.$store.dispatch('form/invoices/SET_FORM_DATA', {
+      //   invoice_number
+      // })
+    }
   },
 
   methods: {
     itemsListProductChange(product) {
+      console.log('itemsListProductChange')
       if (!product) {
         return
       }
-      this.$refs.itemsList.setItemAttribute('cost', product.price)
+      if (product.custom) {
+        this.$refs.itemsList.setItemAttribute('product_name', product.value)
+      } else {
+        this.$refs.itemsList.setItemAttribute('product_name', product.name)
+        this.$refs.itemsList.setItemAttribute('cost', product.price)
+      }
     },
 
     createClient() {

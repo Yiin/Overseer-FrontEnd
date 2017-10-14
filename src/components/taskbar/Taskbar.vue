@@ -2,7 +2,9 @@
   <div>
     <modal></modal>
     <div class="taskbar">
-      <div @click="activateItem(item)" v-for="(item, index) in items" class="taskbar__item">{{ item.data.title }}</div>
+      <div @click="activateItem(item)" v-for="(item, index) in items" class="taskbar__item">
+        {{ $t(item.data.title) }}
+      </div>
     </div>
   </div>
 </template>

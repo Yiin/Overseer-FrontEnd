@@ -19,7 +19,7 @@ export default (vendor) => {
 
       contacts: vendor.contacts.map((contact) => vendorContact(contact)),
 
-      currency_id: id(vendor.currency_id),
+      currency_code: text(vendor.currency_code),
       notes: text(vendor.notes)
     }
   }

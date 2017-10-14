@@ -9,20 +9,20 @@
           whom you will purchase from.
 
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-vendor-btn-icon"></span>
           {{ $t('actions.new_vendor') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.vendors') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-vendor-btn-icon"></span>
           {{ $t('actions.new_vendor') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :watch="{ countries, currencies }" :name="name" :options="filterBy"></filter-by>

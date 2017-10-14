@@ -7,10 +7,10 @@
         <div class="placeholder__text">
           Add a new expense by pressing the button below.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-expense-btn-icon"></span>
           {{ $t('actions.new_expense') }}
-        </a>
+        </button>
       </div>
     </template>
     <tabs v-else ref="tabs" labels>

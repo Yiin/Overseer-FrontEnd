@@ -24,10 +24,10 @@
               <div class="placeholder__text">
                 Add a new vendor by pressing the button below.
               </div>
-              <a @click="createVendor" class="button button--create">
+              <button @click="createVendor" class="button button--create">
                 <span class="icon-new-vendor-btn-icon"></span>
                 {{ $t('actions.new_vendor') }}
-              </a>
+              </button>
             </div>
           </form-inline-select-input>
         </form-container>
@@ -55,10 +55,10 @@
               <div class="placeholder__text">
                 Add a new client by pressing the button below.
               </div>
-              <a @click="createClient" class="button button--create">
+              <button @click="createClient" class="button button--create">
                 <span class="icon-new-client-btn-icon"></span>
                 {{ $t('actions.new_client') }}
-              </a>
+              </button>
             </div>
           </form-inline-select-input>
         </form-container>
@@ -88,7 +88,7 @@
             <!--
               Cost
             -->
-            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency_id' ]" :readonly="preview">
+            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency_code' ]" :readonly="preview">
               <form-inputs-group>
 
                 <!--
@@ -99,7 +99,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="form.currency_id" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown v-model="form.currency_code" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
 
               </form-inputs-group>
             </form-field>

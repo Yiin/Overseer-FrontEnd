@@ -1,3 +1,4 @@
+// @import '../../node_modules/vue-material/dist/vue-material.css';
 @import '_icons';
 @import '_fonts';
 @import '_base';
@@ -8,6 +9,7 @@
 @import '_buttons';
 @import '_transitions';
 
+@import 'ui';
 @import 'tables';
 @import 'list';
 @import 'placeholders';

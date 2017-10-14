@@ -50,7 +50,7 @@ export default {
       }, 500)
     },
 
-    onError: function (e) {
+    onError: function () {
       alert('Failed to copy texts')
     }
   }

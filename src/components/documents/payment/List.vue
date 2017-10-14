@@ -8,20 +8,20 @@
           Here you can enter incoming payments,<br>
           manage cashflow and track revenue.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-payment-btn-icon"></span>
           {{ $t('actions.new_payment') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.payments') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-payment-btn-icon"></span>
           {{ $t('actions.new_payment') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :watch="{ payment_methods: paymentMethods, clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>

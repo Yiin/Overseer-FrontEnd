@@ -1,11 +1,11 @@
 import Api from '@/api'
 
 export default {
-  LOAD_RESULTS({ commit }) {
-    Api.get('feature/vat-checker/results')
-      .then((response) => {
-        // commit('SET_RESULTS', response)
-      })
+  LOAD_RESULTS() {
+    // Api.get('feature/vat-checker/results')
+    //   .then(() => {
+    //     commit('SET_RESULTS', response)
+    //   })
   },
 
   CHECK_VAT({ commit }, { country_code, number }) {

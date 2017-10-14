@@ -3,18 +3,22 @@
     box-sizing: border-box;
 }
 
+html
+{
+    overflow-y: auto;
+}
+
 body
 {
     font-family: $primary-font-family;
     font-size: 14px;
     line-height: .8;
+    background: $color-page-bg;
 
     // overflow-y: scroll;
 
     margin: 0;
     // padding: $height-navbar 0 0 0;
-
-    background: $color-page-bg;
 }
 
 .page-content
@@ -167,8 +171,8 @@ iframe
 
         display: inline-block;
 
-        width: 18px;
-        height: 18px;
+        width: 22px;
+        height: 22px;
 
         content: '';
 
@@ -351,4 +355,20 @@ span.result-detail__value
     &::before {
         box-shadow: -1px 1px 1px rgba(186, 186, 188, 0.3) !important;
     }
+}
+
+@-webkit-keyframes autofill {
+    to {
+        background: transparent;
+    }
+}
+
+input:-webkit-autofill {
+    -webkit-animation-name: autofill;
+    -webkit-animation-fill-mode: both;
+}
+
+::selection {
+    background: $color-main;
+    color: #ffffff;
 }

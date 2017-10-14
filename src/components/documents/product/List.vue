@@ -8,20 +8,20 @@
           Here you can add products.<br>
           Both physical stock and services.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-product-btn-icon"></span>
           {{ $t('actions.new_product') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.products') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-product-btn-icon"></span>
           {{ $t('actions.new_product') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :name="name" :options="filterBy"></filter-by>

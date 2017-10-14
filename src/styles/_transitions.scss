@@ -17,10 +17,6 @@
     position: relative;
 }
 
-.--relative {
-    position: relative;
-}
-
 .fade-enter-active.--relative > div,
 .fade-leave-active.--relative > div {
     position: absolute;
@@ -29,6 +25,31 @@
     width: 100%;
 }
 
+
+/* Fade out */
+.slow-cross-fade-enter-active {
+  transition: opacity .2s ease-in-out;
+}
+
+/* slow-cross-fade In */
+.slow-cross-fade-leave-active {
+  transition: opacity .2s ease-out;
+}
+
+.slow-cross-fade-enter, .slow-cross-fade-leave-active {
+  opacity: 0;
+}
+
+.slow-cross-fade-enter {
+    position: relative;
+}
+
+
+
 .--disable-transition {
     transition: none !important;
+}
+
+.--relative {
+    position: relative;
 }

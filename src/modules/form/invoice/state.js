@@ -9,6 +9,7 @@ const state = FormState({
   invoice_date: undefined, // YYYY-MM-DD
   due_date: undefined, // YYYY-MM-DD
   partial: 0, // partial/deposit
+  currency_code: '',
   invoice_number: '',
   po_number: '',
   discount_type: 'percentage',
@@ -43,7 +44,7 @@ const state = FormState({
       'invoice_number',
       'po_number',
       'deposit',
-      'currency_id',
+      'currency_code',
       'discount_type',
       'discount_value'
     ],

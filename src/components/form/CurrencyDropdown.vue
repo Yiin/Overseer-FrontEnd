@@ -1,10 +1,10 @@
 <template>
-  <form-field catch-errors="currency_id" :label="$t('labels.currency')">
-    <form-dropdown-input v-bind="$attrs" :watch="currencies" v-model="localValue" name="currency_id" :placeholder="$t('labels.currency')" scrollable searchable>
-      <dropdown-option v-for="currency in currencies" :key="currency.id"
-                      :value="currency.id"
+  <form-field catch-errors="currency_code" :label="$t('labels.currency')">
+    <form-dropdown-input v-bind="$attrs" :watch="currencies" v-model="localValue" name="currency_code" :placeholder="$t('labels.currency')" scrollable searchable>
+      <dropdown-option v-for="currency in currencies" :key="currency.code"
+                      :value="currency.code"
                       :title="currency.code + ' - ' + currency.name"
-                      :selected="currency.id === (localValue || settings.currency.id)">
+                      :selected="currency.code === (localValue || settings.currency.code)">
         {{ currency.code }} - {{ currency.name }}
       </dropdown-option>
     </form-dropdown-input>

@@ -26,3 +26,7 @@ export const id = uuid
 export const text = (val, defaultVal = '') => {
   return (typeof val !== 'undefined' && val !== null) ? val.toString() : defaultVal
 }
+
+export const currency = (val, defaultVal = '0.00') => {
+  return text(val, defaultVal)
+}

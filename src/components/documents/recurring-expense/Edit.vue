@@ -60,7 +60,7 @@
             <!--
               Cost
             -->
-            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency_id' ]">
+            <form-field :label="$t('labels.amount')" :catch-errors="[ 'amount', 'currency_code' ]">
               <form-inputs-group>
 
                 <!--
@@ -71,13 +71,7 @@
                 <!--
                   Currency
                 -->
-                <form-dropdown-input name="currency_id" class="dropdown--small" :placeholder="$t('labels.currency')" scrollable searchable>
-                  <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
-                                  :value="currency.id"
-                                  :selected="currency.id === form.currency_id">
-                    {{ currency.code }}
-                  </dropdown-option>
-                </form-dropdown-input>
+                <form-currency-dropdown v-model="form.currency_code" class="dropdown--small"></form-currency-dropdown>
 
               </form-inputs-group>
             </form-field>
@@ -102,8 +96,14 @@
 </template>
 
 <script>
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+
 export default {
   name: 'edit-expense',
+
+  components: {
+    FormCurrencyDropdown
+  },
 
   props: {
     data: {

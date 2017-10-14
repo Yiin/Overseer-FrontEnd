@@ -32,7 +32,7 @@ const state = FormState({
     }
   ],
 
-  currency_id: null, // id
+  currency_code: null, // id
   language_id: null, // id
   payment_terms: null, // integer
   company_size_id: null, // id
@@ -59,7 +59,7 @@ const state = FormState({
       'contacts'
     ],
     [
-      'currency_id',
+      'currency_code',
       'language_id',
       'payment_terms',
       'company_size_id',

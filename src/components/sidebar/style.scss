@@ -48,28 +48,28 @@
             cursor: pointer;
             text-decoration: none;
 
-            color: $color-mine-shaft;
+            color: $color-mine-shaft !important;
             &:hover
             {
                 font-weight: $font-weight-semibold;
 
-                color: $color-navbar-link-hover;
+                color: $color-navbar-link-hover !important;
                 background: $color-navbar-link-hover-bg;
             }
             &--active
             {
                 font-weight: $font-weight-semibold;
 
-                color: $color-navbar-link-active;
+                color: $color-navbar-link-active !important;
                 // @include gradient-background;
                 background: $color-main;
             }
             &--disabled
             {
-                color: $color-dusty-gray;
+                color: $color-dusty-gray !important;
                 &:hover
                 {
-                    color: $color-dusty-gray;
+                    color: $color-dusty-gray !important;
                     background: none;
                     cursor: default;
                     font-weight: normal;

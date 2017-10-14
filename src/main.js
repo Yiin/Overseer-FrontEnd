@@ -1,6 +1,8 @@
 /* Vue */
 import Vue from 'vue'
 import VueResource from 'vue-resource'
+// import { Vuetify } from 'vuetify'
+import VueMaterial from 'vue-material'
 import { VTooltip } from 'v-tooltip'
 import VueClipboard from 'vue-clipboard2'
 import App from './App'
@@ -13,6 +15,7 @@ import * as plugins from './plugins'
 import * as filters from './filters'
 import * as components from './components/common'
 import * as directives from './directives'
+import { preload } from './scripts'
 
 // Options
 Vue.config.productionTip = false
@@ -22,6 +25,16 @@ Vue.directive('tooltip', VTooltip)
 
 /* Clipboard */
 Vue.use(VueClipboard)
+
+/* UI Lib */
+// Vue.use(Vuetify)
+Vue.use(VueMaterial)
+Vue.material.registerTheme('default', {
+  warn: {
+    color: 'red',
+    hue: 'A700'
+  }
+})
 
 /* Http Client */
 Vue.use(VueResource)
@@ -53,6 +66,8 @@ for (let name in plugins) {
   Vue.use(plugins[name])
 }
 
+preload()
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -60,13 +75,7 @@ new Vue({
   store,
   i18n,
   template: '<App/>',
-  components: { App },
-
-  mounted() {
-    if (this.$store.state.auth.isLoggedIn) {
-      this.$store.dispatch('INIT')
-    }
-  }
+  components: { App }
 })
 
 i18n.locale = store.state.settings.locale

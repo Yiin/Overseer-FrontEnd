@@ -23,6 +23,10 @@ export default {
     tooltip: {
       type: Object,
       default: undefined
+    },
+    custom: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -50,8 +54,10 @@ export default {
 
   methods: {
     select() {
+      console.log('select')
       this.$emit('select', {
-        value: this.value,
+        custom: this.custom,
+        value: this.custom ? this.text : this.value,
         text: this.text
       })
     }

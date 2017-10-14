@@ -32,7 +32,7 @@ const state = FormState({
     }
   ],
 
-  currency_id: null, // id
+  currency_code: '', // id
   notes: '',
 
   tabs: [
@@ -56,7 +56,7 @@ const state = FormState({
       'contacts'
     ],
     [
-      'currency_id'
+      'currency_code'
     ]
   ],
 

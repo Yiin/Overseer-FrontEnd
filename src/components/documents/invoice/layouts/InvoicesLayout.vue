@@ -8,20 +8,20 @@
           Here you can create and manage invoices, <br>
           E-Mail them to clients and save drafts.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-invoice-btn-icon"></span>
           {{ $t('actions.new_invoice') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.invoices') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-invoice-btn-icon"></span>
           {{ $t('actions.new_invoice') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :watch="{ clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
@@ -121,6 +121,7 @@ import {
   Archive,
   Delete,
   Restore,
+  PrintDocument,
   Preview,
   EditDocument,
   CloneDocument,
@@ -173,7 +174,8 @@ export default {
           icon: 'icon-new-invoice-btn-icon'
         }),
         SELECTED_DOCUMENT.extend({ documentType: 'invoice' }),
-        Preview.extend({ title: 'actions.preview' }),
+        PrintDocument.extend({ title: 'actions.print_invoice' }),
+        Preview,
         EditDocument.extend({ title: 'actions.edit_invoice' }),
         CloneDocument.extend({ title: 'actions.clone_invoice' }),
         ViewHistory,

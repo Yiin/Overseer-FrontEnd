@@ -1,4 +1,4 @@
-import { uuid, boolean, date, integer, float, text } from './data-types'
+import { uuid, boolean, date, currency, integer, text } from './data-types'
 import billItem from './bill-item'
 
 export default (recurringInvoice) => {
@@ -12,10 +12,10 @@ export default (recurringInvoice) => {
       discount_type: text(recurringInvoice.discount_type),
       discount_value: integer(recurringInvoice.discount_value),
       frequency_type: text(recurringInvoice.frequency_type),
-      frequency_value: integer(recurringInvoice.frequency_value),
+      frequency_value: currency(recurringInvoice.frequency_value),
       due_date: integer(recurringInvoice.due_date),
       autobill: boolean(recurringInvoice.autobill),
-      currency_id: float(recurringInvoice.currency_id),
+      currency_code: text(recurringInvoice.currency_code),
 
       items: recurringInvoice.items.map((item) => billItem(item)),
 

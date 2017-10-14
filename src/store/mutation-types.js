@@ -1,6 +1,0 @@
-export const UPDATE_ACCESS_TOKEN = 'UPDATE_ACCESS_TOKEN'
-export const RESET_AUTH = 'RESET_AUTH'
-export const UPDATE_USER = 'UPDATE_USER'
-export const RESET_USER = 'RESET_USER'
-export const CLEAR_ALL_DATA = 'CLEAR_ALL_DATA'
-export const UPDATE_LOCALE = 'UPDATE_LOCALE'

@@ -8,20 +8,20 @@
           Oops! There are no recurring invoices here.<br>
           Add a new recurring invoice by pressing the button below.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-recurring-btn-icon"></span>
           {{ $t('actions.new_recurring_invoice') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.recurring_invoices') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-recurring-btn-icon"></span>
           {{ $t('actions.new_invoice') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :watch="{ frequencies, clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>

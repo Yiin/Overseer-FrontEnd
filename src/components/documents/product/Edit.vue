@@ -65,7 +65,7 @@
             <!--
               Price
             -->
-            <form-field :label="$t('labels.price')" :catch-errors="[ 'price', 'currency_id' ]">
+            <form-field :label="$t('labels.price')" :catch-errors="[ 'price', 'currency_code' ]">
               <form-inputs-group>
 
                 <!--
@@ -82,7 +82,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="form.currency_id" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown v-model="form.currency_code" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
 
               </form-inputs-group>
             </form-field>
@@ -153,8 +153,8 @@ export default {
     currency() {
       let currency = null
 
-      if (this.form.currency_id) {
-        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      if (this.form.currency_code) {
+        currency = this.passive.currencies.find((c) => c.code === this.form.currency_code)
       }
       if (!currency) {
         currency = this.$store.state.settings.currency

@@ -74,7 +74,7 @@
             <!--
               Currency
             -->
-            <form-currency-dropdown v-model="form.currency_id" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+            <form-currency-dropdown v-model="form.currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
 
             <!--
               Discount
@@ -417,8 +417,8 @@ export default {
     currency() {
       let currency = null
 
-      if (this.form.currency_id) {
-        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      if (this.form.currency_code) {
+        currency = this.passive.currencies.find((c) => c.code === this.form.currency_code)
       }
       if (!currency) {
         let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)

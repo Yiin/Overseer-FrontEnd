@@ -7,10 +7,10 @@
         <div class="placeholder__text">
           Create a new project by pressing the button below.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-quote-btn-icon"></span>
           {{ $t('actions.new_project') }}
-        </a>
+        </button>
       </div>
     </template>
     <documents-table v-else simple

@@ -8,20 +8,20 @@
           Here you can enter expenses<br>
           and track expenditures.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-expense-btn-icon"></span>
           {{ $t('actions.new_expense') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.expenses') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-expense-btn-icon"></span>
           {{ $t('actions.new_expense') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :watch="{ currencies, clients }" :name="name" :options="filterBy"></filter-by>

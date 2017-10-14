@@ -1,27 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import state from './state'
-import * as getters from './getters'
-import * as actions from './actions'
+import actions from './actions'
 import mutations from './mutations'
+import state from './state'
 import plugins from './plugins'
 import modules from '@/modules'
 
 Vue.use(Vuex)
 
-const store = new Vuex.Store({
-  state,
-  getters,
+export default new Vuex.Store({
   actions,
   mutations,
+  state,
+
   plugins,
   modules
 })
-
-export default store
-
-const initialStateCopy = JSON.parse(JSON.stringify(store.state))
-
-export function resetState() {
-  store.replaceState(JSON.parse(JSON.stringify(initialStateCopy)))
-}

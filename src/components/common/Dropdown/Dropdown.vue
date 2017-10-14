@@ -286,7 +286,7 @@ export default {
       this.recalculateComputedProperty('shouldBeReversed')
     },
     value: function (value) {
-      if (typeof value === 'object' && typeof value.text !== 'undefined') {
+      if (typeof value === 'object' && value !== null && typeof value.text !== 'undefined') {
         this.valueText = value.text
       } else {
         this.findAndSelect(value)

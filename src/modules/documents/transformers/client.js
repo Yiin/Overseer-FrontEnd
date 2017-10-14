@@ -19,7 +19,7 @@ export default (client) => {
 
       contacts: client.contacts.map((contact) => clientContact(contact)),
 
-      currency_id: id(client.currency_id),
+      currency_code: text(client.currency_code),
       language_id: id(client.language_id),
       payment_terms: id(client.payment_terms),
       company_size_id: id(client.company_size_id),

@@ -99,7 +99,7 @@ export default {
 
   computed: {
     activityLog() {
-      const log = []
+      let log = []
       let lastDate = null
 
       this.$store.state.system.activityLog.filter((loggedActivity) => {
@@ -131,6 +131,13 @@ export default {
     }
   },
 
+  watch: {
+    '$store.state.system.activityLog': function () {
+      console.log('recalculateComputedProperty')
+      this.recalculateComputedProperty('activityLog')
+    }
+  },
+
   methods: {
     edit(document) {
       editDocument(document.data, document.type)
@@ -142,6 +149,13 @@ export default {
           const el = document.getElementsByClassName('router-view')[0]
           smoothScrollToBottom(el)
         }, 1000)
+      })
+    },
+
+    recalculateComputedProperty(property) {
+      this.$nextTick(() => {
+        this._computedWatchers[property].update()
+        this.$forceUpdate()
       })
     }
   }

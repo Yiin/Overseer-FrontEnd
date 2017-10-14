@@ -26,7 +26,7 @@ export default {
     if (store.state.auth.accessToken) {
       this.echo = new Echo({
         broadcaster: 'socket.io',
-        host: `http://${window.location.host}:6001`,
+        host: `${location.protocol}//${process.env.WS_SERVER}`,
         auth: {
           headers: {
             Authorization: 'Bearer ' + store.state.auth.accessToken
@@ -34,7 +34,7 @@ export default {
         }
       })
 
-      const { company, uuid } = store.state.user
+      const { company, uuid } = store.state.auth.user
 
       const channel = this.echo.private(`user:${company}.${uuid}`)
 

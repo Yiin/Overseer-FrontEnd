@@ -122,15 +122,7 @@
       <modal-tab :title="$t('tabs.additional_info')">
         <form-container name="vendor">
           <form-row>
-            <form-field catch-errors="currency" :label="$t('labels.currency')">
-              <form-dropdown-input v-model="form.currency_id" name="currency_id" scrollable searchable :readonly="preview">
-                <dropdown-option v-for="currency in passive.currencies" :key="currency.id"
-                                :value="currency.id"
-                                :selected="currency.id === form.currency_id">
-                  {{ currency.code }} - {{ currency.name }}
-                </dropdown-option>
-              </form-dropdown-input>
-            </form-field>
+            <form-currency-dropdown v-model="form.currency_code" :readonly="preview"></form-currency-dropdown>
           </form-row>
         </form-container>
       </modal-tab>
@@ -139,8 +131,14 @@
 </template>
 
 <script>
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
+
 export default {
   name: 'edit-vendor',
+
+  components: {
+    FormCurrencyDropdown
+  },
 
   computed: {
     form() {

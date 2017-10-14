@@ -11,7 +11,7 @@ const state = FormState({
 
   // Details
   amount: 0,
-  currency_id: null, // id (currencies)
+  currency_code: '', // id (currencies)
   date: null, // YYYY-MM-DD
 
   // Documents
@@ -26,7 +26,7 @@ const state = FormState({
     ],
     [
       'amount',
-      'currency_id',
+      'currency_code',
       'date'
     ],
     [

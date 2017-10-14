@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import store from '@/store'
-import { UPDATE_ACCESS_TOKEN } from '@/store/mutation-types'
 
 /**
  * @var{string} LOGIN_URL The endpoint for logging in.
@@ -129,7 +128,7 @@ export default {
   _refreshToken(request) {
     return Vue.http.post(REFRESH_TOKEN_URL, {}, AUTH_BASIC_HEADERS)
       .then((response) => {
-        store.commit(UPDATE_ACCESS_TOKEN, response.body.access_token)
+        store.commit('auth/UPDATE_ACCESS_TOKEN', response.body.access_token)
         return this._retry(request)
       })
       .catch((errorResponse) => {

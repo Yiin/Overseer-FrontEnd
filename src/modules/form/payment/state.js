@@ -10,7 +10,7 @@ const state = FormState({
 
   // Details
   amount: 0,
-  currency_id: null, // id (currencies)
+  currency_code: null, // id (currencies)
   payment_type_id: null, // id (payment_types)
   payment_date: null, // YYYY-MM-DD
   payment_reference: '',
@@ -24,7 +24,7 @@ const state = FormState({
     ],
     [
       'amount',
-      'currency_id',
+      'currency_code',
       'payment_type_id',
       'payment_date',
       'payment_reference'

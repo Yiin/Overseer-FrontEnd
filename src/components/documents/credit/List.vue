@@ -8,20 +8,20 @@
           Here you can enter and manage credit notes;<br>
           Such as bank cheques and refunds.
         </div>
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-credit-btn-icon"></span>
           {{ $t('actions.new_credit') }}
-        </a>
+        </button>
       </div>
     </template>
     <template v-else>
       <breadcrumb :path="[ $t('common.credits') ]"></breadcrumb>
 
       <div class="table__heading">
-        <a @click="create" class="button button--create">
+        <button @click="create" class="button button--create">
           <span class="icon-new-credit-btn-icon"></span>
           {{ $t('actions.new_credit') }}
-        </a>
+        </button>
 
         <div class="table__dropdowns">
           <filter-by :watch="{ clients }" :name="name" :options="filterBy"></filter-by>

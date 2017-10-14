@@ -1,4 +1,4 @@
-import { uuid, date, float, text, integer } from './data-types'
+import { uuid, date, currency, text } from './data-types'
 import billItem from './bill-item'
 
 export default (invoice) => {
@@ -7,12 +7,12 @@ export default (invoice) => {
       client_uuid: uuid(invoice.client_uuid),
       invoice_date: date(invoice.invoice_date),
       due_date: date(invoice.due_date),
-      partial: float(invoice.partial),
-      currency_id: float(invoice.currency_id),
+      partial: currency(invoice.partial),
+      currency_code: text(invoice.currency_code),
       invoice_number: text(invoice.invoice_number),
       po_number: text(invoice.po_number),
       discount_type: text(invoice.discount_type),
-      discount_value: integer(invoice.discount_value),
+      discount_value: currency(invoice.discount_value),
       status: text(invoice.status),
 
       items: invoice.items.map((item) => billItem(item)),

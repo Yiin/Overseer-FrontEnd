@@ -1,6 +1,7 @@
 import ContextMenuAction from './cm-action'
 import pluralize from 'pluralize'
 import moment from 'moment'
+// import print from 'print-js'
 
 // visibility filters
 export const whenMoreThanOneRowIsSelected = (tableName, { state }, row) => {
@@ -167,6 +168,28 @@ export const Restore = ContextMenuAction({
         dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
       }
     }
+  }
+})
+
+export const PrintDocument = ContextMenuAction({
+  title: 'actions.print_document',
+  icon: 'icon-dropdown-mark',
+
+  visible(tableName, store, row) {
+    return !!row
+  },
+
+  handler(tableName, { dispatch }, row) {
+    if (typeof row === 'undefined') {
+      return
+    }
+    if (typeof row.pdfs === 'undefined') {
+      return
+    }
+    if (!row.pdfs.length) {
+      // return
+    }
+    // print('/storage/pdf/' + row.pdfs[0])
   }
 })
 
@@ -346,14 +369,14 @@ export const EnterExpense = ContextMenuAction({
     case 'clients':
       dispatch('form/expense/SET_FORM_DATA', {
         client_uuid: row.uuid,
-        currency_id: row.currency ? row.currency.id : null
+        currency_code: row.currency_code || null
       })
       break
 
     case 'vendors':
       dispatch('form/expense/SET_FORM_DATA', {
         vendor_uuid: row.uuid,
-        currency_id: row.currency ? row.currency.id : null
+        currency_code: row.currency_code || null
       })
       // Skip first modal tab, since we
       // already picked vendor for the user
@@ -516,7 +539,7 @@ export const ConvertToInvoice = ContextMenuAction({
       client_uuid: quote.client ? quote.client.uuid : null,
       items: quote.items.slice(),
       partial: quote.partial,
-      currency_id: quote.currency ? quote.currency.id : null,
+      currency_code: quote.currency_code || null,
       discount_type: quote.discount_type,
       discount_value: quote.discount_value,
       note_to_client: quote.note_to_client,

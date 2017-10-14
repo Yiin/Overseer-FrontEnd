@@ -24,10 +24,10 @@
               <div class="placeholder__text">
                 Add a new client by pressing the button below.
               </div>
-              <a @click="createClient" class="button button--create">
+              <button @click="createClient" class="button button--create">
                 <span class="icon-new-client-btn-icon"></span>
                 {{ $t('actions.new_client') }}
-              </a>
+              </button>
             </div>
           </form-inline-select-input>
         </form-container>
@@ -55,7 +55,7 @@
             <!--
               Currency
             -->
-            <form-currency-dropdown v-model="form.currency_id" :readonly="preview"></form-currency-dropdown>
+            <form-currency-dropdown v-model="form.currency_code" :readonly="preview"></form-currency-dropdown>
           </form-row>
           <form-row>
 
@@ -116,8 +116,8 @@ export default {
     currency() {
       let currency = null
 
-      if (this.form.currency_id) {
-        currency = this.passive.currencies.find((c) => c.id === this.form.currency_id)
+      if (this.form.currency_code) {
+        currency = this.passive.currencies.find((c) => c.code === this.form.currency_code)
       }
       if (!currency) {
         let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)
@@ -133,10 +133,10 @@ export default {
     },
 
     currencyCode() {
-      if (this.currency) {
-        return this.currency.code
+      if (this.currency_code) {
+        return this.currency_code
       }
-      return 'EUR'
+      return this.currency ? this.currency.code : 'EUR'
     },
 
     clients() {

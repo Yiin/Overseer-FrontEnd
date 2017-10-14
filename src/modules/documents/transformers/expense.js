@@ -1,4 +1,4 @@
-import { uuid, id, date, float } from './data-types'
+import { uuid, text, date, currency } from './data-types'
 
 export default (expense) => {
   return {
@@ -7,8 +7,8 @@ export default (expense) => {
       client_uuid: uuid(expense.client_uuid),
       category_uuid: uuid(expense.category_uuid),
 
-      amount: float(expense.amount),
-      currency_id: id(expense.currency_id),
+      amount: currency(expense.amount),
+      currency_code: text(expense.currency_code),
 
       date: date(expense.date)
     }
