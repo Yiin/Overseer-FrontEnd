@@ -1,8 +1,7 @@
 /* Vue */
 import Vue from 'vue'
 import VueResource from 'vue-resource'
-// import { Vuetify } from 'vuetify'
-import VueMaterial from 'vue-material'
+import { Vuetify } from 'vuetify'
 import { VTooltip } from 'v-tooltip'
 import VueClipboard from 'vue-clipboard2'
 import App from './App'
@@ -27,14 +26,7 @@ Vue.directive('tooltip', VTooltip)
 Vue.use(VueClipboard)
 
 /* UI Lib */
-// Vue.use(Vuetify)
-Vue.use(VueMaterial)
-Vue.material.registerTheme('default', {
-  warn: {
-    color: 'red',
-    hue: 'A700'
-  }
-})
+Vue.use(Vuetify)
 
 /* Http Client */
 Vue.use(VueResource)

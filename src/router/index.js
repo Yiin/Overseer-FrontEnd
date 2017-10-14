@@ -392,6 +392,13 @@ const router = new Router({
         require(['@/components/documents/vendor/Edit.vue'], resolve)
       },
       beforeEnter: checkIfLoggedIn
+    },
+    {
+      path: '*',
+      name: 'NOT_FOUND',
+      redirect: {
+        name: Routes.OVERVIEW
+      }
     }
   ]
 })
