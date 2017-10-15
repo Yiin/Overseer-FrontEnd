@@ -184,7 +184,7 @@ export default {
     },
 
     getFillingPosition() {
-      const { btnRect, formRect } = this.getRects()
+      const { btnRect } = this.getRects()
       return {
         x: btnRect.x,
         y: btnRect.y
@@ -229,7 +229,7 @@ export default {
      * calculate timing and apply transformations.
      */
     fillAuthAnimation() {
-      const { formRect, btnRect } = this.getRects()
+      const { formRect } = this.getRects()
       const { x, y } = this.getFillingPosition()
       const time = 700
 

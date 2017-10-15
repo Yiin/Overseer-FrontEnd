@@ -1,7 +1,13 @@
 /* Vue */
 import Vue from 'vue'
 import VueResource from 'vue-resource'
-import { Vuetify } from 'vuetify'
+import {
+ Vuetify,
+ VApp,
+ VGrid,
+ VTextField
+} from 'vuetify'
+import VueMaterial from 'vue-material'
 import { VTooltip } from 'v-tooltip'
 import VueClipboard from 'vue-clipboard2'
 import App from './App'
@@ -26,7 +32,14 @@ Vue.directive('tooltip', VTooltip)
 Vue.use(VueClipboard)
 
 /* UI Lib */
-Vue.use(Vuetify)
+Vue.use(VueMaterial) /* Temporary, for input fields scaling bug fix */
+Vue.use(Vuetify, {
+  components: {
+    VApp,
+    VGrid,
+    VTextField
+  }
+})
 
 /* Http Client */
 Vue.use(VueResource)

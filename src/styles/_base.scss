@@ -369,6 +369,6 @@ input:-webkit-autofill {
 }
 
 ::selection {
-    background: $color-main;
+    background: $color-main !important;
     color: #ffffff;
 }

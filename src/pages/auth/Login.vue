@@ -7,20 +7,23 @@
       </h1>
 
       <div class="auth__input-fields">
-        <v-text-field
-          label="Email"
-          name="username"
-          v-model="username"
-          :error-messages="errorMessages.username"
-        ></v-text-field>
+        <md-input-container :class="{ 'md-input-invalid': errorMessages.username.length }">
+          <label>Email</label>
+          <md-input v-model="username"></md-input>
 
-        <v-text-field
-          label="Password"
-          name="password"
-          type="password"
-          v-model="password"
-          :error-messages="errorMessages.password"
-        ></v-text-field>
+          <span v-for="error in errorMessages.username" class="md-error">
+            {{ error }}
+          </span>
+        </md-input-container>
+
+        <md-input-container :class="{ 'md-input-invalid': errorMessages.password.length }">
+          <label>Password</label>
+          <md-input type="password" v-model="password"></md-input>
+
+          <span v-for="error in errorMessages.password" class="md-error">
+            {{ error }}
+          </span>
+        </md-input-container>
       </div>
     </div>
   </div>
@@ -87,5 +90,6 @@ export default {
     width: 274px;
     margin-top: 63px;
     margin-left: 4px;
+    overflow: hidden;
 }
 </style>

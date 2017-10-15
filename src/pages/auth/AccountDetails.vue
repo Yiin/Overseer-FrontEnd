@@ -79,15 +79,7 @@
 </template>
 
 <script>
-import {
-  VTextField
-} from 'vuetify'
-
 export default {
-  components: {
-    VTextField
-  },
-
   computed: {
     validationErrors() {
       let errors = {}

@@ -1,14 +1,19 @@
-// .md-input-container {
-//     margin: 1px 0 26px;
-// }
+.md-input-container {
+    margin: 1px 0 26px;
+}
 
-// .md-input-container::after {
-//     background-color: #8a8e91;
-// }
+.md-input-container::after {
+    background-color: #8a8e91;
+}
 
-// .md-input-invalid .md-error {
-//     padding-top: 6px;
-// }
+.md-input-invalid .md-error {
+    padding-top: 6px;
+}
+
+a:not(.md-button):not(.md-bottom-bar-item):hover {
+    text-decoration: none;
+}
+
 .input-group__details {
     -webkit-backface-visibility: hidden;
 }
