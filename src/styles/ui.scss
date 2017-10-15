@@ -2,6 +2,10 @@
     margin: 1px 0 26px;
 }
 
+.md-input-container label {
+    color: rgba(0,0,0,0.87);
+}
+
 .md-input-container::after {
     background-color: #8a8e91;
 }

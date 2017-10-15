@@ -44,7 +44,7 @@
           <column width="15%">{{ $t('fields.amount') }}</column>
           <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
-        <template slot="columns" scope="props">
+        <template slot="columns" slot-scope="props">
           <column width="16%">
             <a :href="`#${props.row.uuid}`" @click="edit(props.row)">
               {{ props.row.frequency | frequencyName }}

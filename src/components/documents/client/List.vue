@@ -43,7 +43,7 @@
           <column width="11%">{{ $t('fields.date_created') }}</column>
           <column width="14%">{{ $t('fields.balance') }}</column>
         </template>
-        <template slot="columns" scope="props">
+        <template slot="columns" slot-scope="props">
           <column width="17%">
             <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
           </column>

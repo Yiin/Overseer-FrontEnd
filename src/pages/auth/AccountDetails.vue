@@ -6,7 +6,7 @@
     <div class="inputs__group">
       <div class="input__column">
 
-        <v-text-field
+        <md-text-field
           label="Company Name"
           name="company_name"
           v-model="company_name"
@@ -14,35 +14,32 @@
           :error-messages="validationErrors.company_name"
           data-lpignore="true"
           tabindex="1"
-        ></v-text-field>
+        ></md-text-field>
 
-        <v-text-field
+        <md-text-field
+          label="First Name"
           name="first_name"
           v-model="first_name"
           @change="validate('first_name')"
           :error-messages="validationErrors.first_name"
           data-lpignore="true"
           tabindex="3"
-        >
-          <div slot="label">
-            First Name
-          </div>
-        </v-text-field>
+        ></md-text-field>
 
-        <v-text-field
+        <md-text-field
           label="Password"
           type="password"
           v-model="password"
           @change="validate('password')"
           :error-messages="validationErrors.password"
           tabindex="5"
-        ></v-text-field>
+        ></md-text-field>
 
       </div>
 
       <div class="input__column">
 
-        <v-text-field
+        <md-text-field
           label="Email"
           name="email"
           v-model="email"
@@ -50,28 +47,25 @@
           :error-messages="validationErrors.email"
           data-lpignore="true"
           tabindex="2"
-        ></v-text-field>
+        ></md-text-field>
 
-        <v-text-field
+        <md-text-field
+          label="Last Name"
           name="last_name"
           v-model="last_name"
           @change="validate('last_name')"
           :error-messages="validationErrors.last_name"
           data-lpignore="true"
           tabindex="4"
-        >
-          <div slot="label">
-            Last Name
-          </div>
-        </v-text-field>
+        ></md-text-field>
 
-        <v-text-field
+        <md-text-field
           label="Confirm Pasword"
           v-model="password_confirmation"
           @change="validate('password')"
           type="password"
           tabindex="6"
-        ></v-text-field>
+        ></md-text-field>
 
       </div>
     </div>
@@ -79,7 +73,13 @@
 </template>
 
 <script>
+import MdTextField from './MdTextField.vue'
+
 export default {
+  components: {
+    MdTextField
+  },
+
   computed: {
     validationErrors() {
       let errors = {}

@@ -24,7 +24,7 @@
             <column width="20%">{{ $t('fields.date') }}</column>
             <column width="20%">{{ $t('fields.amount') }}</column>
           </template>
-          <template slot="columns" scope="props">
+          <template slot="columns" slot-scope="props">
             <column width="30%">{{ props.row.vendor.company_name }}</column>
             <column width="30%">{{ props.row.client.name }}</column>
             <column width="20%">{{ props.row.date | date }}</column>
