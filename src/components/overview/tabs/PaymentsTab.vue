@@ -26,7 +26,7 @@
             <column width="20%">{{ $t('labels.payment_date') }}</column>
             <column width="20%">{{ $t('fields.amount') }}</column>
           </template>
-          <template slot="columns" scope="props">
+          <template slot="columns" slot-scope="props">
             <column width="30%">{{ props.row.invoice.invoice_number }}</column>
             <column width="30%">{{ props.row.client.name }}</column>
             <column width="20%">{{ props.row.payment_date | date }}</column>

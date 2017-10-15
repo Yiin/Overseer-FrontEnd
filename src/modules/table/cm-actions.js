@@ -263,7 +263,7 @@ export const NewInvoice = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/invoice/UPDATE_FIELD_VALUE', {
+      dispatch('form/invoice/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })
@@ -299,7 +299,7 @@ export const NewQuote = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/quote/UPDATE_FIELD_VALUE', {
+      dispatch('form/quote/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })
@@ -328,7 +328,7 @@ export const EnterPayment = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/payment/UPDATE_FIELD_VALUE', {
+      dispatch('form/payment/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })
@@ -403,7 +403,7 @@ export const EnterCredit = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/credit/UPDATE_FIELD_VALUE', {
+      dispatch('form/credit/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })

@@ -39,7 +39,7 @@
           <column width="11%">{{ $t('fields.date_created') }}</column>
           <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
-        <template slot="columns" scope="props">
+        <template slot="columns" slot-scope="props">
           <column width="16%">
             <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.invoice.invoice_number }}</a>
           </column>

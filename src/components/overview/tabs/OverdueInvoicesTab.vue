@@ -22,7 +22,7 @@
         <column width="13%">{{ $t('fields.amount') }}</column>
         <column width="13%">{{ $t('fields.paid_in') }}</column>
       </template>
-      <template slot="columns" scope="props">
+      <template slot="columns" slot-scope="props">
         <column width="18%">
           <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.invoice_number }}</a>
         </column>

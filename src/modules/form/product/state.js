@@ -1,20 +1,23 @@
 import FormState from '@/modules/form/state'
 
 const state = FormState('product', {
-  uuid: '',
+  fields: {
+    uuid: '',
 
-  name: '',
-  qty: 1,
-  description: '',
-  identification_number: '',
+    name: '',
+    qty: 1,
+    description: '',
+    identification_number: '',
 
-  price: '',
-  currency_code: '',
-  tax_rate_uuid: '',
+    price: '',
+    currency_code: ''
+  },
 
+  /**
+   * If product is a service,
+   * we should ignore its qty.
+   */
   is_service: false,
-
-  images: [],
 
   tabs: [
     [

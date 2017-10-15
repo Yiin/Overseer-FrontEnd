@@ -1,7 +1,21 @@
 import pluralize from 'pluralize'
 import S from 'string'
+import validators from './validators'
 
 export default (actions = {}) => Object.assign({
+  VALIDATE({ commit, state }, field) {
+    const result = validators[state.__name](state.fields)
+
+    if (typeof field === 'undefined') {
+      commit('SET_ERRORS', result)
+    } else {
+      commit('SET_FIELD_ERRORS', {
+        field,
+        errors: result[field]
+      })
+    }
+  },
+
   SET_FORM_DATA({ commit }, data) {
     commit('SET_FORM_DATA', data)
   },
@@ -110,7 +124,7 @@ export default (actions = {}) => Object.assign({
     }
   },
 
-  UPDATE_FIELD_VALUE({ commit }, { field, value }) {
+  SET_FIELD_VALUE({ commit }, { field, value }) {
     commit('SET_FORM_DATA', { [field]: value })
   }
 }, actions)

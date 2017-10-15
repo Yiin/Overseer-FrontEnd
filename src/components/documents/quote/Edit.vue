@@ -127,7 +127,7 @@
             <!--
               New item form
             -->
-            <template slot="fields" scope="props">
+            <template slot="fields" slot-scope="props">
 
               <!--
                 Product
@@ -176,7 +176,7 @@
             <!--
               List item
             -->
-            <template slot="preview" scope="row">
+            <template slot="preview" slot-scope="row">
               <div class="list-item__field field--product">
                 <div class="list-item__field list-item__index">
                   {{ row.index + 1 }}.

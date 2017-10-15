@@ -38,7 +38,7 @@
           <column width="15%">{{ $t('fields.expenses') }}</column>
           <column width="12%">{{ $t('fields.date_created') }}</column>
         </template>
-        <template slot="columns" scope="props">
+        <template slot="columns" slot-scope="props">
           <column width="23%">
             <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.company_name }}</a>
           </column>

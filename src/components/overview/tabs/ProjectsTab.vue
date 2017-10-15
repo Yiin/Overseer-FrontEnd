@@ -24,7 +24,7 @@
         <column width="20%">Progress</column>
         <column width="60%">Description</column>
       </template>
-      <template slot="columns" scope="props">
+      <template slot="columns" slot-scope="props">
           <column width="20%">
             <a href="#" @click="open(props.row)">
               {{ props.row.name }}
@@ -37,7 +37,7 @@
             {{ props.row.description }}
           </column>
       </template>
-      <template slot="details" scope="props">
+      <template slot="details" slot-scope="props">
         <project-details :project="props.row"></project-details>
       </template>
     </documents-table>

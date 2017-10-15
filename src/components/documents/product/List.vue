@@ -36,7 +36,7 @@
           <column width="17%">{{ $t('fields.price') }}</column>
           <column width="15%">{{ $t('fields.stock') }}</column>
         </template>
-        <template slot="columns" scope="props">
+        <template slot="columns" slot-scope="props">
           <column width="21%">
             <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
           </column>

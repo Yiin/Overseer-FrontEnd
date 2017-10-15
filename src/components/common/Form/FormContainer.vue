@@ -46,12 +46,12 @@ export default {
 
         // key1:key2 = val1:val2
         if (nameB && valueB) {
-          this.$store.dispatch(`form/${this.name}/UPDATE_FIELD_VALUE`, {
+          this.$store.dispatch(`form/${this.name}/SET_FIELD_VALUE`, {
             field: nameA,
             value: valueA
           })
 
-          this.$store.dispatch(`form/${this.name}/UPDATE_FIELD_VALUE`, {
+          this.$store.dispatch(`form/${this.name}/SET_FIELD_VALUE`, {
             field: nameB,
             value: valueB
           })
@@ -62,7 +62,7 @@ export default {
         this.$store.commit(`form/${this.name}/SET_${name.slice(1).toUpperCase()}`, value)
         return
       }
-      this.$store.dispatch(`form/${this.name}/UPDATE_FIELD_VALUE`, {
+      this.$store.dispatch(`form/${this.name}/SET_FIELD_VALUE`, {
         field: name,
         value
       })

@@ -36,7 +36,7 @@
           <column width="20%">{{ $t('fields.amount') }}</column>
           <column width="20%">{{ $t('fields.balance') }}</column>
         </template>
-        <template slot="columns" scope="props">
+        <template slot="columns" slot-scope="props">
           <column width="30%">
             <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.client.name }}</a>
           </column>
