@@ -3,52 +3,81 @@
     <modal-tabs @save="save" @cancel="cancel" @fill="fill">
       <modal-tab :title="$t('tabs.details')">
 
-        <v-container grid-list-md>
-          <v-layout row wrap>
-            <v-flex xs6>
+        <div class="form__row">
+          <div class="form__column form__column--half">
               <v-text-field
                 :label="$t('labels.product_name')"
                 name="product_name"
                 v-model="name"
                 @change="validate('name')"
                 :error-messages="validationErrors.name"
-                data-lpignore="true"
                 tabindex="1"
               ></v-text-field>
+          </div>
+          <div class="form__column form__column--half">
+            <v-text-field
+              :label="$t('labels.identification_number')"
+              name="identification_number"
+              v-model="identification_number"
+              tabindex="2"
+            ></v-text-field>
+          </div>
+        </div>
+        <div class="form__row">
+          <div class="form__column form__column--half">
+            <v-select
+              label="Product Type"
+              :items="productTypes"
+              v-model="isService"
+              persistent-hint
+            ></v-select>
 
-              <v-text-field
-                :label="$t('labels.product_name')"
-                name="product_name"
-                v-model="name"
-                @change="validate('name')"
-                :error-messages="validationErrors.name"
-                data-lpignore="true"
-                tabindex="1"
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-container>
+            <v-text-field
+              label="Quantity"
+              v-model="qty"
+            ></v-text-field>
+          </div>
+
+          <div class="form__column form__column--half">
+            <v-text-field
+              label="Price"
+              name="price"
+              v-model="price"
+            ></v-text-field>
+
+            <v-select
+              label="Currency"
+              :items="currencies"
+              v-model="currency_code"
+              autocomplete
+            ></v-select>
+          </div>
+        </div>
+
+        <v-text-field
+          label="Description"
+          multi-line
+          v-model="description"
+        ></v-text-field>
 
       </modal-tab>
 
-      <modal-tab :title="$t('tabs.images')" class="product__images">
-        <form-container name="product">
-          <form-row>
-            <form-field catch-errors="images">
-
+      <modal-tab :title="$t('tabs.images')">
+        <v-container grid-list-xl>
+          <v-layout row wrap>
+            <v-flex xs12>
               <form-images-input name="images" class="product-images-upload-field" box multiple>
                 <img slot="icon" src="../../../assets/icons/upload.svg">
                 <template slot="title">
-                  {{ $t('placeholders.upload_product_image') }}
+                  {{ $t('placeholders.upload_product_images') }}
                 </template>
                 <template slot="subtitle">
                   {{ $t('placeholders.drag_and_drop_image_or_click_to_browse') }}
                 </template>
               </form-images-input>
-
-            </form-field>
-          </form-row>
-        </form-container>
+            </v-flex>
+          </v-layout>
+        </v-container>
       </modal-tab>
     </modal-tabs>
   </div>
@@ -56,9 +85,11 @@
 
 <script>
 import FormMixin from '@/mixins/FormMixin'
+import CurrencyMixin from '@/mixins/CurrencyMixin'
 
 export default {
   mixins: [
+    CurrencyMixin,
     FormMixin('product', [
       /**
        * Fields
@@ -70,7 +101,25 @@ export default {
       'currency_code',
       'description'
     ])
-  ]
+  ],
+
+  computed: {
+    isService: {
+      set(value) {
+        this.$store.commit('form/product/IS_SERVICE', value)
+      },
+      get() {
+        return this.form.is_service
+      }
+    },
+
+    productTypes() {
+      return [
+        { text: 'Physical', value: false },
+        { text: 'Service', value: true }
+      ]
+    }
+  }
 }
 </script>
 
@@ -79,8 +128,10 @@ export default {
   width: 100%;
 }
 .modal-form {
-    width: 866px;
-    height: 530px;
+  width: 866px;
+}
+.modal-tab {
+  height: 400px;
 }
 textarea {
     height: 124px !important;

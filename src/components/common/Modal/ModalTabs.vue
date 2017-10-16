@@ -8,9 +8,6 @@
         class="modal__tab"
         :class="{ 'modal__tab--active': tab.isActive }"
       >
-        <div class="tab-number">
-          {{ index + 1 }}
-        </div>
         <div class="tab-title">
           {{ tab.title }}
         </div>
@@ -20,13 +17,13 @@
       <slot></slot>
       <div v-if="!hideButtons" slot="nav-buttons" class="modal-buttons">
         <div class="modal-buttons-group modal-buttons-group--left">
-          <div @click="$emit('fill')" class="button button__modal button__modal--cancel">Test Data</div>
+          <div @click="$emit('fill')" class="button button__modal button__modal--test">Test Data</div>
         </div>
         <div class="modal-buttons-group modal-buttons-group--right">
-          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
           <slot name="right-buttons">
             <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>
           </slot>
+          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
         </div>
       </div>
     </div>
@@ -46,7 +43,6 @@ export default {
 
   computed: {
     tabs() {
-      // return this.$store.state.modal.tabs
       return this.$children
     },
 
@@ -71,7 +67,7 @@ export default {
 
   mounted() {
     if (this.activeTabIndex >= this.tabs.length) {
-      throw new Error(`ModalTabs should contain at least ${this.activeTabIndex} tab(s).`)
+      throw new Error(`ModalTabs should contain at least ${this.activeTabIndex + 1} tab(s).`)
     }
 
     this.tabs[this.activeTabIndex].isActive = true

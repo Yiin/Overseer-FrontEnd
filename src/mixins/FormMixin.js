@@ -55,7 +55,7 @@ export default (formName, fields) => {
        * Save form data to the server
        */
       save() {
-        if (this.form.uuid) {
+        if (this.form.fields.uuid) {
           this.$store.dispatch(`form/${formName}/SAVE`)
         } else {
           this.create()
@@ -83,7 +83,11 @@ function computeFields(formName, fields) {
   const computed = {}
 
   fields.forEach((field) => {
-    computed[field] = fieldMutator(formName, field)
+    if (typeof field === 'string') {
+      computed[field] = fieldMutator(formName, field)
+    } else {
+      computed[field.field] = fieldMutator(formName, field)
+    }
   })
 
   return computed

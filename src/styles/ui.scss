@@ -18,6 +18,17 @@ a:not(.md-button):not(.md-bottom-bar-item):hover {
     -webkit-backface-visibility: hidden;
 }
 
+input, textarea {
+    line-height: initial;
+}
+
+.application--light .input-group label {
+    font-size: 15px;
+}
+.application--light .input-group:not(.input-group--error) label {
+    color: $color-mulled-wine;
+}
+
 // .input-group--focused .input-group__details::before {
 //     background-color: $color-main !important;
 //     height: 2.5px;

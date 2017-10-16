@@ -71,8 +71,8 @@ export default {
     setTimeout(() => {
       this.loaded = true
     })
-    window.addEventListener('resize', this.updateScale.bind(this))
-    this.updateScale()
+    // window.addEventListener('resize', this.updateScale.bind(this))
+    // this.updateScale()
   },
 
   methods: {

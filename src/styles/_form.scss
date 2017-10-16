@@ -2,7 +2,7 @@
 {
     .dropdown__input
     {
-        background: #f7f8fc;
+        background: #edf1fc;
     }
     .dropdown__options
     {
@@ -63,7 +63,7 @@
 
         width: 100%;
         padding: 0 15px;
-        background: #f7f8fc;
+        background: #edf1fc;
 
         color: #373737;
         border: none;
@@ -101,6 +101,15 @@
     &__inline-inputs:first-child
     {
         margin-top: 0;
+    }
+    &__row {
+        display: flex;
+    }
+    &__column {
+        width: 100%;
+        &--half + & {
+            margin-left: 92px;
+        }
     }
 }
 

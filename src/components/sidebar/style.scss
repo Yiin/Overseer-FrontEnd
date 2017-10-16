@@ -1,8 +1,9 @@
 .sidebar
 {
-    width: $sidebar-width;
     position: fixed;
     left: calc(50vw - 1450px / 2);
+
+    width: $sidebar-width;
 
     &__content
     {
@@ -22,10 +23,11 @@
     }
     &__nav
     {
-        width: 183px;
+        width: 220px;
         margin: 27px 25px;
 
         text-align: left;
+        letter-spacing: .1px;
         hr
         {
             height: 0;
@@ -38,49 +40,67 @@
         &-link
         {
             font-size: 15px;
-            line-height: 20px;
+            line-height: 26px;
 
-            display: block;
+            display: flex;
 
             margin-right: 11px;
-            padding: 6px 0 7px 0;
+            padding: 6px 0 7px 75px !important;
 
             cursor: pointer;
             text-decoration: none;
 
-            color: $color-mine-shaft !important;
+            color: $color-mulled-wine !important;
+
+            align-items: center;
             &:hover
             {
-                font-weight: $font-weight-semibold;
-
-                color: $color-navbar-link-hover !important;
-                background: $color-navbar-link-hover-bg;
+                color: #000 !important;
             }
             &--active
             {
-                font-weight: $font-weight-semibold;
+                color: #000 !important;
+                background: #ebeceb;
+                &::before
+                {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
 
-                color: $color-navbar-link-active !important;
-                // @include gradient-background;
-                background: $color-main;
+                    width: 6px;
+                    height: 38px;
+
+                    content: '';
+
+                    background: #5867c2;
+                }
             }
             &--disabled
             {
                 color: $color-dusty-gray !important;
                 &:hover
                 {
+                    cursor: default;
+
                     color: $color-dusty-gray !important;
                     background: none;
-                    cursor: default;
-                    font-weight: normal;
+                    // font-weight: normal;
                 }
             }
             i
             {
+                position: absolute;
+                top: 7px;
+                left: 40px;
+
                 display: inline-block;
 
                 width: 32px;
-                padding: 0 5px 0 12px;
+                margin-right: 3px;
+
+                &.sidebar-icon--credit {
+                    top: 8px !important;
+                }
             }
         }
         &-category
@@ -91,11 +111,52 @@
 
             margin-right: 11px;
             margin-bottom: 5px;
-            padding: 0 5px 0;
+            padding: 0 40px 0;
 
             text-transform: uppercase;
 
             color: $color-main;
+        }
+    }
+}
+
+.sidebar2
+{
+    &__nav
+    {
+        &-link
+        {
+            font-size: 15px;
+            font-weight: normal;
+            line-height: 20px;
+
+            color: $color-mine-shaft !important;
+
+            &:hover
+            {
+                font-weight: $font-weight-semibold;
+
+                // color: $color-navbar-link-hover !important;
+            }
+            &--active
+            {
+                font-weight: $font-weight-semibold;
+
+                // color: $color-navbar-link-active !important;
+            }
+            &--disabled
+            {
+                color: $color-dusty-gray !important;
+                &:hover
+                {
+                    font-weight: normal;
+
+                    cursor: default;
+
+                    color: $color-dusty-gray !important;
+                    background: none;
+                }
+            }
         }
     }
 }

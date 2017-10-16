@@ -25,8 +25,6 @@ export function parseDefinition(definition) {
   return stateData
 }
 
-// export default transformForm
-
 export default (name, state = {}) => {
   state = typeof name === 'object' ? name : state
 

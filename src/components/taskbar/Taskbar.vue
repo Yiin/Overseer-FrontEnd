@@ -2,7 +2,13 @@
   <div>
     <modal></modal>
     <div class="taskbar">
-      <div @click="activateItem(item)" v-for="(item, index) in items" class="taskbar__item">
+      <div
+        v-for="(item, index) in items"
+        ref="item"
+        @click="activateItem(item)"
+        :style="{ right: (50 + (180 * index)) + 'px' }"
+        class="taskbar__item"
+      >
         {{ $t(item.data.title) }}
       </div>
     </div>

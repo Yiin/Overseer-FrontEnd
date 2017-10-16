@@ -27,10 +27,17 @@ export default (mutations = {}) => Object.assign({
   RESET_FORM_DATA(state) {
     const copy = JSON.parse(JSON.stringify(state.__initial))
 
-    for (let field in copy) {
-      Vue.set(state.fields, field, copy[field])
+    const copyFields = (fromObj, toObj) => {
+      for (let key in fromObj) {
+        if (typeof fromObj[key] === 'object' && fromObj[key] === null) {
+          copyFields(fromObj[key], toObj[key])
+        } else {
+          toObj[key] = fromObj[key]
+        }
+      }
     }
-    Vue.set(state, '__preview', false)
+
+    copyFields(copy, state)
   },
 
   SET_FIELD_ERRORS(state, { field, errors }) {

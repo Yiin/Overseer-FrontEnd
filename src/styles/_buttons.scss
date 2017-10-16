@@ -130,21 +130,28 @@ $button-text-color: $color-white;
                 @include smooth($color-main-dark);
             }
         }
+        &--test {
+            width: 135px;
+
+            background: $color-storm-gray;
+
+            @include smooth($color-storm-gray);
+        }
         &--cancel
         {
             width: 135px;
 
-            background: $color-main-dark;
+            background: $color-new-york-pink;
 
-            @include smooth($color-main-dark);
+            @include smooth($color-new-york-pink);
         }
         &--save
         {
             width: 119px;
 
-            background: $color-forest-green;
+            background: $color-emerald;
 
-            @include smooth($color-forest-green);
+            @include smooth($color-emerald);
         }
         &--next
         {

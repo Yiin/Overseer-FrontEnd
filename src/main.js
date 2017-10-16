@@ -4,7 +4,9 @@ import VueResource from 'vue-resource'
 import {
  Vuetify,
  VApp,
+ VCard,
  VGrid,
+ VSelect,
  VTextField
 } from 'vuetify'
 import VueMaterial from 'vue-material'
@@ -36,7 +38,9 @@ Vue.use(VueMaterial) /* Temporary, for input fields scaling bug fix */
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VCard,
     VGrid,
+    VSelect,
     VTextField
   }
 })

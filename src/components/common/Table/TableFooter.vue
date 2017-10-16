@@ -166,6 +166,7 @@ export default {
 
   text-align: center;
   font-size: 16px;
+  background: #ffffff;
 
   width: 70px;
   height: 44px;

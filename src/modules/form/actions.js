@@ -73,7 +73,7 @@ export default (actions = {}) => Object.assign({
     const listeners = state.listeners.create.slice()
 
     return dispatch(`table/${pluralize(state.__name)}/CREATE_DOCUMENT`, {
-      data: state
+      data: state.fields
     }, {
       root: true
     })
@@ -91,8 +91,8 @@ export default (actions = {}) => Object.assign({
 
   SAVE({ dispatch, state }) {
     dispatch(`table/${pluralize(state.__name)}/SAVE_DOCUMENT`, {
-      uuid: state.uuid,
-      data: state
+      uuid: state.fields.uuid,
+      data: state.fields
     }, {
       root: true
     })
