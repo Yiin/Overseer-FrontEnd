@@ -1,6 +1,6 @@
-.md-input-container {
-    margin: 1px 0 26px;
-}
+// .md-input-container {
+//     margin: 1px 0 26px;
+// }
 
 .md-input-container label {
     color: rgba(0,0,0,0.87);
@@ -11,7 +11,7 @@
 }
 
 .md-input-invalid .md-error {
-    padding-top: 6px;
+    bottom: -26px;
 }
 
 a:not(.md-button):not(.md-bottom-bar-item):hover {

@@ -70,8 +70,6 @@ export default {
       scale: 1,
       authIsOver: false,
 
-      animationsQueue: [],
-
       timeline: null,
 
       authSubmitBtnStyle: {
@@ -201,9 +199,6 @@ export default {
      * of submit button
      */
     beginAuthAnimation(promise) {
-      // clear queue
-      this.animationsQueue = []
-
       this.timeline = new TimelineLite({
         // paused: true,
         onComplete: this.endAuthAnimation.bind(this, promise)
