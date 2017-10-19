@@ -35,6 +35,13 @@ Vue.use(VueClipboard)
 
 /* UI Lib */
 Vue.use(VueMaterial) /* Temporary, for input fields scaling bug fix */
+Vue.material.registerTheme('default', {
+  warn: {
+    color: 'red',
+    hue: 'A700'
+  }
+})
+
 Vue.use(Vuetify, {
   components: {
     VApp,

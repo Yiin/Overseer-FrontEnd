@@ -39,8 +39,8 @@ export default {
       })
       .catch(() => {
         commit('SET_ERRORS', {
-          username: [],
           password: ['Wrong Login or Password. Try again.']
+          username: [],
         })
       })
   }

@@ -7,36 +7,29 @@
       </h1>
 
       <div class="auth__input-fields">
-        <md-input-container :class="{ 'md-input-invalid': errorMessages.username.length }">
-          <label>Email</label>
-          <md-input v-model="username"></md-input>
+        <md-text-field
+          label="Email"
+          :error-messages="errorMessages.username"
+          v-model="username"
+        ></md-text-field>
 
-          <span v-for="error in errorMessages.username" class="md-error">
-            {{ error }}
-          </span>
-        </md-input-container>
-
-        <md-input-container :class="{ 'md-input-invalid': errorMessages.password.length }">
-          <label>Password</label>
-          <md-input type="password" v-model="password"></md-input>
-
-          <span v-for="error in errorMessages.password" class="md-error">
-            {{ error }}
-          </span>
-        </md-input-container>
+        <md-text-field
+          label="Password"
+          type="password"
+          :error-messages="errorMessages.password"
+          v-model="password"
+        ></md-text-field>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {
-  VTextField
-} from 'vuetify'
+import MdTextField from './MdTextField.vue'
 
 export default {
   components: {
-    VTextField
+    MdTextField
   },
 
   computed: {
@@ -73,7 +66,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .auth__title {
   font-size: 30px;
   font-weight: normal;
