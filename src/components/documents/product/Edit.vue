@@ -3,62 +3,58 @@
     <modal-tabs @save="save" @cancel="cancel" @fill="fill">
       <modal-tab :title="$t('tabs.details')">
 
-        <div class="form__row">
-          <div class="form__column form__column--half">
-              <v-text-field
-                :label="$t('labels.product_name')"
-                name="product_name"
-                v-model="name"
-                @change="validate('name')"
-                :error-messages="validationErrors.name"
-                tabindex="1"
-              ></v-text-field>
-          </div>
-          <div class="form__column form__column--half">
-            <v-text-field
-              :label="$t('labels.identification_number')"
-              name="identification_number"
-              v-model="identification_number"
-              tabindex="2"
-            ></v-text-field>
-          </div>
-        </div>
-        <div class="form__row">
-          <div class="form__column form__column--half">
-            <v-select
-              label="Product Type"
+        <form-row>
+          <form-field catch-errors="name" :label="$t('labels.product_name')">
+            <form-text-input v-model="name" name="product_name" :readonly="preview"></form-text-input>
+          </form-field>
+          <form-field catch-errors="identification_number" :label="$t('labels.identification_number')">
+            <form-text-input v-model="identification_number" name="identification_number" :readonly="preview"></form-text-input>
+          </form-field>
+        </form-row>
+
+        <form-row>
+          <form-field :label="$t('labels.product_type')">
+            <form-dropdown-input
               :items="productTypes"
               v-model="isService"
-              persistent-hint
-            ></v-select>
+            >
+              <dropdown-option :value="false">
+                Physical
+              </dropdown-option>
+              <dropdown-option :value="true">
+                Service
+              </dropdown-option>
+            </form-dropdown-input>
+          </form-field>
 
-            <v-text-field
+          <form-field :label="$t('labels.quantity')">
+            <form-text-input
               label="Quantity"
               v-model="qty"
-            ></v-text-field>
-          </div>
+            ></form-text-input>
+          </form-field>
+        </form-row>
 
-          <div class="form__column form__column--half">
-            <v-text-field
+        <form-row>
+          <form-field :label="$t('labels.price')">
+            <form-text-input
               label="Price"
               name="price"
               v-model="price"
-            ></v-text-field>
+            ></form-text-input>
+          </form-field>
 
-            <v-select
-              label="Currency"
-              :items="currencies"
-              v-model="currency_code"
-              autocomplete
-            ></v-select>
-          </div>
-        </div>
+          <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
+        </form-row>
 
-        <v-text-field
-          label="Description"
-          multi-line
-          v-model="description"
-        ></v-text-field>
+        <form-row>
+          <form-field :label="$t('labels.description')">
+            <form-textarea-input
+              label="Description"
+              v-model="description"
+            ></form-textarea-input>
+          </form-field>
+        </form-row>
 
       </modal-tab>
 
@@ -67,7 +63,7 @@
           <v-layout row wrap>
             <v-flex xs12>
               <form-images-input name="images" class="product-images-upload-field" box multiple>
-                <img slot="icon" src="../../../assets/icons/upload.svg">
+                <img slot="icon" src="../../../assets/icons/image.svg">
                 <template slot="title">
                   {{ $t('placeholders.upload_product_images') }}
                 </template>
@@ -86,6 +82,7 @@
 <script>
 import FormMixin from '@/mixins/FormMixin'
 import CurrencyMixin from '@/mixins/CurrencyMixin'
+import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 
 export default {
   mixins: [
@@ -102,6 +99,10 @@ export default {
       'description'
     ])
   ],
+
+  components: {
+    FormCurrencyDropdown
+  },
 
   computed: {
     isService: {

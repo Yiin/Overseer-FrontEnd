@@ -14,7 +14,7 @@
       </div>
     </template>
     <tabs v-else ref="tabs" labels>
-      <tab fade title="Table">
+      <simple-tab fade title="Table">
         <documents-table simple
           :documents="visiblePayments"
           :data="tableData"
@@ -36,9 +36,9 @@
             </column>
           </template>
         </documents-table>
-      </tab>
+      </simple-tab>
 
-      <tab fade @state-changed="updateChartTabState" title="Chart">
+      <simple-tab fade @state-changed="updateChartTabState" title="Chart">
         <payments-chart ref="chart" v-if="chartTabIsActive" @update="updateChart"
           :chart-data="{
             labels: this.graphLabels,
@@ -48,7 +48,7 @@
           :height="455"
           :width="tabWidth"
         ></payments-chart>
-      </tab>
+      </simple-tab>
     </tabs>
   </div>
 </template>
@@ -80,7 +80,8 @@ export default {
   mixins: [TableMixin],
 
   components: {
-    PaymentsChart
+    PaymentsChart,
+    'simple-tab': Tab
   },
 
   props: {

@@ -1,6 +1,15 @@
 import Vue from 'vue'
+import { copyFields } from '@/scripts'
 
 export default (mutations = {}) => Object.assign({
+  SET_FORM_STATE(state, newState) {
+    copyFields(newState, state)
+  },
+
+  SET_PREVIEW(state, preview) {
+    state.__preview = preview
+  },
+
   SET_FORM_DATA(state, data) {
     for (let field in data) {
       Vue.set(state.fields, field, data[field])
@@ -26,16 +35,6 @@ export default (mutations = {}) => Object.assign({
 
   RESET_FORM_DATA(state) {
     const copy = JSON.parse(JSON.stringify(state.__initial))
-
-    const copyFields = (fromObj, toObj) => {
-      for (let key in fromObj) {
-        if (typeof fromObj[key] === 'object' && fromObj[key] === null) {
-          copyFields(fromObj[key], toObj[key])
-        } else {
-          toObj[key] = fromObj[key]
-        }
-      }
-    }
 
     copyFields(copy, state)
   },

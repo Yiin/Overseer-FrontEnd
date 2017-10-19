@@ -6,15 +6,16 @@
         Select client we're sending recurring invoice to
        -->
       <modal-tab :title="$t('tabs.client')">
-        <form-container name="recurring_invoice">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :hide-buttons="preview">
+        <form-container>
+          <form-inline-select-input v-model="client_uuid" :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :hide-buttons="preview">
             <inline-option v-if="preview" selected>
-              {{ form.client.name }}
+              {{ form.fields.client.name }}
             </inline-option>
-            <inline-option v-else v-for="client in clients"
-                          :key="client.uuid"
-                          :value="client.uuid"
-                          :selected="client.uuid === form.client_uuid"
+            <inline-option v-else
+              v-for="client in clients"
+              :key="client.uuid"
+              :value="client.uuid"
+              :selected="client.uuid === form.client_uuid"
             >
               {{ client.name }}
             </inline-option>
@@ -26,22 +27,26 @@
         Invoice details
       -->
       <modal-tab :title="$t('tabs.details')">
-        <form-container name="recurring_invoice">
+        <form-container>
           <form-row>
 
             <!--
               Start Date
             -->
             <form-field :label="$t('labels.start_date')">
-              <form-date-input :current-date="!form.uuid" v-model="form.start_date" name="start_date" :readonly="preview"></form-date-input>
+              <form-date-input :current-date="!form.fields.uuid" v-model="start_date" name="start_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Frequency
             -->
             <form-field :label="$t('labels.frequency')">
-              <form-dropdown-input v-model="form.frequency" :watch="frequencies" name="frequency_value:frequency_type" scrollable :hide-buttons="preview">
-                <dropdown-option v-for="(frequency, index) in frequencies" :key="index" :value="`${frequency.value}:${frequency.type}`" :selected="frequency_type === form.frequency_type && frequency_value === form.frequency_value">
+              <form-dropdown-input v-model="frequency" :watch="frequencies" name="frequency_value:frequency_type" scrollable :hide-buttons="preview">
+                <dropdown-option
+                  v-for="(frequency, index) in frequencies" :key="index"
+                  :value="index"
+                  :selected="frequency.type === frequency_type && frequency.value === frequency_value"
+                >
                   {{ $t('frequency.' + frequency.name) }}
                 </dropdown-option>
               </form-dropdown-input>
@@ -54,15 +59,15 @@
               End Date
             -->
             <form-field :label="$t('labels.end_date')">
-              <form-date-input v-model="form.end_date" name="end_date" :readonly="preview"></form-date-input>
+              <form-date-input v-model="end_date" name="end_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Due Date
             -->
             <form-field :label="$t('labels.due_date')">
-              <form-dropdown-input v-model="form.due_date" name="due_date" :watch="dueDates" scrollable :hide-buttons="preview">
-                <dropdown-option v-for="(dueDate, index) in dueDates" :key="index" :value="dueDate.value" :selected="form.due_date === dueDate.value">
+              <form-dropdown-input v-model="due_date" name="due_date" :watch="dueDates" scrollable :hide-buttons="preview">
+                <dropdown-option v-for="(dueDate, index) in dueDates" :key="index" :value="dueDate.value" :selected="due_date === dueDate.value">
                   {{ $t(`due_date.${dueDate.name}`) }}
                 </dropdown-option>
               </form-dropdown-input>
@@ -74,7 +79,7 @@
             <!--
               Currency
             -->
-            <form-currency-dropdown v-model="form.currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+            <form-currency-dropdown v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
 
             <!--
               Discount
@@ -86,9 +91,9 @@
                 -->
                 <form-formatted-input
                   type="number"
-                  :label="form.discount_type === 'percentage' ? '%' : currencyCode"
-                  :label-position="form.discount_type === 'percentage' ? 'right' : 'left'"
-                  v-model="form.discount_value"
+                  :label="discount_type === 'percentage' ? '%' : currencyCode"
+                  :label-position="discount_type === 'percentage' ? 'right' : 'left'"
+                  v-model="discount_value"
                   name="discount_value"
                   :readonly="preview"
                 ></form-formatted-input>
@@ -96,16 +101,16 @@
                 <!--
                   Discount Type
                 -->
-                <form-dropdown-input v-model="form.discount_type" name="discount_type" class="dropdown--small" :readonly="preview">
+                <form-dropdown-input v-model="discount_type" name="discount_type" class="dropdown--small" :readonly="preview">
                   <dropdown-option
                     value="percentage"
-                    :selected="form.discount_type === 'percentage'"
+                    :selected="discount_type === 'percentage'"
                   >
                     {{ $t('discount_type.percent') }}
                   </dropdown-option>
                   <dropdown-option
                     value="flat"
-                    :selected="form.discount_type === 'flat'"
+                    :selected="discount_type === 'flat'"
                   >
                     {{ $t('discount_type.flat') }}
                   </dropdown-option>
@@ -121,14 +126,14 @@
               PO Number
             -->
             <form-field :label="$t('labels.po_number')">
-              <form-text-input v-model="form.po_number" name="po_number" :readonly="preview"></form-text-input>
+              <form-text-input v-model="po_number" name="po_number" :readonly="preview"></form-text-input>
             </form-field>
 
             <!--
               Autobill
             -->
             <form-field :label="$t('labels.autobill')">
-              <form-dropdown-input v-model="form.autobill" name="autobill" :hide-buttons="preview">
+              <form-dropdown-input v-model="autobill" name="autobill" :hide-buttons="preview">
                 <dropdown-option :value="false" :selected="true">{{ $t('common.off') }}</dropdown-option>
                 <dropdown-option :value="true">{{ $t('common.on') }}</dropdown-option>
               </form-dropdown-input>
@@ -140,13 +145,13 @@
       </modal-tab>
 
       <!--
-        recurring_Invoice items
+        Invoice items
       -->
       <modal-tab :title="$t('tabs.items')">
-        <form-container name="recurring_invoice">
+        <form-container>
 
           <form-items-list ref="itemsList"
-                           v-model="form.items"
+                           v-model="items"
                            :model="itemModel"
                            name="items"
                            :readonly="preview"
@@ -313,18 +318,18 @@
             <form-documents-input:readonly="preview"></form-documents-input>
           </tab>
           <tab :title="$t('tabs.note_to_client')">
-            <form-container name="recurring_invoice">
-              <form-textarea-input v-model="form.note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12" :readonly="preview"></form-textarea-input>
+            <form-container>
+              <form-textarea-input v-model="note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
           <tab :title="$t('tabs.terms')">
-            <form-container name="recurring_invoice">
-              <form-textarea-input v-model="form.terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12" :readonly="preview"></form-textarea-input>
+            <form-container>
+              <form-textarea-input v-model="terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
           <tab :title="$t('tabs.footer')">
-            <form-container name="recurring_invoice">
-              <form-textarea-input v-model="form.footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12" :readonly="preview"></form-textarea-input>
+            <form-container>
+              <form-textarea-input v-model="footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12" :readonly="preview"></form-textarea-input>
             </form-container>
           </tab>
         </tabs>
@@ -340,11 +345,33 @@
 </template>
 
 <script>
+import FormMixin from '@/mixins/FormMixin'
+import BillableDocumentMixin from '@/mixins/BillableDocumentMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 
 export default {
-  name: 'edit-recurring-invoice',
+  mixins: [
+    BillableDocumentMixin,
+    FormMixin('recurring_invoice', [
+      'client_uuid',
+      'start_date',
+      'end_date',
+      'po_number',
+      'discount_type',
+      'discount_value',
+      'frequency_type',
+      'frequency_value',
+      'currency_code',
+      'due_date',
+      'autobill',
+      'items',
+      'documents',
+      'note_to_client',
+      'terms',
+      'footer'
+    ])
+  ],
 
   components: {
     FormCurrencyDropdown,
@@ -364,16 +391,25 @@ export default {
   },
 
   computed: {
-    form() {
-      return this.$store.state.form.recurring_invoice
-    },
-
-    preview() {
-      return this.form.__preview
-    },
-
     frequencies() {
       return this.$store.state.passive.frequencies
+    },
+
+    frequency: {
+      get() {
+        const index = this.frequencies.findIndex((frequency) => {
+          return frequency.type === this.frequency_type && frequency.value === this.frequency_value
+        })
+        return index > -1 ? index : 0
+      },
+
+      set(index) {
+        if (index < 0 || index >= this.frequencies.length) {
+          return
+        }
+        this.frequency_type = this.frequencies[index].type
+        this.frequency_value = this.frequencies[index].value
+      }
     },
 
     dueDates() {
@@ -381,11 +417,11 @@ export default {
         { name: 'use_client_terms', value: 0 }
       ]
 
-      if (!this.form.frequency_type) {
+      if (!this.frequency_type) {
         return dates
       }
 
-      switch (this.form.frequency_type) {
+      switch (this.frequency_type) {
       case 'week':
         const weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
         for (let i = 1, value = 1; i <= 4; ++i) {
@@ -448,7 +484,7 @@ export default {
     },
 
     subtotal() {
-      return this.form.items.filter((item) => item.cost)
+      return this.form.fields.items.filter((item) => item.cost)
         .map((item) => {
           return parseFloat(item.cost) * parseFloat(item.qty || 1)
         })
@@ -456,7 +492,7 @@ export default {
     },
 
     discount() {
-      return this.form.items
+      return this.form.fields.items
         .map((item) => {
           const priceSum = parseFloat(item.cost) * parseFloat(item.qty || 1)
           return priceSum * (parseFloat(item.discount) || 0) / 100
@@ -465,7 +501,7 @@ export default {
     },
 
     taxes() {
-      const items = this.form.items
+      const items = this.form.fields.items
       let taxes = 0 // flat
 
       for (let i = 0; i < items.length; ++i) {
@@ -485,7 +521,7 @@ export default {
     },
 
     paid_to_date() {
-      if (this.form.uuid) {
+      if (this.form.fields.uuid) {
         return parseFloat(this.form.paid_in)
       }
       return 0
@@ -522,19 +558,14 @@ export default {
     },
 
     save() {
-      if (this.form.uuid) {
-        this.$store.dispatch('form/recurring_invoice/SAVE')
+      this.$store.dispatch('form/recurring_invoice/SET_FORM_DATA', {
+        status: 'active'
+      })
+      if (this.form.fields.uuid) {
+        this.$store.dispatch(`form/recurring_invoice/SAVE`)
       } else {
         this.create()
       }
-    },
-
-    create() {
-      this.$store.dispatch('form/recurring_invoice/CREATE')
-    },
-
-    cancel() {
-      this.$emit('cancel')
     }
   }
 }

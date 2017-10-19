@@ -36,27 +36,27 @@
 
       <documents-table :data="list" :context-menu-actions="contextMenuActions">
         <template slot="head">
-          <column width="16%">{{ $t('fields.frequency') }}</column>
-          <column width="20%">{{ $t('fields.client_name') }}</column>
-          <column width="11%">{{ $t('fields.start_date') }}</column>
-          <column width="11%">{{ $t('fields.last_sent') }}</column>
+          <column width="13%">{{ $t('fields.frequency') }}</column>
+          <column width="17%">{{ $t('fields.client_name') }}</column>
+          <column width="14%">{{ $t('fields.start_date') }}</column>
+          <column width="14%">{{ $t('fields.last_sent') }}</column>
           <column width="15%">{{ $t('fields.end_date') }}</column>
           <column width="15%">{{ $t('fields.amount') }}</column>
           <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
         <template slot="columns" slot-scope="props">
-          <column width="16%">
+          <column width="13%">
             <a :href="`#${props.row.uuid}`" @click="edit(props.row)">
               {{ props.row.frequency | frequencyName }}
             </a>
           </column>
-          <column width="20%">
+          <column width="17%">
             <span>{{ props.row.client ? props.row.client.name : '' }}</span>
           </column>
-          <column width="11%">
+          <column width="14%">
             <span>{{ props.row.start_date | date }}</span>
           </column>
-          <column width="11%">
+          <column width="14%">
             <span>{{ props.row.last_sent | date }}</span>
           </column>
           <column width="15%">

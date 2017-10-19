@@ -133,7 +133,6 @@ export default {
 
   watch: {
     '$store.state.system.activityLog': function () {
-      console.log('recalculateComputedProperty')
       this.recalculateComputedProperty('activityLog')
     }
   },

@@ -186,7 +186,6 @@ export default {
 
       // Select first option, if no one is selected
       if (!selected && this.options.length) {
-        console.log('select first')
         this.options[0].$refs.input.click()
       }
 

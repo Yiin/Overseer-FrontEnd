@@ -30,6 +30,13 @@ export default (formName, fields) => {
          */
         passive() {
           return this.$store.state.passive
+        },
+
+        /**
+         * Read only mode
+         */
+        preview() {
+          return this.form.__preview
         }
       },
       computeFields(formName, fields)

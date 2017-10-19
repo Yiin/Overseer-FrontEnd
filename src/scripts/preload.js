@@ -9,7 +9,7 @@ export default () => {
     } else {
       const accessToken = store.state.preloadedData.access_token
       if (accessToken !== store.state.auth.accessToken) {
-
+        // TODO: change accessToken
       }
       store.dispatch('INIT', store.state.preloadedData.data || null)
       store.dispatch('auth/LOAD')

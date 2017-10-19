@@ -1,7 +1,7 @@
 import FormState from '@/modules/form/state'
 
 const state = FormState({
-  __name: 'project',
+  _name: 'project',
 
   uuid: '',
 

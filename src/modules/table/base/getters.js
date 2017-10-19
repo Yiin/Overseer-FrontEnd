@@ -32,6 +32,7 @@ export default (getters) => Object.assign({
     if (state.filterBy.length === 0) {
       // if no filters are selected, show only active items
       state.filterBy.push(filters.IsActiveFilter.name)
+      state.filterBy.push(filters.IsArchivedFilter.name)
     }
 
     /**

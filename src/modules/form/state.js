@@ -4,7 +4,7 @@ export function parseDefinition(definition) {
   }
 
   let stateData = {
-    __name: definition.name,
+    _name: definition.name,
     tabs: {}
   }
 
@@ -36,7 +36,7 @@ export default (name, state = {}) => {
   }
 
   return JSON.parse(JSON.stringify(Object.assign({
-    __name: typeof name === 'string' ? name : '',
+    _name: typeof name === 'string' ? name : '',
     __preview: false,
 
     /**

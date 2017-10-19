@@ -9,7 +9,12 @@
         :class="{ 'modal__tab--active': tab.isActive }"
       >
         <div class="tab-title">
-          {{ tab.title }}
+          <div class="tab-number">
+            {{ index + 1 }}
+          </div>
+          <div class="tab-text">
+            {{ tab.title }}
+          </div>
         </div>
       </div>
     </div>
@@ -20,10 +25,10 @@
           <div @click="$emit('fill')" class="button button__modal button__modal--test">Test Data</div>
         </div>
         <div class="modal-buttons-group modal-buttons-group--right">
+          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
           <slot name="right-buttons">
             <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>
           </slot>
-          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
         </div>
       </div>
     </div>
@@ -80,7 +85,7 @@ export default {
         return
       }
 
-      this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', index)
+      this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', index)
 
       this.tabs.forEach((tab, index) => {
         tab.isActive = (index === this.activeTabIndex)

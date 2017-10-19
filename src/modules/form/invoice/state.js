@@ -1,38 +1,38 @@
 import FormState from '@/modules/form/state'
 
-const state = FormState({
-  __name: 'invoice',
+const state = FormState('invoice', {
+  fields: {
+    uuid: '',
 
-  uuid: '',
+    client_uuid: '', // uuid
+    invoice_date: undefined, // YYYY-MM-DD
+    due_date: undefined, // YYYY-MM-DD
+    partial: 0, // partial/deposit
+    currency_code: '',
+    invoice_number: '',
+    po_number: '',
+    discount_type: 'percentage',
+    discount_value: 0,
 
-  client_uuid: '', // uuid
-  invoice_date: undefined, // YYYY-MM-DD
-  due_date: undefined, // YYYY-MM-DD
-  partial: 0, // partial/deposit
-  currency_code: '',
-  invoice_number: '',
-  po_number: '',
-  discount_type: 'percentage',
-  discount_value: 0,
+    items: [
+      /* {
+        product_uuid // uuid (products)
+        product_name // new product
+        price
+        qty
+        discount // %
+        taxRate // uuid (tax_rates)
+      } */
+    ],
+    documents: [
+      /* array of document files */
+    ],
+    note_to_client: '',
+    terms: '',
+    footer: '',
 
-  items: [
-    /* {
-      product_uuid // uuid (products)
-      product_name // new product
-      price
-      qty
-      discount // %
-      taxRate // uuid (tax_rates)
-    } */
-  ],
-  documents: [
-    /* array of document files */
-  ],
-  note_to_client: '',
-  terms: '',
-  footer: '',
-
-  status: 'draft',
+    status: 'draft'
+  },
 
   tabs: [
     [
@@ -56,9 +56,7 @@ const state = FormState({
       'terms',
       'footer'
     ]
-  ],
-
-  errors: {}
+  ]
 })
 
 state.__initial = JSON.parse(JSON.stringify(state))

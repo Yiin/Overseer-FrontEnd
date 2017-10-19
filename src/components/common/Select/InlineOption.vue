@@ -49,7 +49,6 @@ export default {
 
   methods: {
     click() {
-      console.log('click handled')
       this.$emit('input', this.value)
     }
   }

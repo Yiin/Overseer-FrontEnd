@@ -1,3 +1,10 @@
+.vendor-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: url(../assets/icons/btn/vendor.svg);
+}
+
 .sidebar-icon {
     display: inline-block;
     height: 25px;
@@ -43,5 +50,8 @@
     }
     &--vendors {
         background-image: url(../assets/icons/sidebar/1__Vendors.svg);
+    }
+    &--settings {
+        background-image: url(../assets/icons/sidebar/1__Settings.svg);
     }
 }

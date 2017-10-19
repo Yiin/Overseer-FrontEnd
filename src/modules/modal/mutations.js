@@ -1,12 +1,10 @@
-import * as types from './mutation-types'
-
 export default {
-  [types.OPEN_MODAL](state, data) {
+  OPEN(state, data) {
     state.isOpen = true
     state.data = data
   },
 
-  [types.CLOSE_MODAL](state) {
+  HIDE(state) {
     state.isOpen = false
     state.activeTabIndex = 0
     state.data.title = null
@@ -14,7 +12,15 @@ export default {
     state.data.form = ''
   },
 
-  [types.UPDATE_ACTIVE_TAB_INDEX](state, index) {
+  CLOSE(state) {
+    state.isOpen = false
+    state.activeTabIndex = 0
+    state.data.title = null
+    state.data.component = null
+    state.data.form = ''
+  },
+
+  UPDATE_ACTIVE_TAB_INDEX(state, index) {
     state.activeTabIndex = index
   }
 }

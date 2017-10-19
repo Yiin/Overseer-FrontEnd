@@ -16,6 +16,7 @@ export default (recurringInvoice) => {
       due_date: integer(recurringInvoice.due_date),
       autobill: boolean(recurringInvoice.autobill),
       currency_code: text(recurringInvoice.currency_code),
+      status: text(recurringInvoice.status),
 
       items: recurringInvoice.items.map((item) => billItem(item)),
 

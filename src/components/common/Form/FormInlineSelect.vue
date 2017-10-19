@@ -52,17 +52,7 @@ export default {
 
   methods: {
     onInput(value) {
-      const payload = {
-        name: this.name,
-        value: value
-      }
-      if (this.$parent) {
-        setTimeout(() => {
-          console.log('call parent from inline form select')
-          this.$parent.$emit('input:field', payload)
-        }, 100)
-      }
-      // this.$emit('input', payload)
+      this.$emit('input', value)
     }
   }
 }

@@ -1,4 +1,4 @@
-$modal-shadow: 0 -4px 17px rgba(0,0,0,0.03);
+$modal-shadow: 0 -4px 17px rgba(0,0,0,.03);
 
 .background-dim
 {
@@ -9,18 +9,18 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,0.03);
     width: 100%;
     height: 100%;
 
-    background: $modal-bg-dim;
+    background: black;
 }
 
-.modal-background
+.modal-container
 {
     position: fixed;
-    bottom: 0;
-    left: 50%;
+    top: 0;
+    left: 0;
+    opacity: 0;
 
     padding: 80px 0 0;
-
-    transform: translate(-50%, 0);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
 
     border-radius: 5px 5px 0 0;
     background: $modal-outer-bg;
@@ -28,6 +28,13 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,0.03);
 
 .modal
 {
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    &--visible {
+        opacity: 1;
+        pointer-events: all;
+    }
     &__title
     {
         font-size: 15px;
@@ -113,8 +120,8 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,0.03);
         }
         &__content
         {
-            padding-bottom: 150px;
             height: 100%;
+            padding-bottom: 150px;
 
             background: #fff;
             box-shadow: $modal-shadow;
@@ -126,9 +133,6 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,0.03);
         font-weight: $font-weight-semibold;
 
         display: inline-flex;
-
-        width: 212px;
-        height: 54px;
 
         cursor: pointer;
 
@@ -144,17 +148,59 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,0.03);
             {
                 &.modal__tab--active
                 {
+                    // color: $color-text-alt;
+                    // background: $color;
+                }
+                .tab-number
+                {
                     color: $color-text-alt;
                     background: $color;
                 }
             }
         }
+        &:nth-child(2),
+        &:nth-child(4)
+        {
+            .tab-number
+            {
+                padding-left: 0;
+            }
+        }
+
+        .tab-title
+        {
+            display: inline-flex;
+            // width: 212px;
+
+            height: 54px;
+            padding: 0 37px;
+
+            align-items: center;
+            justify-content: left;
+        }
 
         &--active
         {
-            // background: #5bc26e;
+            position: relative;
+
+            color: #373737;
+            background: #fff;
             box-shadow: $modal-shadow;
-            margin-left: -1px;
+
+            &::after
+            {
+                position: absolute;
+                z-index: 1;
+                top: 45px;
+                left: 0;
+
+                width: 100%;
+                height: 15px;
+
+                content: '';
+
+                background: #fff;
+            }
         }
     }
 }
@@ -197,9 +243,10 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,0.03);
 {
     display: flex;
 
-    width: 25px;
+    width: 28px;
     height: 25px;
     margin-right: 16px;
+    padding-left: 1px;
 
     align-items: center;
     justify-content: center;

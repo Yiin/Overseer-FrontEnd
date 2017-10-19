@@ -1,4 +1,5 @@
-.form
+.form,
+.modal-form
 {
     .dropdown__input
     {
@@ -89,15 +90,6 @@
             }
         }
     }
-    textarea
-    {
-        font-family: inherit;
-
-        height: auto;
-        padding: 15px;
-
-        resize: none;
-    }
     &__inline-inputs:first-child
     {
         margin-top: 0;
@@ -111,6 +103,15 @@
             margin-left: 92px;
         }
     }
+}
+
+textarea.form__input {
+    font-family: inherit;
+
+    height: auto;
+    padding: 15px;
+
+    resize: none;
 }
 
 .items-list
@@ -241,6 +242,7 @@
 
   &.scrollable {
       padding-right: 20px;
+      margin-right: -26px;
   }
   .separator {
     margin: 40px 0;

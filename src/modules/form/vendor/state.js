@@ -1,39 +1,39 @@
 import FormState from '@/modules/form/state'
 
-const state = FormState({
-  __name: 'vendor',
+const state = FormState('vendor', {
+  fields: {
+    uuid: '',
 
-  uuid: '',
+    // Organization
+    company_name: '',
+    registration_number: '',
+    vat_number: '',
+    website: '',
+    phone: '',
+    logo: null,
 
-  // Organization
-  company_name: '',
-  registration_number: '',
-  vat_number: '',
-  website: '',
-  phone: '',
-  logo: null,
+    // Address
+    address1: '',
+    address2: '',
+    city: '',
+    postal_code: '',
+    state: '',
+    country_id: null, // id
 
-  // Address
-  address1: '',
-  address2: '',
-  city: '',
-  postal_code: '',
-  state: '',
-  country_id: null, // id
+    // Contacts
+    contacts: [
+      {
+        first_name: '',
+        last_name: '',
+        job_position: '',
+        email: '',
+        phone: ''
+      }
+    ],
 
-  // Contacts
-  contacts: [
-    {
-      first_name: '',
-      last_name: '',
-      job_position: '',
-      email: '',
-      phone: ''
-    }
-  ],
-
-  currency_code: '', // id
-  notes: '',
+    currency_code: '', // id
+    notes: ''
+  },
 
   tabs: [
     [

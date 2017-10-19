@@ -53,9 +53,55 @@
             color: $color-mulled-wine !important;
 
             align-items: center;
-            &:hover
+            &:hover,
+            &--active
             {
                 color: #000 !important;
+                .sidebar-icon--appointments {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Appointments hover.svg');
+                }
+                .sidebar-icon--products {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Products hover.svg');
+                }
+                .sidebar-icon--clients {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Client hover.svg');
+                }
+                .sidebar-icon--credits {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Credits hover.svg');
+                }
+                .sidebar-icon--currency {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Currency hover.svg');
+                }
+                .sidebar-icon--expenses {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Expenses hover.svg');
+                }
+                .sidebar-icon--invoices {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Invoice hover.svg');
+                }
+                .sidebar-icon--overview {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Overview hover.svg');
+                }
+                .sidebar-icon--payments {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Payment hover.svg');
+                }
+                .sidebar-icon--personel {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Personel hover.svg');
+                }
+                .sidebar-icon--projects {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Projects hover.svg');
+                }
+                .sidebar-icon--quotes {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Quotes hover.svg');
+                }
+                .sidebar-icon--reports {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Reports hover.svg');
+                }
+                .sidebar-icon--vendors {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Vendors hover.svg');
+                }
+                .sidebar-icon--settings {
+                    background-image: url('../../assets/icons/sidebar/hover/1__Settings hover.svg');
+                }
             }
             &--active
             {

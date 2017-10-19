@@ -1,17 +1,20 @@
 <template>
   <div>
-    <modal></modal>
     <div class="taskbar">
       <div
         v-for="(item, index) in items"
         ref="item"
-        @click="activateItem(item)"
+        @click.self="activateItem(item)"
         :style="{ right: (50 + (180 * index)) + 'px' }"
         class="taskbar__item"
       >
-        {{ $t(item.data.title) }}
+        <div @click.self="activateItem(item)" class="taskbar-item__content">
+          {{ $t(item.data.title) }}
+          <span @click.prevent="closeItem(item.data)" class="taskbar-item__close"></span>
+        </div>
       </div>
     </div>
+    <modal></modal>
   </div>
 </template>
 
@@ -19,13 +22,17 @@
 export default {
   computed: {
     items() {
-      return this.$store.getters.idle_items
+      return this.$store.getters['taskbar/idle_items']
     }
   },
 
   methods: {
     activateItem(item) {
-      this.$store.dispatch('ACTIVATE_TASKBAR_ITEM', item)
+      this.$store.dispatch('taskbar/ACTIVATE_ITEM', item)
+    },
+
+    closeItem(item) {
+      this.$store.dispatch('taskbar/REMOVE_ITEM', item)
     }
   }
 }
