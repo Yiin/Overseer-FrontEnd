@@ -2,7 +2,7 @@ import { uuid, text, float } from './data-types'
 
 export default (item) => {
   return {
-    product_uuid: uuid(item.product_uuid, null),
+    product_uuid: uuid(item.product_uuid || item.product.uuid, null),
     product_name: text(item.product_name),
     cost: float(item.price || item.cost),
     qty: float(item.qty),

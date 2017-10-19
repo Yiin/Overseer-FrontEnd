@@ -1,19 +1,32 @@
 import Vue from 'vue'
+import { copyFields } from '@/scripts'
 
 export default (mutations = {}) => Object.assign({
+  SET_FORM_STATE(state, newState) {
+    copyFields(newState, state)
+  },
+
+  SET_PREVIEW(state, preview) {
+    state.__preview = preview
+  },
+
   SET_FORM_DATA(state, data) {
     for (let field in data) {
-      Vue.set(state, field, data[field])
+      Vue.set(state.fields, field, data[field])
 
       if (data[field] && typeof data[field] === 'object') {
         if (typeof data[field].id !== 'undefined') {
-          Vue.set(state, field + '_id', data[field].id)
+          Vue.set(state.fields, field + '_id', data[field].id)
         }
         if (typeof data[field].uuid !== 'undefined') {
-          Vue.set(state, field + '_uuid', data[field].uuid)
+          Vue.set(state.fields, field + '_uuid', data[field].uuid)
         }
       }
     }
+  },
+
+  SET_FIELD_VALUE(state, { field, value }) {
+    state.fields[field] = value
   },
 
   ADD_CREATE_LISTENER(state, fn) {
@@ -23,23 +36,16 @@ export default (mutations = {}) => Object.assign({
   RESET_FORM_DATA(state) {
     const copy = JSON.parse(JSON.stringify(state.__initial))
 
-    for (let field in copy) {
-      Vue.set(state, field, copy[field])
-    }
-    Vue.set(state, '__preview', false)
+    copyFields(copy, state)
+  },
+
+  SET_FIELD_ERRORS(state, { field, errors }) {
+    state.validationErrors[field] = errors
   },
 
   SET_ERRORS(state, errors) {
-    let err = {}
-
-    for (let key in errors) {
-      const field = key.split('.').slice(1).join('.')
-
-      if (field.trim().length) {
-        err[field] = errors[key]
-      }
+    for (let field in errors) {
+      state.validationErrors[field] = errors[field]
     }
-
-    state.errors = err
   }
 }, mutations)

@@ -1,7 +1,21 @@
 import pluralize from 'pluralize'
 import S from 'string'
+import validators from './validators'
 
 export default (actions = {}) => Object.assign({
+  VALIDATE({ commit, state }, field) {
+    const result = validators[state._name](state.fields)
+
+    if (typeof field === 'undefined') {
+      commit('SET_ERRORS', result)
+    } else {
+      commit('SET_FIELD_ERRORS', {
+        field,
+        errors: result[field]
+      })
+    }
+  },
+
   SET_FORM_DATA({ commit }, data) {
     commit('SET_FORM_DATA', data)
   },
@@ -13,13 +27,13 @@ export default (actions = {}) => Object.assign({
   OPEN_CREATE_FORM({ commit, dispatch, state }) {
     dispatch('RESET_FORM_DATA')
 
-    dispatch('CREATE_MODAL', {
+    dispatch('modal/CREATE', {
       // meta data
-      title: 'actions.new_' + state.__name,
+      title: 'actions.new_' + state._name,
       // form component we're rendering when modal is open
-      component: 'edit-' + S(state.__name).slugify().s,
-      // namespace to current form's state
-      form: state.__name
+      component: 'edit-' + S(state._name).slugify().s,
+      // path to current form's state
+      module: `form/${state._name}`
     }, { root: true })
 
     return new Promise((resolve) => {
@@ -30,25 +44,23 @@ export default (actions = {}) => Object.assign({
   OPEN_EDIT_FORM({ dispatch, state }, data) {
     dispatch('SET_FORM_DATA', data)
 
-    return dispatch('OPEN_MODAL', {
+    return dispatch('modal/OPEN', {
       // meta data
-      title: 'actions.edit_' + state.__name,
+      title: 'actions.edit_' + state._name,
       // form component we're rendering when modal is open
-      component: 'edit-' + S(state.__name).slugify().s,
-      // namespace to current form's state
-      form: state.__name
+      component: 'edit-' + S(state._name).slugify().s,
+      // path to current form's state
+      module: `form/${state._name}`
     }, { root: true })
   },
 
-  OPEN_PREVIEW_FORM({ dispatch }, data) {
-    dispatch('SET_FORM_DATA', {
-      __preview: true
-    })
+  OPEN_PREVIEW_FORM({ dispatch, commit }, data) {
+    commit('SET_PREVIEW', true)
     return dispatch('OPEN_EDIT_FORM', data)
   },
 
   FILL({ dispatch, commit, state }) {
-    return dispatch(`table/${pluralize(state.__name)}/FILL`, null, { root: true })
+    return dispatch(`table/${pluralize(state._name)}/FILL`, null, { root: true })
       .then((data) => {
         delete data.uuid
         commit('SET_FORM_DATA', data)
@@ -58,8 +70,8 @@ export default (actions = {}) => Object.assign({
   CREATE({ dispatch, state }) {
     const listeners = state.listeners.create.slice()
 
-    return dispatch(`table/${pluralize(state.__name)}/CREATE_DOCUMENT`, {
-      data: state
+    return dispatch(`table/${pluralize(state._name)}/CREATE_DOCUMENT`, {
+      data: state.fields
     }, {
       root: true
     })
@@ -76,9 +88,9 @@ export default (actions = {}) => Object.assign({
   },
 
   SAVE({ dispatch, state }) {
-    dispatch(`table/${pluralize(state.__name)}/SAVE_DOCUMENT`, {
-      uuid: state.uuid,
-      data: state
+    dispatch(`table/${pluralize(state._name)}/SAVE_DOCUMENT`, {
+      uuid: state.fields.uuid,
+      data: state.fields
     }, {
       root: true
     })
@@ -104,13 +116,13 @@ export default (actions = {}) => Object.assign({
         return tab.indexOf(field) > -1
       })
 
-      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', tabIndex, { root: true })
+      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', tabIndex, { root: true })
 
       break
     }
   },
 
-  UPDATE_FIELD_VALUE({ commit }, { field, value }) {
+  SET_FIELD_VALUE({ commit }, { field, value }) {
     commit('SET_FORM_DATA', { [field]: value })
   }
 }, actions)

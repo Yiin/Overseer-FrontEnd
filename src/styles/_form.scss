@@ -1,8 +1,9 @@
-.form
+.form,
+.modal-form
 {
     .dropdown__input
     {
-        background: #f7f8fc;
+        background: #edf1fc;
     }
     .dropdown__options
     {
@@ -63,7 +64,7 @@
 
         width: 100%;
         padding: 0 15px;
-        background: #f7f8fc;
+        background: #edf1fc;
 
         color: #373737;
         border: none;
@@ -89,19 +90,28 @@
             }
         }
     }
-    textarea
-    {
-        font-family: inherit;
-
-        height: auto;
-        padding: 15px;
-
-        resize: none;
-    }
     &__inline-inputs:first-child
     {
         margin-top: 0;
     }
+    &__row {
+        display: flex;
+    }
+    &__column {
+        width: 100%;
+        &--half + & {
+            margin-left: 92px;
+        }
+    }
+}
+
+textarea.form__input {
+    font-family: inherit;
+
+    height: auto;
+    padding: 15px;
+
+    resize: none;
 }
 
 .items-list
@@ -232,6 +242,7 @@
 
   &.scrollable {
       padding-right: 20px;
+      margin-right: -26px;
   }
   .separator {
     margin: 40px 0;

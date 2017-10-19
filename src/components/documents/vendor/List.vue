@@ -7,7 +7,6 @@
         <div class="placeholder__text">
           Here you can add vendors, <br>
           whom you will purchase from.
-
         </div>
         <button @click="create" class="button button--create">
           <span class="icon-new-vendor-btn-icon"></span>

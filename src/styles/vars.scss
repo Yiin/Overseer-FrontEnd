@@ -21,6 +21,10 @@ $color-alabaster: #fbfbfb;
 $color-gallery: #ebebeb;
 $color-dusty-gray: #949494;
 $color-oslo-gray: #8a8e91;
+$color-mulled-wine: #494d66;
+$color-new-york-pink: #df8383;
+$color-emerald: #5bc26e;
+$color-storm-gray: #6d7084;
 
 // Fonts
 $primary-font-family: 'Open Sans', sans-serif;
@@ -49,10 +53,10 @@ $table-border-radius: 4px;
 $color-main: $color-indigo;
 $color-main-dark: $color-mine-shaft;
 
-$modal-bg-dim: rgba($color-black, 0.5);
+$modal-bg-dim: rgba($color-black, 0.4);
 $modal-inner-bg: $color-white;
-$modal-outer-bg: $color-alabaster;
-$modal-tab-colors: $color-main, $color-blaze-orange, $color-forest-green, $color-purple-heart;
+$modal-outer-bg: $color-wild-sand;
+$modal-tab-colors: #6871b1, #ec8b46, $color-emerald, #836cb2;
 
 $color-text: $color-black;
 $color-text-alt: $color-white;

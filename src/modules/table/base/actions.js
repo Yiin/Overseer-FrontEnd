@@ -87,7 +87,7 @@ export default (actions = {}) => Object.assign({
     return Api.post(prefix + name.replace(/_/g, '-'), transformedData)
       .then((response) => {
         dispatch('INSERT_ROW', response)
-        dispatch('CLOSE_MODAL', null, { root: true })
+        dispatch('modal/CLOSE', null, { root: true })
         return response
       })
   },
@@ -103,7 +103,7 @@ export default (actions = {}) => Object.assign({
     return Api.put(prefix + name.replace(/_/g, '-') + `/${uuid}`, transformedData)
       .then((response) => {
         dispatch('UPDATE_ROW', response)
-        dispatch('CLOSE_MODAL', null, { root: true })
+        dispatch('modal/CLOSE', null, { root: true })
         return response
       })
   },

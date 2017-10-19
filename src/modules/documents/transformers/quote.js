@@ -13,6 +13,7 @@ export default (quote) => {
       po_number: text(quote.po_number),
       discount_type: text(quote.discount_type),
       discount_value: integer(quote.discount_value),
+      status: text(quote.status),
 
       items: quote.items.map((item) => billItem(item)),
 

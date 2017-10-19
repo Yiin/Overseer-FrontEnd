@@ -1,35 +1,37 @@
 import FormState from '@/modules/form/state'
 
-const state = FormState({
-  __name: 'quote',
+const state = FormState('quote', {
+  fields: {
+    uuid: '',
 
-  uuid: '',
+    client_uuid: '', // uuid
+    quote_date: null, // YYYY-MM-DD
+    due_date: null, // YYYY-MM-DD
+    partial: 0, // partial/deposit
+    currency_code: '',
+    quote_number: '',
+    po_number: '',
+    discount_type: 'percentage',
+    discount_value: 0,
 
-  client_uuid: '', // uuid
-  quote_date: null, // YYYY-MM-DD
-  due_date: null, // YYYY-MM-DD
-  partial: 0, // partial/deposit
-  currency_code: '',
-  quote_number: '',
-  po_number: '',
-  discount_type: 'percentage',
-  discount_value: 0,
+    items: [
+      /* {
+        product_uuid // uuid (products)
+        price
+        qty
+        discount // %
+        taxRate // uuid (tax_rates)
+      } */
+    ],
+    documents: [
+      /* array of document files */
+    ],
+    note_to_client: '',
+    terms: '',
+    footer: '',
 
-  items: [
-    /* {
-      product_uuid // uuid (products)
-      price
-      qty
-      discount // %
-      taxRate // uuid (tax_rates)
-    } */
-  ],
-  documents: [
-    /* array of document files */
-  ],
-  note_to_client: '',
-  terms: '',
-  footer: '',
+    status: 'draft'
+  },
 
   tabs: [
     [
@@ -53,9 +55,7 @@ const state = FormState({
       'terms',
       'footer'
     ]
-  ],
-
-  errors: {}
+  ]
 })
 
 state.__initial = JSON.parse(JSON.stringify(state))

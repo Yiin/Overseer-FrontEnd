@@ -190,7 +190,7 @@ $thumb-size: 115px;
 
 .file-upload__title {
   font-weight: bold;
-  margin: 15px 0;
+  margin: 4px 0 15px;
 }
 
 .file-upload__subtitle {
@@ -322,5 +322,12 @@ $remove-image-icon-size: 36px;
     .uploaded-image-container--add-image:hover & {
       filter: brightness(0.95);
     }
+}
+</style>
+
+<style lang="scss">
+.file-upload-placeholder img {
+    height: 52px;
+    margin-top: -12px;
 }
 </style>

@@ -15,8 +15,12 @@
     {
         font-size: 0;
 
+        display: flex;
+
         margin-top: 26px;
         margin-bottom: 37px;
+
+        align-items: center;
     }
     &__dropdowns
     {
@@ -25,7 +29,7 @@
         margin-left: 45px;
 
         vertical-align: middle;
-        > .dropdown
+         > .dropdown
         {
             float: left;
         }
@@ -42,7 +46,7 @@
         //border-top: 1px solid #e6ebf1;
         border-bottom: 1px solid #e6ebf1;
         border-radius: $table-border-radius $table-border-radius 0 0;
-        background: #f7f8fc; //$table-head-bg;
+        background: #f7f8fc;
         .table--simple &
         {
             border-right: 1px solid #e6ebf1;
@@ -77,14 +81,15 @@
         border-radius: 0 0 $table-border-radius $table-border-radius;
         background: $table-bg;
         .column,
-        span,
+        span
         {
             text-decoration: none;
         }
         .column
         {
-            border-color: $table-border-color;
             position: relative;
+
+            border-color: $table-border-color;
         }
     }
     &__row
@@ -151,11 +156,11 @@
             {
                 background: none;
             }
-            > .column
+             > .column
             {
                 border-color: transparent !important;
             }
-            > .column:nth-child(n+3)
+             > .column:nth-child(n+3)
             {
                 display: none;
             }
@@ -171,14 +176,15 @@
         align-items: center;
         &:not(.column--center)
         {
-            > span, > a
+             > span,
+             > a
             {
                 overflow: hidden;
 
                 margin-top: -1px;
                 padding: 15px 21px;
-                white-space: nowrap;
 
+                white-space: nowrap;
                 text-overflow: ellipsis;
             }
         }
@@ -202,17 +208,23 @@
     }
 }
 
-.status--dropdown {
+.status--dropdown
+{
     position: relative;
-    text-align: center;
+
     padding-right: 15px;
+
+    text-align: center;
 }
 
-.status--dropdown::before {
+.status--dropdown::before
+{
     position: absolute;
     top: 10px;
     right: 10px;
+
     content: '';
+
     border-top: 4px solid;
     border-right: 4px solid transparent;
     border-left: 4px solid transparent;

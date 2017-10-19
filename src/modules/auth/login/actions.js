@@ -26,7 +26,6 @@ export default {
     commit('SET_ERRORS', errors)
 
     if (errors.username || errors.password) {
-      console.log(errors)
       return false
     }
 
@@ -41,6 +40,7 @@ export default {
       .catch(() => {
         commit('SET_ERRORS', {
           password: ['Wrong Login or Password. Try again.']
+          username: [],
         })
       })
   }

@@ -1,0 +1,57 @@
+.vendor-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background: url(../assets/icons/btn/vendor.svg);
+}
+
+.sidebar-icon {
+    display: inline-block;
+    height: 25px;
+    width: 32px;
+    &--appointments {
+        background-image: url(../assets/icons/sidebar/1__Appointments.svg);
+    }
+    &--products {
+        background-image: url(../assets/icons/sidebar/1__Products.svg);
+    }
+    &--clients {
+        background-image: url(../assets/icons/sidebar/1__Client.svg);
+    }
+    &--credits {
+        background-image: url(../assets/icons/sidebar/1__Credits.svg);
+    }
+    &--currency {
+        background-image: url(../assets/icons/sidebar/1__Currency.svg);
+    }
+    &--expenses {
+        background-image: url(../assets/icons/sidebar/1__Expenses.svg);
+    }
+    &--invoices {
+        background-image: url(../assets/icons/sidebar/1__Invoice.svg);
+    }
+    &--overview {
+        background-image: url(../assets/icons/sidebar/1__Overview.svg);
+    }
+    &--payments {
+        background-image: url(../assets/icons/sidebar/1__Payment.svg);
+    }
+    &--personel {
+        background-image: url(../assets/icons/sidebar/1__Personel.svg);
+    }
+    &--projects {
+        background-image: url(../assets/icons/sidebar/1__Projects.svg);
+    }
+    &--quotes {
+        background-image: url(../assets/icons/sidebar/1__Quotes.svg);
+    }
+    &--reports {
+        background-image: url(../assets/icons/sidebar/1__Reports.svg);
+    }
+    &--vendors {
+        background-image: url(../assets/icons/sidebar/1__Vendors.svg);
+    }
+    &--settings {
+        background-image: url(../assets/icons/sidebar/1__Settings.svg);
+    }
+}

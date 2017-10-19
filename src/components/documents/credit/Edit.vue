@@ -6,15 +6,15 @@
         Select client
        -->
       <modal-tab :title="$t('tabs.client')">
-        <form-container name="credit">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+        <form-container>
+          <form-inline-select-input v-model="client_uuid" :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
             <inline-option v-if="preview" selected>
               {{ form.client.name }}
             </inline-option>
             <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
-                          :selected="client.uuid === form.client_uuid"
+                          :selected="client.uuid === client_uuid"
             >
               {{ client.name }}
             </inline-option>
@@ -37,7 +37,7 @@
         Credit details
       -->
       <modal-tab :title="$t('tabs.details')">
-        <form-container name="credit">
+        <form-container>
           <form-row>
             <form-field :label="$t('labels.amount')">
               <!--
@@ -45,8 +45,8 @@
               -->
               <form-formatted-input
                 type="number"
-                :label="currencyCode"
-                v-model="form.amount"
+                :label="currency.code"
+                v-model="amount"
                 name="amount"
                 :readonly="preview"
               ></form-formatted-input>
@@ -55,7 +55,7 @@
             <!--
               Currency
             -->
-            <form-currency-dropdown v-model="form.currency_code" :readonly="preview"></form-currency-dropdown>
+            <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
           </form-row>
           <form-row>
 
@@ -63,14 +63,14 @@
               Credit Date
             -->
             <form-field catch-errors="credit_date" :label="$t('labels.credit_date')">
-              <form-date-input current-date v-model="form.credit_date" name="credit_date" :readonly="preview"></form-date-input>
+              <form-date-input current-date v-model="credit_date" name="credit_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Credit Number
             -->
             <form-field catch-errors="credit_number" :label="$t('labels.credit_number')">
-              <form-text-input v-model="form.credit_number" name="credit_number" :readonly="preview"></form-text-input>
+              <form-text-input v-model="credit_number" name="credit_number" :readonly="preview"></form-text-input>
             </form-field>
 
           </form-row>
@@ -82,61 +82,60 @@
 </template>
 
 <script>
+import FormMixin from '@/mixins/FormMixin'
+import CurrencyMixin from '@/mixins/CurrencyMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 import { createDocument } from '@/modules/documents/actions'
 
 export default {
-  name: 'edit-credit',
+  mixins: [
+    CurrencyMixin,
+    FormMixin('credit', [
+      'client_uuid',
+      'amount',
+      'currency_code',
+      'credit_date',
+      'credit_number'
+    ])
+  ],
 
   components: {
     FormCurrencyDropdown,
     FormFormattedInput
   },
 
-  props: {
-    data: {
-      default: null
-    }
-  },
-
   computed: {
-    form() {
-      return this.$store.state.form.credit
-    },
-
-    preview() {
-      return this.form.__preview
-    },
-
-    passive() {
-      return this.$store.state.passive
-    },
-
     currency() {
       let currency = null
 
-      if (this.form.currency_code) {
-        currency = this.passive.currencies.find((c) => c.code === this.form.currency_code)
+      // use invoices set currency if possible
+      if (this.currency_code) {
+        currency = this.currencies.find((c) => c.code === this.currency_code)
       }
+
+      // else try to use clients currency
       if (!currency) {
-        let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)
+        const client = this.form.fields.client || this.clients.find((c) => c.uuid === this.client_uuid)
 
         if (client) {
           currency = client.currency
         }
       }
+
+      // or use users preferred currency
       if (!currency) {
         currency = this.$store.state.settings.currency
       }
-      return currency
-    },
 
-    currencyCode() {
-      if (this.currency_code) {
-        return this.currency_code
+      // or just default to eur
+      if (!currency) {
+        currency = {
+          code: 'EUR',
+          symbol: '€'
+        }
       }
-      return this.currency ? this.currency.code : 'EUR'
+      return currency
     },
 
     clients() {
@@ -150,24 +149,8 @@ export default {
         this.$store.dispatch('form/credit/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
-        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+        this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       })
-    },
-
-    save() {
-      if (this.form.uuid) {
-        this.$store.dispatch('form/credit/SAVE')
-      } else {
-        this.create()
-      }
-    },
-
-    create() {
-      this.$store.dispatch('form/credit/CREATE')
-    },
-
-    cancel() {
-      this.$emit('cancel')
     }
   }
 }

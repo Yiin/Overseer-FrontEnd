@@ -7,7 +7,6 @@
         <div class="placeholder__text">
           Here you can add customers<br>
           whom you will offer services to.
-
         </div>
         <button @click="create" class="button button--create">
           <span class="icon-new-client-btn-icon"></span>

@@ -100,7 +100,7 @@ export default {
             moment: x.clone()
           }
           weeks[weeks.length - 1].push(day)
-          x.add(1, 'day')
+          x.add(1, 'days')
         }
       }
 

@@ -1,5 +1,10 @@
 let state = {
-  items: [/* { type: 'modal', data } */],
+  items: [/*
+    {
+      type: 'modal',
+      data
+    }
+  */],
   activeIndex: null,
   savedTasks: []
 }

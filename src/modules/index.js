@@ -10,6 +10,7 @@ import dashboard from './dashboard'
 import settings from './settings'
 import system from './system'
 import documents from './documents'
+import notification from './notification'
 
 export default {
   auth,
@@ -23,5 +24,6 @@ export default {
   dashboard,
   settings,
   system,
-  documents
+  documents,
+  notification
 }

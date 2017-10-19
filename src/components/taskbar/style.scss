@@ -1,6 +1,7 @@
 .taskbar
 {
     position: fixed;
+    z-index: 0;
     right: 0;
     bottom: 0;
 
@@ -11,25 +12,101 @@
 
 .taskbar__item
 {
-    font-size: 13px;
-    line-height: 40px;
+    font-size: 15px;
+    font-weight: 600;
 
-    float: right;
+    position: absolute;
+    right: 0;
+    bottom: -10px;
 
-    margin: 0 4px;
-    padding: 0 15px;
+    display: flex;
+
+    width: 200px;
+    height: 50px;
+    padding-bottom: 10px;
 
     cursor: pointer;
     transition: all .1s;
 
-    background: $color-white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
-    &:hover
-    {
-        margin-top: -3px;
-    }
+    color: #fff;
+    border-radius: 10px 10px 0 0;
+    // box-shadow: 0 0px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: -3px 2px rgba(0, 0, 0, .05), 3px 1px 1px rgba(0, 0, 0, .20), 0 5px 5px rgba(0, 0, 0, .05), 0 -3px 10px rgba(0, 0, 0, .03);
+
+    justify-content: center;
+    align-items: center;
     &.active
     {
         font-weight: 600;
+    }
+
+    &:hover
+    {
+        z-index: 1;
+        bottom: 0;
+        .taskbar-item__content
+        {
+            &::before
+            {
+                position: absolute;
+                bottom: 13px;
+                left: 50%;
+
+                width: 70px;
+                height: 2px;
+
+                content: '';
+                transform: translate(-50%, 0);
+
+                background: rgba(255, 255, 255, .8);
+            }
+        }
+    }
+
+    &:nth-child(4n+1)
+    {
+        background: #6871b1;
+    }
+    &:nth-child(4n+2)
+    {
+        background: #ec8b46;
+    }
+    &:nth-child(4n+3)
+    {
+        background: #836cb2;
+    }
+    &:nth-child(4n+4)
+    {
+        background: $color-emerald;
+    }
+}
+
+.taskbar-item
+{
+    &__close
+    {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        padding: 20px;
+
+        cursor: pointer;
+
+        filter: opacity(.8);
+        &::before
+        {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+
+            width: 12px;
+            height: 12px;
+
+            content: '';
+
+            background: url(../../assets/icons/cross-white.svg) center center no-repeat;
+            background-size: contain;
+        }
     }
 }

@@ -1,5 +1,11 @@
+import { copyFields } from '@/scripts'
+
 export default {
-  SAVE_TASKBAR_ITEM(state, index) {
+  SET_STATE(state, newState) {
+    copyFields(newState, state)
+  },
+
+  SAVE_ITEM(state, index) {
     if (index > -1 && index < state.items.length) {
       state.savedTasks.unshift(index)
     }
@@ -24,12 +30,12 @@ export default {
     }
   },
 
-  SAVE_TASKBAR_ITEM_DATA(state, index) {
+  SAVE_ITEM_DATA(state, index) {
     state.items[index].data = Object.assign({}, state.items[index].data)
   },
 
-  SAVE_TASKBAR_ITEM_FORM_DATA(state, { index, formData }) {
-    state.items[index].savedData = Object.assign({}, formData)
+  SAVE_ITEM_STATE(state, { index, itemState }) {
+    state.items[index].itemState = Object.assign({}, itemState)
   },
 
   RESET_ACTIVE_ITEM(state) {

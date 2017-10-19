@@ -180,11 +180,14 @@ export default {
     },
 
     selectedRows() {
-      return this.data.selection.length + (
-        this.data.selection.find((row) => {
-          return this.contextMenu.selectedRow.uuid === row.uuid
-        }) ? 0 : 1
-      )
+      let selectedRows = this.data.selection.length
+
+      if (this.contextMenu.selectedRow) {
+        if (this.data.selection.find((row) => this.contextMenu.selectedRow.uuid === row.uuid)) {
+          selectedRows++
+        }
+      }
+      return selectedRows
     },
 
     /**
@@ -435,8 +438,19 @@ export default {
   &:not(.static) {
     height: 35px;
     line-height: 35px;
+    cursor: pointer;
     &:hover {
       background-color: #f5f5f5;
+      &::before {
+        content: '';
+        position: absolute;
+        width: 70px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.8);
+        bottom: 13px;
+        left: 50%;
+        transform: translate(-50%, 0);
+      }
     }
   }
 

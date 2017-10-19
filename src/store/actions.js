@@ -17,6 +17,10 @@ export default {
   INIT({ dispatch, commit, state }, preloadedData = null) {
     const promises = []
 
+    if (state.preloadedData && state.preloadedData.user && state.preloadedData.user.taskbar) {
+      commit('taskbar/SET_STATE', JSON.parse(state.preloadedData.user.taskbar), { root: true })
+    }
+
     // Use preloaded data if possible, load everything if not
     if (preloadedData) {
       const data = preloadedData

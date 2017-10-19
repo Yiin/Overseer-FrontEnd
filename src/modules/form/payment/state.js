@@ -1,19 +1,19 @@
 import FormState from '@/modules/form/state'
 
-const state = FormState({
-  __name: 'payment',
+const state = FormState('payment', {
+  fields: {
+    uuid: '',
 
-  uuid: '',
+    client_uuid: '', // uuid
+    invoice_uuid: '', // uuid
 
-  client_uuid: '', // uuid
-  invoice_uuid: '', // uuid
-
-  // Details
-  amount: 0,
-  currency_code: null, // id (currencies)
-  payment_type_id: null, // id (payment_types)
-  payment_date: null, // YYYY-MM-DD
-  payment_reference: '',
+    // Details
+    amount: 0,
+    currency_code: null, // id (currencies)
+    payment_type_id: null, // id (payment_types)
+    payment_date: null, // YYYY-MM-DD
+    payment_reference: ''
+  },
 
   tabs: [
     [
@@ -29,9 +29,7 @@ const state = FormState({
       'payment_date',
       'payment_reference'
     ]
-  ],
-
-  errors: {}
+  ]
 })
 
 state.__initial = JSON.parse(JSON.stringify(state))

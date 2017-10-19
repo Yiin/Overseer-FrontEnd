@@ -4,7 +4,9 @@ import VueResource from 'vue-resource'
 import {
  Vuetify,
  VApp,
+ VCard,
  VGrid,
+ VSelect,
  VTextField
 } from 'vuetify'
 import VueMaterial from 'vue-material'
@@ -43,7 +45,9 @@ Vue.material.registerTheme('default', {
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VCard,
     VGrid,
+    VSelect,
     VTextField
   }
 })

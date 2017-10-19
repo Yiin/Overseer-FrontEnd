@@ -1,15 +1,47 @@
 import ContextMenuAction from './cm-action'
 import pluralize from 'pluralize'
 import moment from 'moment'
+import $store from '@/store'
 // import print from 'print-js'
+
+function getSelectedRows(state, tableName, row) {
+  let selectedRows = state.table[tableName].selection.length
+
+  if (row) {
+    if (state.table[tableName].selection.find((r) => r.uuid === row.uuid)) {
+      selectedRows++
+    }
+  }
+  return selectedRows
+}
+
+function showUndoNotification(data) {
+  if (Array.isArray(data)) {
+    $store.dispatch('notification/SHOW', {
+      message: `You just did something with ${data.length} items.`,
+      action: () => {
+        $store.dispatch('notification/SHOW', {
+          message: 'Action completed'
+        })
+      },
+      actionText: 'ACTION'
+    })
+  } else {
+    $store.dispatch('notification/SHOW', {
+      message: `You just did something with single item.`,
+      action: () => {
+        $store.dispatch('notification/SHOW', {
+          message: 'Action completed'
+        })
+      },
+      actionText: 'ACTION'
+    })
+  }
+}
 
 // visibility filters
 export const whenMoreThanOneRowIsSelected = (tableName, { state }, row) => {
-  return state.table[tableName].selection.length + (
-    state.table[tableName].selection.find((r) => r.uuid === row.uuid)
-      ? 0
-      : 1
-  ) > 1
+  return getSelectedRows(state, tableName, row) > 1
 }
 
 export const whenSpecificRowIsSelected = (tableName, store, row) => {
@@ -28,11 +60,7 @@ export const SELECTED_ROWS = ContextMenuAction({
   class: 'heading',
 
   visible(tableName, { state }, row) {
-    return state.table[tableName].selection.length + (
-      state.table[tableName].selection.find((r) => r.uuid === row.uuid)
-        ? 0
-        : 1
-    ) > 1
+    return getSelectedRows(state, tableName, row) > 1
   }
 })
 
@@ -116,6 +144,7 @@ export const Delete = ContextMenuAction({
   icon: 'icon-dropdown-delete',
 
   visible(tableName, store, row) {
+    console.log('row', row, row && !row.deleted_at && !row.archived_at)
     return row && !row.deleted_at && !row.archived_at
   },
 
@@ -128,11 +157,11 @@ export const Delete = ContextMenuAction({
     if (rows.length > 1) {
       const uuids = rows.map((row) => row.uuid)
 
-      dispatch(`table/${tableName}/DELETE_DOCUMENTS`, uuids)
+      dispatch(`table/${tableName}/DELETE_DOCUMENTS`, uuids).then(showUndoNotification)
     } else {
       const row = rows[0]
 
-      dispatch(`table/${tableName}/DELETE_DOCUMENT`, row)
+      dispatch(`table/${tableName}/DELETE_DOCUMENT`, row).then(showUndoNotification)
     }
   }
 })
@@ -179,6 +208,7 @@ export const PrintDocument = ContextMenuAction({
     return !!row
   },
 
+  // TODO: Print functionality
   handler(tableName, { dispatch }, row) {
     if (typeof row === 'undefined') {
       return
@@ -263,13 +293,13 @@ export const NewInvoice = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/invoice/UPDATE_FIELD_VALUE', {
+      dispatch('form/invoice/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })
       // Skip first modal tab, since we
       // already picked client for the user
-      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
 
     /**
@@ -299,13 +329,13 @@ export const NewQuote = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/quote/UPDATE_FIELD_VALUE', {
+      dispatch('form/quote/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })
       // Skip first modal tab, since we
       // already picked client for the user
-      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
     }
   }
@@ -328,13 +358,13 @@ export const EnterPayment = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/payment/UPDATE_FIELD_VALUE', {
+      dispatch('form/payment/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })
       // Skip first modal tab, since we
       // already picked client for the user
-      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
 
     case 'invoices':
@@ -344,7 +374,7 @@ export const EnterPayment = ContextMenuAction({
         invoice_uuid: row.uuid,
         amount: row.amount - row.paid_in
       })
-      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 2)
+      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 2)
       break
     }
   }
@@ -380,7 +410,7 @@ export const EnterExpense = ContextMenuAction({
       })
       // Skip first modal tab, since we
       // already picked vendor for the user
-      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
     }
   }
@@ -403,13 +433,13 @@ export const EnterCredit = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/credit/UPDATE_FIELD_VALUE', {
+      dispatch('form/credit/SET_FIELD_VALUE', {
         field: 'client_uuid',
         value: row.uuid
       })
       // Skip first modal tab, since we
       // already picked client for the user
-      dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
     }
   }
@@ -431,7 +461,7 @@ export const ApplyCredit = ContextMenuAction({
         return type.name === 'Apply Credit'
       }).id
     })
-    dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+    dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
   }
 })
 
@@ -546,7 +576,7 @@ export const ConvertToInvoice = ContextMenuAction({
       terms: quote.terms,
       footer: quote.footer
     })
-    dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+    dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
   }
 })
 
@@ -579,7 +609,7 @@ export const InvoiceExpense = ContextMenuAction({
     //     }
     //   })
     // })
-    // dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+    // dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
   }
 })
 

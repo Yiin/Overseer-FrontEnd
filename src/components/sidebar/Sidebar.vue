@@ -6,76 +6,76 @@
       </div>
       <div class="sidebar__nav">
         <nav-link :name="routes.overview">
-          <i class="icon-sidebar-overview"></i>
-          {{ $t('common.overview') }}
+          <i class="sidebar-icon sidebar-icon--overview"></i>
+          <span>{{ $t('common.overview') }}</span>
         </nav-link>
         <div class="sidebar__nav-link sidebar__nav-link--disabled">
-          <i class="icon-sidebar-vendors"></i>
-          Appointments
+          <i class="sidebar-icon sidebar-icon--appointments"></i>
+          <span>Appointments</span>
         </div>
         <nav-link :name="routes.products">
-          <i class="icon-sidebar-products"></i>
-          {{ $t('common.products') }}
+          <i class="sidebar-icon sidebar-icon--products"></i>
+          <span>{{ $t('common.products') }}</span>
         </nav-link>
         <nav-link :name="routes.clients">
-          <i class="icon-sidebar-clients"></i>
-          {{ $t('common.clients') }}
+          <i class="sidebar-icon sidebar-icon--clients"></i>
+          <span>{{ $t('common.clients') }}</span>
         </nav-link>
         <hr>
         <div class="sidebar__nav-category">
           Category 1
         </div>
         <nav-link :name="routes.invoices">
-          <i class="icon-sidebar-invoices"></i>
-          {{ $t('common.invoices') }}
+          <i class="sidebar-icon sidebar-icon--invoices"></i>
+          <span>{{ $t('common.invoices') }}</span>
         </nav-link>
         <nav-link :name="routes.payments">
-          <i class="icon-sidebar-payments"></i>
-          {{ $t('common.payments') }}
+          <i class="sidebar-icon sidebar-icon--payments"></i>
+          <span>{{ $t('common.payments') }}</span>
         </nav-link>
         <nav-link :name="routes.credits">
-          <i class="icon-sidebar-credits"></i>
-          {{ $t('common.credits') }}
+          <i class="sidebar-icon sidebar-icon--credits"></i>
+          <span>{{ $t('common.credits') }}</span>
         </nav-link>
         <hr>
         <div class="sidebar__nav-category">
           Category 2
         </div>
         <nav-link :name="routes.quotes">
-          <i class="icon-sidebar-quotes"></i>
-          {{ $t('common.quotes') }}
+          <i class="sidebar-icon sidebar-icon--quotes"></i>
+          <span>{{ $t('common.quotes') }}</span>
         </nav-link>
         <nav-link :name="routes.expenses">
-          <i class="icon-sidebar-expenses"></i>
-          {{ $t('common.expenses') }}
+          <i class="sidebar-icon sidebar-icon--expenses"></i>
+          <span>{{ $t('common.expenses') }}</span>
         </nav-link>
         <nav-link :name="routes.vendors">
-          <i class="icon-sidebar-vendors"></i>
-          {{ $t('common.vendors') }}
+          <i class="sidebar-icon sidebar-icon--vendors"></i>
+          <span>{{ $t('common.vendors') }}</span>
         </nav-link>
         <div class="sidebar__nav-link sidebar__nav-link--disabled">
-          <i class="icon-sidebar-clients"></i>
-          Personnel
+          <i class="sidebar-icon sidebar-icon--personel"></i>
+          <span>Personnel</span>
         </div>
         <nav-link :name="routes.currency">
-          <i class="icon-sidebar-credits"></i>
-          Currency
+          <i class="sidebar-icon sidebar-icon--currency"></i>
+          <span>Currency</span>
         </nav-link>
         <hr>
         <div class="sidebar__nav-category">
           Category 3
         </div>
         <nav-link :name="routes.projects">
-          <i class="icon-sidebar-quotes"></i>
-          {{ $t('common.projects') }}
+          <i class="sidebar-icon sidebar-icon--projects"></i>
+          <span>{{ $t('common.projects') }}</span>
         </nav-link>
         <div class="sidebar__nav-link sidebar__nav-link--disabled">
-          <i class="icon-sidebar-reports"></i>
-          {{ $t('common.reports') }}
+          <i class="sidebar-icon sidebar-icon--reports"></i>
+          <span>{{ $t('common.reports') }}</span>
         </div>
         <div class="sidebar__nav-link">
-          <i class="icon-sidebar-settings"></i>
-          {{ $t('common.settings') }}
+          <i class="sidebar-icon sidebar-icon--settings"></i>
+          <span>{{ $t('common.settings') }}</span>
         </div>
       </div>
     </div>

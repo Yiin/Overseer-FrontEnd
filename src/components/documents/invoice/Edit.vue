@@ -6,15 +6,15 @@
         Select client we're sending invoice to
        -->
       <modal-tab :title="$t('tabs.client')">
-        <form-container name="invoice">
-          <form-inline-select-input :watch="clients" v-model="form.client_uuid" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+        <form-container>
+          <form-inline-select-input :watch="clients" v-model="client_uuid" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
             <inline-option v-if="preview" selected>
-              {{ form.client.name }}
+              {{ form.fields.client.name }}
             </inline-option>
             <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
-                          :selected="client.uuid === form.client_uuid"
+                          :selected="client.uuid === client_uuid"
             >
               {{ client.name }}
             </inline-option>
@@ -37,21 +37,21 @@
         Invoice details
       -->
       <modal-tab :title="$t('tabs.details')">
-        <form-container name="invoice">
+        <form-container>
           <form-row>
             <form-field catch-errors="invoice_date" :label="$t('labels.invoice_date')">
-              <form-date-input :current-date="!form.uuid" v-model="form.invoice_date" name="invoice_date" :readonly="preview"></form-date-input>
+              <form-date-input :current-date="!form.fields.uuid" v-model="invoice_date" name="invoice_date" :readonly="preview"></form-date-input>
             </form-field>
             <form-field catch-errors="invoice_number" :label="$t('labels.invoice_number')">
-              <form-text-input v-model="form.invoice_number" name="invoice_number" :readonly="preview"></form-text-input>
+              <form-text-input v-model="invoice_number" name="invoice_number" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
             <form-field catch-errors="due_date" :label="$t('labels.invoice_due_date')">
-              <form-date-input v-model="invoiceDueDate" name="due_date" :readonly="preview"></form-date-input>
+              <form-date-input v-model="due_date" name="due_date" :readonly="preview"></form-date-input>
             </form-field>
             <form-field catch-errors="po_number" :label="$t('labels.po_number')">
-              <form-text-input v-model="form.po_number" name="po_number" :readonly="preview"></form-text-input>
+              <form-text-input v-model="po_number" name="po_number" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
@@ -62,8 +62,8 @@
               <form-inputs-group>
                 <form-formatted-input
                   type="number"
-                  :label="currencyCode"
-                  v-model="form.partial"
+                  :label="currency.code"
+                  v-model="partial"
                   name="partial"
                   :readonly="preview"
                 ></form-formatted-input>
@@ -71,7 +71,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="form.currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
               </form-inputs-group>
             </form-field>
 
@@ -86,9 +86,9 @@
                 -->
                 <form-formatted-input
                   type="number"
-                  :label="form.discount_type === 'percentage' ? '%' : currencyCode"
-                  :label-position="form.discount_type === 'percentage' ? 'right' : 'left'"
-                  v-model="form.discount_value"
+                  :label="discount_type === 'percentage' ? '%' : currencyCode"
+                  :label-position="discount_type === 'percentage' ? 'right' : 'left'"
+                  v-model="discount_value"
                   name="discount_value"
                   :readonly="preview"
                 ></form-formatted-input>
@@ -96,16 +96,16 @@
                 <!--
                   Discount Type
                 -->
-                <form-dropdown-input v-model="form.discount_type" name="discount_type" class="dropdown--small" :readonly="preview">
+                <form-dropdown-input v-model="discount_type" name="discount_type" class="dropdown--small" :readonly="preview">
                   <dropdown-option
                     value="percentage"
-                    :selected="form.discount_type === 'percentage'"
+                    :selected="discount_type === 'percentage'"
                   >
                     {{ $t('discount_type.percent') }}
                   </dropdown-option>
                   <dropdown-option
                     value="flat"
-                    :selected="form.discount_type === 'flat'"
+                    :selected="discount_type === 'flat'"
                   >
                     {{ $t('discount_type.flat') }}
                   </dropdown-option>
@@ -120,11 +120,11 @@
         Invoice items
       -->
       <modal-tab :title="$t('tabs.items')">
-        <form-container name="invoice">
+        <form-container>
 
           <form-items-list
             ref="itemsList"
-            v-model="form.items"
+            v-model="items"
             :model="itemModel"
             name="$items"
             :readonly="preview"
@@ -197,7 +197,7 @@
               </div>
               <div class="list-item__field field--cost">
                 <span class="currency">
-                    {{ currency_symbol | currencySymbol }}
+                    {{ currency.symbol | currencySymbol }}
                 </span>
                 <span class="currency currency--primary">
                     {{ row.item.cost | currency }}
@@ -225,7 +225,7 @@
                     {{ $t('labels.subtotal') }}
                 </label>
                 <span class="currency">
-                    {{ currency_symbol | currencySymbol }}
+                    {{ currency.symbol | currencySymbol }}
                 </span>
                 <span class="currency currency--primary">
                     {{ subtotal | currency }}
@@ -237,7 +237,7 @@
                     {{ $t('labels.discount') }}
                 </label>
                 <span class="currency">
-                    {{ currency_symbol | currencySymbol }}
+                    {{ currency.symbol | currencySymbol }}
                 </span>
                 <span class="currency currency--primary">
                     {{ discount | currency }}
@@ -249,7 +249,7 @@
                     {{ $t('labels.taxes') }}
                 </label>
                 <span class="currency">
-                    {{ currency_symbol | currencySymbol }}
+                    {{ currency.symbol | currencySymbol }}
                 </span>
                 <span class="currency currency--primary">
                     {{ taxes | currency }}
@@ -261,7 +261,7 @@
                   {{ $t('labels.paid_to_date') }}
                 </label>
                 <span class="currency">
-                  {{ currency_symbol | currencySymbol }}
+                  {{ currency.symbol | currencySymbol }}
                 </span>
                 <span class="currency currency--primary">
                   {{ paid_to_date | currency }}
@@ -273,7 +273,7 @@
                   {{ $t('labels.balance_due') }}
                 </label>
                 <span class="currency">
-                  {{ currency_symbol | currencySymbol }}
+                  {{ currency.symbol | currencySymbol }}
                 </span>
                 <span class="currency currency--primary">
                   {{ balance_due | currency }}
@@ -297,177 +297,109 @@
             <form-documents-input :readonly="preview"></form-documents-input>
           </tab>
           <tab :title="$t('tabs.note_to_client')">
-            <form-container name="invoice">
-              <form-textarea-input v-model="form.note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12" :readonly="preview"></form-textarea-input>
-            </form-container>
+            <form-textarea-input v-model="note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12" :readonly="preview"></form-textarea-input>
           </tab>
           <tab :title="$t('tabs.terms')">
-            <form-container name="invoice">
-              <form-textarea-input v-model="form.terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12" :readonly="preview"></form-textarea-input>
-            </form-container>
+            <form-textarea-input v-model="terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12" :readonly="preview"></form-textarea-input>
           </tab>
           <tab :title="$t('tabs.footer')">
-            <form-container name="invoice">
-              <form-textarea-input v-model="form.footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12" :readonly="preview"></form-textarea-input>
-            </form-container>
+            <form-textarea-input v-model="footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12" :readonly="preview"></form-textarea-input>
           </tab>
         </tabs>
       </modal-tab>
       <template slot="right-buttons">
-        <dropdown @input="save" placeholder="Finish" class="dropdown--primary dropdown--invoice">
-          <dropdown-option v-if="!form.uuid" value="draft" :tooltip="{ content: 'Save Draft', placement: 'right' }">
+        <dropdown @input="saveInvoice" placeholder="Finish" class="dropdown--primary dropdown--invoice">
+          <dropdown-option v-if="!form.fields.uuid" value="draft" :tooltip="{ content: 'Save Draft', placement: 'right' }">
             Save Draft
           </dropdown-option>
-          <dropdown-option v-if="form.uuid" value="save" :tooltip="{ content: 'Save Invoice', placement: 'right' }">
+          <dropdown-option v-if="form.fields.uuid" value="save" :tooltip="{ content: 'Save Invoice', placement: 'right' }">
             Save Invoice
-          </dropdown-option>
-          <dropdown-option value="sent" :tooltip="{ content: 'Mark Sent', placement: 'right' }">
-            Mark Sent
           </dropdown-option>
           <dropdown-option value="email" :tooltip="{ content: 'Email To Client', placement: 'right' }">
             Email To Client
+          </dropdown-option>
+          <dropdown-option value="sent" :tooltip="{ content: 'Mark Sent', placement: 'right' }">
+            Mark Sent
           </dropdown-option>
         </dropdown>
       </template>
     </modal-tabs>
     <div class="modal-sidebar">
       <div class="modal-sidebar__title">
-        {{ $t('sidebar.invoice_preview') }}
+        Invoice summary
       </div>
-      <div class="invoice__preview"></div>
+      <div class="invoice__preview">
+        <!-- <iframe src="api/pdf-preview" frameborder="0" width="700"></iframe> -->
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import moment from 'moment'
+import FormMixin from '@/mixins/FormMixin'
+import BillableDocumentMixin from '@/mixins/BillableDocumentMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 import { createDocument } from '@/modules/documents/actions'
 
 export default {
-  name: 'edit-invoice',
+  mixins: [
+    BillableDocumentMixin,
+    FormMixin('invoice', [
+      'client_uuid',
+      'invoice_date',
+      'partial',
+      'currency_code',
+      'invoice_number',
+      'po_number',
+      'discount_type',
+      'discount_value',
+      'items',
+      'documents',
+      'note_to_client',
+      'terms',
+      'footer'
+    ])
+  ],
 
   components: {
     FormCurrencyDropdown,
     FormFormattedInput
   },
 
-  data() {
-    return {
-      itemModel: {
-        product: {},
-        product_name: '',
-        qty: 1,
-        cost: 0,
-        discount: 0,
-        tax_rate: null
-      }
-    }
-  },
-
   computed: {
-    form() {
-      return this.$store.state.form.invoice
-    },
-
-    preview() {
-      return this.form.__preview
-    },
-
-    invoiceDueDate: {
+    due_date: {
       get() {
         // if document is already created, leave due date as it is
-        if (this.form.uuid) {
-          return this.form.due_date
+        if (this.form.fields.uuid) {
+          return this.form.fields.due_date
         }
 
-        const client = this.clients.find((client) => client.uuid === this.form.client_uuid)
+        // else set due date by client's payment terms
+        const client = this.clients.find((client) => client.uuid === this.client_uuid)
 
         if (client) {
-          if (client.payment_terms) {
-            return moment(this.form.invoice_date).add(client.payment_terms, 'days')
+          if (client.payment_terms !== null) {
+            return moment(this.invoice_date).add(client.payment_terms, 'days')
           }
         }
+        return null
       },
-      set() {}
-    },
 
-    currency() {
-      let currency = null
-
-      if (this.form.currency_code) {
-        currency = this.passive.currencies.find((c) => c.code === this.form.currency_code)
-      }
-      if (!currency) {
-        let client = this.form.client || this.clients.find((c) => c.uuid === this.form.client_uuid)
-
-        if (client) {
-          currency = client.currency
-        }
-      }
-      if (!currency) {
-        currency = this.$store.state.settings.currency
-      }
-      return currency
-    },
-
-    currency_symbol() {
-      if (this.currency) {
-        return this.currency.symbol
-      }
-      return '€'
-    },
-
-    currencyCode() {
-      if (this.currency) {
-        return this.currency.code
-      }
-      return 'EUR'
-    },
-
-    subtotal() {
-      return this.form.items.filter((item) => item.cost)
-        .map((item) => {
-          return parseFloat(item.cost) * parseFloat(item.qty || 1)
+      set(value) {
+        this.$store.commit(`form/invoice/SET_FIELD_VALUE`, {
+          field: 'due_date',
+          value
         })
-        .reduce((a, b) => a + b, 0)
-    },
-
-    discount() {
-      return this.form.items
-        .map((item) => {
-          const priceSum = parseFloat(item.cost) * parseFloat(item.qty || 1)
-          return priceSum * (parseFloat(item.discount) || 0) / 100
-        })
-        .reduce((a, b) => a + b, 0)
-    },
-
-    taxes() {
-      const items = this.form.items
-      let taxes = 0 // flat
-
-      for (let i = 0; i < items.length; ++i) {
-        if (!items[i].tax_rate) {
-          continue
-        }
-
-        const tax = this.taxRates.find((taxRate) => taxRate.uuid === items[i].tax_rate.uuid)
-
-        if (!tax) {
-          continue
-        }
-
-        taxes += parseFloat(tax.rate) * parseFloat(items[i].cost) * (parseFloat(items[i].discount) / 100) / 100
       }
-      return taxes
     },
 
     paid_to_date() {
-      if (this.form.uuid) {
-        return parseFloat(this.form.paid_in)
+      if (this.form.fields.uuid) {
+        return parseFloat(this.form.fields.paid_in)
       }
-      return parseFloat(this.form.partial)
+      return parseFloat(this.partial)
     },
 
     balance_due() {
@@ -480,55 +412,20 @@ export default {
 
     clients() {
       return this.$store.state.table.clients.items
-    },
-
-    products() {
-      return this.$store.state.table.products.items
-    },
-
-    taxRates() {
-      return this.$store.state.table.tax_rates.items
-    }
-  },
-
-  mounted() {
-    // Creating new invoice
-    if (!this.form.uuid) {
-      // const pattern = this.$store.state.user.preferences.invoice_number_pattern
-
-      // const counter = this.$store.state.table.invoices.filter((invoice) => )
-
-      // const invoice_number = pattern.replace()
-      // this.$store.dispatch('form/invoices/SET_FORM_DATA', {
-      //   invoice_number
-      // })
     }
   },
 
   methods: {
-    itemsListProductChange(product) {
-      console.log('itemsListProductChange')
-      if (!product) {
-        return
-      }
-      if (product.custom) {
-        this.$refs.itemsList.setItemAttribute('product_name', product.value)
-      } else {
-        this.$refs.itemsList.setItemAttribute('product_name', product.name)
-        this.$refs.itemsList.setItemAttribute('cost', product.price)
-      }
-    },
-
     createClient() {
       createDocument('client').then((client) => {
         this.$store.dispatch('form/invoice/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
-        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 0)
+        this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 0)
       })
     },
 
-    save(action) {
+    saveInvoice(action) {
       switch (action) {
       case 'draft':
         this.$store.dispatch('form/invoice/SET_FORM_DATA', {
@@ -545,19 +442,7 @@ export default {
           status: 'pending'
         })
       }
-      if (this.form.uuid) {
-        this.$store.dispatch('form/invoice/SAVE')
-      } else {
-        this.create(action)
-      }
-    },
-
-    create() {
-      this.$store.dispatch('form/invoice/CREATE')
-    },
-
-    cancel() {
-      this.$emit('cancel')
+      this.save()
     }
   }
 }

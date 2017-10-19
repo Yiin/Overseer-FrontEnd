@@ -1,18 +1,18 @@
 import FormState from '@/modules/form/state'
 
-const state = FormState({
-  __name: 'credit',
+const state = FormState('credit', {
+  fields: {
+    uuid: '',
 
-  uuid: '',
+    // Client
+    client_uuid: '', // uuid
 
-  // Client
-  client_uuid: '', // uuid
-
-  // Details
-  amount: 0,
-  currency_code: null, // id
-  credit_date: null, // YYYY-MM-DD
-  credit_number: '',
+    // Details
+    amount: 0,
+    currency_code: null, // id
+    credit_date: null, // YYYY-MM-DD
+    credit_number: ''
+  },
 
   tabs: [
     [

@@ -81,8 +81,8 @@ $button-text-color: $color-white;
     {
         display: inline-flex;
 
-        min-width: 190px;
-        padding: 0 24px 0 15px;
+        min-width: 170px;
+        justify-content: center;
         margin-bottom: 0;
 
         align-items: center;
@@ -98,6 +98,7 @@ $button-text-color: $color-white;
 
             margin-right: 12px;
             padding-right: 24px !important;
+            display: none;
             &::before
             {
                 position: absolute !important;
@@ -130,21 +131,30 @@ $button-text-color: $color-white;
                 @include smooth($color-main-dark);
             }
         }
+        &--test {
+            width: 135px;
+
+            background: $color-storm-gray;
+
+            opacity: 0;
+
+            @include smooth($color-storm-gray);
+        }
         &--cancel
         {
             width: 135px;
 
-            background: $color-main-dark;
+            background: $color-new-york-pink;
 
-            @include smooth($color-main-dark);
+            @include smooth($color-new-york-pink);
         }
         &--save
         {
             width: 119px;
 
-            background: $color-forest-green;
+            background: $color-emerald;
 
-            @include smooth($color-forest-green);
+            @include smooth($color-emerald);
         }
         &--next
         {

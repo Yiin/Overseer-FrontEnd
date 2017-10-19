@@ -13,7 +13,7 @@ body
     font-family: $primary-font-family;
     font-size: 14px;
     line-height: .8;
-    background: $color-page-bg;
+    background: $color-page-bg !important;
 
     // overflow-y: scroll;
 
@@ -52,7 +52,7 @@ span.highlight__text {
 }
 
 /* Links */
-a[href]:not(.--do-not-style-link)
+a[href]:not(.--do-not-style-link):not(.list__tile--link)
 {
     position: relative;
 
@@ -268,10 +268,7 @@ iframe
 
 .results__list
 {
-    max-height: 249px;
-    margin-top: 20px;
-
-    border-top: 1px solid $border-color;
+    max-height: 242px;
 }
 
 .result

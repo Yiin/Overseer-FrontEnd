@@ -114,7 +114,7 @@ const router = new Router({
     //   name: Routes.VIEW_CLIENT,
     //   parentName: Routes.LIST_CLIENTS,
     //   beforeEnter: (to, from, next) => {
-    //     // store.dispatch('OPEN_MODAL', {
+    //     // store.dispatch('modal/OPEN', {
     //     //   to.params.uuid
 
     //     // })

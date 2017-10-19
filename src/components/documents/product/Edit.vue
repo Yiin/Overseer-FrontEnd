@@ -1,210 +1,124 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel" @fill="fill" :hide-buttons="preview">
+    <modal-tabs @save="save" @cancel="cancel" @fill="fill">
       <modal-tab :title="$t('tabs.details')">
 
-        <form-container name="product">
-          <form-row>
+        <form-row>
+          <form-field catch-errors="name" :label="$t('labels.product_name')">
+            <form-text-input v-model="name" name="product_name" :readonly="preview"></form-text-input>
+          </form-field>
+          <form-field catch-errors="identification_number" :label="$t('labels.identification_number')">
+            <form-text-input v-model="identification_number" name="identification_number" :readonly="preview"></form-text-input>
+          </form-field>
+        </form-row>
 
-            <!--
-              Product Name
-            -->
-            <form-field :label="$t('labels.product_name')" catch-errors="name">
-              <form-text-input v-model="form.name" name="name" :readonly="preview"></form-text-input>
-            </form-field>
+        <form-row>
+          <form-field :label="$t('labels.product_type')">
+            <form-dropdown-input
+              :items="productTypes"
+              v-model="isService"
+            >
+              <dropdown-option :value="false">
+                Physical
+              </dropdown-option>
+              <dropdown-option :value="true">
+                Service
+              </dropdown-option>
+            </form-dropdown-input>
+          </form-field>
 
-            <form-field :label="$t('labels.identification_number')">
-              <form-inputs-group>
-                <form-text-input v-model="form.identification_number" name="identification_number" :readonly="preview"></form-text-input>
+          <form-field :label="$t('labels.quantity')">
+            <form-text-input
+              label="Quantity"
+              v-model="qty"
+            ></form-text-input>
+          </form-field>
+        </form-row>
 
-                <!--
-                  Tax Rate
-                -->
-                <form-field catch-errors="tax_rate_uuid" :label="$t('labels.tax_rate')">
+        <form-row>
+          <form-field :label="$t('labels.price')">
+            <form-text-input
+              label="Price"
+              name="price"
+              v-model="price"
+            ></form-text-input>
+          </form-field>
 
-                  <form-dropdown-input v-model="form.tax_rate_uuid" name="tax_rate_uuid" scrollable searchable :readonly="preview">
-                    <dropdown-option v-for         = "taxRate in taxRates"
-                                    :key           = "taxRate.uuid"
-                                    :value         = "taxRate.uuid"
-                                    :selected.once = "taxRate.uuid === form.tax_rate_uuid"
-                    >
-                      {{ taxRate.name }}
-                    </dropdown-option>
-                  </form-dropdown-input>
+          <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
+        </form-row>
 
-                </form-field>
-
-              </form-inputs-group>
-
-            </form-field>
-
-          </form-row>
-
-          <form-row>
-
-            <!--
-              Quantity
-            -->
-            <form-field catch-errors="is_service" :label="$t('labels.product_type')">
-              <form-inputs-group>
-                <form-dropdown-input v-model="form.is_service" name="is_service" class="--service-dropdown">
-                  <dropdown-option :value="false" :selected="!form.is_service">
-                    Physical
-                  </dropdown-option>
-                  <dropdown-option :value="true" :selected="form.is_service">
-                    Service
-                  </dropdown-option>
-                </form-dropdown-input>
-
-                <form-field v-if="!form.is_service" catch-errors="qty" :label="$t('labels.quantity')">
-                  <form-text-input v-model="form.qty" name="qty" :readonly="preview"></form-text-input>
-                </form-field>
-              </form-inputs-group>
-            </form-field>
-
-            <!--
-              Price
-            -->
-            <form-field :label="$t('labels.price')" :catch-errors="[ 'price', 'currency_code' ]">
-              <form-inputs-group>
-
-                <!--
-                  Amount
-                -->
-                <form-formatted-input
-                  type="number"
-                  :label="currencyCode"
-                  v-model="form.price"
-                  name="price"
-                  :readonly="preview"
-                ></form-formatted-input>
-
-                <!--
-                  Currency
-                -->
-                <form-currency-dropdown v-model="form.currency_code" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
-
-              </form-inputs-group>
-            </form-field>
-
-          </form-row>
-
-          <form-row>
-
-            <!--
-              Description
-            -->
-            <form-field :label="$t('labels.description')">
-              <form-textarea-input v-model="form.description" name="description" :readonly="preview"></form-textarea-input>
-            </form-field>
-
-          </form-row>
-
-        </form-container>
+        <form-row>
+          <form-field :label="$t('labels.description')">
+            <form-textarea-input
+              label="Description"
+              v-model="description"
+            ></form-textarea-input>
+          </form-field>
+        </form-row>
 
       </modal-tab>
 
-      <modal-tab :title="$t('tabs.images')" class="product__images">
-        <form-container name="product">
-          <form-row>
-            <form-field catch-errors="images">
-
+      <modal-tab :title="$t('tabs.images')">
+        <v-container grid-list-xl>
+          <v-layout row wrap>
+            <v-flex xs12>
               <form-images-input name="images" class="product-images-upload-field" box multiple>
-                <img slot="icon" src="../../../assets/icons/upload.svg">
+                <img slot="icon" src="../../../assets/icons/image.svg">
                 <template slot="title">
-                  {{ $t('placeholders.upload_product_image') }}
+                  {{ $t('placeholders.upload_product_images') }}
                 </template>
                 <template slot="subtitle">
                   {{ $t('placeholders.drag_and_drop_image_or_click_to_browse') }}
                 </template>
               </form-images-input>
-
-            </form-field>
-          </form-row>
-        </form-container>
+            </v-flex>
+          </v-layout>
+        </v-container>
       </modal-tab>
     </modal-tabs>
   </div>
 </template>
 
 <script>
+import FormMixin from '@/mixins/FormMixin'
+import CurrencyMixin from '@/mixins/CurrencyMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
-import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 
 export default {
-  name: 'edit-product',
+  mixins: [
+    CurrencyMixin,
+    FormMixin('product', [
+      /**
+       * Fields
+       */
+      'name',
+      'identification_number',
+      'qty',
+      'price',
+      'currency_code',
+      'description'
+    ])
+  ],
 
   components: {
-    FormCurrencyDropdown,
-    FormFormattedInput
-  },
-
-  props: {
-    data: {
-      default: null
-    }
+    FormCurrencyDropdown
   },
 
   computed: {
-    form() {
-      return this.$store.state.form.product
-    },
-
-    currency() {
-      let currency = null
-
-      if (this.form.currency_code) {
-        currency = this.passive.currencies.find((c) => c.code === this.form.currency_code)
-      }
-      if (!currency) {
-        currency = this.$store.state.settings.currency
-      }
-      return currency
-    },
-
-    currencyCode() {
-      if (this.currency) {
-        return this.currency.code
-      }
-      return 'EUR'
-    },
-
-    preview() {
-      return this.form.__preview
-    },
-
-    settings() {
-      return this.$store.state.settings
-    },
-
-    passive() {
-      return this.$store.state.passive
-    },
-
-    taxRates() {
-      return this.$store.state.table.tax_rates.items
-    }
-  },
-
-  methods: {
-    fill() {
-      this.$store.dispatch('form/product/FILL')
-    },
-
-    save() {
-      if (this.form.uuid) {
-        this.$store.dispatch('form/product/SAVE')
-      } else {
-        this.create()
+    isService: {
+      set(value) {
+        this.$store.commit('form/product/IS_SERVICE', value)
+      },
+      get() {
+        return this.form.is_service
       }
     },
 
-    create() {
-      this.$store.dispatch('form/product/CREATE')
-    },
-
-    cancel() {
-      this.$emit('cancel')
+    productTypes() {
+      return [
+        { text: 'Physical', value: false },
+        { text: 'Service', value: true }
+      ]
     }
   }
 }
@@ -215,8 +129,10 @@ export default {
   width: 100%;
 }
 .modal-form {
-    width: 866px;
-    height: 530px;
+  width: 866px;
+}
+.modal-tab {
+  height: 400px;
 }
 textarea {
     height: 124px !important;

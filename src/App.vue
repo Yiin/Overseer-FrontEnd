@@ -1,6 +1,5 @@
 <template>
   <v-app
-    :style="scalePage"
     :class="{
       'app--transition': $store.state.auth.wasRedirected,
       'app--transition-active': loaded,
@@ -10,12 +9,13 @@
     <template v-if="isAuthenticated && !isRedirecting">
       <sidebar></sidebar>
       <div class="page-content">
-        <transition name="fade">
+        <transition name="slow-cross-fade">
           <router-view class="router-view"></router-view>
         </transition>
       </div>
       <taskbar></taskbar>
       <popup></popup>
+      <notification></notification>
     </template>
     <auth v-if="!isAuthenticated || !isLoaded"></auth>
   </v-app>
@@ -25,6 +25,7 @@
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import Taskbar from '@/components/taskbar/Taskbar.vue'
 import Auth from '@/pages/auth/Auth.vue'
+import Notification from '@/components/notification/Notification.vue'
 import {
   VApp
 } from 'vuetify'
@@ -36,7 +37,8 @@ export default {
     Sidebar,
     Taskbar,
     Auth,
-    VApp
+    VApp,
+    Notification
   },
 
   data() {
@@ -47,13 +49,6 @@ export default {
   },
 
   computed: {
-    scalePage() {
-      return {
-        transform: `scale(${this.isAuthenticated ? this.scale : 1})`,
-        'transform-origin': '50% 0%'
-      }
-    },
-
     isAuthenticated() {
       return this.$store.state.auth.isLoggedIn
     },
@@ -71,8 +66,8 @@ export default {
     setTimeout(() => {
       this.loaded = true
     })
-    window.addEventListener('resize', this.updateScale.bind(this))
-    this.updateScale()
+    // window.addEventListener('resize', this.updateScale.bind(this))
+    // this.updateScale()
   },
 
   methods: {

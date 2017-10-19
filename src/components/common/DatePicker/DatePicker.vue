@@ -78,11 +78,18 @@ export default {
   },
 
   data() {
+    const hasValue = !!this.value
+    const value = typeof this.value === 'object' && this.value !== null && !this.value._isAMomentObject
+      ? this.value.date
+      : this.value
+
+    console.log('passed value', value)
+
     return {
       isOpen: false,
 
-      currentMonth: this.value ? moment(this.value) : moment(),
-      selectedDate: this.value ? moment(this.value) : null
+      currentMonth: hasValue ? moment(value) : moment(),
+      selectedDate: hasValue ? moment(value) : null
     }
   },
 

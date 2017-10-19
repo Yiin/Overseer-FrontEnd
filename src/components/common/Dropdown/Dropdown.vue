@@ -34,7 +34,7 @@
           'dropdown__options--reversed': shouldBeReversed
         }"
     >
-      <dropdown-option v-if="document && newEntryValue && query">
+      <dropdown-option @select="selectCustom(query)" v-if="document && newEntryValue && query">
         {{ query }}
       </dropdown-option>
       <!--
@@ -269,15 +269,6 @@ export default {
       this.options.forEach((option) => {
         option.isVisible = this.shouldBeVisible(option)
       })
-      if (this.document && this.newEntryValue) {
-        // this.setValue({
-        //   text: this.valueText || query,
-        //   value: Object.assign({}, this.value, {
-        //     uuid: null,
-        //     [this.newEntryValue]: query
-        //   })
-        // })
-      }
     },
     isOpen: function () {
       this.recalculateComputedProperty('shouldBeReversed')
@@ -304,12 +295,29 @@ export default {
     if (this.watch) {
       this.$watch(() => this.watch, this.recalculateOptions)
     }
-    if (this.value) {
+    if (this.value !== '') {
       this.findAndSelect(this.value)
     }
   },
 
   methods: {
+    selectCustom(text) {
+      if (this.document && this.newEntryValue) {
+        this.setValue({
+          text,
+          value: {
+            [this.newEntryValue]: text
+          }
+        })
+      } else {
+        this.setValue({
+          text,
+          value: text
+        })
+      }
+      this.close()
+    },
+
     recalculateOptions() {
       this.recalculateComputedProperty('options')
       this.$nextTick(() => {

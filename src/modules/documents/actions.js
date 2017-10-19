@@ -43,7 +43,7 @@ export const createDocument = (documentType, prefilledData = {}, tabIndex = null
 
   store.dispatch(`form/${formName}/SET_FORM_DATA`, prefilledData)
   if (tabIndex !== null) {
-    store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', tabIndex)
+    store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', tabIndex)
   }
   return promise
 }
@@ -55,6 +55,6 @@ export const editDocument = (document, documentType, tabIndex = null) => {
   const formName = getFormName(documentType)
   store.dispatch(`form/${formName}/OPEN_EDIT_FORM`, document)
   if (tabIndex !== null) {
-    store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', tabIndex)
+    store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', tabIndex)
   }
 }

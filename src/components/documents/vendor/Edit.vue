@@ -2,33 +2,33 @@
   <div class="modal-form">
     <modal-tabs @save="save" @cancel="cancel" @fill="fill" :hide-buttons="preview">
       <modal-tab :title="$t('tabs.organization')">
-        <form-container name="vendor">
+        <form-container>
           <form-row>
 
             <form-field catch-errors="company_name" :label="$t('labels.company_name')">
-              <form-text-input v-model="form.company_name" name="company_name" :readonly="preview"></form-text-input>
+              <form-text-input v-model="company_name" name="company_name" :readonly="preview"></form-text-input>
             </form-field>
 
           </form-row>
           <form-row>
 
             <form-field catch-errors="registration_number" :label="$t('labels.registration_number')">
-              <form-text-input v-model="form.registration_number" name="registration_number" :readonly="preview"></form-text-input>
+              <form-text-input v-model="registration_number" name="registration_number" :readonly="preview"></form-text-input>
             </form-field>
 
             <form-field catch-errors="vat_number" :label="$t('labels.vat_number')">
-              <form-text-input v-model="form.vat_number" name="vat_number" :readonly="preview"></form-text-input>
+              <form-text-input v-model="vat_number" name="vat_number" :readonly="preview"></form-text-input>
             </form-field>
 
           </form-row>
           <form-row>
 
             <form-field catch-errors="website" :label="$t('labels.website')">
-              <form-text-input v-model="form.website" name="website" :readonly="preview"></form-text-input>
+              <form-text-input v-model="website" name="website" :readonly="preview"></form-text-input>
             </form-field>
 
             <form-field catch-errors="phone" :label="$t('labels.phone')">
-              <form-text-input v-model="form.phone" name="phone" :readonly="preview"></form-text-input>
+              <form-text-input v-model="phone" name="phone" :readonly="preview"></form-text-input>
             </form-field>
 
           </form-row>
@@ -51,32 +51,32 @@
         </form-container>
       </modal-tab>
       <modal-tab :title="$t('tabs.address')">
-        <form-container name="vendor">
+        <form-container>
           <form-row>
             <form-field :label="$t('labels.street')">
-              <form-text-input v-model="form.address1" name="address1" :readonly="preview"></form-text-input>
+              <form-text-input v-model="address1" name="address1" :readonly="preview"></form-text-input>
             </form-field>
             <form-field :label="$t('labels.apt_suite')">
-              <form-text-input v-model="form.address2" name="address2" :readonly="preview"></form-text-input>
+              <form-text-input v-model="address2" name="address2" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
             <form-field :label="$t('labels.city')">
-              <form-text-input v-model="form.city" name="city" :readonly="preview"></form-text-input>
+              <form-text-input v-model="city" name="city" :readonly="preview"></form-text-input>
             </form-field>
             <form-field :label="$t('labels.postal_code')">
-              <form-text-input v-model="form.postal_code" name="postal_code" :readonly="preview"></form-text-input>
+              <form-text-input v-model="postal_code" name="postal_code" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
             <form-field :label="$t('labels.state')">
-              <form-text-input v-model="form.state" name="state" :readonly="preview"></form-text-input>
+              <form-text-input v-model="state" name="state" :readonly="preview"></form-text-input>
             </form-field>
             <form-field catch-errors="country_id" :label="$t('labels.country')">
-              <form-dropdown-input v-model="form.country_id" name="country_id" scrollable searchable :readonly="preview">
+              <form-dropdown-input v-model="country_id" name="country_id" scrollable searchable :readonly="preview">
                 <dropdown-option v-for = "country in passive.countries" :key="country.id"
                                 :value = "country.id"
-                                :selected="country.id === form.country_id">
+                                :selected="country.id === country_id">
                   {{ country.name }}
                 </dropdown-option>
               </form-dropdown-input>
@@ -85,31 +85,31 @@
         </form-container>
       </modal-tab>
       <modal-tab :title="$t('tabs.contacts')">
-        <form-container name="vendor">
-          <div ref="contactsList" class="contacts-list" :class="{ scrollable: form.contacts.length > 1 }">
-            <div v-for="(contact, index) in form.contacts" :key="index" class="contact__form">
+        <form-container>
+          <div ref="contactsList" class="contacts-list" :class="{ scrollable: contacts.length > 1 }">
+            <div v-for="(contact, index) in contacts" :key="index" class="contact__form">
               <hr v-if="index" class="separator">
               <div v-if="index" class="contact__index"><span>{{ index + 1 }}.</span></div>
               <div v-if="index && !preview" @click="removeContact(index)" class="delete-contact"></div>
               <form-row>
                 <form-field :label="$t('labels.first_name')">
-                  <form-text-input v-model="contact.first_name" :name="`contact_first_name[${index}]`" :readonly="preview"></form-text-input>
+                  <form-text-input :value="contact.first_name" @input="updateContact(index, 'first_name', $event)" name="first_name" :readonly="preview"></form-text-input>
                 </form-field>
                 <form-field :label="$t('labels.last_name')">
-                  <form-text-input v-model="contact.last_name" :name="`contact_last_name[${index}]`" :readonly="preview"></form-text-input>
+                  <form-text-input :value="contact.last_name" @input="updateContact(index, 'last_name', $event)" name="last_name" :readonly="preview"></form-text-input>
                 </form-field>
               </form-row>
               <form-row>
                 <form-field :label="$t('labels.job_position')">
-                  <form-text-input v-model="contact.job_position" :name="`contact_job_position[${index}]`" :readonly="preview"></form-text-input>
+                  <form-text-input :value="contact.job_position" @input="updateContact(index, 'job_position', $event)" name="job_position" :readonly="preview"></form-text-input>
                 </form-field>
               </form-row>
               <form-row>
                 <form-field :label="$t('labels.email')">
-                  <form-text-input v-model="contact.email" :name="`contact_email[${index}]`" :readonly="preview"></form-text-input>
+                  <form-text-input :value="contact.email" @input="updateContact(index, 'email', $event)" name="email" :readonly="preview"></form-text-input>
                 </form-field>
                 <form-field :label="$t('labels.phone')">
-                  <form-text-input v-model="contact.phone" :name="`contact_phone[${index}]`" :readonly="preview"></form-text-input>
+                  <form-text-input :value="contact.phone" @input="updateContact(index, 'phone', $event)" name="phone" :readonly="preview"></form-text-input>
                 </form-field>
               </form-row>
             </div>
@@ -120,9 +120,9 @@
         </form-container>
       </modal-tab>
       <modal-tab :title="$t('tabs.additional_info')">
-        <form-container name="vendor">
+        <form-container>
           <form-row>
-            <form-currency-dropdown v-model="form.currency_code" :readonly="preview"></form-currency-dropdown>
+            <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
           </form-row>
         </form-container>
       </modal-tab>
@@ -131,84 +131,36 @@
 </template>
 
 <script>
+import FormMixin from '@/mixins/FormMixin'
+import CurrencyMixin from '@/mixins/CurrencyMixin'
+import ContactsMixin from '@/mixins/ContactsMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 
 export default {
-  name: 'edit-vendor',
+  mixins: [
+    CurrencyMixin,
+    ContactsMixin('vendor'),
+    FormMixin('vendor', [
+      'company_name',
+      'registration_number',
+      'vat_number',
+      'website',
+      'phone',
+      'logo',
+      'address1',
+      'address2',
+      'city',
+      'postal_code',
+      'state',
+      'country_id',
+      'contacts',
+      'currency_code',
+      'notes'
+    ])
+  ],
 
   components: {
     FormCurrencyDropdown
-  },
-
-  computed: {
-    form() {
-      return this.$store.state.form.vendor
-    },
-
-    preview() {
-      return this.form.__preview
-    },
-
-    passive() {
-      return this.$store.state.passive
-    }
-  },
-
-  methods: {
-    addNewContact() {
-      this.$store.dispatch('form/vendor/ADD_NEW_CONTACT')
-
-      this.$nextTick(() => {
-        const containerHeight = this.$refs.contactsList.scrollHeight - this.$refs.contactsList.getBoundingClientRect().height
-        const speed = 1500
-        let start = null
-
-        const scroll = (timestamp) => {
-          const distance = containerHeight - this.$refs.contactsList.scrollTop
-
-          if (distance <= 0) {
-            return
-          }
-          if (!start) {
-            start = timestamp
-          }
-          const diffInTime = timestamp - start
-
-          this.$refs.contactsList.scrollTop += (diffInTime / speed * 1000)
-          if (this.$refs.contactsList.scrollTop >= containerHeight) {
-            this.$refs.contactsList.scrollTop = containerHeight
-          } else {
-            window.requestAnimationFrame(scroll)
-          }
-          start = timestamp
-        }
-        window.requestAnimationFrame(scroll)
-      })
-    },
-
-    removeContact(index) {
-      this.$store.dispatch('form/vendor/REMOVE_CONTACT', index)
-    },
-
-    fill() {
-      this.$store.dispatch('form/vendor/FILL')
-    },
-
-    save() {
-      if (this.form.uuid) {
-        this.$store.dispatch('form/vendor/SAVE')
-      } else {
-        this.create()
-      }
-    },
-
-    create() {
-      this.$store.dispatch('form/vendor/CREATE')
-    },
-
-    cancel() {
-      this.$emit('cancel')
-    }
   }
 }
 </script>

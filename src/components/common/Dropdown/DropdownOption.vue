@@ -54,7 +54,6 @@ export default {
 
   methods: {
     select() {
-      console.log('select')
       this.$emit('select', {
         custom: this.custom,
         value: this.custom ? this.text : this.value,

@@ -11,6 +11,10 @@ import {
 } from './invoice-conflicts'
 
 import {
+  checkForQuoteMailingConflicts
+} from './quote-conflicts'
+
+import {
   checkForRefundedPaymentConflict,
   checkForCompletedPaymentConflict
 } from './payment-conflicts'
@@ -162,6 +166,7 @@ const Statuses = {
         conflicts = conflicts.concat(checkForGenericConflicts(invoice, 'invoice'))
         conflicts = conflicts.concat(checkForInvoiceMailingConflicts(invoice, status || 'pending'))
         conflicts = conflicts.concat(checkForExistingPaymentsConflict(invoice, status || 'pending'))
+        conflicts = conflicts.concat(checkForPaidInvoiceConflicts(invoice, status || 'pending'))
         conflicts = conflicts.concat(checkForOverdueConflict(invoice, status || 'pending'))
 
         return {
@@ -529,6 +534,7 @@ const Statuses = {
         }
       }
     },
+
     pending: {
       visible: true,
       name: i18n.t('status.pending'),
@@ -542,7 +548,6 @@ const Statuses = {
         let conflicts = []
 
         conflicts = conflicts.concat(checkForGenericConflicts(recurringInvoice, 'recurring_invoice'))
-        // conflicts = conflicts.concat(checkForMissingInvoice)
         conflicts = conflicts.concat(checkForOverdueConflict(recurringInvoice.last_invoice, 'invoice'))
 
         return {
@@ -599,26 +604,120 @@ const Statuses = {
 
       meetsCondition(document) {
         return document.status === 'draft'
+      },
+
+      apply(quote) {
+        let conflicts = []
+
+        conflicts = conflicts.concat(checkForGenericConflicts(quote, 'quote'))
+
+        return {
+          conflicts,
+          solve() {
+            quote.status = 'draft'
+            return patchDocument(quote, 'quotes', { status: 'draft' })
+          }
+        }
       }
     },
-    sent: {
+
+    /**
+     * Pending
+     *
+     * Quote is queued to be sent.
+     */
+    pending: {
       visible: true,
-      name: i18n.t('status.sent'),
+      name: i18n.t('status.pending'),
       priority: 1,
 
       meetsCondition(document) {
-        return document.status === 'sent'
+        return document.status === 'pending'
+      },
+
+      /**
+       * Mark quote as pending
+       */
+      apply(quote, status) {
+        let conflicts = []
+
+        conflicts = conflicts.concat(checkForGenericConflicts(quote, 'quote'))
+        conflicts = conflicts.concat(checkForQuoteMailingConflicts(quote, status || 'pending'))
+
+        return {
+          conflicts,
+          solve() {
+            quote.status = 'pending'
+            return patchDocument(quote, 'quotes', { status: 'pending' })
+          }
+        }
       }
     },
-    viewed: {
+
+    /**
+     * Sent
+     *
+     * Quote is sent
+     */
+    sent: {
       visible: true,
-      name: i18n.t('status.viewed'),
+      name: i18n.t('status.sent'),
       priority: 2,
 
       meetsCondition(document) {
-        return document.status === 'viewed'
+        return document.status === 'sent'
+      },
+
+      /**
+       * Mark quote as sent, but do not actually send one.
+       */
+      apply(quote) {
+        let conflicts = []
+
+        conflicts = conflicts.concat(checkForGenericConflicts(quote, 'quote'))
+
+        return {
+          conflicts,
+          solve() {
+            quote.status = 'sent'
+            return patchDocument(quote, 'quotes', { status: 'sent' })
+          }
+        }
       }
     },
+
+    /**
+     * Viewed
+     *
+     * Invoice was opened
+     */
+    viewed: {
+      visible: true,
+      name: i18n.t('status.viewed'),
+      priority: 3,
+
+      meetsCondition(document) {
+        return document.status === 'viewed'
+      },
+
+      /**
+       * Mark quote as pending
+       */
+      apply(quote) {
+        let conflicts = []
+
+        conflicts = conflicts.concat(checkForGenericConflicts(quote, 'quote'))
+
+        return {
+          conflicts,
+          solve() {
+            quote.status = 'viewed'
+            return patchDocument(quote, 'quotes', { status: 'viewed' })
+          }
+        }
+      }
+    },
+
     approved: {
       visible: true,
       name: i18n.t('status.approved'),
@@ -626,6 +725,20 @@ const Statuses = {
 
       meetsCondition(document) {
         return document.status === 'approved'
+      },
+
+      apply(quote) {
+        let conflicts = []
+
+        conflicts = conflicts.concat(checkForGenericConflicts(quote, 'quote'))
+
+        return {
+          conflicts,
+          solve() {
+            quote.status = 'approved'
+            return patchDocument(quote, 'quotes', { status: 'approved' })
+          }
+        }
       }
     }
   },

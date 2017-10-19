@@ -40,9 +40,9 @@
           <column width="20%">{{ $t('fields.client_name') }}</column>
           <column width="15%">{{ $t('fields.date') }}</column>
           <column width="15%">{{ $t('fields.due_date') }}</column>
-          <column width="11%">{{ $t('fields.amount') }}</column>
-          <column width="11%">{{ $t('fields.paid_in') }}</column>
-          <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
+          <column width="10%">{{ $t('fields.amount') }}</column>
+          <column width="10%">{{ $t('fields.paid_in') }}</column>
+          <column width="14%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
         <template slot="columns" slot-scope="props">
           <column width="16%">
@@ -61,11 +61,11 @@
           <column width="15%">
             <span>{{ props.row.due_date | date }}</span>
           </column>
-          <column width="11%">
+          <column width="10%">
             <span class="currency">{{ props.row.currency | currencySymbol }}</span>
             <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
           </column>
-          <column width="11%">
+          <column width="10%">
             <span class="currency">{{ props.row.currency | currencySymbol }}</span>
             <span class="currency currency--secondary"
                   :class="{
@@ -74,7 +74,7 @@
               {{ props.row.paid_in | currency }}
             </span>
           </column>
-          <column width="12%" class="column--center">
+          <column width="14%" class="column--center">
             <statuses-list type="invoice" :document="props.row"></statuses-list>
           </column>
         </template>

@@ -1,67 +1,97 @@
 <template>
-  <date-picker
-    @input  = "onInput"
-    v-model = "valueProxy"
-    v-bind  = "$attrs"
-  ></date-picker>
+  <div class="date__input" v-clickaway="hide">
+    <input type="text" v-model="formattedValue" class="form__input" @focus="show">
+    <v-date-picker landscape class="datePicker" v-show="isOpen" @input="hide" v-model="localValue" scrollable actions></v-date-picker>
+  </div>
 </template>
 
 <script>
-// import debounce from 'debounce'
 import moment from 'moment'
-import DatePicker from '@/components/common/DatePicker/DatePicker.vue'
+import {
+  VDatePicker
+} from 'vuetify'
 
 export default {
   name: 'form-date-input',
 
   components: {
-    DatePicker
+    VDatePicker
   },
 
   props: {
-    name: {
-      type: String,
-      default: undefined
-    },
-
-    value: {
-      default: null
-    },
-
     currentDate: {
       type: Boolean,
       default: false
-    }
+    },
+
+    value: {}
   },
 
   data() {
-    return {
-      valueProxy: this.value ? moment(this.value) : this.currentDate ? moment() : undefined,
-      customValue: false
-    }
-  },
+    let localValue = null
 
-  watch: {
-    value: function (value) {
-      if (!this.customValue) {
-        this.valueProxy = moment(value)
+    if (this.value) {
+      if (typeof this.value === 'object') {
+        localValue = moment(this.value.date).format('YYYY-MM-DD')
+      } else {
+        localValue = moment(this.value).format('YYYY-MM-DD')
       }
+    } else if (this.currentDate) {
+      localValue = moment().format('YYYY-MM-DD')
+    }
+    return {
+      isOpen: false,
+      localValue,
+      separator: '/'
     }
   },
 
-  mounted() {
-    if (!this.value) {
-      this.onInput(this.valueProxy, false)
+  computed: {
+    formattedValue: {
+      get() {
+        if (!this.localValue) {
+          return ''
+        }
+        return moment(this.localValue).format('DD/MM/YY')
+      },
+      set(value) {
+        if (value.length !== 'DD/MM/YY'.length) {
+          return
+        }
+        value.replace(/-/g, '/')
+        value.replace(/ /g, '/')
+        value.replace(/\./g, '/')
+
+        const date = moment(value, 'DD/MM/YY')
+
+        if (date.isValid()) {
+          this.localValue = moment(date).format('YYYY-MM-DD')
+        }
+      }
     }
   },
 
   methods: {
-    onInput(input, isCustom = true) {
-      if (isCustom) {
-        this.customValue = true
-      }
-      this.$emit('input', input ? moment(input).format('YYYY-MM-DD') : null)
+    show() {
+      this.isOpen = true
+    },
+
+    hide() {
+      this.isOpen = false
     }
   }
 }
 </script>
+
+<style lang="scss">
+.date__input {
+  position: relative;
+
+  .datePicker {
+    position: absolute;
+    z-index: 1;
+    line-height: initial;
+    // right: -50px;
+  }
+}
+</style>

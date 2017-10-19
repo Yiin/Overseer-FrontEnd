@@ -87,6 +87,7 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Restore,
   Preview,
   EditDocument
 } from '@/modules/table/cm-actions'
@@ -129,7 +130,8 @@ export default {
         EditDocument.extend({ title: 'actions.edit_product' }),
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Delete,
+        Restore
       ]
     },
 

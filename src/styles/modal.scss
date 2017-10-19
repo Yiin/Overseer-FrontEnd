@@ -1,73 +1,93 @@
+$modal-shadow: 0 -4px 17px rgba(0,0,0,.03);
+
 .background-dim
 {
     position: fixed;
-    z-index: 1;
     top: 0;
     left: 0;
 
     width: 100%;
     height: 100%;
 
-    background: $modal-bg-dim;
+    background: black;
 }
 
-.modal-background
+.modal-container
 {
     position: fixed;
-    bottom: 0;
-    left: 50%;
+    top: 0;
+    left: 0;
+    opacity: 0;
 
-    padding: 52px 31px 0;
-    transform: translate(-50%, 0);
+    padding: 80px 0 0;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+
+    border-radius: 5px 5px 0 0;
     background: $modal-outer-bg;
-    border-radius: $border-radius $border-radius 0 0;
 }
 
 .modal
 {
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    &--visible {
+        opacity: 1;
+        pointer-events: all;
+    }
     &__title
     {
-        font-size: 16px;
+        font-size: 15px;
+        font-weight: bold;
 
         position: absolute;
-        top: 20px;
+        top: 0;
+        left: 65px;
+
+        display: flex;
+
+        height: 80px;
 
         user-select: none;
+        text-transform: uppercase;
+
+        align-items: center;
     }
     &__body
     {
         position: relative;
 
-        background: $modal-inner-bg;
-        box-shadow: $box-shadow-modal-body;
-
         border-radius: 4px 4px 0 0;
-        overflow: hidden;
+        background: $color-wild-sand;
     }
     &-tab
     {
         // position: relative;
+        padding: 38px 55px 0;
     }
     &-icon
     {
+        font-size: 12px;
+
         float: left;
 
         padding: 10px;
-        font-size: 12px;
 
         cursor: pointer;
 
         background-size: cover;
         &__hide
         {
-            i::before {
+            i::before
+            {
                 color: $color-mine-shaft;
             }
         }
         &__full
         {
-            transform: rotateZ(90deg);
             display: none;
+
+            transform: rotateZ(90deg);
 
             background-image: url('../assets/icons/fullscreen.svg');
             &:hover
@@ -77,7 +97,8 @@
         }
         &__close
         {
-            i::before {
+            i::before
+            {
                 color: $color-mine-shaft;
             }
         }
@@ -95,11 +116,15 @@
         user-select: none;
         &__list
         {
-            overflow: hidden;
+            // overflow: hidden;
         }
         &__content
         {
-            padding: 40px 20px 105px 20px;
+            height: 100%;
+            padding-bottom: 150px;
+
+            background: #fff;
+            box-shadow: $modal-shadow;
         }
     }
     &__tab
@@ -109,25 +134,72 @@
 
         display: inline-flex;
 
-        height: 53px;
-        padding: 14px 28px 15px 20px;
-
         cursor: pointer;
 
-        color: $color-text;
+        color: $color-mulled-wine;
 
+        justify-content: center;
         align-items: center;
+
         @for $i from 1 through length($modal-tab-colors)
         {
             $color: nth($modal-tab-colors, $i);
             &:nth-child(#{$i})
             {
-                &.modal__tab--active,
+                &.modal__tab--active
+                {
+                    // color: $color-text-alt;
+                    // background: $color;
+                }
                 .tab-number
                 {
                     color: $color-text-alt;
                     background: $color;
                 }
+            }
+        }
+        &:nth-child(2),
+        &:nth-child(4)
+        {
+            .tab-number
+            {
+                padding-left: 0;
+            }
+        }
+
+        .tab-title
+        {
+            display: inline-flex;
+            // width: 212px;
+
+            height: 54px;
+            padding: 0 37px;
+
+            align-items: center;
+            justify-content: left;
+        }
+
+        &--active
+        {
+            position: relative;
+
+            color: #373737;
+            background: #fff;
+            box-shadow: $modal-shadow;
+
+            &::after
+            {
+                position: absolute;
+                z-index: 1;
+                top: 45px;
+                left: 0;
+
+                width: 100%;
+                height: 15px;
+
+                content: '';
+
+                background: #fff;
             }
         }
     }
@@ -142,7 +214,7 @@
     left: 0;
 
     width: 100%;
-    padding: 0 20px;
+    padding: 0 55px;
     &-group
     {
         &::after
@@ -160,7 +232,8 @@
         {
             float: right;
         }
-        > .button:not(:first-child) {
+         > .button:not(:first-child)
+        {
             margin-left: 20px;
         }
     }
@@ -170,9 +243,10 @@
 {
     display: flex;
 
-    width: 25px;
+    width: 28px;
     height: 25px;
     margin-right: 16px;
+    padding-left: 1px;
 
     align-items: center;
     justify-content: center;

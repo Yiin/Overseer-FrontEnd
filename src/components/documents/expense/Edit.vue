@@ -6,15 +6,15 @@
         Select vendor
        -->
       <modal-tab :title="$t('tabs.vendor')">
-        <form-container name="expense">
-          <form-inline-select-input :watch="vendors" name="vendor_uuid" :placeholder="$t('placeholders.type_vendor_name')" :readonly="preview">
+        <form-container>
+          <form-inline-select-input v-model="vendor_uuid" :watch="vendors" name="vendor_uuid" :placeholder="$t('placeholders.type_vendor_name')" :readonly="preview">
             <inline-option v-if="preview" selected>
-              {{ form.vendor.company_name }}
+              {{ vendor.company_name }}
             </inline-option>
             <inline-option v-else v-for="vendor in vendors"
                           :key="vendor.uuid"
                           :value="vendor.uuid"
-                          :selected="vendor.uuid === form.vendor_uuid"
+                          :selected="vendor.uuid === vendor_uuid"
             >
               {{ vendor.company_name }}
             </inline-option>
@@ -37,15 +37,15 @@
         Select client
        -->
       <modal-tab :title="$t('tabs.client')">
-        <form-container name="expense">
-          <form-inline-select-input :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
+        <form-container>
+          <form-inline-select-input v-model="client_uuid" :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
             <inline-option v-if="preview" selected>
-              {{ form.client.name }}
+              {{ client.name }}
             </inline-option>
             <inline-option v-else v-for="client in clients"
                           :key="client.uuid"
                           :value="client.uuid"
-                          :selected="client.uuid === form.client_uuid"
+                          :selected="client.uuid === client_uuid"
             >
               {{ client.name }}
             </inline-option>
@@ -68,12 +68,12 @@
         Expenses Category
        -->
       <!-- <modal-tab :title="$t('tabs.category')">
-        <form-container name="expense">
+        <form-container>
           <form-inline-select-input :watch="categories" name="category_uuid" :placeholder="$t('placeholders.type_category_name')">
             <inline-option v-for="category in categories"
                           :key="category.uuid"
                           :value="category.uuid"
-                          :selected.once="category.uuid === form.category_uuid"
+                          :selected.once="category.uuid === category_uuid"
             >
               {{ category.name }}
             </inline-option>
@@ -82,7 +82,7 @@
       </modal-tab> -->
 
       <modal-tab :title="$t('tabs.details')">
-        <form-container name="expense">
+        <form-container>
           <form-row>
 
             <!--
@@ -94,12 +94,12 @@
                 <!--
                   Amount
                 -->
-                <form-text-input v-model="form.amount" name="amount" :readonly="preview"></form-text-input>
+                <form-text-input v-model="amount" name="amount" :readonly="preview"></form-text-input>
 
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="form.currency_code" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown v-model="currency_code" class="dropdown--small" :readonly="preview"></form-currency-dropdown>
 
               </form-inputs-group>
             </form-field>
@@ -110,7 +110,7 @@
               Date
             -->
             <form-field catch-errors="date" :label="$t('labels.date')">
-              <form-date-input current-date v-model="form.date" name="date" :readonly="preview"></form-date-input>
+              <form-date-input current-date v-model="date" name="date" :readonly="preview"></form-date-input>
             </form-field>
 
             <form-field></form-field>
@@ -128,35 +128,27 @@
 </template>
 
 <script>
+import FormMixin from '@/mixins/FormMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 import { createDocument } from '@/modules/documents/actions'
 
 export default {
-  name: 'edit-expense',
+  mixins: [
+    FormMixin('expense', [
+      'vendor_uuid',
+      'client_uuid',
+      'category_uuid',
+      'amount',
+      'currency_code',
+      'date'
+    ])
+  ],
 
   components: {
     FormCurrencyDropdown
   },
 
-  props: {
-    data: {
-      default: null
-    }
-  },
-
   computed: {
-    form() {
-      return this.$store.state.form.expense
-    },
-
-    preview() {
-      return this.form.__preview
-    },
-
-    passive() {
-      return this.$store.state.passive
-    },
-
     vendors() {
       return this.$store.getters['table/vendors/activeItems']
     },
@@ -176,7 +168,7 @@ export default {
         this.$store.dispatch('form/expense/SET_FORM_DATA', {
           vendor_uuid: vendor.uuid
         })
-        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 0)
+        this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 0)
       })
     },
 
@@ -185,24 +177,8 @@ export default {
         this.$store.dispatch('form/expense/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
-        this.$store.dispatch('UPDATE_MODAL_ACTIVE_TAB_INDEX', 1)
+        this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       })
-    },
-
-    save() {
-      if (this.form.uuid) {
-        this.$store.dispatch('form/expense/SAVE')
-      } else {
-        this.create()
-      }
-    },
-
-    create() {
-      this.$store.dispatch('form/expense/CREATE')
-    },
-
-    cancel() {
-      this.$emit('cancel')
     }
   }
 }

@@ -1,0 +1,104 @@
+@import "variables";
+
+@font-face {
+  font-family: 'btn-icons-2';
+  src:
+    url('#{$icomoon-font-path}/btn-icons-2.ttf?s8zr4z') format('truetype'),
+    url('#{$icomoon-font-path}/btn-icons-2.woff?s8zr4z') format('woff'),
+    url('#{$icomoon-font-path}/btn-icons-2.svg?s8zr4z#btn-icons-2') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="btn-icon-"], [class*=" btn-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'btn-icons-2' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  margin-right: 10px;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.btn-icon-clients {
+  &:before {
+    content: $btn-icon-clients;
+  }
+}
+.btn-icon-appointments {
+  &:before {
+    content: $btn-icon-appointments;
+  }
+}
+.btn-icon-credits {
+  &:before {
+    content: $btn-icon-credits;
+  }
+}
+.btn-icon-currency {
+  &:before {
+    content: $btn-icon-currency;
+  }
+}
+.btn-icon-expenses {
+  &:before {
+    content: $btn-icon-expenses;
+  }
+}
+.btn-icon-invoices {
+  &:before {
+    content: $btn-icon-invoices;
+  }
+}
+.btn-icon-overview {
+  &:before {
+    content: $btn-icon-overview;
+  }
+}
+.btn-icon-payments {
+  &:before {
+    content: $btn-icon-payments;
+  }
+}
+.btn-icon-personel {
+  &:before {
+    content: $btn-icon-personel;
+  }
+}
+.btn-icon-products {
+  &:before {
+    content: $btn-icon-products;
+  }
+}
+.btn-icon-projects {
+  &:before {
+    content: $btn-icon-projects;
+  }
+}
+.btn-icon-quotes {
+  &:before {
+    content: $btn-icon-quotes;
+  }
+}
+.btn-icon-reports {
+  &:before {
+    content: $btn-icon-reports;
+  }
+}
+.btn-icon-settings {
+  &:before {
+    content: $btn-icon-settings;
+  }
+}
+.btn-icon-vendors {
+  &:before {
+    content: $btn-icon-vendors;
+  }
+}
+
