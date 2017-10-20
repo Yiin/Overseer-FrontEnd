@@ -87,6 +87,8 @@
         "percent": "Percent"
     },
     "fields": {
+        "identification_number": "Identification Number",
+        "credit_number": "Credit Number",
         "amount": "Amount",
         "balance": "Balance",
         "category": "Category",

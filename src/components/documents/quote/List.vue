@@ -38,25 +38,29 @@
           <column width="18%">{{ $t('fields.amount') }}</column>
           <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope="{ row }">
           <column width="20%">
-            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.quote_number }}</a>
+            <a :href="`#${row.uuid}`" @click="edit(row)">
+              {{ row.quote_number }}
+            </a>
           </column>
           <column width="20%">
-            <span>{{ props.row.client.name }}</span>
+            <a :href="`#${row.key}`" @click="editDocument(row.client, 'client')">
+              {{ row.client.name }}
+            </a>
           </column>
           <column width="15%">
-            <span>{{ props.row.quote_date | date }}</span>
+            <span>{{ row.quote_date | date }}</span>
           </column>
           <column width="15%">
-            <span>{{ props.row.due_date | date }}</span>
+            <span>{{ row.due_date | date }}</span>
           </column>
           <column width="18%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+            <span class="currency">{{ row.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount | currency }}</span>
           </column>
           <column width="12%" class="column--center">
-            <statuses-list type="quote" :document="props.row"></statuses-list>
+            <statuses-list type="quote" :document="row"></statuses-list>
           </column>
         </template>
         <template slot="table-controls-left"></template>

@@ -229,6 +229,9 @@ export default {
           return
         }
         invoice.items.forEach((item) => {
+          if (!item.product) {
+            return
+          }
           products.push(item.product)
         })
       })

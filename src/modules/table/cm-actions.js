@@ -2,7 +2,7 @@ import ContextMenuAction from './cm-action'
 import pluralize from 'pluralize'
 import moment from 'moment'
 import $store from '@/store'
-// import print from 'print-js'
+import print from 'print-js'
 
 function getSelectedRows(state, tableName, row) {
   let selectedRows = state.table[tableName].selection.length
@@ -15,27 +15,21 @@ function getSelectedRows(state, tableName, row) {
   return selectedRows
 }
 
-function showUndoNotification(data) {
-  if (Array.isArray(data)) {
-    $store.dispatch('notification/SHOW', {
-      message: `You just did something with ${data.length} items.`,
-      action: () => {
-        $store.dispatch('notification/SHOW', {
-          message: 'Action completed'
-        })
-      },
-      actionText: 'ACTION'
-    })
-  } else {
-    $store.dispatch('notification/SHOW', {
-      message: `You just did something with single item.`,
-      action: () => {
-        $store.dispatch('notification/SHOW', {
-          message: 'Action completed'
-        })
-      },
-      actionText: 'ACTION'
-    })
+function showUndoNotification(message, action) {
+  return (responseData) => {
+    if (Array.isArray(responseData)) {
+      $store.dispatch('notification/SHOW', {
+        message,
+        action: action.bind(null, responseData),
+        actionText: 'UNDO'
+      })
+    } else {
+      $store.dispatch('notification/SHOW', {
+        message,
+        action: action.bind(null, responseData),
+        actionText: 'UNDO'
+      })
+    }
   }
 }
 
@@ -128,10 +122,16 @@ export const Archive = ContextMenuAction({
       const uuids = rows.map((row) => row.uuid)
 
       dispatch(`table/${tableName}/ARCHIVE_DOCUMENTS`, uuids)
+        .then(showUndoNotification(`Archived ${uuids.length} documents.`, () => {
+          dispatch(`table/${tableName}/UNARCHIVE_DOCUMENTS`, uuids)
+        }))
     } else {
       const row = rows[0]
 
       dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+        .then(showUndoNotification('Archived one document', () => {
+          dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+        }))
     }
   }
 })
@@ -157,11 +157,17 @@ export const Delete = ContextMenuAction({
     if (rows.length > 1) {
       const uuids = rows.map((row) => row.uuid)
 
-      dispatch(`table/${tableName}/DELETE_DOCUMENTS`, uuids).then(showUndoNotification)
+      dispatch(`table/${tableName}/DELETE_DOCUMENTS`, uuids)
+        .then(showUndoNotification(`Deleted ${uuids.length} documents`, () => {
+          dispatch(`table/${tableName}/RESTORE_DOCUMENTS`, uuids)
+        }))
     } else {
       const row = rows[0]
 
-      dispatch(`table/${tableName}/DELETE_DOCUMENT`, row).then(showUndoNotification)
+      dispatch(`table/${tableName}/DELETE_DOCUMENT`, row)
+        .then(showUndoNotification('Deleted one document', () => {
+          dispatch(`table/${tableName}/RESTORE_DOCUMENT`, row)
+        }))
     }
   }
 })
@@ -184,17 +190,27 @@ export const Restore = ContextMenuAction({
     }
 
     if (rows.length > 1) {
-      const uuids = rows.map((row) => row.uuid)
+      const archivedUuids = rows.filter((row) => row.archived_at).map((row) => row.uuid)
+      // const deletedUuids = rows.filter((row) => row.deleted_at).map((row) => row.uuid)
 
-      dispatch(`table/${tableName}/RESTORE_DOCUMENTS`, uuids)
-      dispatch(`table/${tableName}/UNARCHIVE_DOCUMENTS`, uuids)
+      // dispatch(`table/${tableName}/RESTORE_DOCUMENTS`, deletedUuids)
+      dispatch(`table/${tableName}/UNARCHIVE_DOCUMENTS`, archivedUuids)
+        .then(showUndoNotification(`Restored ${archivedUuids.length} documents}`, () => {
+          dispatch(`table/${tableName}/ARCHIVE_DOCUMENTS`, archivedUuids)
+        }))
     } else {
       const row = rows[0]
 
       if (row.deleted_at) {
         dispatch(`table/${tableName}/RESTORE_DOCUMENT`, row)
-      } else {
+          .then(showUndoNotification('Restored one document', () => {
+            dispatch(`table/${tableName}/DELETE_DOCUMENT`, row)
+          }))
+      } else if (row.archived_at) {
         dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+          .then(showUndoNotification('Restored one document', () => {
+            dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+          }))
       }
     }
   }
@@ -210,6 +226,7 @@ export const PrintDocument = ContextMenuAction({
 
   // TODO: Print functionality
   handler(tableName, { dispatch }, row) {
+    console.log(row)
     if (typeof row === 'undefined') {
       return
     }
@@ -217,9 +234,9 @@ export const PrintDocument = ContextMenuAction({
       return
     }
     if (!row.pdfs.length) {
-      // return
+      return
     }
-    // print('/storage/pdf/' + row.pdfs[0])
+    print('/api/storage/pdf/' + row.pdfs[0].id + '/' + row.pdfs[0].pdfable_id)
   }
 })
 

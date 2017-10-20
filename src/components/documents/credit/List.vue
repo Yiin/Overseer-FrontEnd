@@ -31,25 +31,33 @@
 
       <documents-table :data="list" :context-menu-actions="contextMenuActions">
         <template slot="head">
-          <column width="30%">{{ $t('fields.client_name') }}</column>
-          <column width="30%">{{ $t('fields.credit_date') }}</column>
+          <column width="20%">{{ $t('fields.credit_number') }}</column>
+          <column width="20%">{{ $t('fields.client_name') }}</column>
+          <column width="20%">{{ $t('fields.credit_date') }}</column>
           <column width="20%">{{ $t('fields.amount') }}</column>
           <column width="20%">{{ $t('fields.balance') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
-          <column width="30%">
-            <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.client.name }}</a>
-          </column>
-          <column width="30%">
-            <span>{{ props.row.credit_date | date }}</span>
+        <template slot="columns" slot-scope="{ row }">
+          <column width="20%">
+            <a href="#" @click.prevent="edit(row)">
+              {{ row.credit_number }}
+            </a>
           </column>
           <column width="20%">
-            <span class="currency">{{ props.row.client.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+            <a :href="`#${row.key}`" @click="editDocument(row.client, 'client')">
+              {{ row.client.name }}
+            </a>
           </column>
           <column width="20%">
-            <span class="currency">{{ props.row.client.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.balance | currency }}</span>
+            <span>{{ row.credit_date | date }}</span>
+          </column>
+          <column width="20%">
+            <span class="currency">{{ row.client.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount | currency }}</span>
+          </column>
+          <column width="20%">
+            <span class="currency">{{ row.client.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.balance | currency }}</span>
           </column>
         </template>
         <template slot="table-controls-left"></template>

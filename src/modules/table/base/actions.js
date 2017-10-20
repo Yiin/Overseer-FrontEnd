@@ -185,7 +185,13 @@ export default (actions = {}) => Object.assign({
 
     return Api.post(prefix + name.replace(/_/g, '-') + `/${uuid}/restore`)
       .then((response) => {
-        dispatch('UPDATE_ROW', response)
+        const row = state.items.find((item) => item.uuid === response.uuid)
+
+        if (row) {
+          dispatch('UPDATE_ROW', response)
+        } else {
+          dispatch('INSERT_ROW', response)
+        }
         return response
       })
   },

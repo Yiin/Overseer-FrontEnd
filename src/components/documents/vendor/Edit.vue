@@ -37,7 +37,7 @@
             <form-field>
 
               <form-images-input name="logo" multiple>
-                <img slot="icon" src="../../../assets/icons/upload.svg">
+                <img slot="icon" src="../../../assets/icons/image.svg">
                 <template slot="title">
                   {{ $t('placeholders.upload_company_logo_image') }}
                 </template>

@@ -11,18 +11,6 @@ export default {
   },
 
   /**
-   * Save reference to specifix taskbar item,
-   * so we can get back to it later.
-   */
-  SAVE_ITEM({ dispatch, commit, state }, item) {
-    const index = state.items.findIndex((taskbarItem) => taskbarItem.data === item.data)
-
-    commit('SAVE_ITEM', index)
-
-    dispatch('SAVE_STATE')
-  },
-
-  /**
    * Activate previously used taskbar item
    */
   ACTIVATE_SAVED_ITEM({ dispatch, state }, index = 0) {

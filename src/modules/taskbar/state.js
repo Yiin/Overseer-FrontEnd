@@ -5,8 +5,7 @@ let state = {
       data
     }
   */],
-  activeIndex: null,
-  savedTasks: []
+  activeIndex: null
 }
 
 export default state

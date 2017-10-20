@@ -32,18 +32,22 @@
       <documents-table :data="list" :context-menu-actions="contextMenuActions">
         <template slot="head">
           <column width="21%">{{ $t('fields.product_name') }}</column>
-          <column width="47%">{{ $t('fields.description') }}</column>
-          <column width="17%">{{ $t('fields.price') }}</column>
+          <column width="21%">{{ $t('fields.identification_number') }}</column>
+          <column width="28%">{{ $t('fields.description') }}</column>
+          <column width="15%">{{ $t('fields.price') }}</column>
           <column width="15%">{{ $t('fields.stock') }}</column>
         </template>
         <template slot="columns" slot-scope="props">
           <column width="21%">
             <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
           </column>
-          <column width="47%">
+          <column width="21%">
+            <span>{{ props.row.identification_number }}</span>
+          </column>
+          <column width="28%">
             <span>{{ props.row.description }}</span>
           </column>
-          <column width="17%">
+          <column width="15%">
             <span class="currency">{{ props.row.currency | currencySymbol }}</span>
             <span class="currency currency--primary">{{ props.row.price | currency }}</span>
           </column>

@@ -5,26 +5,19 @@ export default {
     copyFields(newState, state)
   },
 
-  SAVE_ITEM(state, index) {
-    if (index > -1 && index < state.items.length) {
-      state.savedTasks.unshift(index)
-    }
-  },
-
   ADD_ITEM(state, taskbarItem) {
     state.items.push(taskbarItem)
   },
 
   SET_ACTIVE_ITEM(state, index) {
+    if (index === state.activeIndex) {
+      return
+    }
     if (index > -1 && index < state.items.length) {
-      if (state.activeIndex !== null) {
-        state.savedTasks.unshift(state.activeIndex)
+      if (state.activeIndex !== null && state.items[state.activeIndex].parent !== state.items[index]) {
+        state.items[index].parent = state.items[state.activeIndex]
       }
       state.activeIndex = index
-
-      if (state.savedTasks.indexOf(index) > -1) {
-        state.savedTasks.splice(state.savedTasks.indexOf(index), 1)
-      }
     } else {
       state.activeIndex = null
     }
@@ -43,13 +36,24 @@ export default {
   },
 
   REMOVE_ITEM_AT_INDEX(state, index) {
+    state.items.forEach((item) => {
+      if (item.parent && item.parent === state.items[index]) {
+        item.parent = undefined
+      }
+    })
+
+    const parent = state.items[index].parent
+
     state.items.splice(index, 1)
 
-    if (state.savedTasks.indexOf(index) > -1) {
-      state.savedTasks.splice(state.savedTasks.indexOf(index), 1)
+    if (parent) {
+      const parentIndex = state.items.findIndex((item) => item === parent)
+
+      if (parentIndex > -1) {
+        state.activeIndex = parentIndex
+        return
+      }
     }
-    if (state.activeIndex === index) {
-      state.activeIndex = state.savedTasks.length ? state.savedTasks.pop() : null
-    }
+    state.activeIndex = null
   }
 }

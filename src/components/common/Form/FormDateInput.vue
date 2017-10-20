@@ -46,6 +46,12 @@ export default {
     }
   },
 
+  watch: {
+    localValue(value) {
+      this.$emit('input', value)
+    }
+  },
+
   computed: {
     formattedValue: {
       get() {
@@ -68,6 +74,12 @@ export default {
           this.localValue = moment(date).format('YYYY-MM-DD')
         }
       }
+    }
+  },
+
+  mounted() {
+    if (this.localValue && this.value !== this.localValue) {
+      this.$emit('input', this.localValue)
     }
   },
 

@@ -10,6 +10,7 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,.03);
     height: 100%;
 
     background: black;
+    transform: rotateZ(360deg);
 }
 
 .modal-container
@@ -24,6 +25,7 @@ $modal-shadow: 0 -4px 17px rgba(0,0,0,.03);
 
     border-radius: 5px 5px 0 0;
     background: $modal-outer-bg;
+    transform: rotateZ(360deg);
 }
 
 .modal

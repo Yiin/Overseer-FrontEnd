@@ -31,36 +31,42 @@
 
       <documents-table :data="list" :context-menu-actions="contextMenuActions">
         <template slot="head">
+          <column width="17%">{{ $t('fields.transaction_reference') }}</column>
           <column width="16%">{{ $t('fields.invoice') }}</column>
           <column width="20%">{{ $t('fields.client_name') }}</column>
-          <column width="17%">{{ $t('fields.transaction_reference') }}</column>
           <column width="12%">{{ $t('fields.method') }}</column>
           <column width="12%">{{ $t('fields.amount') }}</column>
           <column width="11%">{{ $t('fields.date_created') }}</column>
           <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope="{ row }">
+          <column width="17%">
+            <a href="`#${row.key}`" @click.prevent="editDocument(row, 'payment')">
+              {{ row.payment_reference }}
+            </a>
+          </column>
           <column width="16%">
-            <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.invoice.invoice_number }}</a>
+            <a :href="`#${row.key}`" @click.prevent="editDocument(row.invoice, 'invoice')">
+              {{ row.invoice ? row.invoice.invoice_number : 'Deleted' }}
+            </a>
           </column>
           <column width="20%">
-            <span>{{ props.row.client.name }}</span>
-          </column>
-          <column width="17%">
-            <span>{{ props.row.payment_reference }}</span>
-          </column>
-          <column width="12%">
-            <span>{{ props.row.method }}</span>
+            <a :href="`#${row.key}`" @click.prevent="editDocument(row.client, 'client')">
+              {{ row.client ? row.client.name : 'Deleted' }}
+            </a>
           </column>
           <column width="12%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+            <span>{{ row.method }}</span>
+          </column>
+          <column width="12%">
+            <span class="currency">{{ row.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount | currency }}</span>
           </column>
           <column width="11%">
-            <span>{{ props.row.payment_date | date }}</span>
+            <span>{{ row.payment_date | date }}</span>
           </column>
           <column width="12%" class="column--center">
-            <statuses-list type="payment" :document="props.row"></statuses-list>
+            <statuses-list type="payment" :document="row"></statuses-list>
           </column>
         </template>
         <template slot="table-controls-left"></template>

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import store from '@/store'
 import * as Routes from './routes.js'
 import Overview from '@/components/overview/Overview.vue'
+import LandingPage from '@/pages/landing-page/Index.vue'
 
 Vue.use(Router)
 
@@ -47,12 +48,11 @@ const router = new Router({
     /**
      * Basic routes
      */
-    {
-      path: '/',
-      redirect: {
-        name: Routes.OVERVIEW
-      }
-    },
+    // {
+    //   path: '/',
+    //   name: 'landing-page',
+    //   component: LandingPage
+    // },
     {
       path: '/overview',
       name: Routes.OVERVIEW,

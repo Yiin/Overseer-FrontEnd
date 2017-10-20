@@ -106,15 +106,15 @@ export default {
         element: this.$refs.searchInput,
         mode: Medium.inlineMode
       })
+
+      this.$refs.searchInput.addEventListener('input', () => {
+        let value = this.medium.value().trim().toLowerCase()
+
+        if (this.query !== value) {
+          this.query = value
+        }
+      })
     }
-
-    this.$refs.searchInput.addEventListener('input', () => {
-      let value = this.medium.value().trim().toLowerCase()
-
-      if (this.query !== value) {
-        this.query = value
-      }
-    })
 
     if (this.watch) {
       this.$watch(() => this.watch, () => {

@@ -106,6 +106,18 @@ export default (getters) => Object.assign({
         }
       }
     }
+
+    const orderDir = state.orderDirection === 'desc' ? -1 : 1
+
+    items.sort((a, b) => {
+      if (a[state.orderBy] < b[state.orderBy]) {
+        return -1 * orderDir
+      } else if (a[state.orderBy] === b[state.orderBy]) {
+        return 0
+      } else {
+        return 1 * orderDir
+      }
+    })
     return items
   },
 

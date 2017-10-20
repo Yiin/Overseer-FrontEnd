@@ -1,3 +1,9 @@
+import {
+  editDocument,
+  createDocument,
+  patchDocument
+} from '@/modules/documents/actions'
+
 export default {
   computed: {
     state() {
@@ -28,6 +34,10 @@ export default {
           const [valA, valB] = [a[orderBy].toUpperCase(), b[orderBy].toUpperCase()]
           return valA < valB ? (-1) : valA > valB ? (1) : 0
         })
-    }
+    },
+
+    editDocument,
+    createDocument,
+    patchDocument
   }
 }

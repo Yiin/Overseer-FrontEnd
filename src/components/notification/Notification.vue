@@ -8,11 +8,11 @@
   >
     {{ message }}
     <template v-if="action">
-      <v-btn @click="action" flat class="btn--action">
+      <v-btn @click="dispatchAction" flat class="btn--action">
         {{ actionText }}
       </v-btn>
     </template>
-    <div class="btn--close-snack" click.native="$store.dispatch('notification/CLOSE')"></div>
+    <div class="btn--close-snack" @click="$store.dispatch('notification/CLOSE')"></div>
   </v-snackbar>
 </template>
 
@@ -62,14 +62,21 @@ export default {
     isVisible: {
       set(isVisible) {
         if (isVisible) {
-          this.$store.commit('notification/SHOW')
+          this.$store.dispatch('notification/SHOW')
         } else {
-          this.$store.commit('notification/CLOSE')
+          this.$store.dispatch('notification/CLOSE')
         }
       },
       get() {
         return this.state.isVisible
       }
+    }
+  },
+
+  methods: {
+    dispatchAction() {
+      this.action()
+      this.$store.dispatch('notification/CLOSE')
     }
   }
 }

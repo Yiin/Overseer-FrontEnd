@@ -37,10 +37,9 @@
         <template slot="head">
           <column width="17%">{{ $t('fields.client_name') }}</column>
           <column width="23%">{{ $t('fields.vat_number') }}</column>
-          <column width="15%">{{ $t('fields.phone_number') }}</column>
-          <column width="20%">{{ $t('fields.email') }}</column>
-          <column width="11%">{{ $t('fields.date_created') }}</column>
-          <column width="14%">{{ $t('fields.balance') }}</column>
+          <column width="21%">{{ $t('fields.phone_number') }}</column>
+          <column width="24%">{{ $t('fields.email') }}</column>
+          <column width="15%">{{ $t('fields.balance') }}</column>
         </template>
         <template slot="columns" slot-scope="props">
           <column width="17%">
@@ -50,16 +49,13 @@
             <span>{{ props.row.vat_number }}</span>
             <vat-info :vat="props.row.vat_number"></vat-info>
           </column>
-          <column width="15%">
+          <column width="21%">
             <span>{{ props.row.phone }}</span>
           </column>
-          <column width="20%">
+          <column width="24%">
             <span>{{ props.row.email }}</span>
           </column>
-          <column width="11%">
-            <span>{{ props.row.created_at | date }}</span>
-          </column>
-          <column width="14%">
+          <column width="15%">
             <span class="currency">{{ props.row.currency | currencySymbol }}</span>
             <span class="currency currency--primary">{{ props.row.balance | currency }}</span>
           </column>

@@ -77,15 +77,21 @@ export default {
       } else {
         this.animateMoveToTaskbar()
       }
+    },
+
+    '$store.state.taskbar.activeIndex': function (current, previous) {
+      console.log('activeIndex', previous, '->', current)
+
+      if (current !== null && previous !== null) {
+        if (this.taskbarItem.parent) {
+          this.animateMoveToTaskbar()
+          setTimeout(this.animateOpenNew.bind(this), 500)
+        } else {
+          this.animateCloseCompletely()
+          setTimeout(this.animateOpenFromTaskbar.bind(this), 500)
+        }
+      }
     }
-
-    // '$store.state.taskbar.activeIndex': function (current, previous) {
-    //   if (current !== null && previous !== null) {
-    //     this.animateOpenNew()
-
-    //     // setTimeout(this.animateOpenNew.bind(this), 500)
-    //   }
-    // }
   },
 
   methods: {
@@ -126,13 +132,13 @@ export default {
      * Animate modal opening animation
      */
     animateOpenNew() {
+      console.log('animateOpenNew')
+      this.isClosing = false
       this.isClosed = false
 
       this.$nextTick(() => {
         const taskbarItemBoundingRect = this.getTaskbarItemBoundingRect()
         const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
-
-        this.animateBackgroundFadeIn()
 
         const ratio = taskbarItemBoundingRect.width / modalBoundingRect.width
 
@@ -148,7 +154,6 @@ export default {
 
         TweenLite.fromTo(this.$refs.modal, 0.4, {
           opacity: 0,
-          scale: ratio,
           x: modalInitialPosition.x,
           y: modalInitialPosition.y
         }, {
@@ -157,16 +162,18 @@ export default {
           x: modalFinalPosition.x,
           y: modalFinalPosition.y,
           ease: Power2.easeOut
-        }, 0)
+        })
+
+        this.animateBackgroundFadeIn()
       })
     },
 
     animateOpenFromTaskbar() {
+      console.log('animateOpenFromTaskbar')
+      this.isClosing = false
       this.isClosed = false
 
       this.$nextTick(() => {
-        this.animateBackgroundFadeIn()
-
         const taskbarItemBoundingRect = this.getTaskbarItemBoundingRect()
         const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
 
@@ -193,11 +200,14 @@ export default {
           scale: 1,
           x: modalFinalPosition.x,
           y: modalFinalPosition.y
-        }, 0)
+        })
+
+        this.animateBackgroundFadeIn()
       })
     },
 
     animateMoveToTaskbar() {
+      console.log('animateMoveToTaskbar')
       const taskbarItemBoundingRect = this.getTaskbarItemBoundingRect()
       const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
 
@@ -234,7 +244,21 @@ export default {
     },
 
     animateCloseCompletely() {
+      console.log('animateCloseCompletely')
+
       this.animateBackgroundFadeOut()
+
+      TweenLite.fromTo(this.$refs.modal, 0.4, {
+        scale: 1
+      }, {
+        opacity: 0,
+        scale: 0.2,
+        clearProps: 'all',
+        onComplete: () => {
+          this.isClosing = false
+          this.isClosed = true
+        }
+      })
     },
 
     cacheData() {
