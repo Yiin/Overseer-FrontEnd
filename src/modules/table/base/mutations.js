@@ -6,15 +6,6 @@ export default (mutations = {}) => {
       state.state = tableState
     },
 
-    SET_TABLE_ITEMS(state, items) {
-      Vue.set(state, 'items', items)
-      state.itemsRelationsAreUpdated = false
-    },
-
-    ITEMS_RELATIONS_ARE_UPDATED(state) {
-      state.itemsRelationsAreUpdated = true
-    },
-
     RESET_TABLE(state) {
       state.page = 0
       state.orderBy = 'created_at'
@@ -24,15 +15,8 @@ export default (mutations = {}) => {
       state.searchBy = {}
     },
 
-    NORMALIZE_TABLE(state) {
-      // remove selected items who no longer exists on the table
-      state.selection = state.selection.filter((item) => state.items.indexOf(item) > -1)
-
-      // reset page to last available page, if it's out of bounds
-      const pageCount = Math.ceil(state.items.length / state.rows_per_page)
-      if (state.page >= pageCount) {
-        state.page = Math.max(0, pageCount - 1)
-      }
+    SET_SELECTION(state, selection) {
+      state.selection = selection
     },
 
     FILTER_BY(state, filters) {

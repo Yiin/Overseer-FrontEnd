@@ -7,29 +7,21 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container>
-          <form-inline-select-input v-model="client_uuid" :watch="clients" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
-            <inline-option v-if="preview" selected>
-              {{ form.client.name }}
-            </inline-option>
-            <inline-option v-else v-for="client in clients"
-                          :key="client.uuid"
-                          :value="client.uuid"
-                          :selected="client.uuid === client_uuid"
-            >
-              {{ client.name }}
-            </inline-option>
-            <div slot="placeholder" class="placeholder-area">
-              <div class="placeholder placeholder--clients"></div>
-              <div class="placeholder placeholder--line"></div>
-              <div class="placeholder__text">
-                Add a new client by pressing the button below.
-              </div>
-              <button @click="createClient" class="button button--create">
-                <span class="icon-new-client-btn-icon"></span>
-                {{ $t('actions.new_client') }}
-              </button>
+          <form-inline-select-input
+            v-if="dropdownOptions.clients.length"
+            v-model="client_uuid"
+            :items="dropdownOptions.clients"
+            :placeholder="$t('placeholders.type_client_name')"
+            :readonly="preview"
+          ></form-inline-select-input>
+
+          <div v-else class="placeholder-area">
+            <div class="placeholder placeholder--clients"></div>
+            <div class="placeholder placeholder--line"></div>
+            <div class="placeholder__text">
+              Add a new client by pressing the button below.
             </div>
-          </form-inline-select-input>
+          </div>
         </form-container>
       </modal-tab>
 
@@ -76,6 +68,12 @@
           </form-row>
         </form-container>
       </modal-tab>
+      <template slot="right-buttons--left">
+        <div v-show="modal.activeTabIndex === 0" @click="createClient" class="button button--create">
+          <span class="icon-new-client-btn-icon"></span>
+          {{ $t('actions.new_client') }}
+        </div>
+      </template>
 
     </modal-tabs>
   </div>
@@ -83,14 +81,12 @@
 
 <script>
 import FormMixin from '@/mixins/FormMixin'
-import CurrencyMixin from '@/mixins/CurrencyMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 import { createDocument } from '@/modules/documents/actions'
 
 export default {
   mixins: [
-    CurrencyMixin,
     FormMixin('credit', [
       'client_uuid',
       'amount',
@@ -116,7 +112,7 @@ export default {
 
       // else try to use clients currency
       if (!currency) {
-        const client = this.form.fields.client || this.clients.find((c) => c.uuid === this.client_uuid)
+        const client = this.clients.find((client) => client.uuid === this.client_uuid)
 
         if (client) {
           currency = client.currency
@@ -136,10 +132,12 @@ export default {
         }
       }
       return currency
-    },
+    }
+  },
 
-    clients() {
-      return this.$store.state.table.clients.items
+  mounted() {
+    if (!this.currency_code) {
+      this.currency_code = this.currency.code
     }
   },
 
@@ -149,7 +147,7 @@ export default {
         this.$store.dispatch('form/credit/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
-        this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
+        this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 0)
       })
     }
   }
@@ -162,7 +160,7 @@ export default {
   height: 617px;
 
   .modal-tabs {
-    width: 590px;
+    width: 750px;
   }
 }
 </style>

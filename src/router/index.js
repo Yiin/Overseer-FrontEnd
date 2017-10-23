@@ -3,7 +3,6 @@ import Router from 'vue-router'
 import store from '@/store'
 import * as Routes from './routes.js'
 import Overview from '@/components/overview/Overview.vue'
-import LandingPage from '@/pages/landing-page/Index.vue'
 
 Vue.use(Router)
 
@@ -31,7 +30,7 @@ const router = new Router({
     },
     {
       path: '/demo',
-      name: Routes.REGISTER,
+      name: 'demo',
       beforeEnter(to, from, next) {
         next('/overview')
       }
@@ -48,11 +47,12 @@ const router = new Router({
     /**
      * Basic routes
      */
-    // {
-    //   path: '/',
-    //   name: 'landing-page',
-    //   component: LandingPage
-    // },
+    {
+      path: '/',
+      redirect: {
+        name: Routes.OVERVIEW
+      }
+    },
     {
       path: '/overview',
       name: Routes.OVERVIEW,

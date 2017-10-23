@@ -53,11 +53,26 @@
       <modal-tab :title="$t('tabs.address')">
         <form-container>
           <form-row>
-            <form-field :label="$t('labels.street')">
-              <form-text-input v-model="address1" name="address1" :readonly="preview"></form-text-input>
+            <form-field :label="$t('labels.state')">
+              <form-text-input v-model="state" name="state" :readonly="preview"></form-text-input>
             </form-field>
-            <form-field :label="$t('labels.apt_suite')">
-              <form-text-input v-model="address2" name="address2" :readonly="preview"></form-text-input>
+            <form-field catch-errors="country_id" :label="$t('labels.country')">
+              <form-dropdown-input
+                v-model="country_id"
+                :items="dropdownOptions.countries"
+              >
+                <template slot="option" slot-scope="{ item, parent }">
+                  <v-list-tile avatar @click="parent.select(item)">
+                    <v-list-tile-avatar>
+                      <span class="flag-icon" :class="['flag-icon-' + item.iso_3166_2.toLowerCase() ]"></span>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title v-html="item.text"></v-list-tile-title>
+                      <v-list-tile-sub-title v-html="item.full_name"></v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </template>
+              </form-dropdown-input>
             </form-field>
           </form-row>
           <form-row>
@@ -69,17 +84,11 @@
             </form-field>
           </form-row>
           <form-row>
-            <form-field :label="$t('labels.state')">
-              <form-text-input v-model="state" name="state" :readonly="preview"></form-text-input>
+            <form-field :label="$t('labels.street')">
+              <form-text-input v-model="address1" name="address1" :readonly="preview"></form-text-input>
             </form-field>
-            <form-field catch-errors="country_id" :label="$t('labels.country')">
-              <form-dropdown-input v-model="country_id" name="country_id" scrollable searchable :readonly="preview">
-                <dropdown-option v-for = "country in passive.countries" :key="country.id"
-                                :value = "country.id"
-                                :selected="country.id === country_id">
-                  {{ country.name }}
-                </dropdown-option>
-              </form-dropdown-input>
+            <form-field :label="$t('labels.apt_suite')">
+              <form-text-input v-model="address2" name="address2" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
         </form-container>
@@ -102,6 +111,9 @@
               <form-row>
                 <form-field :label="$t('labels.job_position')">
                   <form-text-input :value="contact.job_position" @input="updateContact(index, 'job_position', $event)" name="job_position" :readonly="preview"></form-text-input>
+                </form-field>
+                <form-field :label="$t('labels.linkedin_profile')">
+                  <form-text-input :value="contact.linkedin_profile" @input="updateContact(index, 'linkedin_profile', $event)" name="linkedin_profile" :readonly="preview"></form-text-input>
                 </form-field>
               </form-row>
               <form-row>
@@ -132,13 +144,11 @@
 
 <script>
 import FormMixin from '@/mixins/FormMixin'
-import CurrencyMixin from '@/mixins/CurrencyMixin'
 import ContactsMixin from '@/mixins/ContactsMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 
 export default {
   mixins: [
-    CurrencyMixin,
     ContactsMixin('vendor'),
     FormMixin('vendor', [
       'company_name',

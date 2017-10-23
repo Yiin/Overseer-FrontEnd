@@ -9,7 +9,7 @@ export const IsActiveFilter = {
   name: 'active',
   placeholder: 'filters.active',
   filter: function (document) {
-    return !document.deleted_at && !document.archived_at
+    return !document.deletedAt && !document.archivedAt
   }
 }
 
@@ -18,7 +18,7 @@ export const IsArchivedFilter = {
   name: 'archived',
   placeholder: 'filters.archived',
   filter: function (document) {
-    return document.archived_at
+    return document.archivedAt
   }
 }
 
@@ -27,7 +27,7 @@ export const IsDeletedFilter = {
   name: 'deleted',
   placeholder: 'filters.deleted',
   filter: function (document) {
-    return document.deleted_at
+    return document.deletedAt
   }
 }
 

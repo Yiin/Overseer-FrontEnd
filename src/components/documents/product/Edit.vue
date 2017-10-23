@@ -7,9 +7,7 @@
           <form-field catch-errors="name" :label="$t('labels.product_name')">
             <form-text-input v-model="name" name="product_name" :readonly="preview"></form-text-input>
           </form-field>
-          <form-field catch-errors="identification_number" :label="$t('labels.identification_number')">
-            <form-text-input v-model="identification_number" name="identification_number" :readonly="preview"></form-text-input>
-          </form-field>
+          <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
         </form-row>
 
         <form-row>
@@ -44,7 +42,10 @@
             ></form-text-input>
           </form-field>
 
-          <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
+          <form-field catch-errors="identification_number" :label="$t('labels.identification_number')">
+            <form-text-input v-model="identification_number" name="identification_number" :readonly="preview"></form-text-input>
+          </form-field>
+
         </form-row>
 
         <form-row>
@@ -81,12 +82,10 @@
 
 <script>
 import FormMixin from '@/mixins/FormMixin'
-import CurrencyMixin from '@/mixins/CurrencyMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 
 export default {
   mixins: [
-    CurrencyMixin,
     FormMixin('product', [
       /**
        * Fields

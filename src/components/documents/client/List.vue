@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--clients"></div>
         <div class="placeholder placeholder--line"></div>
@@ -41,23 +41,23 @@
           <column width="24%">{{ $t('fields.email') }}</column>
           <column width="15%">{{ $t('fields.balance') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope="{ row }">
           <column width="17%">
-            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
+            <a :href="`#${row.uuid}`" @click="edit(row)">{{ row.name }}</a>
           </column>
           <column width="23%">
-            <span>{{ props.row.vat_number }}</span>
-            <vat-info :vat="props.row.vat_number"></vat-info>
+            <span>{{ row.vat.vatNumber }}</span>
+            <vat-info :vat="row.vat.vatNumber"></vat-info>
           </column>
           <column width="21%">
-            <span>{{ props.row.phone }}</span>
+            <span>{{ row.phone }}</span>
           </column>
           <column width="24%">
-            <span>{{ props.row.email }}</span>
+            <span>{{ row.getPrimaryEmail() }}</span>
           </column>
           <column width="15%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.balance | currency }}</span>
+            <span class="currency">{{ row.balance.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.balance.amount | currency }}</span>
           </column>
         </template>
         <template slot="table-controls-left"></template>
@@ -204,29 +204,6 @@ export default {
   },
 
   methods: {
-    applyFiltersToShowHiddenResults() {
-      this.$refs.filterByComponent.$children[0].$children[0].open()
-
-      setTimeout(() => {
-        const check = (i) => {
-          if (i >= 3) {
-            return
-          }
-          const option = this.$refs.filterByComponent.$refs.checkboxOption[i]
-
-          if (option) {
-            if (option.isChecked) {
-              check(i + 1)
-            } else {
-              this.$nextTick(() => option.check())
-              setTimeout(() => check(i + 1), 370)
-            }
-          }
-        }
-        setTimeout(() => check(0), 200)
-      }, 100)
-    },
-
     create() {
       this.$store.dispatch('form/client/OPEN_CREATE_FORM')
     },

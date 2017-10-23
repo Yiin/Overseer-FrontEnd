@@ -43,8 +43,8 @@
         }
         &--reversed
         {
-            bottom: 44px;
             z-index: 0;
+            bottom: 44px;
 
             border-top: none;
             border-bottom: 1px solid #ebebeb !important;
@@ -58,11 +58,12 @@
     {
         line-height: 34px;
 
-        user-select: none;
+        display: flex;
 
         padding: 0 15px 0 26px;
 
         cursor: default;
+        user-select: none;
         /**
          * Slight shade on hover
          */
@@ -70,8 +71,10 @@
         {
             background: $color-wild-sand;
         }
-        .dropdown-option__content {
+        .dropdown-option__content
+        {
             overflow: hidden;
+
             white-space: nowrap;
             text-overflow: ellipsis;
         }
@@ -129,12 +132,13 @@
             // Child options dropdown position should be relative to this option
             position: relative;
 
-            padding-left: 26px;
             overflow: visible;
+
+            padding-left: 26px;
             /**
              * Label of this nested option
              */
-            > .option-label
+             > .option-label
             {
                 /**
                  * Small triangle arrow indicating that this options is
@@ -255,20 +259,20 @@
             // color: $color-text-placeholder;
         }
         // &:not(.--datepicker) {
-            // caret
-            &::before,
-            &-wrapper::before
-            {
-                position: absolute;
-                top: 20px;
-                right: 15px;
+        // caret
+        &::before,
+        &-wrapper::before
+        {
+            position: absolute;
+            top: 20px;
+            right: 15px;
 
-                content: '';
+            content: '';
 
-                border-top: 4px solid $color-mine-shaft;
-                border-right: 4px solid transparent;
-                border-left: 4px solid transparent;
-            }
+            border-top: 4px solid $color-mine-shaft;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+        }
         // }
         &-wrapper
         {
@@ -303,7 +307,7 @@
         {
             // adjust caret height for filter dropdown
             // because of different height
-            > .dropdown__input::before
+             > .dropdown__input::before
             {
                 top: 16px;
             }
@@ -311,12 +315,13 @@
         /**
          * Adjust heights and shadows
          */
-        > .dropdown__input
+         > .dropdown__input
         {
             line-height: 44px;
 
-            height: 44px;
             position: relative;
+
+            height: 44px;
 
             border: none;
             box-shadow: $box-shadow;
@@ -328,13 +333,14 @@
         /**
          * Box shadow on dropdown menu
          */
-        > .dropdown__options
+         > .dropdown__options
         {
             border-right: none;
             border-bottom: none;
             border-left: none;
             box-shadow: $box-shadow-primary-dropdown-options;
-            &.dropdown__options--reversed {
+            &.dropdown__options--reversed
+            {
                 box-shadow: $box-shadow;
             }
         }

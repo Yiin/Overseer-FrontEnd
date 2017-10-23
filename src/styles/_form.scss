@@ -1,6 +1,27 @@
 .form,
 .modal-form
 {
+    letter-spacing: normal;
+
+    .placeholder-area
+    {
+        width: 100%;
+    }
+
+    .placeholder:not(.placeholder--line)
+    {
+        width: 100%;
+        height: 350px;
+        margin: 0 auto;
+
+        background-repeat: no-repeat;
+        background-position-x: center;
+    }
+    .placeholder--line
+    {
+        transform: scale(.7);
+    }
+
     .dropdown__input
     {
         background: #edf1fc;
@@ -8,7 +29,8 @@
     .dropdown__options
     {
         padding-top: 15px;
-        &.scrollable {
+        &.scrollable
+        {
             border-right: none;
         }
     }
@@ -49,13 +71,14 @@
     &__inputs-group
     {
         display: flex;
-        > * + *
+         > * + *
         {
             margin-left: 20px;
         }
-        > .form__input-wrapper {
-            margin-top: 0;
+         > .form__input-wrapper
+        {
             width: auto;
+            margin-top: 0;
         }
     }
     &__input
@@ -64,16 +87,17 @@
 
         width: 100%;
         padding: 0 15px;
-        background: #edf1fc;
 
         color: #373737;
         border: none;
         border-radius: $border-radius;
+        background: #edf1fc;
         &:not(textarea)
         {
             height: 44px;
         }
-        &:focus {
+        &:focus
+        {
             outline-color: $color-main;
         }
         &-error
@@ -85,7 +109,8 @@
         &--inline
         {
             border: none;
-            &:focus {
+            &:focus
+            {
                 outline: none;
             }
         }
@@ -94,18 +119,22 @@
     {
         margin-top: 0;
     }
-    &__row {
+    &__row
+    {
         display: flex;
     }
-    &__column {
+    &__column
+    {
         width: 100%;
-        &--half + & {
+        &--half + &
+        {
             margin-left: 92px;
         }
     }
 }
 
-textarea.form__input {
+textarea.form__input
+{
     font-family: inherit;
 
     height: auto;
@@ -235,62 +264,228 @@ textarea.form__input {
     }
 }
 
-.contacts-list {
-  height: 366px;
-  margin-left: -1px;
-  padding-left: 1px;
+.contacts-list
+{
+    height: 366px;
+    margin-left: -1px;
+    padding-left: 1px;
 
-  &.scrollable {
-      padding-right: 20px;
-      margin-right: -26px;
-  }
-  .separator {
-    margin: 40px 0;
-    width: 100%;
+    &.scrollable
+    {
+        margin-right: -26px;
+        padding-right: 20px;
+    }
+    .separator
+    {
+        width: 100%;
+        margin: 40px 0;
 
-    border-style: solid;
-    border-image-source: url('../assets/icons/upload-border.svg');
-    border-image-slice: 5;
-    border-image-width: 3px;
-    border-image-outset: 1;
-    border-image-repeat: round;
-    opacity: 0.6;
-  }
+        opacity: .6;
+        border-style: solid;
+        border-image-source: url('../assets/icons/upload-border.svg');
+        border-image-slice: 5;
+        border-image-width: 3px;
+        border-image-outset: 1;
+        border-image-repeat: round;
+    }
 }
 
-.contact__form {
-  position: relative;
+.contact__form
+{
+    position: relative;
 }
 
-.delete-contact {
-  position: absolute;
-
-  width: 12px;
-  height: 12px;
-
-  cursor: pointer;
-
-  background: url(../assets/icons/cross.svg) center center no-repeat;
-  background-size: contain;
-
-  top: 25px;
-  right: 10px;
-}
-
-.add-new-block {
-  padding: 20px;
-  position: relative;
-
-  &, &::before {
-    font-weight: $font-weight-semibold;
-    color: $color-main;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  &::before {
-    content: "+";
-    font-weight: bold;
+.delete-contact
+{
     position: absolute;
-    left: 0;
-  }
+    top: 25px;
+    right: 10px;
+
+    width: 12px;
+    height: 12px;
+
+    cursor: pointer;
+
+    background: url(../assets/icons/cross.svg) center center no-repeat;
+    background-size: contain;
+}
+
+.add-new-block
+{
+    position: relative;
+
+    padding: 20px;
+
+    &,
+    &::before
+    {
+        font-size: 16px;
+        font-weight: $font-weight-semibold;
+
+        cursor: pointer;
+
+        color: $color-main;
+    }
+    &::before
+    {
+        font-weight: bold;
+
+        position: absolute;
+        left: 0;
+
+        content: '+';
+    }
+}
+
+.half-in-group
+{
+    width: 100% !important;
+}
+
+/**
+ * Inline select
+ */
+
+.inline-select
+{
+    margin-top: -20px;
+}
+
+.inline-select-head
+{
+    font-weight: $font-weight-semibold;
+    line-height: 35px;
+
+    display: flex;
+
+    height: 35px;
+    margin-right: 6px;
+
+    border-top: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.inline-select-column:first-child
+{
+    display: flex;
+
+    width: 60px;
+    min-width: 60px;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.inline-select-column:not(:first-child)
+{
+    padding: 0 15px;
+}
+
+.inline-select-column
+{
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &--center
+    {
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.inline-select__search-wrapper
+{
+    position: relative;
+}
+
+.inline-select__search-input
+{
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 52px;
+
+    display: block;
+    overflow: hidden;
+
+    height: 52px;
+
+    white-space: nowrap;
+
+    color: $color-main;
+    /**
+     * On focus show basic text w/o much styling
+     */
+    &:focus
+    {
+        font-weight: normal;
+
+        color: $color-mine-shaft;
+        outline: none;
+    }
+    /**
+     * When search input isn't focused,
+     * and is empty - show placeholder
+     */
+    &:empty:not(:focus)::before
+    {
+        font-weight: normal;
+
+        content: attr(data-placeholder);
+        cursor: text;
+        text-transform: capitalize;
+
+        color: $color-text-placeholder;
+        background: $color-white;
+    }
+}
+
+.inline-select__options
+{
+    height: 370px;
+}
+
+.inline-select-row
+{
+    font-size: 16px;
+    line-height: 52px;
+
+    display: flex;
+
+    height: 52px;
+
+    cursor: default;
+
+    border-bottom: 1px solid #e1e1e1;
+}
+.inline-select-row:hover
+{
+    background: #fbfbfb;
+}
+
+.inline-option
+{
+    font-size: 16px;
+    line-height: 53px;
+
+    display: flex;
+
+    height: 53px;
+    margin-right: 20px;
+
+    cursor: default;
+
+    border-top: 1px solid #e1e1e1;
+
+    align-items: center;
+
+    &__label
+    {
+        display: inline-block;
+
+        margin-left: 22px;
+    }
 }

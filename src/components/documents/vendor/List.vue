@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--vendors"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,12 +24,16 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by :watch="{ countries, currencies }" :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :watch="{ countries, currencies }" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
 
-      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
         <template slot="head">
           <column width="23%">{{ $t('fields.vendor_name') }}</column>
           <column width="25%">{{ $t('fields.phone_number') }}</column>

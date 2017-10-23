@@ -6,7 +6,6 @@ export default (state = {}) => {
     rows_per_page: 10,
     orderBy: 'created_at',
     orderDirection: 'desc',
-    items: [],
     selection: [],
     filterBy: [],
     searchBy: {}

@@ -30,8 +30,12 @@ export default {
   data() {
     let localValue = null
 
+    console.log('setting datepicker data', this.value)
+
     if (this.value) {
-      if (typeof this.value === 'object') {
+      if (this.value instanceof moment) {
+        localValue = this.value.format('YYYY-MM-DD')
+      } else if (typeof this.value === 'object') {
         localValue = moment(this.value.date).format('YYYY-MM-DD')
       } else {
         localValue = moment(this.value).format('YYYY-MM-DD')
@@ -39,6 +43,8 @@ export default {
     } else if (this.currentDate) {
       localValue = moment().format('YYYY-MM-DD')
     }
+
+    console.log('--- END ---', localValue)
     return {
       isOpen: false,
       localValue,

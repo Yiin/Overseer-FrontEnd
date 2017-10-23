@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--credits"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,12 +24,16 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by :watch="{ clients }" :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :watch="{ clients }" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
 
-      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
         <template slot="head">
           <column width="20%">{{ $t('fields.credit_number') }}</column>
           <column width="20%">{{ $t('fields.client_name') }}</column>
@@ -40,7 +44,7 @@
         <template slot="columns" slot-scope="{ row }">
           <column width="20%">
             <a href="#" @click.prevent="edit(row)">
-              {{ row.credit_number }}
+              {{ row.creditNumber }}
             </a>
           </column>
           <column width="20%">
@@ -49,15 +53,15 @@
             </a>
           </column>
           <column width="20%">
-            <span>{{ row.credit_date | date }}</span>
+            <span>{{ row.creditDate | date }}</span>
           </column>
           <column width="20%">
-            <span class="currency">{{ row.client.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ row.amount | currency }}</span>
+            <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
           </column>
           <column width="20%">
-            <span class="currency">{{ row.client.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ row.balance | currency }}</span>
+            <span class="currency">{{ row.balance.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.balance.amount | currency }}</span>
           </column>
         </template>
         <template slot="table-controls-left"></template>

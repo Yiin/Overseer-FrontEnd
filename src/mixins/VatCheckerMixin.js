@@ -13,7 +13,7 @@ export default {
   watch: {
     'vat_checker.number': function (number) {
       const cc = number.slice(0, 2).toUpperCase()
-      const memberState = this.passive.member_states.find((state) => state.code.toUpperCase() === cc)
+      const memberState = this.passive.memberStates.find((state) => state.code.toUpperCase() === cc)
 
       if (memberState) {
         this.vat_checker.country_code = cc

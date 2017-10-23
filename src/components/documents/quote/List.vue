@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--quotes"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,12 +24,16 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by :watch="{ clients, products }" :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :watch="{ clients, products }" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
 
-      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
         <template slot="head">
           <column width="20%">{{ $t('fields.quote_number') }}</column>
           <column width="20%">{{ $t('fields.client_name') }}</column>
@@ -41,7 +45,7 @@
         <template slot="columns" slot-scope="{ row }">
           <column width="20%">
             <a :href="`#${row.uuid}`" @click="edit(row)">
-              {{ row.quote_number }}
+              {{ row.quoteNumber }}
             </a>
           </column>
           <column width="20%">
@@ -50,14 +54,14 @@
             </a>
           </column>
           <column width="15%">
-            <span>{{ row.quote_date | date }}</span>
+            <span>{{ row.quoteDate | date }}</span>
           </column>
           <column width="15%">
-            <span>{{ row.due_date | date }}</span>
+            <span>{{ row.dueDate | date }}</span>
           </column>
           <column width="18%">
             <span class="currency">{{ row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ row.amount | currency }}</span>
+            <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
           </column>
           <column width="12%" class="column--center">
             <statuses-list type="quote" :document="row"></statuses-list>

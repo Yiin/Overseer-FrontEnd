@@ -1,3 +1,7 @@
-import FormActions from '@/modules/form/actions'
+import FormActions from '../base/actions'
+import Payment from '@/modules/documents/models/payment'
 
-export default FormActions()
+export default FormActions({
+  model: Payment,
+  repository: 'documents/repositories/payment'
+})

@@ -6,6 +6,7 @@
       'app--transition-redirecting': isRedirecting,
       'transitioning': isAuthenticated && !isLoaded
     }">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.8.0/css/flag-icon.min.css">
     <template v-if="isAuthenticated && !isRedirecting">
       <sidebar></sidebar>
       <div class="page-content">

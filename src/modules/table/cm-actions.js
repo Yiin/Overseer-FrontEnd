@@ -2,13 +2,15 @@ import ContextMenuAction from './cm-action'
 import pluralize from 'pluralize'
 import moment from 'moment'
 import $store from '@/store'
-import print from 'print-js'
+import print from '@/vendor/print.js/print.min'
+import Statuses from '@/modules/documents/statuses'
+import { getFormName } from '@/modules/documents/helpers'
 
 function getSelectedRows(state, tableName, row) {
   let selectedRows = state.table[tableName].selection.length
 
   if (row) {
-    if (state.table[tableName].selection.find((r) => r.uuid === row.uuid)) {
+    if (!state.table[tableName].selection.find((r) => r.uuid === row.uuid)) {
       selectedRows++
     }
   }
@@ -96,7 +98,7 @@ export const CreateDocument = ContextMenuAction({
     return !row
   },
 
-  handler: function (tableName, { dispatch }) {
+  handler: function (meta, { dispatch }) {
     dispatch(`form/${this.documentType}/OPEN_CREATE_FORM`)
   }
 })
@@ -109,10 +111,10 @@ export const Archive = ContextMenuAction({
   icon: 'icon-dropdown-archive',
 
   visible(tableName, store, row) {
-    return row && !row.deleted_at && !row.archived_at
+    return Statuses.generic.active.meetsCondition(row)
   },
 
-  handler(tableName, { dispatch, state }, row) {
+  handler({ repositoryPath, tableName }, { dispatch, state }, row) {
     const rows = state.table[tableName].selection.slice()
     if (row && rows.indexOf(row) < 0) {
       rows.push(row)
@@ -121,16 +123,16 @@ export const Archive = ContextMenuAction({
     if (rows.length > 1) {
       const uuids = rows.map((row) => row.uuid)
 
-      dispatch(`table/${tableName}/ARCHIVE_DOCUMENTS`, uuids)
+      dispatch(`${repositoryPath}/API_ARCHIVE_MANY`, uuids)
         .then(showUndoNotification(`Archived ${uuids.length} documents.`, () => {
-          dispatch(`table/${tableName}/UNARCHIVE_DOCUMENTS`, uuids)
+          dispatch(`${repositoryPath}/API_UNARCHIVE_MANY`, uuids)
         }))
     } else {
       const row = rows[0]
 
-      dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+      dispatch(`${repositoryPath}/API_ARCHIVE`, row)
         .then(showUndoNotification('Archived one document', () => {
-          dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+          dispatch(`${repositoryPath}/API_UNARCHIVE`, row)
         }))
     }
   }
@@ -144,11 +146,10 @@ export const Delete = ContextMenuAction({
   icon: 'icon-dropdown-delete',
 
   visible(tableName, store, row) {
-    console.log('row', row, row && !row.deleted_at && !row.archived_at)
-    return row && !row.deleted_at && !row.archived_at
+    return Statuses.generic.active.meetsCondition(row)
   },
 
-  handler(tableName, { dispatch, state }, row) {
+  handler({ repositoryPath, tableName }, { dispatch, state }, row) {
     const rows = state.table[tableName].selection.slice()
     if (row && rows.indexOf(row) < 0) {
       rows.push(row)
@@ -157,16 +158,16 @@ export const Delete = ContextMenuAction({
     if (rows.length > 1) {
       const uuids = rows.map((row) => row.uuid)
 
-      dispatch(`table/${tableName}/DELETE_DOCUMENTS`, uuids)
+      dispatch(`${repositoryPath}/API_DELETE_MANY`, uuids)
         .then(showUndoNotification(`Deleted ${uuids.length} documents`, () => {
-          dispatch(`table/${tableName}/RESTORE_DOCUMENTS`, uuids)
+          dispatch(`${repositoryPath}/API_RESTORE_MANY`, uuids)
         }))
     } else {
       const row = rows[0]
 
-      dispatch(`table/${tableName}/DELETE_DOCUMENT`, row)
+      dispatch(`${repositoryPath}/API_DELETE`, row)
         .then(showUndoNotification('Deleted one document', () => {
-          dispatch(`table/${tableName}/RESTORE_DOCUMENT`, row)
+          dispatch(`${repositoryPath}/API_RESTORE`, row)
         }))
     }
   }
@@ -180,36 +181,40 @@ export const Restore = ContextMenuAction({
   icon: 'icon-dropdown-restore',
 
   visible(tableName, store, row) {
-    return row && (row.deleted_at || row.archived_at)
+    return !Statuses.generic.active.meetsCondition(row)
   },
 
-  handler(tableName, { dispatch, state }, row) {
+  handler({ repositoryPath, tableName }, { dispatch, state }, row) {
     const rows = state.table[tableName].selection.slice()
     if (row && rows.indexOf(row) < 0) {
       rows.push(row)
     }
 
     if (rows.length > 1) {
-      const archivedUuids = rows.filter((row) => row.archived_at).map((row) => row.uuid)
-      // const deletedUuids = rows.filter((row) => row.deleted_at).map((row) => row.uuid)
+      const archivedUuids = rows.filter(Statuses.generic.archived.meetsCondition).map((row) => row.uuid)
+      const deletedUuids = rows.filter(Statuses.generic.deleted.meetsCondition).map((row) => row.uuid)
 
-      // dispatch(`table/${tableName}/RESTORE_DOCUMENTS`, deletedUuids)
-      dispatch(`table/${tableName}/UNARCHIVE_DOCUMENTS`, archivedUuids)
-        .then(showUndoNotification(`Restored ${archivedUuids.length} documents}`, () => {
-          dispatch(`table/${tableName}/ARCHIVE_DOCUMENTS`, archivedUuids)
-        }))
+      Promise.all([
+        dispatch(`${repositoryPath}/API_RESTORE_MANY`, deletedUuids),
+        dispatch(`${repositoryPath}/API_UNARCHIVE_MANY`, archivedUuids)
+      ]).then(() => {
+        showUndoNotification(`Restored ${archivedUuids.length + deletedUuids.length} documents`, () => {
+          dispatch(`${repositoryPath}/API_DELETE_MANY`, deletedUuids)
+          dispatch(`${repositoryPath}/API_ARCHIVE_MANY`, archivedUuids)
+        })
+      })
     } else {
       const row = rows[0]
 
-      if (row.deleted_at) {
-        dispatch(`table/${tableName}/RESTORE_DOCUMENT`, row)
+      if (Statuses.generic.deleted.meetsCondition(row)) {
+        dispatch(`${repositoryPath}/API_RESTORE`, row)
           .then(showUndoNotification('Restored one document', () => {
-            dispatch(`table/${tableName}/DELETE_DOCUMENT`, row)
+            dispatch(`${repositoryPath}/API_DELETE`, row)
           }))
-      } else if (row.archived_at) {
-        dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+      } else if (Statuses.generic.archived.meetsCondition(row)) {
+        dispatch(`${repositoryPath}/API_UNARCHIVE`, row)
           .then(showUndoNotification('Restored one document', () => {
-            dispatch(`table/${tableName}/ARCHIVE_DOCUMENT`, row)
+            dispatch(`${repositoryPath}/API_ARCHIVE`, row)
           }))
       }
     }
@@ -268,8 +273,8 @@ export const EditDocument = ContextMenuAction({
     return !!row
   },
 
-  handler(tableName, { dispatch }, row) {
-    const formName = pluralize.singular(tableName)
+  handler({ tableName }, { dispatch }, row) {
+    const formName = getFormName(tableName)
     dispatch(`form/${formName}/OPEN_EDIT_FORM`, row)
   }
 })

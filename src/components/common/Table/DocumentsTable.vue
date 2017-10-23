@@ -20,7 +20,7 @@
         <div class="column">
           <span>
             Hmm, it seems like there is nothing to display.
-            <template v-if="hiddenEntries.length && !simple">
+            <template v-if="hiddenEntries && !simple">
               However,
               <span @click="applyFiltersToShowAllResults" class="highlight__text">
                 {{ hiddenEntries }}
@@ -123,6 +123,7 @@
 import TableMixin from '@/mixins/TableMixin'
 import DragSelectMixin from '@/mixins/DragSelect'
 import { Delete } from '@/modules/table/cm-actions'
+import { getRepositoryName } from '@/modules/documents/helpers'
 
 export default {
   name: 'documents-table',
@@ -183,7 +184,7 @@ export default {
       let selectedRows = this.data.selection.length
 
       if (this.contextMenu.selectedRow) {
-        if (this.data.selection.find((row) => this.contextMenu.selectedRow.uuid === row.uuid)) {
+        if (!this.data.selection.find((row) => this.contextMenu.selectedRow.uuid === row.uuid)) {
           selectedRows++
         }
       }
@@ -212,7 +213,7 @@ export default {
       if (!this.data) {
         return []
       }
-      return this.$store.state.table[this.data.name].items.filter((item) => {
+      return this.availableItems.filter((item) => {
         return !this.pageRows.find((row) => row.uuid === item.uuid)
       }).length
     }
@@ -235,8 +236,10 @@ export default {
   methods: {
     listenForHotkeys() {
       window.addEventListener('keydown', (e) => {
-        if (e.keyCode === 46) {
+        switch (e.keyCode) {
+        case 46:
           Delete.handler(this.data.name, this.$store)
+          break
         }
       })
     },
@@ -279,9 +282,6 @@ export default {
      * @return {void}
      */
     toggle(row, event = null) {
-      if (false && this.simple) { // eslint-disable-line
-        return
-      }
       if (event) {
         if (['a'].indexOf(event.target.nodeName.toLowerCase()) > -1) {
           return
@@ -300,6 +300,20 @@ export default {
         }
       }
       this.$store.dispatch(`table/${this.data.name}/TOGGLE_ROW`, row)
+
+      if (this.lastSelectedRow) {
+        if (event && event.shiftKey) {
+          const fromIndex = this.filteredItems.indexOf(this.lastSelectedRow)
+          const toIndex = this.filteredItems.indexOf(row)
+
+          if (fromIndex > -1 && toIndex > -1) {
+            for (let i = Math.min(fromIndex, toIndex); i <= Math.max(fromIndex, toIndex); ++i) {
+              this.$store.dispatch(`table/${this.data.name}/TOGGLE_ROW_ON`, this.filteredItems[i])
+            }
+          }
+        }
+      }
+      this.lastSelectedRow = row
     },
 
     /**
@@ -308,9 +322,6 @@ export default {
      * @return {Boolean}     Is row selected
      */
     isRowSelected(row) {
-      if (false && this.simple) { // eslint-disable-line
-        return false
-      }
       return this.data.selection.indexOf(row) > -1 || this.contextMenu.selectedRow === row
     },
 
@@ -407,7 +418,10 @@ export default {
       if (typeof action.handler === 'undefined') {
         return
       }
-      action.handler(this.data.name, this.$store, this.contextMenu.selectedRow, this)
+      action.handler({
+        repositoryPath: 'documents/repositories/' + getRepositoryName(this.data.name),
+        tableName: this.data.name
+      }, this.$store, this.contextMenu.selectedRow, this)
 
       this.$nextTick(() => {
         this.closeContextMenu()

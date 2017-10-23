@@ -1,4 +1,4 @@
-import FormMutations from '@/modules/form/mutations'
+import FormMutations from '../base/mutations'
 
 export default FormMutations({
   IS_SERVICE(state, isService) {

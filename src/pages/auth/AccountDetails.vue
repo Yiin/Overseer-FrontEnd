@@ -62,7 +62,7 @@
         <md-text-field
           label="Confirm Pasword"
           v-model="password_confirmation"
-          @change="validate('password')"
+          @input="validate('password')"
           type="password"
           tabindex="6"
         ></md-text-field>
@@ -124,7 +124,9 @@ export default {
 
   methods: {
     validate(field) {
-      this.$store.dispatch('auth/registration/VALIDATE_FIELD', field)
+      this.$nextTick(() => {
+        this.$store.dispatch('auth/registration/VALIDATE_FIELD', field)
+      })
     }
   }
 }

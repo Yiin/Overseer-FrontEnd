@@ -53,11 +53,26 @@
       <modal-tab :title="$t('tabs.address')">
         <form-container>
           <form-row>
-            <form-field :label="$t('labels.street')">
-              <form-text-input v-model="address1" name="address1" :readonly="preview"></form-text-input>
+            <form-field :label="$t('labels.state')">
+              <form-text-input v-model="state" name="state" :readonly="preview"></form-text-input>
             </form-field>
-            <form-field :label="$t('labels.apt_suite')">
-              <form-text-input v-model="address2" name="address2" :readonly="preview"></form-text-input>
+            <form-field catch-errors="country_id" :label="$t('labels.country')">
+              <form-dropdown-input
+                v-model="country_id"
+                :items="dropdownOptions.countries"
+              >
+                <template slot="option" slot-scope="{ item, parent }">
+                  <v-list-tile avatar @click="parent.select(item)">
+                    <v-list-tile-avatar>
+                      <span class="flag-icon" :class="['flag-icon-' + item.iso_3166_2.toLowerCase() ]"></span>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                      <v-list-tile-title v-html="item.text"></v-list-tile-title>
+                      <v-list-tile-sub-title v-html="item.full_name"></v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </v-list-tile>
+                </template>
+              </form-dropdown-input>
             </form-field>
           </form-row>
           <form-row>
@@ -69,17 +84,11 @@
             </form-field>
           </form-row>
           <form-row>
-            <form-field :label="$t('labels.state')">
-              <form-text-input v-model="state" name="state" :readonly="preview"></form-text-input>
+            <form-field :label="$t('labels.street')">
+              <form-text-input v-model="address1" name="address1" :readonly="preview"></form-text-input>
             </form-field>
-            <form-field catch-errors="country_id" :label="$t('labels.country')">
-              <form-dropdown-input v-model="country_id" name="country_id" scrollable searchable :readonly="preview">
-                <dropdown-option v-for = "country in passive.countries" :key="country.id"
-                                :value = "country.id"
-                                :selected="country.id === country_id">
-                  {{ country.name }}
-                </dropdown-option>
-              </form-dropdown-input>
+            <form-field :label="$t('labels.apt_suite')">
+              <form-text-input v-model="address2" name="address2" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
         </form-container>
@@ -102,6 +111,9 @@
               <form-row>
                 <form-field :label="$t('labels.job_position')">
                   <form-text-input :value="contact.job_position" @input="updateContact(index, 'job_position', $event)" name="job_position" :readonly="preview"></form-text-input>
+                </form-field>
+                <form-field :label="$t('labels.linkedin_profile')">
+                  <form-text-input :value="contact.linkedin_profile" @input="updateContact(index, 'linkedin_profile', $event)" name="linkedin_profile" :readonly="preview"></form-text-input>
                 </form-field>
               </form-row>
               <form-row>
@@ -126,42 +138,30 @@
           </form-row>
           <form-row>
             <form-field catch-errors="language_id" :label="$t('labels.language')">
-              <form-dropdown-input v-model="language_id" :watch="passive.languages" name="language_id" scrollable searchable :readonly="preview">
-                <dropdown-option v-for="language in passive.languages" :key="language.id"
-                                :value="language.id"
-                                :selected="language.id === language_id">
-                  {{ language.name }}
-                </dropdown-option>
-              </form-dropdown-input>
+              <form-dropdown-input
+                v-model="language_id"
+                :items="dropdownOptions.languages"
+              ></form-dropdown-input>
             </form-field>
-            <form-field catch-errors="payment_terms" :label="$t('labels.payment_terms')">
-              <form-dropdown-input v-model="payment_terms" :watch="passive.paymentTerms" name="payment_terms" scrollable searchable :readonly="preview">
-                <dropdown-option v-for="pt in passive.paymentTerms" :key="pt.id"
-                                :value="pt.id"
-                                :selected="pt.id === payment_terms">
-                  {{ pt.name }}
-                </dropdown-option>
-              </form-dropdown-input>
+            <form-field catch-errors="industry_id" :label="$t('labels.industry')">
+              <form-dropdown-input
+                v-model="industry_id"
+                :items="dropdownOptions.industries"
+              ></form-dropdown-input>
             </form-field>
           </form-row>
           <form-row>
             <form-field catch-errors="company_size_id" :label="$t('labels.company_size')">
-              <form-dropdown-input v-model="company_size_id" :watch="passive.company_sizes" name="company_size_id" scrollable searchable :readonly="preview">
-                <dropdown-option v-for="company_size in passive.companySizes" :key="company_size.id"
-                                :value="company_size.id"
-                                :selected="company_size.id === company_size_id">
-                  {{ company_size.name }}
-                </dropdown-option>
-              </form-dropdown-input>
+              <form-dropdown-input
+                v-model="company_size_id"
+                :items="dropdownOptions.companySizes"
+              ></form-dropdown-input>
             </form-field>
-            <form-field :label="$t('labels.industry')">
-              <form-dropdown-input catch-errors="industry_id" :watch="passive.industries" v-model="industry_id" name="industry_id" scrollable searchable :readonly="preview">
-                <dropdown-option v-for="industry in passive.industries" :key="industry.id"
-                                :value="industry.id"
-                                :selected="industry.id === industry_id">
-                  {{ industry.name }}
-                </dropdown-option>
-              </form-dropdown-input>
+            <form-field catch-errors="payment_terms" :label="$t('labels.payment_terms')">
+              <form-dropdown-input
+                v-model="payment_terms"
+                :items="dropdownOptions.paymentTerms"
+              ></form-dropdown-input>
             </form-field>
           </form-row>
         </form-container>
@@ -170,13 +170,22 @@
     <div v-if="!preview" class="modal-sidebar">
       <div class="form__inline-inputs">
         <div class="form__input-wrapper form">
-          <label class="form__label">{{ $t('labels.country') }}</label>
-          <form-dropdown-input :watch="passive.countries" v-model="vat_checker.country_code" class="dropdown--member-states dropdown--hide-overflow" scrollable searchable>
-            <dropdown-option v-for = "country in passive.member_states" :key="country.id"
-                            :value = "country.code"
-                            :title = "country.name">
-              {{ country.name }}
-            </dropdown-option>
+          <label class="form__label">{{ $t('labels.country_code') }}</label>
+          <form-dropdown-input
+            v-model="vat_checker.country_code"
+            :items="dropdownOptions.memberStates"
+          >
+            <template slot="option" slot-scope="{ item, parent }">
+              <v-list-tile avatar @click="parent.select(item)">
+                <v-list-tile-avatar>
+                  <span class="flag-icon" :class="['flag-icon-' + item.code.toLowerCase() ]"></span>
+                </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title v-html="item.code"></v-list-tile-title>
+                  <v-list-tile-sub-title v-html="item.name"></v-list-tile-sub-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
           </form-dropdown-input>
         </div>
       </div>
@@ -227,14 +236,12 @@
 
 <script>
 import FormMixin from '@/mixins/FormMixin'
-import CurrencyMixin from '@/mixins/CurrencyMixin'
 import ContactsMixin from '@/mixins/ContactsMixin'
 import VatCheckerMixin from '@/mixins/VatCheckerMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 
 export default {
   mixins: [
-    CurrencyMixin,
     VatCheckerMixin,
     ContactsMixin('client'),
     FormMixin('client', [
@@ -274,14 +281,13 @@ export default {
   },
 
   methods: {
-    create() {
+    onCreate() {
       if (this.$store.state.auth.user.guest_key) {
         this.$store.dispatch('features/vat_checker/REMOVE_CHECKS', {
           country_code: this.vat_number.slice(0, 2),
           number: this.vat_number.slice(2)
         })
       }
-      this.$store.dispatch('form/client/CREATE')
     }
   }
 }

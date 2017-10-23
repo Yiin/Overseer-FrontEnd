@@ -1,4 +1,4 @@
-import FormState from '@/modules/form/state'
+import FormState from '../base/state'
 
 const state = FormState('product', {
   fields: {

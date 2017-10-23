@@ -1,6 +1,4 @@
 import Echo from '@/echo'
-import { getTableName } from '@/modules/documents/helpers'
-import DocumentsList from '@/modules/documents/list'
 
 export default {
   PRELOAD_DATA({ commit }, preloadedData) {
@@ -15,8 +13,6 @@ export default {
   },
 
   INIT({ dispatch, commit, state }, preloadedData = null) {
-    const promises = []
-
     if (state.preloadedData && state.preloadedData.user && state.preloadedData.user.taskbar) {
       commit('taskbar/SET_STATE', JSON.parse(state.preloadedData.user.taskbar), { root: true })
     }
@@ -28,43 +24,32 @@ export default {
       dispatch('SET_STATIC_DATA', data.passive)
       dispatch('settings/SET_SETTINGS', state.auth.user.settings)
 
-      /* Documents */
-      for (let key in data.documents) {
-        const tableName = getTableName(key)
-        commit(`table/${tableName}/SET_TABLE_ITEMS`, data.documents[key])
-        commit(`table/${tableName}/NORMALIZE_TABLE`)
-      }
+      /* Repositories */
+      dispatch('documents/repositories/currency/SET_ITEMS', data.passive.currencies)
+      dispatch('documents/repositories/country/SET_ITEMS', data.passive.countries)
+      dispatch('documents/repositories/companySize/SET_ITEMS', data.passive.companySizes)
+      dispatch('documents/repositories/industry/SET_ITEMS', data.passive.industries)
+      dispatch('documents/repositories/language/SET_ITEMS', data.passive.languages)
+      dispatch('documents/repositories/timezone/SET_ITEMS', data.passive.timezones)
+      dispatch('documents/repositories/paymentType/SET_ITEMS', data.passive.paymentTypes)
 
-      DocumentsList.forEach((key) => {
-        const tableName = getTableName(key)
-        dispatch(`table/${tableName}/UPDATE_RELATIONS`)
-      })
+      /**
+       * The order is kind of important.
+       *
+       * Try to first set parent documents, and only then their children.
+       */
+      dispatch('documents/repositories/product/SET_ITEMS', data.documents.product)
+      dispatch('documents/repositories/client/SET_ITEMS', data.documents.client)
+      dispatch('documents/repositories/invoice/SET_ITEMS', data.documents.invoice)
+      dispatch('documents/repositories/recurringInvoice/SET_ITEMS', data.documents['recurring-invoice'])
+      dispatch('documents/repositories/payment/SET_ITEMS', data.documents.payment)
+      dispatch('documents/repositories/credit/SET_ITEMS', data.documents.credit)
+      dispatch('documents/repositories/quote/SET_ITEMS', data.documents.quote)
+      dispatch('documents/repositories/vendor/SET_ITEMS', data.documents.vendor)
+      dispatch('documents/repositories/expense/SET_ITEMS', data.documents.expense)
+      dispatch('documents/repositories/project/SET_ITEMS', data.crm.projects)
 
       dispatch('system/SET_ACTIVITY_LOG', data.system.activityLog)
-    } else {
-      /* Static Data */
-      dispatch('LOAD_STATIC_DATA').then(() => {
-        dispatch('settings/SET_SETTINGS', state.auth.user.settings)
-      })
-
-      dispatch('system/UPDATE_ACTIVITY_LOG')
-
-      /* Documents */
-      DocumentsList.forEach((key) => {
-        const tableName = getTableName(key)
-        promises.push(dispatch(`table/${tableName}/LOAD_TABLE`))
-      })
-
-      /* Features */
-      dispatch(`features/vat_checker/LOAD_RESULTS`)
-
-      // once all documents are loaded, link relationships
-      Promise.all(promises).then(() => {
-        DocumentsList.forEach((key) => {
-          const tableName = getTableName(key)
-          dispatch(`table/${tableName}/UPDATE_RELATIONS`)
-        })
-      })
     }
 
     /* Real time updates */

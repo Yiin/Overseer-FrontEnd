@@ -1,6 +1,6 @@
 <template>
   <div v-show="isActive" class="tab tab--dashboard">
-    <template v-if="!expenses || !expenses.length">
+    <template v-if="!activeExpenses.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--expenses"></div>
         <div class="placeholder placeholder--line"></div>
@@ -16,7 +16,7 @@
     <tabs v-else ref="tabs" labels>
       <simple-tab fade title="Table">
         <documents-table simple
-          :documents="expenses"
+          :documents="activeExpenses"
         >
           <template slot="head">
             <column width="30%">{{ $t('fields.vendor_name') }}</column>
@@ -24,13 +24,13 @@
             <column width="20%">{{ $t('fields.date') }}</column>
             <column width="20%">{{ $t('fields.amount') }}</column>
           </template>
-          <template slot="columns" slot-scope="props">
-            <column width="30%">{{ props.row.vendor.company_name }}</column>
-            <column width="30%">{{ props.row.client.name }}</column>
-            <column width="20%">{{ props.row.date | date }}</column>
+          <template slot="columns" slot-scope="{ row }">
+            <column width="30%">{{ row.vendor.company_name }}</column>
+            <column width="30%">{{ row.client.name }}</column>
+            <column width="20%">{{ row.date | date }}</column>
             <column width="20%">
-              <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-              <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+              <span class="currency">{{ row.currency | currencySymbol }}</span>
+              <span class="currency currency--primary">{{ row.amount | currency }}</span>
             </column>
           </template>
         </documents-table>
@@ -126,10 +126,6 @@ export default {
         Archive,
         Delete
       ]
-    },
-
-    expenses() {
-      return this.state.items
     },
 
     activeExpenses() {

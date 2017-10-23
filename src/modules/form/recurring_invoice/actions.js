@@ -1,4 +1,4 @@
-import FormActions from '@/modules/form/actions'
+import FormActions from '../base/actions'
 
 export default FormActions({
   SET_FORM_DATA({ commit }, data) {

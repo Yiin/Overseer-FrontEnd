@@ -1,20 +1,13 @@
 <template>
   <form-field catch-errors="currency_code" :label="$t('labels.currency')">
+
     <form-dropdown-input
-      v-bind="$attrs"
-      :watch="currencies"
       v-model="localValue"
-      name="currency_code"
-      :placeholder="$t('labels.currency')"
-      scrollable
-      searchable
+      :items="currencies"
     >
-      <dropdown-option v-for="currency in currencies" :key="currency.code"
-                      :value="currency.code"
-                      :title="currency.code + ' - ' + currency.name"
-                      :selected="currency.code === (localValue || settings.currency.code)">
-        {{ currency.code }} - {{ currency.name }}
-      </dropdown-option>
+      <template slot="option" slot-scope="{ item, parent }">
+
+      </template>
     </form-dropdown-input>
   </form-field>
 </template>
@@ -47,7 +40,11 @@ export default {
 
   computed: {
     currencies() {
-      return this.$store.state.passive.currencies
+      return this.$store.state.passive.currencies.map((currency) => {
+        return Object.assign({}, currency, {
+          text: currency.code
+        })
+      })
     },
 
     settings() {

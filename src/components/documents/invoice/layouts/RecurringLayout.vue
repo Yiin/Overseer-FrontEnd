@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--invoices"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,7 +24,7 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by :watch="{ frequencies, clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :watch="{ frequencies, clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
@@ -34,7 +34,11 @@
         <tab title="Recurring"></tab>
       </tabs>
 
-      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
         <template slot="head">
           <column width="13%">{{ $t('fields.frequency') }}</column>
           <column width="17%">{{ $t('fields.client_name') }}</column>

@@ -37,6 +37,7 @@ body
     font-size: 26px;
     color: #455092;
     text-transform: lowercase;
+    visibility: hidden;
     > span:nth-child(1) {
         color: #414c8e;
     }
@@ -368,4 +369,10 @@ input:-webkit-autofill {
 ::selection {
     background: $color-main !important;
     color: #ffffff;
+}
+
+.flag-icon {
+    height: 24px;
+    width: 32px !important;
+    border-radius: 2px;
 }

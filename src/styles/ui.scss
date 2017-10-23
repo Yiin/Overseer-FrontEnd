@@ -2,6 +2,9 @@
 //     margin: 1px 0 26px;
 // }
 
+/**
+ * Auth form
+ */
 .md-input-container label {
     color: rgba(0,0,0,0.87);
 }
@@ -22,21 +25,38 @@ a:not(.md-button):not(.md-bottom-bar-item):hover {
     -webkit-backface-visibility: hidden;
 }
 
+/**
+ * Fix line height for form elements
+ */
 input, textarea {
     line-height: initial;
 }
 
+/**
+ * Vuetify corrections
+ */
 .application--light .input-group label {
     font-size: 15px;
 }
+
 .application--light .input-group:not(.input-group--error) label {
     color: $color-mulled-wine;
 }
 
-// .input-group--focused .input-group__details::before {
-//     background-color: $color-main !important;
-//     height: 2.5px;
-// }
-// .input-group--focused .input-group__details::after {
-//     display: none;
-// }
+/**
+ * Vuetify dropdowns styling,
+ * to match our original style
+ */
+.input-group {
+    padding-top: 0;
+}
+
+.input-group__input {
+    min-height: 44px;
+    background: #edf1fc;
+    padding-left: 15px;
+}
+
+.input-group__details::before, .input-group__details::after {
+    display: none;
+}

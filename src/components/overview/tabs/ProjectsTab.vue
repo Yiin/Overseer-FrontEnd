@@ -1,6 +1,6 @@
 <template>
   <div v-show="isActive" class="tab tab--dashboard">
-    <template v-if="!projects || !projects.length">
+    <template v-if="!projects.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--projects"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,21 +24,21 @@
         <column width="20%">Progress</column>
         <column width="60%">Description</column>
       </template>
-      <template slot="columns" slot-scope="props">
+      <template slot="columns" slot-scope="{ row }">
           <column width="20%">
-            <a href="#" @click="open(props.row)">
-              {{ props.row.name }}
+            <a href="#" @click="open(row)">
+              {{ row.name }}
             </a>
           </column>
           <column width="20%">
-            {{ props.row.tasks | projectProgress }}
+            {{ row.tasks | projectProgress }}
           </column>
           <column width="60%">
-            {{ props.row.description }}
+            {{ row.description }}
           </column>
       </template>
       <template slot="details" slot-scope="props">
-        <project-details :project="props.row"></project-details>
+        <project-details :project="row"></project-details>
       </template>
     </documents-table>
   </div>
@@ -109,7 +109,7 @@ export default {
     },
 
     projects() {
-      return this.$store.state.table.projects.items
+      return this.$store.getters['table/projects/activeItems']
     },
 
     tableData() {

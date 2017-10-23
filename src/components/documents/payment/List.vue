@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--payments"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,12 +24,16 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by :watch="{ payment_methods: paymentMethods, clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :watch="{ payment_methods: paymentMethods, clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
 
-      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
         <template slot="head">
           <column width="17%">{{ $t('fields.transaction_reference') }}</column>
           <column width="16%">{{ $t('fields.invoice') }}</column>
@@ -42,28 +46,28 @@
         <template slot="columns" slot-scope="{ row }">
           <column width="17%">
             <a href="`#${row.key}`" @click.prevent="editDocument(row, 'payment')">
-              {{ row.payment_reference }}
+              {{ row.paymentReference }}
             </a>
           </column>
           <column width="16%">
             <a :href="`#${row.key}`" @click.prevent="editDocument(row.invoice, 'invoice')">
-              {{ row.invoice ? row.invoice.invoice_number : 'Deleted' }}
+              {{ row.invoice.invoiceNumber }}
             </a>
           </column>
           <column width="20%">
             <a :href="`#${row.key}`" @click.prevent="editDocument(row.client, 'client')">
-              {{ row.client ? row.client.name : 'Deleted' }}
+              {{ row.client.name }}
             </a>
           </column>
           <column width="12%">
-            <span>{{ row.method }}</span>
+            <span>{{ row.paymentType.name }}</span>
           </column>
           <column width="12%">
-            <span class="currency">{{ row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ row.amount | currency }}</span>
+            <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
           </column>
           <column width="11%">
-            <span>{{ row.payment_date | date }}</span>
+            <span>{{ row.paymentDate | date }}</span>
           </column>
           <column width="12%" class="column--center">
             <statuses-list type="payment" :document="row"></statuses-list>

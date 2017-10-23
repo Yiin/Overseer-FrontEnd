@@ -1,10 +1,4 @@
-import CurrencyMixin from '@/mixins/CurrencyMixin'
-
 export default {
-  mixins: [
-    CurrencyMixin
-  ],
-
   data() {
     return {
       itemModel: {
@@ -86,14 +80,6 @@ export default {
         taxes += parseFloat(tax.rate) * parseFloat(items[i].cost) * (parseFloat(items[i].discount) / 100) / 100
       }
       return taxes
-    },
-
-    products() {
-      return this.$store.state.table.products.items
-    },
-
-    taxRates() {
-      return this.$store.state.table.tax_rates.items
     }
   },
 

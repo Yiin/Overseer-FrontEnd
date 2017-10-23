@@ -8,7 +8,7 @@ import modules from '@/modules'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   actions,
   mutations,
   state,
@@ -16,3 +16,9 @@ export default new Vuex.Store({
   plugins,
   modules
 })
+
+export function getStoreModule(path) {
+  return store._modules.get(path).context
+}
+
+export default store

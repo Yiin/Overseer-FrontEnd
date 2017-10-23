@@ -91,7 +91,7 @@
                 -->
                 <form-formatted-input
                   type="number"
-                  :label="discount_type === 'percentage' ? '%' : currencyCode"
+                  :label="discount_type === 'percentage' ? '%' : currency.code"
                   :label-position="discount_type === 'percentage' ? 'right' : 'left'"
                   v-model="discount_value"
                   name="discount_value"
@@ -474,13 +474,6 @@ export default {
         return this.currency.symbol
       }
       return '€'
-    },
-
-    currencyCode() {
-      if (this.currency) {
-        return this.currency.code
-      }
-      return 'EUR'
     },
 
     subtotal() {

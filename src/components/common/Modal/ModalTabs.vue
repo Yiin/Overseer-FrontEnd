@@ -25,6 +25,7 @@
           <div @click="$emit('fill')" class="button button__modal button__modal--test">Test Data</div>
         </div>
         <div class="modal-buttons-group modal-buttons-group--right">
+          <slot name="right-buttons--left"></slot>
           <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
           <slot name="right-buttons">
             <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>

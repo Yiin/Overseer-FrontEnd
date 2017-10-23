@@ -57,6 +57,7 @@ export default {
 
     // if there is saved data, load it to form
     if (state.items[index].itemState) {
+      console.log('itemState', state.items[index].itemState)
       commit(`${state.items[index].data.module}/SET_FORM_STATE`, state.items[index].itemState, { root: true })
     }
 

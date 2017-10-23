@@ -28,7 +28,7 @@
         <div @click="nextPage" v-show="!isLastPage" class="nav-page nav-page--right">»</div>
       </div>
       <div class="table__footer-text">
-        <template v-if="showing_all">
+        <template v-if="showing_all && total > 0">
           {{ $t('table.showing_all_entries') }}
         </template>
         <template v-else>
@@ -106,7 +106,7 @@ export default {
     },
 
     from() {
-      return (this.tableState.page * this.tableState.rows_per_page) + 1
+      return this.total ? (this.tableState.page * this.tableState.rows_per_page) + 1 : 0
     },
 
     to() {
@@ -118,7 +118,7 @@ export default {
     },
 
     total() {
-      return this.tableState.items.length
+      return this.$store.getters[`table/${this.tableName}/filteredItems`].length
     }
   },
 

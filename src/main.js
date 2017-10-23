@@ -4,7 +4,9 @@ import VueResource from 'vue-resource'
 import {
  Vuetify,
  VApp,
+ VAvatar,
  VCard,
+ VList,
  VGrid,
  VSelect,
  VTextField
@@ -23,6 +25,7 @@ import * as filters from './filters'
 import * as components from './components/common'
 import * as directives from './directives'
 import { preload } from './scripts'
+require('objectmodel/src/devtool-formatter')
 
 // Options
 Vue.config.productionTip = false
@@ -45,8 +48,10 @@ Vue.material.registerTheme('default', {
 Vue.use(Vuetify, {
   components: {
     VApp,
+    VAvatar,
     VCard,
     VGrid,
+    VList,
     VSelect,
     VTextField
   }

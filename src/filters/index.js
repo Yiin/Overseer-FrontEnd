@@ -3,9 +3,20 @@ import numeral from 'numeral'
 import moment from 'moment'
 import i18n from '@/i18n'
 import store from '@/store'
+import { methods as CurrencyRepository } from '@/modules/documents/repositories/currency'
 
 export const currencySymbol = (val) => {
-  return (val !== null && typeof val === 'object' ? val.symbol : val) || store.state.settings.currency.symbol
+  if (!val) {
+    val = store.state.settings.currency.symbol
+    console.warn('Currency is not defined, defaulting to ', val)
+  }
+  const currency = CurrencyRepository.findOrCreate(val)
+
+  if (currency.symbol) {
+    return currency.symbol
+  } else {
+    return currency.code
+  }
 }
 
 export const currency = (val) => {
@@ -20,6 +31,9 @@ export const date = (val) => {
   if (!val) {
     return ''
   }
+  if (val instanceof moment) {
+    return val.format('MMM D, Y')
+  }
   if (typeof val === 'string') {
     return moment(val).format('MMM D, Y')
   }
@@ -27,10 +41,10 @@ export const date = (val) => {
 }
 
 export const documentStatus = (document) => {
-  if (document.archived_at) {
+  if (document.archivedAt) {
     return 'archived'
   }
-  if (document.deleted_at) {
+  if (document.deletedAt) {
     return 'deleted'
   }
   return undefined

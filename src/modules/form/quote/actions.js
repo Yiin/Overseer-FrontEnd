@@ -1,6 +1,10 @@
-import FormActions from '@/modules/form/actions'
+import FormActions from '../base/actions'
+import Quote from '@/modules/documents/models/quote'
 
 export default FormActions({
+  model: Quote,
+  repository: 'documents/repositories/quote'
+}, {
   SET_FORM_DATA({ commit }, data) {
     commit('SET_FORM_DATA', data)
 

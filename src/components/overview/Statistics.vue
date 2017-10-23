@@ -117,12 +117,12 @@ export default {
 
     currencies() {
       let currencies = [this.selectedCurrency]
-        .concat(this.$store.getters['table/products/activeItems'].map((product) => product.currency))
-        .concat(this.$store.getters['table/invoices/activeItems'].map((invoice) => invoice.currency))
-        .concat(this.$store.getters['table/payments/activeItems'].map((payment) => payment.currency))
-        .concat(this.$store.getters['table/credits/activeItems'].map((credit) => credit.currency))
-        .concat(this.$store.getters['table/quotes/activeItems'].map((quote) => quote.currency))
-        .concat(this.$store.getters['table/expenses/activeItems'].map((expense) => expense.currency))
+        .concat(this.$store.getters['documents/repositories/product/AVAILABLE_ITEMS'].map((product) => product.price.currency))
+        .concat(this.$store.getters['documents/repositories/invoice/AVAILABLE_ITEMS'].map((invoice) => invoice.currency))
+        .concat(this.$store.getters['documents/repositories/payment/AVAILABLE_ITEMS'].map((payment) => payment.amount.currency))
+        .concat(this.$store.getters['documents/repositories/credit/AVAILABLE_ITEMS'].map((credit) => credit.amount.currency))
+        .concat(this.$store.getters['documents/repositories/quote/AVAILABLE_ITEMS'].map((quote) => quote.currency))
+        .concat(this.$store.getters['documents/repositories/expense/AVAILABLE_ITEMS'].map((expense) => expense.amount.currency))
         .filter((currency) => !!currency)
 
       return _.uniqBy(currencies, 'id')
@@ -214,21 +214,15 @@ export default {
     },
 
     payments() {
-      return this.$store.state.table.payments.items.filter((payment) => {
-        return Statuses.generic.active.meetsCondition(payment)
-      })
+      return this.$store.getters['table/payments/activeItems']
     },
 
     expenses() {
-      return this.$store.state.table.expenses.items.filter((expense) => {
-        return Statuses.generic.active.meetsCondition(expense)
-      })
+      return this.$store.getters['table/expenses/activeItems']
     },
 
     invoices() {
-      return this.$store.state.table.invoices.items.filter((invoice) => {
-        return Statuses.generic.active.meetsCondition(invoice)
-      })
+      return this.$store.getters['table/invoices/activeItems']
     }
   },
 

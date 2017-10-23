@@ -213,12 +213,12 @@ $button-text-color: $color-white;
     }
   }
   .dropdown__input {
-    background: $color-forest-green;
+    background: $color-emerald;
     color: $color-white;
     font-weight: 600;
     padding: 0 23px 0 0;
     text-align: center;
-    @include smooth($color-forest-green);
+    @include smooth($color-emerald);
   }
   .dropdown__options--reversed {
     padding-bottom: 61px;

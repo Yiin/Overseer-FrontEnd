@@ -28,6 +28,14 @@ export default {
     }
   },
 
+  watch: {
+    selected(val) {
+      if (val) {
+        this.$refs.input.click()
+      }
+    }
+  },
+
   methods: {
     click() {
       this.$emit('input', this.value)
@@ -35,17 +43,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.inline-select-row {
-    display: flex;
-    font-size: 16px;
-    height: 52px;
-    line-height: 52px;
-    border-bottom: 1px solid #e1e1e1;
-    cursor: default;
-}
-.inline-select-row:hover {
-    background: #fbfbfb;
-}
-</style>

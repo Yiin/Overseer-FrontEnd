@@ -1,6 +1,5 @@
 <template>
   <div>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.8.0/css/flag-icon.min.css">
     <div class="table">
       <div class="table__head">
         <div class="column" style="width: 65%">

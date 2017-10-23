@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="modal__body">
-        <component :is="component" :data="data.data" @cancel="close"></component>
+        <component keep-alive :is="component" :data="data.data" @cancel="close"></component>
       </div>
     </div>
   </div>
@@ -94,6 +94,14 @@ export default {
     }
   },
 
+  mounted() {
+    window.addEventListener('resize', this.animateUpdatePosition)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.animateUpdatePosition)
+  },
+
   methods: {
     /**
      * Get element position in taskbar.
@@ -137,10 +145,7 @@ export default {
       this.isClosed = false
 
       this.$nextTick(() => {
-        const taskbarItemBoundingRect = this.getTaskbarItemBoundingRect()
         const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
-
-        const ratio = taskbarItemBoundingRect.width / modalBoundingRect.width
 
         const modalFinalPosition = {
           x: (window.innerWidth - modalBoundingRect.width) / 2,
@@ -166,6 +171,17 @@ export default {
 
         this.animateBackgroundFadeIn()
       })
+    },
+
+    animateUpdatePosition() {
+      const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
+
+      const modalFinalPosition = {
+        x: (window.innerWidth - modalBoundingRect.width) / 2,
+        y: window.innerHeight - modalBoundingRect.height
+      }
+
+      TweenLite.to(this.$refs.modal, 0.1, modalFinalPosition)
     },
 
     animateOpenFromTaskbar() {

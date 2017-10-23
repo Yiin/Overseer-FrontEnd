@@ -7,29 +7,20 @@
        -->
       <modal-tab :title="$t('tabs.client')">
         <form-container>
-          <form-inline-select-input :watch="clients" v-model="client_uuid" name="client_uuid" :placeholder="$t('placeholders.type_client_name')" :readonly="preview">
-            <inline-option v-if="preview" selected>
-              {{ form.fields.client.name }}
-            </inline-option>
-            <inline-option v-else v-for="client in clients"
-                          :key="client.uuid"
-                          :value="client.uuid"
-                          :selected="client.uuid === client_uuid"
-            >
-              {{ client.name }}
-            </inline-option>
-            <div slot="placeholder" class="placeholder-area">
-              <div class="placeholder placeholder--clients"></div>
-              <div class="placeholder placeholder--line"></div>
-              <div class="placeholder__text">
-                Add a new client by pressing the button below.
-              </div>
-              <button @click="createClient" class="button button--create">
-                <span class="icon-new-client-btn-icon"></span>
-                {{ $t('actions.new_client') }}
-              </button>
+          <form-inline-select-input
+            v-if="dropdownOptions.clients.length"
+            v-model="client_uuid"
+            :items="dropdownOptions.clients"
+            :placeholder="$t('placeholders.type_client_name')"
+          ></form-inline-select-input>
+
+          <div v-else class="placeholder-area">
+            <div class="placeholder placeholder--clients"></div>
+            <div class="placeholder placeholder--line"></div>
+            <div class="placeholder__text">
+              Add a new client by pressing the button below.
             </div>
-          </form-inline-select-input>
+          </div>
         </form-container>
       </modal-tab>
 
@@ -86,7 +77,7 @@
                 -->
                 <form-formatted-input
                   type="number"
-                  :label="discount_type === 'percentage' ? '%' : currencyCode"
+                  :label="discount_type === 'percentage' ? '%' : currency.code"
                   :label-position="discount_type === 'percentage' ? 'right' : 'left'"
                   v-model="discount_value"
                   name="discount_value"
@@ -96,20 +87,11 @@
                 <!--
                   Discount Type
                 -->
-                <form-dropdown-input v-model="discount_type" name="discount_type" class="dropdown--small" :readonly="preview">
-                  <dropdown-option
-                    value="percentage"
-                    :selected="discount_type === 'percentage'"
-                  >
-                    {{ $t('discount_type.percent') }}
-                  </dropdown-option>
-                  <dropdown-option
-                    value="flat"
-                    :selected="discount_type === 'flat'"
-                  >
-                    {{ $t('discount_type.flat') }}
-                  </dropdown-option>
-                </form-dropdown-input>
+                <form-dropdown-input
+                  v-model="discount_type"
+                  :items="dropdownOptions.discountTypes"
+                  class="dropdown--small"
+                ></form-dropdown-input>
               </form-inputs-group>
             </form-field>
           </form-row>
@@ -122,165 +104,9 @@
       <modal-tab :title="$t('tabs.items')">
         <form-container>
 
-          <form-items-list
-            ref="itemsList"
+          <!-- <bill-items-list
             v-model="items"
-            :model="itemModel"
-            name="$items"
-            :readonly="preview"
-          >
-            <!--
-              New item form
-            -->
-            <template slot="fields" slot-scope="props">
-
-              <!--
-                Product
-              -->
-              <form-field class="field--product" :label="$t('labels.item')">
-                <form-dropdown-input
-                  @input="itemsListProductChange"
-                  v-model="props.form.product"
-                  document new-entry-value="name"
-                  :watch="products"
-                  :placeholder="$t('placeholders.please_select_a_product')"
-                  searchable scrollable
-                >
-                  <dropdown-option v-for="(product, index) in products" :key="index" :value="product">
-                    {{ product.name }}
-                  </dropdown-option>
-                </form-dropdown-input>
-              </form-field>
-
-              <!--
-                Unit Cost
-              -->
-              <form-field class="field--cost" :label="$t('labels.unit_cost')">
-                <form-text-input v-model="props.form.cost" name="cost"></form-text-input>
-              </form-field>
-
-              <!--
-                Quantity
-              -->
-              <form-field class="field--qty" :label="$t('labels.qty')">
-                <form-text-input v-model="props.form.qty" name="qty"></form-text-input>
-              </form-field>
-
-              <!--
-                Discount
-              -->
-              <form-field class="field--discount" :label="$t('labels.discount')">
-                <form-text-input v-model="props.form.discount" name="discount"></form-text-input>
-              </form-field>
-
-              <!--
-                Tax Rate
-              -->
-              <form-field class="field--tax-rate" :label="$t('labels.tax_rate')">
-                <form-dropdown-input v-model="props.form.tax_rate" document searchable scrollable>
-                  <dropdown-option v-for="(tr, index) in taxRates" :key="index" :value="tr">
-                    {{ tr.name }}
-                  </dropdown-option>
-                </form-dropdown-input>
-              </form-field>
-            </template>
-
-            <!--
-              List item
-            -->
-            <template slot="preview" slot-scope="row">
-              <div class="list-item__field field--product">
-                <div class="list-item__field list-item__index">
-                  {{ row.index + 1 }}.
-                </div>
-                {{ row.item.product.name }}
-              </div>
-              <div class="list-item__field field--cost">
-                <span class="currency">
-                    {{ currency.symbol | currencySymbol }}
-                </span>
-                <span class="currency currency--primary">
-                    {{ row.item.cost | currency }}
-                </span>
-              </div>
-              <div class="list-item__field field--qty">
-                {{ row.item.qty }}
-              </div>
-              <div class="list-item__field field--discount">
-                <span class="currency currency--primary">
-                    {{ row.item.discount | currency }}
-                </span>
-                <span class="currency">
-                    %
-                </span>
-              </div>
-              <div class="list-item__field field--tax-rate">
-                {{ row.item.taxRate ? row.item.taxRate.text : 'Tobacco Tax (35%)' }}
-              </div>
-            </template>
-
-            <template slot="summary">
-              <div class="summary-block">
-                <label class="summary-block__title">
-                    {{ $t('labels.subtotal') }}
-                </label>
-                <span class="currency">
-                    {{ currency.symbol | currencySymbol }}
-                </span>
-                <span class="currency currency--primary">
-                    {{ subtotal | currency }}
-                </span>
-              </div>
-
-              <div class="summary-block">
-                <label class="summary-block__title">
-                    {{ $t('labels.discount') }}
-                </label>
-                <span class="currency">
-                    {{ currency.symbol | currencySymbol }}
-                </span>
-                <span class="currency currency--primary">
-                    {{ discount | currency }}
-                </span>
-              </div>
-
-              <div class="summary-block">
-                <label class="summary-block__title">
-                    {{ $t('labels.taxes') }}
-                </label>
-                <span class="currency">
-                    {{ currency.symbol | currencySymbol }}
-                </span>
-                <span class="currency currency--primary">
-                    {{ taxes | currency }}
-                </span>
-              </div>
-
-              <div class="summary-block">
-                <label class="summary-block__title">
-                  {{ $t('labels.paid_to_date') }}
-                </label>
-                <span class="currency">
-                  {{ currency.symbol | currencySymbol }}
-                </span>
-                <span class="currency currency--primary">
-                  {{ paid_to_date | currency }}
-                </span>
-              </div>
-
-              <div class="summary-block">
-                <label class="summary-block__title">
-                  {{ $t('labels.balance_due') }}
-                </label>
-                <span class="currency">
-                  {{ currency.symbol | currencySymbol }}
-                </span>
-                <span class="currency currency--primary">
-                  {{ balance_due | currency }}
-                </span>
-              </div>
-            </template>
-          </form-items-list>
+          ></bill-items-list> -->
 
         </form-container>
       </modal-tab>
@@ -307,6 +133,12 @@
           </tab>
         </tabs>
       </modal-tab>
+      <template slot="right-buttons--left">
+        <div v-show="modal.activeTabIndex === 0" @click="createClient" class="button button--create">
+          <span class="icon-new-client-btn-icon"></span>
+          {{ $t('actions.new_client') }}
+        </div>
+      </template>
       <template slot="right-buttons">
         <dropdown @input="saveInvoice" placeholder="Finish" class="dropdown--primary dropdown--invoice">
           <dropdown-option v-if="!form.fields.uuid" value="draft" :tooltip="{ content: 'Save Draft', placement: 'right' }">
@@ -341,6 +173,7 @@ import FormMixin from '@/mixins/FormMixin'
 import BillableDocumentMixin from '@/mixins/BillableDocumentMixin'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
+// import BillItemsList from '@/components/form/BillItemsList.vue'
 import { createDocument } from '@/modules/documents/actions'
 
 export default {
@@ -373,15 +206,15 @@ export default {
       get() {
         // if document is already created, leave due date as it is
         if (this.form.fields.uuid) {
-          return this.form.fields.due_date
+          return this.due_date
         }
 
         // else set due date by client's payment terms
         const client = this.clients.find((client) => client.uuid === this.client_uuid)
 
         if (client) {
-          if (client.payment_terms !== null) {
-            return moment(this.invoice_date).add(client.payment_terms, 'days')
+          if (client.paymentTerms !== null) {
+            return moment(this.invoice_date).add(client.paymentTerms, 'days')
           }
         }
         return null
@@ -395,23 +228,8 @@ export default {
       }
     },
 
-    paid_to_date() {
-      if (this.form.fields.uuid) {
-        return parseFloat(this.form.fields.paid_in)
-      }
-      return parseFloat(this.partial)
-    },
-
-    balance_due() {
-      return this.subtotal - this.discount + this.taxes - this.paid_to_date
-    },
-
     passive() {
       return this.$store.state.passive
-    },
-
-    clients() {
-      return this.$store.state.table.clients.items
     }
   },
 
@@ -453,10 +271,6 @@ iframe {
     overflow:hidden;
 }
 
-.half-in-group {
-  width: 100%;
-}
-
 .modal-form {
   display: flex;
   height: 617px;
@@ -465,6 +279,7 @@ iframe {
     width: 990px;
   }
 }
+
 .modal-sidebar {
   width: 397px;
   border-left: 1px solid #e1e1e1;

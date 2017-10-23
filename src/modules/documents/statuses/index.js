@@ -57,7 +57,7 @@ const Statuses = {
       priority: 98,
 
       meetsCondition(document) {
-        return document.archived_at !== null
+        return document.archivedAt
       },
       apply(document, documentType) {
         let conflicts = []
@@ -86,7 +86,7 @@ const Statuses = {
       priority: 99,
 
       meetsCondition(document) {
-        return document.deleted_at !== null
+        return document.deletedAt
       },
       apply(document, documentType) {
         let conflicts = []

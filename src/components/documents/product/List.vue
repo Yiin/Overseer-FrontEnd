@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--products"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,12 +24,16 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
 
-      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
         <template slot="head">
           <column width="21%">{{ $t('fields.product_name') }}</column>
           <column width="21%">{{ $t('fields.identification_number') }}</column>
@@ -37,24 +41,24 @@
           <column width="15%">{{ $t('fields.price') }}</column>
           <column width="15%">{{ $t('fields.stock') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope="{ row }">
           <column width="21%">
-            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.name }}</a>
+            <a :href="`#${row.uuid}`" @click="edit(row)">{{ row.name }}</a>
           </column>
           <column width="21%">
-            <span>{{ props.row.identification_number }}</span>
+            <span>{{ row.identificationNumber }}</span>
           </column>
           <column width="28%">
-            <span>{{ props.row.description }}</span>
+            <span>{{ row.description }}</span>
           </column>
           <column width="15%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.price | currency }}</span>
+            <span class="currency">{{ row.price.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.price.amount | currency }}</span>
           </column>
           <column width="15%">
-            <span v-if="props.row.is_service" class="product-qty product-qty--service">Service</span>
-            <span v-else-if="props.row.qty <= 0" class="product-qty product-qty--out-of-stock">Out of Stock</span>
-            <span v-else class="product-qty">{{ props.row.qty }}</span>
+            <span v-if="row.isService" class="product-qty product-qty--service">Service</span>
+            <span v-else-if="row.qty <= 0" class="product-qty product-qty--out-of-stock">Out of Stock</span>
+            <span v-else class="product-qty">{{ row.qty }}</span>
           </column>
         </template>
         <template slot="table-controls-left"></template>
@@ -104,6 +108,10 @@ export default {
   computed: {
     name() {
       return 'products'
+    },
+
+    repository() {
+      return 'product'
     },
 
     searchBy() {

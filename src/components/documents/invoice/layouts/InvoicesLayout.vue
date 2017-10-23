@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!state.items || !state.items.length">
+    <template v-if="!availableItems.length">
       <div class="placeholder-area">
         <div class="placeholder placeholder--invoices"></div>
         <div class="placeholder placeholder--line"></div>
@@ -24,7 +24,7 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by :watch="{ clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :watch="{ clients, invoice_products: products }" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
@@ -34,7 +34,11 @@
         <tab title="Recurring"></tab>
       </tabs>
 
-      <documents-table :data="list" :context-menu-actions="contextMenuActions">
+      <documents-table
+        @apply-filters-to-show-hidden-results="applyFiltersToShowHiddenResults"
+        :data="list"
+        :context-menu-actions="contextMenuActions"
+      >
         <template slot="head">
           <column width="16%">{{ $t('fields.invoice_number') }}</column>
           <column width="20%">{{ $t('fields.client_name') }}</column>
@@ -44,38 +48,40 @@
           <column width="10%">{{ $t('fields.paid_in') }}</column>
           <column width="14%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope="{ row }">
           <column width="16%">
-            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">
-              {{ props.row.invoice_number }}
+            <a :href="`#${row.uuid}`" @click="edit(row)">
+              {{ row.invoiceNumber }}
             </a>
           </column>
           <column width="20%">
-            <a href="#" @click.prevent="editDocument(props.row.client, 'client')">
-              {{ props.row.client ? props.row.client.name : '-' }}
+            <a href="#" @click.prevent="editDocument(row.client, 'client')">
+              {{ row.client.name }}
             </a>
           </column>
           <column width="15%">
-            <span>{{ props.row.invoice_date | date }}</span>
+            <span>{{ row.invoiceDate | date }}</span>
           </column>
           <column width="15%">
-            <span>{{ props.row.due_date | date }}</span>
+            <span>{{ row.dueDate | date }}</span>
           </column>
           <column width="10%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+            <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
           </column>
           <column width="10%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--secondary"
+            <span class="currency">{{ row.paidIn.currency | currencySymbol }}</span>
+            <span class="currency"
                   :class="{
-                    'currency--primary': props.row.paid_in === props.row.amount
-                  }">
-              {{ props.row.paid_in | currency }}
+                    'currency--secondary': row.paidIn.amount < row.amount.amount,
+                    'currency--primary': row.paidIn.amount >= row.amount.amount
+                  }"
+            >
+              {{ row.paidIn.amount | currency }}
             </span>
           </column>
           <column width="14%" class="column--center">
-            <statuses-list type="invoice" :document="props.row"></statuses-list>
+            <statuses-list type="invoice" :document="row"></statuses-list>
           </column>
         </template>
         <template slot="table-controls-left"></template>

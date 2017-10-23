@@ -1,3 +1,7 @@
-import FormActions from '@/modules/form/actions'
+import FormActions from '../base/actions'
+import Product from '@/modules/documents/models/product'
 
-export default FormActions()
+export default FormActions({
+  model: Product,
+  repository: 'documents/repositories/product'
+})

@@ -16,3 +16,7 @@ export const getApiRequestName = (name) => {
 export const getResourceName = (name) => {
   return S(getFormName(name)).slugify().s
 }
+
+export const getRepositoryName = (name) => {
+  return S(pluralize.singular(name)).camelize().s
+}
