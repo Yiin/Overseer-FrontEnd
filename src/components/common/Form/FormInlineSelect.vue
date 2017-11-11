@@ -25,7 +25,7 @@
 </template>
 
 <script>
-const Medium = require('@/vendor/medium.js/medium.patched').Medium
+const Medium = require('@/vendor/medium.js/medium.patched')
 
 export default {
   name: 'form-inline-select-input',
@@ -36,7 +36,8 @@ export default {
       type: Array,
       default: () => []
     },
-    value: {}
+    value: {},
+    lastItemValue: {}
   },
 
   data() {
@@ -49,10 +50,20 @@ export default {
 
   computed: {
     filteredItems() {
+      let items = this.items
+
+      // we have a value that we need to show first
+      if (this.lastItemValue) {
+        const currentIndex = items.findIndex((item) => item.value === this.lastItemValue)
+
+        if (currentIndex > -1) {
+          items.splice(0, 0, items.splice(currentIndex, 1)[0])
+        }
+      }
       if (!this.query) {
-        return this.items
+        return items
       } else {
-        return this.items.filter(this.filterByQuery)
+        return items.filter(this.filterByQuery)
       }
     }
   },

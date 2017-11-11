@@ -53,10 +53,10 @@
           <i class="sidebar-icon sidebar-icon--vendors"></i>
           <span>{{ $t('common.vendors') }}</span>
         </nav-link>
-        <div class="sidebar__nav-link sidebar__nav-link--disabled">
-          <i class="sidebar-icon sidebar-icon--personel"></i>
-          <span>Personnel</span>
-        </div>
+        <nav-link :name="routes.personnel">
+          <i class="sidebar-icon sidebar-icon--personnel"></i>
+          <span>{{ $t('common.personnel') }}</span>
+        </nav-link>
         <nav-link :name="routes.currency">
           <i class="sidebar-icon sidebar-icon--currency"></i>
           <span>Currency</span>
@@ -105,7 +105,8 @@ export default {
         quotes: Routes.LIST_QUOTES,
         vendors: Routes.LIST_VENDORS,
         projects: Routes.LIST_PROJECTS,
-        currency: Routes.CURRENCY
+        currency: Routes.CURRENCY,
+        personnel: 'personnel'
       }
     }
   }

@@ -31,9 +31,7 @@ export default {
       default: undefined
     },
 
-    value: {
-      default: null
-    },
+    value: {},
 
     label: {
       type: String
@@ -64,7 +62,7 @@ export default {
   },
 
   watch: {
-    value: function (value) {
+    value(value) {
       if (value !== this.normalizedValue) {
         this.onChange({
           target: {
@@ -101,6 +99,9 @@ export default {
     }, 200),
 
     onChange(e) {
+      if (typeof e.target.value === 'undefined') {
+        return
+      }
       const val = e.target.value.toString()
 
       if (!val) {
@@ -137,10 +138,10 @@ export default {
   width: 100%;
 }
 
-.form__input--label-left input {
+.form__input--label-left .form__input {
   padding-left: 56px;
 }
-.form__input--label-right input {
+.form__input--label-right .form__input {
   padding-right: 56px;
 }
 

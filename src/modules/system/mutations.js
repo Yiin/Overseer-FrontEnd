@@ -2,15 +2,19 @@ export default {
   UPDATE_ACTIVITY_LOG(state, { log, all }) {
     if (!state.activityLog.length) {
       if (Array.isArray(log)) {
-        state.activityLog = log
+        log.forEach((x) => {
+          state.activityLog.push(x)
+        })
       } else {
-        state.activityLog = [log].concat(state.activityLog)
+        state.activityLog.unshift(log)
       }
     } else {
       if (Array.isArray(log)) {
-        state.activityLog = state.activityLog.concat(log)
+        log.forEach((x) => {
+          state.activityLog.push(x)
+        })
       } else {
-        state.activityLog = [log].concat(state.activityLog)
+        state.activityLog.unshift(log)
       }
     }
     state.allActivityLoaded = all

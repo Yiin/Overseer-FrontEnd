@@ -1,3 +1,4 @@
+import moment from 'moment'
 import Api from '@/api'
 import { getStoreModule } from '@/store'
 import Statuses from '../statuses'
@@ -9,6 +10,24 @@ export const RepositoryState = (state) => Object.assign({
   key: 'uuid',
   items: []
 }, state)
+
+/**
+ * Get key of the item.
+ *
+ * Most of the time, item key will be either
+ * numeric id (e.g. 42), or uuid (e.g. 8724687b-0078-501d-8a68-302a5b45b5e7)
+ * But there are cases (like vat info checks), when key may be
+ * composed of item properties, in that case, we need to call
+ * function with item, to get the actual key value of the item.
+ */
+export function getItemKey(item, key) {
+  if (typeof key === 'string') {
+    return item[key]
+  }
+  if (typeof key === 'function') {
+    return key(item)
+  }
+}
 
 /**
  * Base mutations of the repository
@@ -30,12 +49,17 @@ export const RepositoryMutations = (mutations) => Object.assign({
     state.items.push(item)
   },
 
+  REFRESH_LIST(state) {
+    state.items = state.items.slice()
+  },
+
   /**
    * Remove items by their keys
    */
-  REMOVE_ITEMS(state, items) {
+  REMOVE_ITEMS(state, itemsToRemove) {
     state.items = state.items.filter((item) => {
-      return items.findIndex((itemToRemove) => itemToRemove[state.key] === item[state.key]) === -1
+      // if item is not in the itemsToRemove array, keep it
+      return itemsToRemove.findIndex((itemToRemove) => getItemKey(itemToRemove, state.key) === getItemKey(item, state.key)) === -1
     })
   },
 
@@ -43,7 +67,7 @@ export const RepositoryMutations = (mutations) => Object.assign({
    * Remove single item by its key
    */
   REMOVE_ITEM(state, itemToRemove) {
-    state.items = state.items.filter((item) => item[state.key] !== itemToRemove[state.key])
+    state.items = state.items.filter((item) => getItemKey(item, state.key) !== getItemKey(itemToRemove, state.key))
   }
 }, mutations)
 
@@ -52,11 +76,17 @@ export const RepositoryMutations = (mutations) => Object.assign({
  */
 export const RepositoryGetters = (getters) => Object.assign({
   /**
-   * Find item by its key
+   * Find item
    */
   FIND_ITEM(state) {
     return (itemData) => state.items.find((item) => {
-      return item[state.key] === itemData[state.key]
+      return getItemKey(item, state.key) === getItemKey(itemData, state.key)
+    })
+  },
+
+  FIND_ITEM_BY_KEY(state) {
+    return (itemKey) => state.items.find((item) => {
+      return getItemKey(item, state.key) === itemKey
     })
   },
 
@@ -77,9 +107,18 @@ export const RepositoryGetters = (getters) => Object.assign({
    *
    * Active items are neither deleted nor archived
    */
-  ACTIVE_ITEMS(state) {
-    return state.items.filter((item) => {
+  ACTIVE_ITEMS(state, getters) {
+    return getters.AVAILABLE_ITEMS.filter((item) => {
       return Statuses.generic.active.meetsCondition(item)
+    })
+  },
+
+  /**
+   * AA - Active and Archived
+   */
+  AA_ITEMS(state, getters) {
+    return getters.AVAILABLE_ITEMS.filter((item) => {
+      return Statuses.generic.active.meetsCondition(item) || Statuses.generic.archived.meetsCondition(item)
     })
   },
 
@@ -102,7 +141,7 @@ export const RepositoryGetters = (getters) => Object.assign({
     return (item) => `${getters.API_NAME}/${item.uuid}/archive`
   },
   API_ARCHIVE_MANY_URL: (state, getters) => {
-    return `${getters.API_NAME}-archive'`
+    return `${getters.API_NAME}-archive`
   },
   API_DELETE_URL: (state, getters) => {
     return (item) => `${getters.API_NAME}/${item.uuid}`
@@ -133,9 +172,26 @@ export const RepositoryActions = (Model, actions) => {
      * Set repository items
      */
     SET_ITEMS({ dispatch, commit }, items) {
-      items = items.map(Model.create)
+      items = items.map(Model.create, Model).filter((item) => item !== null)
 
       commit('SET_ITEMS', items)
+    },
+
+    /**
+     * Add more items to the repository
+     *
+     * TODO: Maybe update existing items instead of
+     * ignoring them completely?
+     */
+    ADD_ITEMS({ dispatch, commit, state }, items) {
+      items = items.filter((item) => {
+        // Filter out existing items
+        return state.items.findIndex((existingItem) => {
+          return getItemKey(existingItem, state.key) === getItemKey(item)
+        }) === -1
+      }).map(Model.create, Model)
+
+      commit('ADD_ITEMS', items)
     },
 
     /**
@@ -164,9 +220,11 @@ export const RepositoryActions = (Model, actions) => {
       const item = getters.FIND_ITEM(itemData)
 
       if (item) {
+        if (moment(itemData.updated_at.date).unix() < item.updatedAt.unix()) {
+          return item
+        }
         item.update(itemData)
-        commit('REMOVE_ITEM', item)
-        commit('ADD_ITEM', item)
+        commit('REFRESH_LIST')
       }
       return item
     },
@@ -175,8 +233,10 @@ export const RepositoryActions = (Model, actions) => {
      * Send API request to create a document
      */
     API_CREATE({ commit, dispatch, getters }, itemData) {
+      const transformedData = Model.transformProps(itemData)
+
       return Api.post(getters.API_CREATE_URL, {
-        [getters.API_RESOURCE_NAME]: itemData
+        [getters.API_RESOURCE_NAME]: transformedData
       }).then((createdItemData) => {
         dispatch('ADD_ITEM', createdItemData)
         return createdItemData
@@ -187,8 +247,13 @@ export const RepositoryActions = (Model, actions) => {
      * Send API request to save a document
      */
     API_UPDATE({ dispatch, getters }, itemData) {
+      const transformedData = Model.transformProps(itemData)
+      if ('restoredFromActivity' in itemData) {
+        transformedData.restoredFromActivity = itemData.restoredFromActivity
+      }
+
       return Api.put(getters.API_UPDATE_URL(itemData), {
-        [getters.API_RESOURCE_NAME]: itemData
+        [getters.API_RESOURCE_NAME]: transformedData
       }).then((updatedItemData) => {
         dispatch('UPDATE_ITEM', updatedItemData)
         return updatedItemData
@@ -232,17 +297,28 @@ export const RepositoryActions = (Model, actions) => {
     API_DELETE({ commit, dispatch, getters }, itemData) {
       return Api.delete(getters.API_DELETE_URL(itemData))
         .then((updatedItemData) => {
-          dispatch('UPDATE_ITEM', updatedItemData)
+          if (updatedItemData) {
+            dispatch('UPDATE_ITEM', updatedItemData)
+          } else {
+            commit('REMOVE_ITEM', itemData)
+          }
           return updatedItemData
         })
     },
 
-    API_DELETE_MANY({ commit, dispatch, getters }, keys) {
+    API_DELETE_MANY({ commit, dispatch, getters, state }, keys) {
       return Api.post(getters.API_DELETE_MANY_URL, {
         keys
       }).then((updatedItemsData) => {
-        updatedItemsData.forEach((updatedItemData) => {
-          dispatch('UPDATE_ITEM', updatedItemData)
+        keys.forEach((key) => {
+          const updatedItemData = updatedItemsData.find((updatedItemData) => getItemKey(updatedItemData, state.key) === key)
+          if (updatedItemData) {
+            dispatch('UPDATE_ITEM', updatedItemData)
+          } else {
+            commit('REMOVE_ITEM', {
+              [state.key]: key
+            })
+          }
         })
         return updatedItemsData
       })
@@ -295,39 +371,87 @@ export const RepositoryMethods = (module, methods = () => {}) => {
   const getContext = () => getStoreModule(['documents', 'repositories', module])
 
   return Object.assign({
+    /**
+     * Get all available items in the repository
+     */
     getAvailableItems() {
       return getContext().getters.AVAILABLE_ITEMS
     },
 
-    findOrCreate(itemDataOrKeyValue) {
+    /**
+     * Add more items to the repository
+     */
+    addItems(items) {
+      return getContext().dispatch('ADD_ITEMS', items)
+    },
+
+    /**
+     * Add single item to the repository
+     */
+    addItem(item) {
+      return getContext().dispatch('ADD_ITEM', item)
+    },
+
+    /**
+     * Return array of matched items by specified props
+     *
+     * All given properties of item should match for it to be
+     * considerend as valid match.
+     */
+    findMany(props) {
+      return getContext().getters.AVAILABLE_ITEMS.filter((item) => {
+        for (let prop in props) {
+          if (item[prop] !== props[prop]) {
+            return false
+          }
+        }
+        return true
+      })
+    },
+
+    /**
+     * Find item by its key
+     *
+     * Returns undefined if item wasn't found.
+     */
+    findByKey(itemKey) {
+      return getContext().getters.FIND_ITEM_BY_KEY(itemKey)
+    },
+
+    /**
+     * Find item by its key, but takes
+     * whole instance as a parameter
+     */
+    find(itemData) {
       const context = getContext()
-      const key = context.state.key
 
-      console.log('key', key, itemDataOrKeyValue)
-
-      if (
-        typeof itemDataOrKeyValue === 'undefined' ||
-        itemDataOrKeyValue === null ||
-        typeof itemDataOrKeyValue[key] === 'undefined' ||
-        itemDataOrKeyValue[key] === null
-      ) {
-        return undefined
+      if (typeof itemData === 'undefined' || itemData === null) {
+        return null
       }
 
-      let itemData = {}
+      return context.getters.FIND_ITEM(itemData)
+    },
 
+    /**
+     * Find item by its key, and create a new one
+     * with given data if no item was found.
+     *
+     * Also adds created item to the repository.
+     */
+    findOrCreate(itemDataOrKeyValue) {
+      if (typeof itemDataOrKeyValue === 'undefined' || itemDataOrKeyValue === null) {
+        return null
+      }
+      let item = null
       if (typeof itemDataOrKeyValue !== 'object') {
-        itemData[key] = itemDataOrKeyValue
+        item = this.findByKey(itemDataOrKeyValue)
       } else {
-        itemData = itemDataOrKeyValue
+        item = this.find(itemDataOrKeyValue)
       }
-
-      const item = context.getters.FIND_ITEM(itemDataOrKeyValue)
-      console.log('findOrCreate by', key, '->', item, itemDataOrKeyValue)
 
       if (item) {
         return item
-      } else {
+      } else if (item !== null) {
         return getContext().dispatch('ADD_ITEM', itemDataOrKeyValue)
       }
     }

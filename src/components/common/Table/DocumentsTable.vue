@@ -25,7 +25,7 @@
               <span @click="applyFiltersToShowAllResults" class="highlight__text">
                 {{ hiddenEntries }}
               </span>
-              entries were found under
+              {{ hiddenEntries === 1 ? 'entry was' : 'entries were' }} found under
               <span @click="applyFiltersToShowAllResults" class="highlight__text">
                 these
               </span>
@@ -34,6 +34,7 @@
           </span>
         </div>
       </div>
+
       <!-- Else show current page rows -->
       <template
         v-else
@@ -44,7 +45,7 @@
           class="table__row"
           :class="{
             'table__row--selected': isRowSelected(row),
-            'table__row--hover': isMouseDown && isItemSelected($refs.rows[index]),
+            'table__row--hover': isMouseDown && isItemSelected($refs.rows[index]) || (selectedRow === row),
             'table__row--open': showDetailsOf === row
           }"
           @click="toggle(row, $event)"
@@ -63,58 +64,6 @@
       </template>
     </div>
 
-    <!--
-        Context Menu
-    -->
-    <div ref="contextMenu"
-        v-if="contextMenu.isOpen"
-        v-clickaway="closeContextMenu"
-        :style="{ top: contextMenu.position.top, left: contextMenu.position.left }"
-        class="context-menu"
-        @contextmenu.prevent
-    >
-        <div @click="closeContextMenu" class="context-menu-close"></div>
-
-        <!--
-          Loop through list of context menu actions and render them based on
-          action's type and properties
-        -->
-        <div v-for="action in contextMenuActions"
-             v-if="!action.visible || action.visible(data.name, $store, contextMenu.selectedRow)"
-             :class="[
-               {
-                  separator: action.isSeparator,
-                  static: action.isStatic
-               },
-               action.class
-             ]"
-             class="context-menu__list-item"
-             @click="handleContextMenuAction(action)"
-        >
-          <!-- Icon of the action -->
-          <i v-if="action.icon" :class="action.icon"></i>
-
-          <!-- Displays how many rows are selected -->
-          <template v-if="action.isStatic && action.isSelectedRowsCounter">
-            <i18n path="table.selected_rows">
-              <span class="highlight">{{ selectedRows }}</span>
-            </i18n>
-          </template>
-
-          <!-- Displays document name on which we opened context menu -->
-          <template v-if="action.isStatic && action.isSelectedDocumentName">
-            <i18n path="table.selected_document">
-              <span>{{ $t('common.' + action.documentType) }}</span>
-              <span class="highlight">{{ action.documentName(contextMenu.selectedRow) }}</span>
-            </i18n>
-          </template>
-
-          <!-- Displays action title, if it has one -->
-          <template v-if="action.title">
-            {{ $t(action.title) }}
-          </template>
-        </div>
-    </div>
     <div v-show="isMouseDown" class="vue-drag-select-box" :style="selectionBoxStyling"></div>
   </div>
 </template>
@@ -123,7 +72,6 @@
 import TableMixin from '@/mixins/TableMixin'
 import DragSelectMixin from '@/mixins/DragSelect'
 import { Delete } from '@/modules/table/cm-actions'
-import { getRepositoryName } from '@/modules/documents/helpers'
 
 export default {
   name: 'documents-table',
@@ -180,23 +128,16 @@ export default {
       return this.pageRows.length === 0
     },
 
-    selectedRows() {
-      let selectedRows = this.data.selection.length
-
-      if (this.contextMenu.selectedRow) {
-        if (!this.data.selection.find((row) => this.contextMenu.selectedRow.uuid === row.uuid)) {
-          selectedRows++
-        }
-      }
-      return selectedRows
-    },
-
     /**
      * Are all rows in current page selected?
      * @return {Boolean}
      */
     isWholePageSelected() {
       return this.pageRows.length && this.pageRows.every((row) => this.isRowSelected(row))
+    },
+
+    selectedRow() {
+      return this.$store.state.table[this.data.name].selectedRow
     },
 
     /**
@@ -219,6 +160,20 @@ export default {
     }
   },
 
+  watch: {
+    '$store.state.contextmenu.isOpen': function (isOpen) {
+      if (!isOpen) {
+        const selectedRow = this.selectedRow
+
+        if (this.contextMenu.selectedRow === selectedRow) {
+          this.contextMenu.selectedRow = null
+          this.$store.dispatch(`table/${this.data.name}/TOGGLE_ROW_OFF`, selectedRow)
+        }
+        this.$store.commit(`table/${this.data.name}/SET_SELECTED_ROW`, null)
+      }
+    }
+  },
+
   mounted() {
     this.initDragSelect() // TableMixin
     this.initContextMenu()
@@ -238,17 +193,21 @@ export default {
       window.addEventListener('keydown', (e) => {
         switch (e.keyCode) {
         case 46:
-          Delete.handler(this.data.name, this.$store)
+          Delete.handler(this.data.name)
           break
         }
       })
     },
 
     initContextMenu() {
-      document.getElementsByClassName('page-content')[0].addEventListener('contextmenu', (e) => {
+      const pageContentEl = document.getElementsByClassName('page-content')[0]
+
+      pageContentEl.addEventListener('contextmenu', (e) => {
         e.preventDefault()
 
-        this.openContextMenu(e)
+        if (e.target === pageContentEl) {
+          this.openContextMenu(e)
+        }
       })
     },
 
@@ -322,7 +281,7 @@ export default {
      * @return {Boolean}     Is row selected
      */
     isRowSelected(row) {
-      return this.data.selection.indexOf(row) > -1 || this.contextMenu.selectedRow === row
+      return this.data.selection.findIndex((selectedRow) => row.uuid === selectedRow.uuid) > -1 || (this.contextMenu.selectedRow && this.contextMenu.selectedRow.uuid === row.uuid)
     },
 
     /**
@@ -356,12 +315,34 @@ export default {
       if (!this.contextMenuActions || this.contextMenuActions.length === 0) {
         return
       }
-      this.contextMenu.isOpen = true
-      if (row) {
+
+      /**
+       * There are 2 places where we keep reference of clicked row.
+       * 1) this.contextMenu.selecterRow is set to seleted row, if that row wasnt selected before
+       * 2) state.selectedRow is set to selected row regardless if row was selected before
+       *
+       * We do that, so we can remove currently selected row from selection list
+       * when context menu is closed, if that row wasnt selected before.
+       */
+      if (!this.isRowSelected(row)) {
         this.contextMenu.selectedRow = row
+      } else {
+        this.contextMenu.selectedRow = null
+      }
+      this.$store.commit(`table/${this.data.name}/SET_SELECTED_ROW`, row || null)
+
+      if (row) {
+        this.$store.dispatch(`table/${this.data.name}/TOGGLE_ROW_ON`, row)
       }
 
-      this.$nextTick(() => this.setContextMenuPosition(event.y, event.x))
+      this.$store.dispatch('contextmenu/OPEN', {
+        position: {
+          left: event.x,
+          top: event.y
+        },
+        scope: this.data.name,
+        items: this.contextMenuActions
+      })
     },
 
     setContextMenuPosition(top, left) {
@@ -407,117 +388,7 @@ export default {
       const left = box.left + scrollLeft - clientLeft
 
       return { top: Math.round(top), left: Math.round(left) }
-    },
-
-    closeContextMenu() {
-      this.contextMenu.isOpen = false
-      this.contextMenu.selectedRow = undefined
-    },
-
-    handleContextMenuAction(action) {
-      if (typeof action.handler === 'undefined') {
-        return
-      }
-      action.handler({
-        repositoryPath: 'documents/repositories/' + getRepositoryName(this.data.name),
-        tableName: this.data.name
-      }, this.$store, this.contextMenu.selectedRow, this)
-
-      this.$nextTick(() => {
-        this.closeContextMenu()
-      })
     }
   }
 }
 </script>
-
-<style lang="scss">
-.context-menu {
-  background: $color-white;
-  box-shadow: $box-shadow-context-menu;
-  position: absolute;
-  width: 320px;
-  z-index: 10;
-  padding: 6px 0 17px;
-  border-radius: 3px;
-}
-
-.context-menu__list-item {
-  font-size: 16px;
-  cursor: default;
-  user-select: none;
-  padding: 0 30px 0 26px;
-  color: $color-main-dark;
-
-  &:not(.static) {
-    height: 35px;
-    line-height: 35px;
-    cursor: pointer;
-    &:hover {
-      background-color: #f5f5f5;
-      &::before {
-        content: '';
-        position: absolute;
-        width: 70px;
-        height: 2px;
-        background: rgba(255, 255, 255, 0.8);
-        bottom: 13px;
-        left: 50%;
-        transform: translate(-50%, 0);
-      }
-    }
-  }
-
-  &.heading {
-    height: 37px;
-    line-height: 37px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 42px;
-  }
-
-  &.separator {
-    padding: 0;
-    border-top: 1px solid #e0e0e0;
-    width: 100%;
-    margin: 5px auto;
-  }
-
-  i {
-    margin-right: 18px;
-    display: inline-block;
-    width: 16px;
-    color: #808080;
-  }
-
-  .highlight {
-    color: $color-main;
-    font-weight: $font-weight-semibold;
-  }
-}
-
-.context-menu-close {
-  position: absolute;
-  padding: 15px;
-  top: 6px;
-  right: 6px;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.context-menu-close:hover {
-  opacity: 0.8;
-}
-
-.context-menu-close::before {
-  content: "";
-  position: absolute;
-  background: url(../../../assets/icons/cross.svg) no-repeat;
-  background-size: contain;
-  width: 12px;
-  height: 12px;
-  top: 9px;
-  right: 9px;
-}
-</style>

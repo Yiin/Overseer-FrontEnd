@@ -71,7 +71,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
-  Restore,
+  Unarchive,
+  Recover,
   EditDocument,
   CloneDocument,
   ViewHistory,
@@ -99,8 +100,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.invoice_table'
@@ -120,8 +123,9 @@ export default {
         EnterPayment,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
+        Unarchive,
         Delete,
-        Restore
+        Recover
       ]
     },
 
@@ -140,11 +144,11 @@ export default {
 
   methods: {
     create() {
-      this.$store.dispatch('form/invoice/OPEN_CREATE_FORM')
+      this.createDocument('invoice')
     },
 
     edit(data) {
-      this.$store.dispatch('form/invoice/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'invoice')
     }
   }
 }

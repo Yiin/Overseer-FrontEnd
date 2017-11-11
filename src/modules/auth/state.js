@@ -1,5 +1,6 @@
 let state = {
   isLoggedIn: false,
+  isLocked: false,
   isLoaded: false,
   isRedirecting: false,
   redirectingTo: null,

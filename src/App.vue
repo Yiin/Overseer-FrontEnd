@@ -1,24 +1,59 @@
 <template>
   <v-app
     :class="{
+      // my head hurts
       'app--transition': $store.state.auth.wasRedirected,
       'app--transition-active': loaded,
       'app--transition-redirecting': isRedirecting,
       'transitioning': isAuthenticated && !isLoaded
     }">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.8.0/css/flag-icon.min.css">
+
+    <!-- Default page -->
     <template v-if="isAuthenticated && !isRedirecting">
-      <sidebar></sidebar>
-      <div class="page-content">
-        <transition name="slow-cross-fade">
-          <router-view class="router-view"></router-view>
-        </transition>
+      <!-- if we're not locked -->
+      <div v-show="!isLocked">
+        <!-- main content -->
+        <div class="application__content" :style="applicationContentStyle">
+          <!-- sidebar -->
+          <sidebar v-show="!hideSidebar"></sidebar>
+
+          <!-- page content -->
+          <div class="page-content">
+            <transition name="slow-cross-fade">
+              <router-view class="router-view"></router-view>
+            </transition>
+          </div>
+        </div>
+
+        <!-- overlay content, absolute positioned -->
+
+        <!-- content menu -->
+        <context-menu></context-menu>
+
+        <!-- background dim -->
+        <div class="background-dim" id="background-dim"></div>
+
+        <!-- taskbar items -->
+        <taskbar></taskbar>
+
+        <!-- modal -->
+        <popup></popup>
+
+        <!-- snack notification -->
+        <notification></notification>
       </div>
-      <taskbar></taskbar>
-      <popup></popup>
-      <notification></notification>
+
+      <!-- if we're locked, show lock screen -->
+      <transition name="slow-cross-fade">
+        <lockscreen v-show="isLocked"></lockscreen>
+      </transition>
     </template>
+
+    <!-- Auth screen -->
     <auth v-if="!isAuthenticated || !isLoaded"></auth>
+
+    <!-- Move this somewhere else -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.8.0/css/flag-icon.min.css">
   </v-app>
 </template>
 
@@ -26,10 +61,9 @@
 import Sidebar from '@/components/sidebar/Sidebar.vue'
 import Taskbar from '@/components/taskbar/Taskbar.vue'
 import Auth from '@/pages/auth/Auth.vue'
+import Lockscreen from '@/pages/auth/Lockscreen.vue'
 import Notification from '@/components/notification/Notification.vue'
-import {
-  VApp
-} from 'vuetify'
+import ContextMenu from '@/components/shared/ContextMenu.vue'
 
 export default {
   name: 'app',
@@ -38,14 +72,18 @@ export default {
     Sidebar,
     Taskbar,
     Auth,
-    VApp,
-    Notification
+    Lockscreen,
+    Notification,
+    ContextMenu
   },
 
   data() {
     return {
-      scale: 1,
-      loaded: false
+      loaded: false,
+      showingScalingNotification: false,
+      shouldShowScalingNotification: true, // !localStorage.getItem('doNoShowScalingNotification'),
+      disableScaling: false, // !!localStorage.getItem('disableScaling'),
+      previousAspectRatio: null
     }
   },
 
@@ -54,29 +92,158 @@ export default {
       return this.$store.state.auth.isLoggedIn
     },
 
+    isLocked() {
+      return this.$store.state.auth.isLocked
+    },
+
     isRedirecting() {
       return this.$store.state.auth.isRedirecting
     },
 
     isLoaded() {
       return this.$store.state.auth.isLoaded
+    },
+
+    hideSidebar() {
+      return this.$store.state.ui.sidebar.isHidden
+    },
+
+    applicationContentStyle() {
+      return {
+        transform: `scale(${this.$store.state.scale.ratio})`
+      }
+    }
+  },
+
+  watch: {
+    disableScaling(disable) {
+      if (disable) {
+        document.body.classList.add('--disable-scaling')
+      } else {
+        document.body.classList.remove('--disable-scaling')
+      }
+    },
+
+    isLoaded() {
+      this.updateOverflow()
+    },
+
+    isLocked() {
+      this.updateOverflow()
     }
   },
 
   mounted() {
+    /**
+     * I don't even know wtf is this for anymore, but eh
+     */
     setTimeout(() => {
       this.loaded = true
     })
-    // window.addEventListener('resize', this.updateScale.bind(this))
-    // this.updateScale()
+
+    /**
+     * Scaling listeners
+     */
+    window.addEventListener('resize', this.updateScale.bind(this))
+    this.updateScale()
+
+    if (/Mobi/.test(navigator.userAgent) || typeof window.orientation !== 'undefined') {
+      console.log('disable scaling, cuz mobile')
+      this.disableScaling = true
+    }
+    if (this.disableScaling) {
+      document.body.classList.add('--disable-scaling')
+    }
+
+    /**
+     * Hide overflow if user is not loaded yet (i.e. logged in)
+     */
+    this.updateOverflow()
   },
 
   methods: {
-    updateScale() {
-      if (window.innerWidth <= 1500) {
-        const w = window.innerWidth / 1500
-        this.scale = w
+    updateOverflow() {
+      if (!this.isLoaded || this.isLocked) {
+        document.documentElement.classList.add('--hide-overflow')
+      } else {
+        document.documentElement.classList.remove('--hide-overflow')
       }
+    },
+
+    getCurrencyAspectRatio() {
+      return {
+        ratio: parseFloat((window.innerWidth / window.innerHeight).toFixed(3)),
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+    },
+
+    updateScale(e) {
+      if (this.disableScaling) {
+        return
+      }
+      if (!this.previousAspectRatio) {
+        this.previousAspectRatio = this.getCurrencyAspectRatio()
+      }
+      if (window.innerWidth <= 1900) {
+        const w = window.innerWidth / 1900
+
+        /**
+         * Check if page was zoomed, not resized.
+         *
+         * It's sort of accurate-ish, we check if w/h ratio difference is minimal,
+         * if both window width and height are changed and by how much.
+         *
+         * When zooming in, page is most likely to be zoomed in by 5-15% at once.
+         *
+         * p.s.
+         * Remove this monstrosity once we get rid of scaling
+         */
+        if (e &&
+          Math.abs(this.getCurrencyAspectRatio().ratio - this.previousAspectRatio.ratio) < 0.005 &&
+          this.previousAspectRatio.width !== window.innerWidth &&
+          this.previousAspectRatio.height !== window.innerHeight &&
+          Math.min(this.previousAspectRatio.width, window.innerWidth) / Math.max(this.previousAspectRatio.width, window.innerWidth) < 0.95 &&
+          Math.min(this.previousAspectRatio.height, window.innerHeight) / Math.max(this.previousAspectRatio.height, window.innerHeight) < 0.95
+        ) {
+          this.scalingNotificationResponse(false)
+          return
+        }
+        this.previousAspectRatio = this.getCurrencyAspectRatio()
+
+        this.$store.commit('UPDATE_SCALE', {
+          ratio: w,
+          offset: window.innerHeight * (1 - w) / 2
+        })
+      } else if (this.$store.state.scale.ratio < 1) {
+        this.$store.commit('RESET_SCALE')
+      }
+    },
+
+    showScalingNotificationIfNeeded() {
+      if (
+        // if we haven't shown the notification yet
+        this.shouldShowScalingNotification
+      ) {
+        // show it now
+        this.showingScalingNotification = true
+      }
+    },
+
+    scalingNotificationResponse(keep) {
+      if (keep) {
+        // do nothing
+      } else {
+        // disable scaling
+        this.disableScaling = true
+        localStorage.setItem('disableScaling', true)
+        this.$store.commit('RESET_SCALE')
+
+        // and save reminder not to show notification in the future
+        this.shouldShowScalingNotification = false
+        localStorage.setItem('doNoShowScalingNotification', true)
+      }
+      this.showingScalingNotification = false
     }
   }
 }
@@ -86,14 +253,38 @@ export default {
 <style lang="scss" src="@/styles/app.scss"></style>
 
 <style lang="scss">
+.card__text .highlight, .btn.highlight {
+  font-weight: 700;
+  &--main {
+    color: $color-main;
+  }
+  &--red {
+    color: $color-red;
+  }
+  &--title {
+    font-size: 20px;
+    font-weight: 500;
+    color: $color-mine-shaft;
+  }
+}
+
 .transitioning {
   overflow: hidden;
 }
 
-.router-view {
+.application__content {
+  transform-origin: 50% 0%;
+  min-height: 830px;
+}
+
+.application__overlay {
+    height: 100%;
+    width: 100%;
     position: absolute;
-    width: calc(100% - 76px);
-    padding-bottom: 65px;
+}
+
+.background-dim {
+  display: none;
 }
 
 #app {

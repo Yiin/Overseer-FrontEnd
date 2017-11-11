@@ -15,7 +15,7 @@ export const checkForCompletedPaymentConflict = (payment) => {
       type: 'warning',
       message: i18n.t('text.payment_will_be_refunded'),
       solve() {
-        return patchDocument(payment, 'payment', { refunded: payment.amount - payment.refunded })
+        return patchDocument(payment, 'payment', { refunded: payment.amount.get() - payment.refunded.get() })
       }
     })
   }
@@ -29,12 +29,12 @@ export const checkForCompletedPaymentConflict = (payment) => {
 export const checkForRefundedPaymentConflict = (payment) => {
   const conflicts = []
 
-  if (payment.refunded > 0) {
+  if (payment.refunded.get() > 0) {
     conflicts.push({
       type: 'warning',
       message: i18n.t('text.payment_will_be_no_longer_refunded'),
       solve() {
-        return patchDocument(payment, 'payment', { refunded: -payment.refunded })
+        return patchDocument(payment, 'payment', { refunded: -payment.refunded.get() })
       }
     })
   }

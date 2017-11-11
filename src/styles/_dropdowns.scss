@@ -141,7 +141,7 @@
              > .option-label
             {
                 /**
-                 * Small triangle arrow indicating that this options is
+                 * Small triangle arrow indicating that this option is
                  * indeed a dropdown by itself
                  */
                 &::after
@@ -260,8 +260,8 @@
         }
         // &:not(.--datepicker) {
         // caret
-        &::before,
-        &-wrapper::before
+        &::after,
+        &-wrapper::after
         {
             position: absolute;
             top: 20px;
@@ -280,11 +280,11 @@
         }
     }
     // caret when open
-    &--open &__input
+    &--open &__input,
+    &--open &__input-wrapper
     {
         border-radius: $border-radius $border-radius 0 0;
-        &::before,
-        &-wrapper::before
+        &::after
         {
             top: 16px;
 
@@ -315,7 +315,7 @@
         /**
          * Adjust heights and shadows
          */
-         > .dropdown__input
+        .dropdown__input
         {
             line-height: 44px;
 
@@ -333,7 +333,8 @@
         /**
          * Box shadow on dropdown menu
          */
-         > .dropdown__options
+        > .dropdown__options,
+        > .dropdown__options-wrapper
         {
             border-right: none;
             border-bottom: none;
@@ -380,15 +381,29 @@
     font-weight: 600;
     line-height: 34px;
 
+    width: 100%;
     height: 34px;
     padding-left: 26px;
 
     color: $color-main;
+    input {
+        padding-right: 40px;
+        &::placeholder {
+            font-weight: normal;
+
+            text-transform: capitalize;
+
+            color: $color-text;
+        }
+        &:focus::placeholder {
+            color: transparent;
+        }
+    }
     /**
      * If empty and w/o content, show placeholder
      * and imitate text field
      */
-    &:empty::before
+    &.dropdown__option--empty:not(.dropdown__option--focused)::before
     {
         font-weight: normal;
 
@@ -415,11 +430,13 @@
     /**
      * On focus, prepare for input
      */
-    &:focus
+    &:focus {
+        background: $color-main;
+    }
+    &:focus, &--focused input
     {
         color: $color-text-alt;
         outline: none;
-        background: $color-main;
         /**
          * and hide placeholder
          */
@@ -427,6 +444,14 @@
         {
             display: none;
         }
+    }
+}
+
+.dropdown__option--focused {
+    background: $color-main !important;
+    input {
+        color: white;
+        outline: none;
     }
 }
 
@@ -459,7 +484,7 @@
         top: 11px;
         right: 15px;
     }
-    .dropdown__option--text-input:focus + &
+    .dropdown__option--focused + &
     {
         background-image: url(../assets/icons/cross-white.svg);
     }

@@ -38,39 +38,44 @@
           <column width="20%">{{ $t('fields.vendor_name') }}</column>
           <column width="20%">{{ $t('fields.client_name') }}</column>
           <column width="15%">{{ $t('fields.category') }}</column>
-          <column width="18%">{{ $t('fields.amount') }}</column>
+          <column width="16%">{{ $t('fields.amount') }}</column>
           <column width="15%">{{ $t('fields.expense_date') }}</column>
-          <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
+          <column width="14%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope="{ row }">
           <column width="20%">
-            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">
-              {{ props.row.vendor.company_name }}
+            <a href="#" @click.prevent="edit(row)">
+              {{ row.vendor.name }}
             </a>
           </column>
           <column width="20%">
-            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">
-              {{ props.row.client.name }}
+            <a href="#" @click.prevent="editDocument(row.client, 'client')">
+              {{ row.client.name }}
             </a>
           </column>
           <column width="15%">
-            <!-- <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.category.name }}</a> -->
+            <!-- <a :href="`#${row.uuid}`" @click="edit(row)">{{ row.category.name }}</a> -->
           </column>
-          <column width="18%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+          <column width="16%">
+            <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
           </column>
           <column width="15%">
-            <span>{{ props.row.date | date }}</span>
+            <span>{{ row.date | date }}</span>
           </column>
-          <column width="12%" class="column--center">
-            <statuses-list type="expense" :document="props.row"></statuses-list>
+          <column width="14%" class="column--center">
+            <statuses-list type="expense" :document-uuid="row.uuid"></statuses-list>
           </column>
         </template>
         <template slot="table-controls-left"></template>
       </documents-table>
 
-      <table-footer :table-name="name"></table-footer>
+      <table-footer
+        :table-name="name"
+        :calculator-options="[
+          { text: $t('fields.amount'), value: 'amount', type: 'money' }
+        ]"
+      ></table-footer>
     </template>
   </div>
 </template>
@@ -104,6 +109,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Unarchive,
+  Recover,
   Preview,
   EditDocument,
   InvoiceExpense
@@ -121,19 +128,21 @@ export default {
 
     searchBy() {
       return [
-        SearchByText.extend({ key: 'invoice_number', name: 'invoice_number', placeholder: this.$t('search_by.invoice_number') }),
+        SearchByText.extend({ key: 'invoice.invoiceNumber', name: 'invoice_number', placeholder: this.$t('search_by.invoice_number') }),
         SearchByDate.extend({ key: 'date', name: 'expense_date', placeholder: this.$t('search_by.expense_date') }),
-        SearchByValue.extend({ key: 'amount', name: 'expense_amount', placeholder: this.$t('search_by.expense_amount') }),
+        SearchByValue.extend({ key: 'amount.amount', name: 'expense_amount', placeholder: this.$t('search_by.expense_amount') }),
         { type: 'separator' },
-        SearchByText.extend({ key: 'vendor.company_name', name: 'vendor_name', placeholder: this.$t('search_by.vendor_name') })
+        SearchByText.extend({ key: 'vendor.name', name: 'vendor_name', placeholder: this.$t('search_by.vendor_name') })
       ]
     },
 
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.expense_table'
@@ -149,7 +158,9 @@ export default {
         InvoiceExpense,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Unarchive,
+        Delete,
+        Recover
       ]
     },
 
@@ -164,24 +175,25 @@ export default {
         ExpenseIsPendingFilter,
         ExpenseIsPaidFilter,
         { type: 'separator' },
-        CurrenciesFilter,
-        ClientsFilter
+        CurrenciesFilter.make(this.currencies),
+        { type: 'separator' },
+        ClientsFilter.make(this.clients)
       ]
     },
 
     currencies() {
-      const currencies = this.$store.getters[`table/${this.name}/filteredItems`]
-        .filter((expense) => expense.currency)
-        .map((expense) => expense.currency.id)
+      const currencies = this.$store.getters[`table/${this.name}/activeItems`]
+        .filter((expense) => expense.amount.currency)
+        .map((expense) => expense.amount.currency)
 
       return this.filterAndOrder(currencies, {
-        filterBy: 'id',
+        filterBy: 'code',
         orderBy: 'name'
       })
     },
 
     clients() {
-      const clients = this.$store.getters[`table/${this.name}/filteredItems`]
+      const clients = this.$store.getters[`table/${this.name}/activeItems`]
         .filter((expense) => expense.client)
         .map((expense) => expense.client)
 
@@ -194,11 +206,11 @@ export default {
 
   methods: {
     create() {
-      this.$store.dispatch('form/expense/OPEN_CREATE_FORM')
+      this.createDocument('expense')
     },
 
     edit(data) {
-      this.$store.dispatch('form/expense/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'expense')
     }
   }
 }

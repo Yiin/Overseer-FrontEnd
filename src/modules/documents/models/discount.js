@@ -1,34 +1,37 @@
-import { ObjectModel } from 'objectmodel'
+import Model from './model'
 import { methods as CurrencyRepository } from '../repositories/currency'
 import Money from './money'
 
 /**
  * Discount model
- * @type {ObjectModel}
  */
-const Discount = new ObjectModel({
-  type: ['percentage', 'flat'],
-  value: [Number, Money]
-})
-
-Discount.parse = function (data) {
-  let modelData = {}
-
-  if (data.type === 'flat') {
-    modelData.value = Money.create({
-      amount: data.value,
-      currency: CurrencyRepository.findOrCreate(data.currency)
-    })
-  } else {
-    modelData.value = Number(data.value)
+class Discount extends Model {
+  static create(data) {
+    return new Discount(Discount.parse(data))
   }
-  modelData.type = data.type
 
-  return modelData
-}
+  static parse(data) {
+    let modelData = {}
 
-Discount.create = function (data) {
-  return new Discount(Discount.parse(data))
+    if (data.type === 'flat') {
+      modelData.value = Money.create({
+        amount: data.value,
+        currency: CurrencyRepository.findOrDefault(data.currency)
+      })
+    } else {
+      modelData.value = Number(data.value)
+    }
+    modelData.type = data.type
+
+    return modelData
+  }
+
+  serialize() {
+    return {
+      type: this.type,
+      value: this.value instanceof Money ? this.value.amount : this.value
+    }
+  }
 }
 
 export default Discount

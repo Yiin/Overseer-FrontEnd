@@ -18,9 +18,12 @@ export default {
 
       const clientRect = this.$el.getBoundingClientRect()
 
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+      const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+
       // Calculate position and dimensions of the selection box
-      const left = Math.min(this.startPoint.x, this.endPoint.x) - clientRect.left
-      const top = Math.min(this.startPoint.y, this.endPoint.y) - clientRect.top
+      const left = Math.min(this.startPoint.x, this.endPoint.x) - clientRect.left - scrollLeft
+      const top = Math.min(this.startPoint.y, this.endPoint.y) - clientRect.top - scrollTop
       const width = Math.abs(this.startPoint.x - this.endPoint.x)
       const height = Math.abs(this.startPoint.y - this.endPoint.y)
 
@@ -199,7 +202,9 @@ export default {
 
   beforeDestroy() {
     // Remove event listeners
-    document.getElementsByClassName('page-content')[0].removeEventListener('mousedown', this.onMouseDown)
+    if (document.getElementsByClassName('page-content') && document.getElementsByClassName('page-content')[0]) {
+      document.getElementsByClassName('page-content')[0].removeEventListener('mousedown', this.onMouseDown)
+    }
     window.removeEventListener('mousemove', this.onMouseMove)
     window.removeEventListener('mouseup', this.onMouseUp)
     window.removeEventListener('keydown', this.onKeyDown)

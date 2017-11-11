@@ -39,13 +39,16 @@ export default {
 
   computed: {
     vatNumber() {
-      return this.vat || (this.client ? this.client.vat_number : null)
+      return this.vat.vatNumber || (this.client ? this.client.vat_number : null)
     },
 
     result() {
-      const result = this.$store.state.features.vat_checker.results.find((result) => {
-        return result.country_code + result.number === this.vatNumber
-      })
+      const result = this.vat.getLatestInfo()
+
+      if (result.status === 'pending') {
+        return null
+      }
+
       if (result) {
         result.checked_time_ago = moment(result.created_at).fromNow()
       }
@@ -63,6 +66,7 @@ export default {
 
     tooltipClasses() {
       let classes = [
+        'tooltip--vat-info',
         'status--' + this.status
       ]
 
@@ -87,7 +91,7 @@ export default {
           <div class="result-border"></div>
           <div class="result-details">
             <div class="result-detail">
-              VAT: <span class="result-detail__value">${result.country_code + result.number}</span>
+              VAT: <span class="result-detail__value">${result.countryCode + result.number}</span>
             </div>
             <div class="result-detail result-detail--highlight">
               Status: <span class="result-detail__value">${this.$t('vat_status.' + result.status)}</span>
@@ -95,10 +99,10 @@ export default {
             <div class="result-detail-main">
       `
 
-      if (result.name) {
+      if (result.companyName) {
         html += `
-              <div v-if="result.name" class="result-detail__title">
-                ${result.name}
+              <div v-if="result.companyName" class="result-detail__title">
+                ${result.companyName}
               </div>
         `
       }
@@ -118,6 +122,7 @@ export default {
         </div>
       </div>
       `
+
       return html
     }
   },
@@ -146,10 +151,7 @@ export default {
         this.trigger = 'manual'
       }
 
-      this.$store.dispatch('features/vat_checker/CHECK_VAT', {
-        country_code: this.vatNumber.substr(0, 2),
-        number: this.vatNumber.substr(2)
-      }).then(() => {
+      this.vat.check().then(() => {
         this.trigger = 'manual'
         this.$el._tooltip.show()
 

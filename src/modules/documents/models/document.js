@@ -1,53 +1,32 @@
-import Vue from 'vue'
-import { ObjectModel, FunctionModel } from 'objectmodel'
+// import Vue from 'vue'
 import moment from 'moment'
+import Model from './model'
 
-const Document = new ObjectModel({
-  uuid: [String],
-  isDisabled: Boolean,
-  createdAt: [moment],
-  updatedAt: [moment],
-  archivedAt: [moment],
-  deletedAt: [moment],
-
-  update: Function
-}).defaults({
-  isDisabled: false
-})
-
-function parse(data) {
-  const documentData = {}
-
-  documentData.isDisabled = Boolean(data.is_disabled)
-  documentData.uuid = data.uuid
-  documentData.createdAt = data.created_at && moment(data.created_at.date)
-  documentData.updatedAt = data.updated_at && moment(data.updated_at.date)
-  documentData.archivedAt = data.archived_at && moment(data.archived_at.date)
-  documentData.deletedAt = data.deleted_at && moment(data.deleted_at.date)
-
-  return documentData
-}
-
-Document.create = function (data) {
-  if (typeof this === 'undefined') {
-    const exception = {
-      message: 'Document has no constructor.'
-    }
-    throw exception
+export default class Document extends Model {
+  getTitle() {
+    return this.name || 'Undefined'
   }
-  const parsedData = Object.assign(
-    parse(data),
-    this.parse(data)
-  )
-  return new this(parsedData)
-}
 
-Document.prototype.update = FunctionModel(Object).return()(function (data) {
-  const documentData = Object.assign(parse(data), this.constructor.parse(data))
-
-  for (let key in documentData) {
-    Vue.set(this, key, documentData[key])
+  update(data) {
+    this.fill(
+      this.constructor.parse(data)
+    )
+    return this
   }
-})
 
-export default Document
+  static parse(data) {
+    const parsedData = {}
+
+    parsedData.uuid = data.uuid
+    parsedData.createdAt = data.created_at && moment(data.created_at.date)
+    parsedData.updatedAt = data.updated_at && moment(data.updated_at.date)
+    parsedData.archivedAt = data.archived_at && moment(data.archived_at.date)
+    parsedData.deletedAt = data.deleted_at && moment(data.deleted_at.date)
+    parsedData.isDisabled = Boolean(data.is_disabled)
+
+    const Activity = require('./activity').default
+    parsedData.history = (data.history || []).map(Activity.create, Activity)
+
+    return parsedData
+  }
+}

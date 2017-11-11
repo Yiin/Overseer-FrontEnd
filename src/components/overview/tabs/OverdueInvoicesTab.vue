@@ -22,30 +22,30 @@
         <column width="13%">{{ $t('fields.amount') }}</column>
         <column width="13%">{{ $t('fields.paid_in') }}</column>
       </template>
-      <template slot="columns" slot-scope="props">
+      <template slot="columns" slot-scope="{ row }">
         <column width="18%">
-          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.invoice_number }}</a>
+          <a :href="`#${row.uuid}`" @click="edit(row)">{{ row.invoiceNumber }}</a>
         </column>
         <column width="22%">
-          <span>{{ props.row.client ? props.row.client.name : '-' }}</span>
+          <span>{{ row.client ? row.client.name : '-' }}</span>
         </column>
         <column width="17%">
-          <span>{{ props.row.invoice_date | date }}</span>
+          <span>{{ row.invoiceDate | date }}</span>
         </column>
         <column width="17%">
-          <span>{{ props.row.due_date | date }}</span>
+          <span>{{ row.dueDate | date }}</span>
         </column>
         <column width="13%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+          <span class="currency">{{ row.currency | currencySymbol }}</span>
+          <span class="currency currency--primary">{{ row.amount.get() | currency }}</span>
         </column>
         <column width="13%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
+          <span class="currency">{{ row.currency | currencySymbol }}</span>
           <span class="currency currency--secondary"
                 :class="{
-                  'currency--primary': props.row.paid_in === props.row.amount
+                  'currency--primary': row.paidIn.get() === row.amount.get()
                 }">
-            {{ props.row.paid_in | currency }}
+            {{ row.paidIn.get() | currency }}
           </span>
         </column>
       </template>
@@ -67,7 +67,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
-  Restore,
+  Unarchive,
+  Recover,
   EditDocument,
   CloneDocument,
   ViewHistory,
@@ -95,8 +96,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.invoice_table'
@@ -116,8 +119,9 @@ export default {
         EnterPayment,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
+        Unarchive,
         Delete,
-        Restore
+        Recover
       ]
     },
 
@@ -136,7 +140,7 @@ export default {
 
   methods: {
     edit(data) {
-      this.$store.dispatch('form/invoice/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'invoice')
     }
   }
 }

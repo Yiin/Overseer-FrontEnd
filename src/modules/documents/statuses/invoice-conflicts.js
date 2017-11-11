@@ -67,7 +67,9 @@ export const checkForOverdueConflict = (invoice, status) => {
       type: 'error',
       message: i18n.t('text.invoice_due_date_needs_to_be_delayed'),
       solve() {
-        editDocument(invoice, 'invoice', 1)
+        editDocument(invoice, 'invoice', {
+          tabIndex: 1
+        })
       }
     })
   }

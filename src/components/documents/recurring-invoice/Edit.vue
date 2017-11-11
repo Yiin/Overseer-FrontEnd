@@ -79,7 +79,7 @@
             <!--
               Currency
             -->
-            <form-currency-dropdown v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+            <form-currency-dropdown :errors="validationErrors.currency_code" v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
 
             <!--
               Discount

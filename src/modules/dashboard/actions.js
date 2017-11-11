@@ -1,13 +1,8 @@
 // import Api from '@/api'
 
 export default {
-  CHANGE_CURRENCY({ commit, rootState }, currencyId) {
-    const currency = rootState.passive.currencies.find((currency) => {
-      return currency.id === currencyId
-    })
-    if (currency) {
-      commit('CHANGE_CURRENCY', currency)
-    }
+  CHANGE_CURRENCY({ commit, rootState }, currency) {
+    commit('CHANGE_CURRENCY', currency)
   },
 
   CHANGE_GRAPH_INTERVAL({ commit }, graphInterval) {

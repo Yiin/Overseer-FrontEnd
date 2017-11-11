@@ -3,6 +3,7 @@
     :to="{ name }"
     class="sidebar__nav-link --do-not-style-link"
     active-class="sidebar__nav-link--active"
+    :event="['mousedown', 'touchstart']"
   >
     <slot></slot>
   </router-link>

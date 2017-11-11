@@ -1,21 +1,16 @@
-import { ObjectModel } from 'objectmodel'
+import Model from './model'
 
 /**
  * Language model
- * @type {ObjectModel}
  */
-const Language = new ObjectModel({
-  id: Number,
-  name: String,
-  locale: String
-})
-
-Language.create = function (data) {
-  return new Language({
-    id: data.id,
-    name: data.name,
-    locale: data.locale
-  })
+class Language extends Model {
+  static create(data) {
+    return new Language({
+      id: data.id,
+      name: data.name,
+      locale: data.locale
+    })
+  }
 }
 
 export default Language

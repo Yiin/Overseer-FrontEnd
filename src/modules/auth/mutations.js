@@ -8,6 +8,10 @@ export default {
     state.isLoggedIn = isAuthenticated
   },
 
+  SET_LOCKED(state, isLocked) {
+    state.isLocked = isLocked
+  },
+
   UPDATE_USER(state, user) {
     state.user = user
   },

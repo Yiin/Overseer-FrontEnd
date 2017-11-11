@@ -1,4 +1,5 @@
 import moment from 'moment'
+import Statuses from '@/modules/documents/statuses'
 const _ = require('lodash')
 
 /**
@@ -9,7 +10,7 @@ export const IsActiveFilter = {
   name: 'active',
   placeholder: 'filters.active',
   filter: function (document) {
-    return !document.deletedAt && !document.archivedAt
+    return Statuses.generic.active.meetsCondition(document)
   }
 }
 
@@ -18,7 +19,7 @@ export const IsArchivedFilter = {
   name: 'archived',
   placeholder: 'filters.archived',
   filter: function (document) {
-    return document.archivedAt
+    return Statuses.generic.archived.meetsCondition(document)
   }
 }
 
@@ -27,7 +28,7 @@ export const IsDeletedFilter = {
   name: 'deleted',
   placeholder: 'filters.deleted',
   filter: function (document) {
-    return document.deletedAt
+    return Statuses.generic.deleted.meetsCondition(document)
   }
 }
 
@@ -35,26 +36,29 @@ export const IsDeletedFilter = {
  * Vat Checker filters
  */
 export const VatVerifiedFilter = {
+  scope: 'vat',
   name: 'vat_verified',
   placeholder: 'filters.vat_verified',
   filter: function (document) {
-    return document.vat_status === 'verified'
+    return document.vat.getLatestInfo().status === 'valid'
   }
 }
 
 export const VatPendingFilter = {
+  scope: 'vat',
   name: 'vat_pending',
   placeholder: 'filters.vat_pending',
   filter: function (document) {
-    return document.vat_status === null || document.vat_status === 'pending'
+    return document.vat.getLatestInfo().status === 'pending'
   }
 }
 
 export const VatInvalidFilter = {
+  scope: 'vat',
   name: 'vat_invalid',
   placeholder: 'filters.vat_invalid',
   filter: function (document) {
-    return document.vat_status === 'invalid'
+    return document.vat.getLatestInfo().status === 'invalid'
   }
 }
 
@@ -96,52 +100,7 @@ export const IsDraftFilter = {
   name: 'draft',
   placeholder: 'filters.draft',
   filter: function (document) {
-    return document.status === 'draft'
-  }
-}
-
-export const IsSentFilter = {
-  scope: 'invoice_status',
-  name: 'sent',
-  placeholder: 'filters.sent',
-  filter: function (document) {
-    return document.status === 'sent'
-  }
-}
-
-export const IsViewedFilter = {
-  scope: 'invoice_status',
-  name: 'viewed',
-  placeholder: 'filters.viewed',
-  filter: function (document) {
-    return document.status === 'viewed'
-  }
-}
-
-export const IsApprovedFilter = {
-  scope: 'invoice_status',
-  name: 'approved',
-  placeholder: 'filters.approved',
-  filter: function (document) {
-    return document.status === 'approved'
-  }
-}
-
-export const IsPartialFilter = {
-  scope: 'invoice_status',
-  name: 'partial',
-  placeholder: 'filters.partial',
-  filter: function (document) {
-    return document.status === 'partial'
-  }
-}
-
-export const IsPaidFilter = {
-  scope: 'invoice_status',
-  name: 'paid',
-  placeholder: 'filters.paid',
-  filter: function (document) {
-    return document.status === 'paid'
+    return Statuses.invoice.draft.meetsCondition(document)
   }
 }
 
@@ -150,7 +109,43 @@ export const IsPendingFilter = {
   name: 'pending',
   placeholder: 'filters.pending',
   filter: function (document) {
-    return document.status === 'pending'
+    return Statuses.invoice.pending.meetsCondition(document)
+  }
+}
+
+export const IsSentFilter = {
+  scope: 'invoice_status',
+  name: 'sent',
+  placeholder: 'filters.sent',
+  filter: function (document) {
+    return Statuses.invoice.sent.meetsCondition(document)
+  }
+}
+
+export const IsViewedFilter = {
+  scope: 'invoice_status',
+  name: 'viewed',
+  placeholder: 'filters.viewed',
+  filter: function (document) {
+    return Statuses.invoice.viewed.meetsCondition(document)
+  }
+}
+
+export const IsPartialFilter = {
+  scope: 'invoice_status',
+  name: 'partial',
+  placeholder: 'filters.partial',
+  filter: function (document) {
+    return Statuses.invoice.partial.meetsCondition(document)
+  }
+}
+
+export const IsPaidFilter = {
+  scope: 'invoice_status',
+  name: 'paid',
+  placeholder: 'filters.paid',
+  filter: function (document) {
+    return Statuses.invoice.paid.meetsCondition(document)
   }
 }
 
@@ -159,7 +154,76 @@ export const IsOverdueFilter = {
   name: 'overdue',
   placeholder: 'filters.overdue',
   filter: function (document) {
-    return document.due_date && moment().isAfter(document.due_date)
+    return Statuses.invoice.overdue.meetsCondition(document)
+  }
+}
+
+/**
+ * Quote Status filters
+ */
+export const IsQuoteDraftFilter = {
+  scope: 'quote_status',
+  name: 'draft',
+  placeholder: 'filters.draft',
+  filter: function (document) {
+    return Statuses.quote.draft.meetsCondition(document)
+  }
+}
+
+export const IsQuotePendingFilter = {
+  scope: 'quote_status',
+  name: 'pending',
+  placeholder: 'filters.pending',
+  filter: function (document) {
+    return Statuses.quote.pending.meetsCondition(document)
+  }
+}
+
+export const IsQuoteSentFilter = {
+  scope: 'quote_status',
+  name: 'sent',
+  placeholder: 'filters.sent',
+  filter: function (document) {
+    return Statuses.quote.sent.meetsCondition(document)
+  }
+}
+
+export const IsQuoteViewedFilter = {
+  scope: 'quote_status',
+  name: 'viewed',
+  placeholder: 'filters.viewed',
+  filter: function (document) {
+    return Statuses.quote.viewed.meetsCondition(document)
+  }
+}
+
+export const IsQuoteApprovedFilter = {
+  scope: 'quote_status',
+  name: 'approved',
+  placeholder: 'filters.approved',
+  filter: function (document) {
+    return Statuses.quote.approved.meetsCondition(document)
+  }
+}
+
+export const IsQuoteOverdueFilter = {
+  scope: 'quote_status',
+  name: 'overdue',
+  placeholder: 'filters.overdue',
+  filter: function (document) {
+    return Statuses.quote.overdue.meetsCondition(document)
+  }
+}
+
+/**
+ * Expense filters
+ */
+export const ExpenseIsLoggedFilter = {
+  scope: 'expense_status',
+  name: 'logged',
+  placeholder: 'filters.logged',
+  filter: function (document) {
+    return Statuses.expense.logged.meetsCondition(document)
   }
 }
 
@@ -168,7 +232,7 @@ export const ExpenseIsInvoicedFilter = {
   name: 'invoiced',
   placeholder: 'filters.invoiced',
   filter: function (document) {
-    return document.invoice && document.invoice.paid_in < document.invoice.amount
+    return Statuses.expense.invoiced.meetsCondition(document)
   }
 }
 
@@ -177,7 +241,34 @@ export const ExpenseIsPendingFilter = {
   name: 'pending',
   placeholder: 'filters.pending',
   filter: function (document) {
-    return document.invoice === null && document.should_be_invoiced
+    return Statuses.expense.pending.meetsCondition(document)
+  }
+}
+
+export const ExpenseIsSentFilter = {
+  scope: 'expense_status',
+  name: 'sent',
+  placeholder: 'filters.sent',
+  filter: function (document) {
+    return Statuses.expense.sent.meetsCondition(document)
+  }
+}
+
+export const ExpenseIsViewedFilter = {
+  scope: 'expense_status',
+  name: 'viewed',
+  placeholder: 'filters.viewed',
+  filter: function (document) {
+    return Statuses.expense.viewed.meetsCondition(document)
+  }
+}
+
+export const ExpenseIsPartialFilter = {
+  scope: 'expense_status',
+  name: 'partial',
+  placeholder: 'filters.partial',
+  filter: function (document) {
+    return Statuses.expense.partial.meetsCondition(document)
   }
 }
 
@@ -186,19 +277,31 @@ export const ExpenseIsPaidFilter = {
   name: 'paid',
   placeholder: 'filters.paid',
   filter: function (document) {
-    return document.invoice && document.invoice.paid_in >= document.invoice.amount
+    return Statuses.expense.paid.meetsCondition(document)
   }
 }
 
-export const ExpenseIsLoggedFilter = {
+export const ExpenseIsUnpaidFilter = {
   scope: 'expense_status',
-  name: 'logged',
-  placeholder: 'filters.logged',
+  name: 'unpaid',
+  placeholder: 'filters.unpaid',
   filter: function (document) {
-    return document.invoice === null && !document.should_be_invoiced
+    return Statuses.expense.unpaid.meetsCondition(document)
   }
 }
 
+export const ExpenseIsOverdueFilter = {
+  scope: 'expense_status',
+  name: 'overdue',
+  placeholder: 'filters.overdue',
+  filter: function (document) {
+    return Statuses.expense.overdue.meetsCondition(document)
+  }
+}
+
+/**
+ * Recurring Invoices filters
+ */
 export const FrequenciesFilter = {
   scope: 'frequency',
   name: 'frequencies',
@@ -222,12 +325,12 @@ export const FrequenciesFilter = {
 export const CountriesFilter = {
   scope: 'countries',
   name: 'countries',
-  placeholder: 'filters.countries',
+  placeholder: 'filters.country',
   type: 'list',
   keyName: 'id',
   list: [],
   filter: function (document, id) {
-    return parseInt(id) === (document.country ? document.country.id : null)
+    return parseInt(id) === (document.address.country ? parseInt(document.address.country.id) : null)
   },
   make: function (countries) {
     return Object.assign({}, this, {
@@ -239,17 +342,20 @@ export const CountriesFilter = {
 export const CurrenciesFilter = {
   scope: 'currencies',
   name: 'currencies',
-  placeholder: 'filters.currencies',
+  placeholder: 'filters.currency',
   type: 'list',
-  keyName: 'id',
+  keyName: 'code',
   list: [],
-  filter: function (document, id) {
-    return parseInt(id) === (document.currency ? document.currency.id : null)
+  filter: function (document, code) {
+    return code === this.filterKeyOf(document)
   },
-  make: function (currencies) {
+  filterKeyOf(document) {
+    return document.currency.code
+  },
+  make: function (currencies, options = {}) {
     return Object.assign({}, this, {
       list: currencies
-    })
+    }, options)
   }
 }
 
@@ -293,7 +399,7 @@ export const IsPaymentCompletedFilter = {
   name: 'completed',
   placeholder: 'filters.completed',
   filter: function (document) {
-    return document.refunded === 0
+    return Statuses.payment.completed.meetsCondition(document)
   }
 }
 
@@ -302,7 +408,7 @@ export const IsRefundedFilter = {
   name: 'refunded',
   placeholder: 'filters.refunded',
   filter: function (document) {
-    return document.refunded !== 0
+    return Statuses.payment.refunded.meetsCondition(document)
   }
 }
 
@@ -314,7 +420,10 @@ export const PaymentMethodsFilter = {
   keyName: 'id',
   list: [],
   filter: function (document, id) {
-    return parseInt(document.method_id) === parseInt(id)
+    if (document.paymentType) {
+      return parseInt(document.paymentType.id) === parseInt(id)
+    }
+    return false
   },
   make: function (paymentTypes) {
     return Object.assign({}, this, {
@@ -358,10 +467,20 @@ export const SearchByDate = {
   id: 'date',
   type: 'date',
   searchBy: function (document, key, value) {
-    const val = _.get(document, key)
+    let val = _.get(document, key)
 
-    const higherThanMin = value.start === null || moment(val.date).isSameOrAfter(moment(value.start), 'day')
-    const lowerThanMax = value.end === null || moment(val.date).isSameOrBefore(moment(value.end), 'day')
+    if (!(val instanceof moment)) {
+      if (typeof val === 'string') {
+        val = moment(val)
+      } else if (typeof val.date === 'string') {
+        val = moment(val.date)
+      } else {
+        // you're out of luck baby
+      }
+    }
+
+    const higherThanMin = !value.from || !value.from.isValid() || val.isSameOrAfter(value.from, 'day')
+    const lowerThanMax = !value.to || !value.to.isValid() || val.isSameOrBefore(value.to, 'day')
 
     return higherThanMin && lowerThanMax
   },
@@ -376,7 +495,8 @@ export const SearchByItemsProduct = {
   searchBy: function (document, key, value) {
     const val = key ? _.get(document, key) : document
     return !!val.items.map((item) => item.product)
-      .find((product) => product.name.toLowerCase().indexOf(value.toLowerCase()) > -1)
+      .find((product) => product.name.toLowerCase().indexOf(value.toLowerCase()) > -1) ||
+      !!val.items.find((item) => item.name.toLowerCase().indexOf(value.toLowerCase()) > -1)
   },
   extend: function (data) {
     return Object.assign({}, this, data)

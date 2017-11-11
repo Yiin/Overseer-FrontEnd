@@ -1,4 +1,5 @@
 import * as filters from '@/modules/table/filters'
+import moment from 'moment'
 
 export default (repository = {}, getters = null) => {
   return Object.assign({
@@ -23,17 +24,19 @@ export default (repository = {}, getters = null) => {
      * Filter all available items
      */
     filteredItems(state, getters) {
-      let items = getters.items
+      let items = getters.items.slice()
+
+      let filterBy = state.filterBy.slice()
 
       /**
        * Filter items by specified filters
        */
       let scopedFilters = {}
 
-      if (state.filterBy.length === 0) {
+      if (filterBy.length === 0) {
         // if no filters are selected, show only active items
-        state.filterBy.push(filters.IsActiveFilter.name)
-        state.filterBy.push(filters.IsArchivedFilter.name)
+        filterBy.push(filters.IsActiveFilter.scope + '.' + filters.IsActiveFilter.name)
+        // filterBy.push(filters.IsArchivedFilter.scope + '.' + filters.IsArchivedFilter.name)
       }
 
       /**
@@ -43,22 +46,20 @@ export default (repository = {}, getters = null) => {
        * instead of
        * a1 AND a2 AND b1 AND c1 AND c2
        */
-      state.filterBy.forEach((filterName) => {
+      filterBy.forEach((filterName) => {
         /**
          * We split name to [name, value], because some filters may be
          * formatted in format {filterName}:{filterValue}
          * e.g. 'countries:{countryId}'
          */
         const parts = filterName.split(':')
-        const [name, value] = [parts.shift(), parts.join(':')]
+        const [[scope, name], value] = [parts.shift().split('.'), parts.join(':')]
 
         /**
-         * Search for filter definition by its name
+         * Search for filter definition by its scope and name
          */
         for (let key in filters) {
-          if (filters[key].name === name) {
-            const scope = filters[key].scope
-
+          if (filters[key].scope === scope && filters[key].name === name) {
             if (typeof scopedFilters[scope] === 'undefined') {
               scopedFilters[scope] = []
             }
@@ -111,14 +112,30 @@ export default (repository = {}, getters = null) => {
       const orderDir = state.orderDirection === 'desc' ? -1 : 1
 
       items.sort((a, b) => {
+        /**
+         * Order by date
+         */
+        if (a[state.orderBy] instanceof moment) {
+          if (a[state.orderBy].isBefore(b[state.orderBy])) {
+            return -1 * orderDir
+          }
+          if (a[state.orderBy].isAfter(b[state.orderBy])) {
+            return 1 * orderDir
+          }
+          return 0
+        }
+        /**
+         * Order by primitive property
+         */
         if (a[state.orderBy] < b[state.orderBy]) {
           return -1 * orderDir
-        } else if (a[state.orderBy] === b[state.orderBy]) {
-          return 0
-        } else {
+        }
+        if (a[state.orderBy] > b[state.orderBy]) {
           return 1 * orderDir
         }
+        return 0
       })
+
       return items
     },
 

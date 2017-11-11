@@ -1,5 +1,6 @@
 import { RepositoryState, RepositoryMutations, RepositoryActions, RepositoryGetters, RepositoryMethods } from './base'
 import Currency from '../models/currency'
+import $store from '@/store'
 
 /**
  * Repository state
@@ -22,4 +23,18 @@ export default {
   actions,
   getters
 }
-export const methods = RepositoryMethods('currency')
+export const methods = RepositoryMethods('currency', () => {
+  return {
+    findOrDefault(currencyDataOrCode) {
+      const currency = typeof currencyDataOrCode === 'object'
+        ? this.find(currencyDataOrCode)
+        : this.findByKey(currencyDataOrCode)
+
+      if (currency) {
+        return currency
+      } else {
+        return $store.state.settings.currency
+      }
+    }
+  }
+})

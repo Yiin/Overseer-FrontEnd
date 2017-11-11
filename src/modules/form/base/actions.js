@@ -1,5 +1,7 @@
 import S from 'string'
 import validators from '../validators'
+import Statuses from '@/modules/documents/statuses'
+import { getResourceName, getDocumentTitle } from '@/modules/documents/helpers'
 
 export default ({ model, repository }, actions = {}) => Object.assign({
   VALIDATE({ commit, state }, field) {
@@ -32,7 +34,15 @@ export default ({ model, repository }, actions = {}) => Object.assign({
       // form component we're rendering when modal is open
       component: 'edit-' + S(state._name).slugify().s,
       // path to current form's state
-      module: `form/${state._name}`
+      module: `form/${state._name}`,
+      // type
+      type: 'create',
+      // timestamp key
+      key: +(new Date()),
+      // route name
+      route: {
+        name: getResourceName(state._name) + '.create'
+      }
     }, { root: true })
 
     return new Promise((resolve) => {
@@ -40,21 +50,77 @@ export default ({ model, repository }, actions = {}) => Object.assign({
     })
   },
 
-  OPEN_EDIT_FORM({ dispatch, state }, data) {
+  OPEN_EDIT_FORM({ dispatch, state, commit }, { title = null, data }) {
     if (typeof data.serialize === 'function') {
-      console.log('serialize')
       dispatch('SET_FORM_DATA', data.serialize())
     } else {
       dispatch('SET_FORM_DATA', data)
     }
 
+    const isArchived = Statuses.generic.archived.meetsCondition(data)
+
+    if (isArchived) {
+      commit('SET_PREVIEW', true)
+    }
+
+    if (!title) {
+      if (isArchived) {
+        title = 'archived document'
+      } else {
+        title = 'actions.edit_' + state._name
+      }
+    }
+
     return dispatch('modal/OPEN', {
       // meta data
-      title: 'actions.edit_' + state._name,
+      title,
       // form component we're rendering when modal is open
       component: 'edit-' + S(state._name).slugify().s,
       // path to current form's state
-      module: `form/${state._name}`
+      module: `form/${state._name}`,
+      // type
+      type: 'edit',
+      // key
+      key: data.uuid,
+      // route name
+      route: {
+        name: getResourceName(state._name) + '.edit',
+        params: {
+          uuid: data.uuid
+        }
+      }
+    }, { root: true })
+  },
+
+  OPEN_HISTORY_REVIEW_FORM({ dispatch, commit, state }, { title, data, activity }) {
+    if (typeof data.serialize === 'function') {
+      dispatch('SET_FORM_DATA', data.serialize())
+    } else {
+      dispatch('SET_FORM_DATA', data)
+    }
+
+    commit('SET_PREVIEW', true)
+    commit('SET_ACTIVITY', activity)
+
+    return dispatch('modal/OPEN', {
+      // meta data
+      title,
+      // form component we're rendering when modal is open
+      component: 'edit-' + getResourceName(state._name),
+      // path to current form's state
+      module: `form/${state._name}`,
+      // type
+      type: 'revision',
+      // key
+      key: data.uuid + '/history/' + activity.id,
+      // route name
+      route: {
+        name: getResourceName(state._name) + '.revision',
+        params: {
+          uuid: data.uuid,
+          activity: activity.id
+        }
+      }
     }, { root: true })
   },
 
@@ -77,35 +143,63 @@ export default ({ model, repository }, actions = {}) => Object.assign({
       listeners.forEach((fn) => {
         fn(response)
       })
+
+      dispatch('notification/SHOW', {
+        message: `${getDocumentTitle(state._name, 'singular|capitalize')} was created.`
+      }, { root: true })
     })
     .catch((response) => {
       if (parseInt(response.status) === 422) {
         dispatch('SET_ERRORS', response.body.messages)
       }
+      return response
     })
   },
 
   SAVE({ dispatch, state }) {
-    dispatch(`${repository}/API_UPDATE`, state.fields, {
+    return dispatch(`${repository}/API_UPDATE`, state.fields, {
       root: true
     })
     .then((response) => {
       state.listeners.update.forEach((fn) => {
         fn(response)
       })
+
+      dispatch('notification/SHOW', {
+        message: `${getDocumentTitle(state._name, 'singular|capitalize')} was updated.`
+      }, { root: true })
     })
     .catch((response) => {
       if (parseInt(response.status) === 422) {
         dispatch('SET_ERRORS', response.body.messages)
       }
+      return response
+    })
+  },
+
+  RESTORE({ dispatch, state }) {
+    return dispatch(`${repository}/API_UPDATE`, Object.assign(state.fields, {
+      restoredFromActivity: state.activity.id
+    }), {
+      root: true
+    }).then((response) => {
+      state.listeners.update.forEach((fn) => {
+        fn(response)
+      })
+
+      dispatch('notification/SHOW', {
+        message: `${getDocumentTitle(state._name, 'singular|capitalize')} was restored.`
+      }, { root: true })
     })
   },
 
   SET_ERRORS({ dispatch, commit, state }, errors) {
-    commit('SET_ERRORS', errors)
+    const parsedErrors = {}
 
     for (let key in errors) {
       const field = key.split('.').slice(1, 2)[0]
+
+      parsedErrors[field] = [errors[key]]
 
       const tabIndex = state.tabs.findIndex((tab) => {
         return tab.indexOf(field) > -1
@@ -115,6 +209,7 @@ export default ({ model, repository }, actions = {}) => Object.assign({
 
       break
     }
+    commit('SET_ERRORS', parsedErrors)
   },
 
   SET_FIELD_VALUE({ commit }, { field, value }) {

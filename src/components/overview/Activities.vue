@@ -40,5 +40,6 @@ export default {
   background: $color-white;
   padding: 0 20px 20px;
   min-height: 590px;
+  box-shadow: $box-shadow;
 }
 </style>

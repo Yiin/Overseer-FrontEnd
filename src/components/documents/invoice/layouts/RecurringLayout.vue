@@ -48,30 +48,30 @@
           <column width="15%">{{ $t('fields.amount') }}</column>
           <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope=" { row }">
           <column width="13%">
-            <a :href="`#${props.row.uuid}`" @click="edit(props.row)">
-              {{ props.row.frequency | frequencyName }}
+            <a :href="`#${row.uuid}`" @click="edit(row)">
+              {{ row.frequency | frequencyName }}
             </a>
           </column>
           <column width="17%">
-            <span>{{ props.row.client ? props.row.client.name : '' }}</span>
+            <span>{{ row.client ? row.client.name : '' }}</span>
           </column>
           <column width="14%">
-            <span>{{ props.row.start_date | date }}</span>
+            <span>{{ row.startDate | date }}</span>
           </column>
           <column width="14%">
-            <span>{{ props.row.last_sent | date }}</span>
+            <span>{{ row.lastSent | date }}</span>
           </column>
           <column width="15%">
-            <span>{{ props.row.end_date | date }}</span>
+            <span>{{ row.endDate | date }}</span>
           </column>
           <column width="15%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+            <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
           </column>
           <column width="12%" class="column--center">
-            <statuses-list type="recurring_invoice" :document="props.row"></statuses-list>
+            <statuses-list type="recurring_invoice" :document-uuid="row.uuid"></statuses-list>
           </column>
         </template>
         <template slot="table-controls-left"></template>
@@ -112,6 +112,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Unarchive,
+  Recover,
   EditDocument,
   CloneDocument
 } from '@/modules/table/cm-actions'
@@ -146,8 +148,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.recurring_invoice_table'
@@ -162,7 +166,9 @@ export default {
         CloneDocument.extend({ title: 'actions.clone_invoice' }),
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Unarchive,
+        Delete,
+        Recover
       ]
     },
 
@@ -188,7 +194,9 @@ export default {
     },
 
     clients() {
-      const clients = this.$store.getters[`table/${this.name}/filteredItems`].map((invoice) => invoice.client)
+      const clients = this.$store.getters[`table/${this.name}/activeItems`]
+        .map((invoice) => invoice.client)
+
       return this.filterAndOrder(clients, {
         filterBy: 'uuid',
         orderBy: 'name'
@@ -199,7 +207,7 @@ export default {
       let products = []
 
       // Get all invoices products
-      this.$store.getters[`table/${this.name}/filteredItems`].forEach((invoice) => {
+      this.$store.getters[`table/${this.name}/activeItems`].forEach((invoice) => {
         invoice.items.forEach((item) => {
           products.push(item.product)
         })
@@ -214,11 +222,11 @@ export default {
 
   methods: {
     create() {
-      this.$store.dispatch('form/recurring_invoice/OPEN_CREATE_FORM')
+      this.createDocument('recurring_invoice')
     },
 
     edit(data) {
-      this.$store.dispatch('form/recurring_invoice/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'recurring_invoice')
     }
   }
 }

@@ -6,16 +6,19 @@
 
       <dropdown-date-range-option v-if="option.type === 'date'"
         :name="option.name"
+        v-model="values[option.name]"
         :placeholder="option.placeholder">
       </dropdown-date-range-option>
 
       <dropdown-numeric-option v-else-if="option.type === 'numeric'"
         :name="option.name"
+        v-model="values[option.name]"
         :placeholder="option.placeholder">
       </dropdown-numeric-option>
 
       <dropdown-text-option v-else-if="option.type === 'text'"
         :name="option.name"
+        v-model="values[option.name]"
         :placeholder="option.placeholder">
       </dropdown-text-option>
     </template>
@@ -41,6 +44,36 @@ export default {
   props: {
     options: Array,
     name: String
+  },
+
+  data() {
+    const values = {}
+
+    this.options.forEach((option) => {
+      values[option.name] = ''
+    })
+
+    return {
+      values
+    }
+  },
+
+  computed: {
+    searchBy() {
+      return this.$store.state.table[this.name].searchBy
+    }
+  },
+
+  watch: {
+    searchBy(searchBy) {
+      for (let name in this.values) {
+        if (typeof searchBy[name] === 'undefined') {
+          this.values[name] = ''
+        } else {
+          this.values[name] = searchBy[name].value
+        }
+      }
+    }
   },
 
   methods: {

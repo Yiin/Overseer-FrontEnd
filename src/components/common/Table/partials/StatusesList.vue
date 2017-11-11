@@ -28,7 +28,7 @@ export default {
       type: String,
       required: true
     },
-    document: {
+    documentUuid: {
       required: true
     }
   },
@@ -40,6 +40,12 @@ export default {
   },
 
   computed: {
+    document() {
+      return this.$store.getters[`documents/repositories/${this.type}/FIND_ITEM`]({
+        uuid: this.documentUuid
+      })
+    },
+
     statuses() {
       const statuses = []
 
@@ -158,7 +164,7 @@ export default {
   position: relative;
   cursor: pointer;
   text-align: left;
-  padding-left: 0;
+  padding-left: 0px;
   padding-right: 18px;
 
   &--open {

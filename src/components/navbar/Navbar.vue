@@ -14,12 +14,6 @@
     <div class="navbar__content navbar__content--right">
       <button @click="locale('en')" class="locale-picker">EN</button>
       <button @click="locale('lt')" class="locale-picker">LT</button>
-      <!-- <div class="notifications-icon">
-        <i class="fa fa-bell"></i>
-        <div class="notifications-count">
-          6
-        </div>
-      </div> -->
     </div>
   </div>
 </template>

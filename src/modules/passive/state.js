@@ -27,7 +27,7 @@ const state = {
     { 'code': 'DE', 'name': 'Germany' },
     { 'code': 'DK', 'name': 'Denmark' },
     { 'code': 'EE', 'name': 'Estonia' },
-    { 'code': 'EL', 'name': 'Greece' },
+    { 'code': 'EL', 'name': 'Greece', 'iso_3166': 'GR' },
     { 'code': 'ES', 'name': 'Spain' },
     { 'code': 'FI', 'name': 'Finland' },
     { 'code': 'FR', 'name': 'France ' },

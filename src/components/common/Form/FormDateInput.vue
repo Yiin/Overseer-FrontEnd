@@ -11,6 +11,28 @@ import {
   VDatePicker
 } from 'vuetify'
 
+function parseDateValue(value, currentDate) {
+  let localValue = null
+
+  if (value) {
+    if (value instanceof moment) {
+      localValue = value.format('YYYY-MM-DD')
+    } else if (typeof value === 'object') {
+      localValue = moment(value.date).format('YYYY-MM-DD')
+    } else if (value !== 'Invalid date') {
+      localValue = moment(value).format('YYYY-MM-DD')
+    }
+  } else if (currentDate) {
+    localValue = moment().format('YYYY-MM-DD')
+  }
+
+  if (localValue === 'Invalid date') {
+    localValue = null
+  }
+
+  return localValue
+}
+
 export default {
   name: 'form-date-input',
 
@@ -24,30 +46,18 @@ export default {
       default: false
     },
 
+    clearable: {
+      type: Boolean,
+      default: false
+    },
+
     value: {}
   },
 
   data() {
-    let localValue = null
-
-    console.log('setting datepicker data', this.value)
-
-    if (this.value) {
-      if (this.value instanceof moment) {
-        localValue = this.value.format('YYYY-MM-DD')
-      } else if (typeof this.value === 'object') {
-        localValue = moment(this.value.date).format('YYYY-MM-DD')
-      } else {
-        localValue = moment(this.value).format('YYYY-MM-DD')
-      }
-    } else if (this.currentDate) {
-      localValue = moment().format('YYYY-MM-DD')
-    }
-
-    console.log('--- END ---', localValue)
     return {
       isOpen: false,
-      localValue,
+      localValue: parseDateValue(this.value, this.currentDate),
       separator: '/'
     }
   },
@@ -55,6 +65,10 @@ export default {
   watch: {
     localValue(value) {
       this.$emit('input', value)
+    },
+
+    value(value) {
+      this.localValue = parseDateValue(value, false)
     }
   },
 
@@ -64,10 +78,17 @@ export default {
         if (!this.localValue) {
           return ''
         }
-        return moment(this.localValue).format('DD/MM/YY')
+        const date = moment(this.localValue)
+        if (!date.isValid()) {
+          return ''
+        }
+        return date.format('DD/MM/YY')
       },
       set(value) {
         if (value.length !== 'DD/MM/YY'.length) {
+          if (this.clearable && !value.length) {
+            this.localValue = null
+          }
           return
         }
         value.replace(/-/g, '/')
@@ -107,9 +128,9 @@ export default {
 
   .datePicker {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     line-height: initial;
-    // right: -50px;
+    width: 100%;
   }
 }
 </style>

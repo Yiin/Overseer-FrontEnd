@@ -1,10 +1,18 @@
-<template>
-  <input @input  = "onInput"
-         v-model = "valueProxy"
-         class   = "form__input"
-         type    = "text"
-         :name   = "name"
-  >
+<template lang="pug">
+  div(
+    v-if  = 'readonly'
+    class = 'form__input'
+  ) {{ value }}
+
+  input(
+    v-else
+    @input  = 'onInput'
+    v-model = 'valueProxy'
+    v-bind  = '$attrs'
+    class   = 'form__input'
+    type    = 'text'
+    :name   = 'name'
+  )
 </template>
 
 <script>
@@ -21,6 +29,11 @@ export default {
 
     value: {
       default: null
+    },
+
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
 

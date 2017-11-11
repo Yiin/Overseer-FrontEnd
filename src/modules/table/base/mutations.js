@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 export default (mutations = {}) => {
   return Object.assign({
     SET_TABLE_STATE(state, tableState) {
@@ -8,7 +6,7 @@ export default (mutations = {}) => {
 
     RESET_TABLE(state) {
       state.page = 0
-      state.orderBy = 'created_at'
+      state.orderBy = 'createdAt'
       state.orderDirection = 'desc'
       state.selection = []
       state.filterBy = []
@@ -17,6 +15,10 @@ export default (mutations = {}) => {
 
     SET_SELECTION(state, selection) {
       state.selection = selection
+    },
+
+    SET_SELECTED_ROW(state, row) {
+      state.selectedRow = row
     },
 
     FILTER_BY(state, filters) {
@@ -33,28 +35,6 @@ export default (mutations = {}) => {
 
     SET_PAGE(state, page) {
       state.page = parseInt(page)
-    },
-
-    INSERT_ROW(state, row) {
-      if (state.items.indexOf(row) < 0) {
-        state.items.unshift(row)
-      }
-    },
-
-    REMOVE_ROW(state, row) {
-      state.items = state.items.filter((item) => item.uuid !== row.uuid)
-    },
-
-    UPDATE_ROW(state, row) {
-      const items = state.items
-
-      const index = items.findIndex((_row) => _row.uuid === row.uuid)
-
-      if (index > -1) {
-        for (let key in row) {
-          Vue.set(state.items[index], key, row[key])
-        }
-      }
     },
 
     TOGGLE_ROW_ON(state, row) {

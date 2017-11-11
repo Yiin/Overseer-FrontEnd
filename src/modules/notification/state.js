@@ -3,7 +3,7 @@ export const defaultOptions = {
   action: null,
   actionText: '',
   color: 'black',
-  timeout: 600000
+  timeout: 6000
 }
 
 export default {

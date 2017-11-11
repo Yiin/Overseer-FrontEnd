@@ -1,7 +1,7 @@
 <template>
   <div class="background" :class="{ 'background--fade-out': isAuthenticated }">
-    <div class="form__container" :style="scalePage">
-      <form ref="form" @submit.prevent="auth" class="form__auth">
+    <div ref="formContainer" class="form__container">
+      <form ref="form" @submit.prevent="auth" class="form__auth" :style="scalePage">
 
         <!-- Transition between login and register pages -->
         <div class="form__auth-content">
@@ -81,7 +81,7 @@ export default {
   computed: {
     scalePage() {
       return {
-        transform: `scale(${this.scale})`
+        transform: `scale(${this.$store.state.scale.ratio})`
       }
     },
 
@@ -123,24 +123,22 @@ export default {
 
     wasRedirected() {
       return this.$store.state.auth.wasRedirected
+    },
+
+    ratio() {
+      return this.$store.state.scale.ratio
     }
   },
 
-  updated() {
-  },
-
   mounted() {
-    // window.addEventListener('resize', this.updateScale.bind(this))
-    // this.updateScale()
-    const { btnRect } = this.getRects()
-    this.authSubmitBtnStyle.backgroundPosition = `${-btnRect.x}px ${-btnRect.y}px`
+    window.addEventListener('resize', this.updateBtnBackgroundPosition)
+    this.updateBtnBackgroundPosition()
   },
 
   methods: {
-    updateScale() {
-      const w = window.innerWidth / 1920
-      const h = window.innerHeight / 1080
-      this.scale = w > h ? w : h
+    updateBtnBackgroundPosition() {
+      const { btnRect } = this.getRects()
+      this.authSubmitBtnStyle.backgroundPosition = `${-btnRect.x}px ${-btnRect.y}px`
     },
 
     auth() {
@@ -259,6 +257,8 @@ export default {
           'height': size + 6,
           'border-radius': '100%',
           'background-position': `${-toX}px ${-toY}px`,
+          top: 0,
+          left: 0,
           x: toX,
           y: toY
         }

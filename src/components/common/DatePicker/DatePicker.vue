@@ -83,8 +83,6 @@ export default {
       ? this.value.date
       : this.value
 
-    console.log('passed value', value)
-
     return {
       isOpen: false,
 

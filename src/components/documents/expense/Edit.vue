@@ -70,7 +70,7 @@
             <!--
               Amount
             -->
-            <form-field :catch-errors="[ 'amount', 'currency_code' ]" :label="$t('labels.amount')">
+            <form-field :errors="validationErrors.amount" :label="$t('labels.amount')">
               <form-inputs-group>
                 <form-formatted-input
                   type="number"
@@ -83,7 +83,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown :errors="validationErrors.currency_code" v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
               </form-inputs-group>
             </form-field>
           </form-row>
@@ -92,7 +92,7 @@
             <!--
               Date
             -->
-            <form-field catch-errors="date" :label="$t('labels.date')">
+            <form-field :errors="validationErrors.date" :label="$t('labels.date')">
               <form-date-input current-date v-model="date" name="date" :readonly="preview"></form-date-input>
             </form-field>
 

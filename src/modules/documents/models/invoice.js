@@ -1,105 +1,136 @@
-import { ArrayModel } from 'objectmodel'
-import Document from './document'
+import faker from 'faker'
 import moment from 'moment'
+import store from '@/store'
+import Document from './document'
+import InvoiceTransformer from '../transformers/invoice'
 import { methods as ClientRepository } from '../repositories/client'
 import { methods as CurrencyRepository } from '../repositories/currency'
-import Client from './client'
-import Currency from './currency'
 import Money from './money'
 import Discount from './discount'
 import BillItem from './bill-item'
+import AppliedCredit from './applied-credit'
+import Pdf from './pdf'
+import HasPdfs from './concerns/has-pdfs'
+import { mix } from 'mixwith'
 
 /**
  * Invoice model
- * @type {ObjectModel}
  */
-const Invoice = Document.extend({
-  client: Client,
-  invoiceDate: [moment],
-  dueDate: [moment],
-  invoiceNumber: String,
-  poNumber: [String],
-  partial: Money,
-  currency: Currency,
-  discount: Discount,
-  items: ArrayModel(BillItem),
-  noteToClient: [String],
-  terms: [String],
-  footer: [String],
-  status: ['draft', 'pending', 'sent', 'viewed', 'approved', 'partial', 'paid'],
+class Invoice extends mix(Document).with(HasPdfs) {
+  constructor(...data) {
+    super(...data)
 
-  paidIn: Money
-})
+    /**
+     * Update paid in amount for invoice
+     */
+    store.watch(() => {
+      return store.getters['documents/repositories/payment/AA_ITEMS'].filter((payment) => {
+        return payment.invoice.uuid === this.uuid
+      })
+    }, (payments) => {
+      this.paidIn.amount = this.partial.amount + payments.reduce((sum, payment) => {
+        return sum + payment.amount.getIn(this.currency)
+      }, this.appliedCredits.reduce((sum, appliedCredit) => {
+        return sum + appliedCredit.amount.getIn(this.currency)
+      }, 0))
+    })
+  }
 
-/**
- * Constructor
- */
-Invoice.create = Document.create.bind(Invoice)
+  static create(data) {
+    return new this(this.parse(data))
+  }
 
-/**
- * Parse invoice data that came from API
- */
-Invoice.parse = function (data) {
-  const modelData = {}
+  getTitle() {
+    return this.invoiceNumber
+  }
 
-  modelData.client = ClientRepository.findOrCreate(data.client)
-  modelData.invoiceDate = data.invoice_date && moment(data.invoice_date.date)
-  modelData.dueDate = data.due_date && moment(data.due_date.date)
-  modelData.invoiceNumber = data.invoice_number
-  modelData.poNumber = data.po_number
+  /**
+   * Parse invoice data that came from API
+   */
+  static parse(data) {
+    const parsedData = super.parse(data)
 
-  const currency = CurrencyRepository.findOrCreate(data.currency)
+    parsedData.client = ClientRepository.findByKey(data.client_uuid)
+    parsedData.invoiceDate = data.invoice_date && moment(data.invoice_date.date)
+    parsedData.dueDate = data.due_date && moment(data.due_date.date)
+    parsedData.invoiceNumber = data.invoice_number
+    parsedData.poNumber = data.po_number
 
-  modelData.currency = currency
-  modelData.partial = Money.create({
-    amount: data.partial,
-    currency
-  })
+    parsedData.pdfs = (data.pdfs || []).map(Pdf.create, Pdf)
+    parsedData.appliedCredits = data.applied_credits.map(AppliedCredit.create, AppliedCredit)
 
-  modelData.discount = Discount.create({
-    type: data.discount_type,
-    value: data.discount_value,
-    currency
-  })
+    const currency = CurrencyRepository.find(data.currency)
 
-  modelData.items = data.items.map(BillItem.create)
+    parsedData.currency = currency
+    parsedData.partial = Money.create({
+      amount: data.partial,
+      currency
+    })
 
-  modelData.noteToClient = data.note_to_client
-  modelData.terms = data.terms
-  modelData.footer = data.footer
+    parsedData.discount = Discount.create({
+      type: data.discount_type,
+      value: data.discount_value,
+      currency
+    })
 
-  modelData.status = data.status
+    parsedData.items = (data.items || []).map(BillItem.create, BillItem)
 
-  modelData.amount = Money.create({
-    amount: data.amount,
-    currency
-  })
+    parsedData.noteToClient = data.note_to_client
+    parsedData.terms = data.terms
+    parsedData.footer = data.footer
 
-  modelData.paidIn = Money.create({
-    amount: data.paid_in,
-    currency
-  })
+    parsedData.status = data.status
 
-  return modelData
-}
+    parsedData.amount = Money.create({
+      amount: data.amount,
+      currency
+    })
 
-Invoice.prototype.serialize = function () {
-  return {
-    uuid: this.uuid,
-    client_uuid: this.client.uuid,
-    invoice_date: this.invoiceDate.format('YYYY-MM-DD'),
-    due_date: this.dueDate.format('YYYY-MM-DD'),
-    invoice_number: this.invoiceNumber,
-    po_number: this.poNumber,
-    currency_code: this.currency.code,
-    partial: this.partial.amount,
-    discount_type: this.discount.type,
-    discount_value: this.discount.value instanceof Money ? this.discount.value.amount : this.discount.value,
-    items: this.items.map((item) => item.serialize()),
-    note_to_client: this.noteToClient,
-    terms: this.terms,
-    footer: this.footer,
-    status: this.status
+    parsedData.paidIn = Money.create({
+      amount: data.paid_in,
+      currency
+    })
+
+    return parsedData
+  }
+
+  static transformProps(...props) {
+    return InvoiceTransformer(...props)
+  }
+
+  serialize() {
+    return {
+      uuid: this.uuid,
+      client_uuid: this.client.uuid,
+      invoice_date: this.invoiceDate && this.invoiceDate.format('YYYY-MM-DD'),
+      due_date: this.dueDate && this.dueDate.format('YYYY-MM-DD'),
+      invoice_number: this.invoiceNumber,
+      po_number: this.poNumber,
+      currency_code: this.currency.code,
+      partial: this.partial.amount,
+      discount_type: this.discount.type,
+      discount_value: this.discount.value instanceof Money ? this.discount.value.amount : this.discount.value,
+      applied_credits: this.appliedCredits.map((appliedCredit) => appliedCredit.serialize()),
+      items: this.items.map((item) => item.serialize()),
+      note_to_client: this.noteToClient,
+      terms: this.terms,
+      footer: this.footer,
+      status: this.status
+    }
+  }
+
+  static fakeData() {
+    return {
+      client_uuid: faker.random.arrayElement(ClientRepository.getAvailableItems().map((client) => client.uuid)),
+      invoice_date: moment().format('YYYY-MM-DD'),
+      due_date: faker.random.arrayElement([null, moment().add(faker.random.number() % 60, 'days').format('YYYY-MM-DD')]),
+      invoice_number: faker.random.number(),
+      currency_code: faker.random.arrayElement(['EUR', 'USD', 'GBP']),
+      items: Array.from({ length: (faker.random.number() % 10) + 1 }).map(BillItem.fakeData),
+      note_to_client: faker.lorem.paragraph(),
+      terms: faker.lorem.sentence(),
+      footer: faker.lorem.sentence()
+    }
   }
 }
 

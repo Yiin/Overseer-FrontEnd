@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-tab" v-show="isActive">
+  <div class="modal-tab" v-if="isActive">
     <slot></slot>
   </div>
 </template>

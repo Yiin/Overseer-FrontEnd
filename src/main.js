@@ -9,11 +9,20 @@ import {
  VList,
  VGrid,
  VSelect,
- VTextField
+ VMenu,
+ VBtn,
+ VIcon,
+ VDivider,
+ VTextField,
+ VTooltip,
+ VSwitch,
+ VDataTable
 } from 'vuetify'
 import VueMaterial from 'vue-material'
-import { VTooltip } from 'v-tooltip'
+import { VTooltip as VTooltip2 } from 'v-tooltip'
 import VueClipboard from 'vue-clipboard2'
+import Raven from 'raven-js'
+import RavenVue from 'raven-js/plugins/vue'
 import App from './App'
 import Api from './api'
 import Auth from './auth'
@@ -27,11 +36,19 @@ import * as directives from './directives'
 import { preload } from './scripts'
 require('objectmodel/src/devtool-formatter')
 
+// Sentry debugging
+if (process.env.ENV === 'production') {
+  Raven
+    .config('https://242d4b18f4214880963af4f9d495a126@sentry.io/235672')
+    .addPlugin(RavenVue, Vue)
+    .install()
+}
+
 // Options
 Vue.config.productionTip = false
 
 /* Tooltips */
-Vue.directive('tooltip', VTooltip)
+Vue.directive('tooltip', VTooltip2)
 
 /* Clipboard */
 Vue.use(VueClipboard)
@@ -53,7 +70,14 @@ Vue.use(Vuetify, {
     VGrid,
     VList,
     VSelect,
-    VTextField
+    VTextField,
+    VMenu,
+    VBtn,
+    VIcon,
+    VDivider,
+    VSwitch,
+    VDataTable,
+    VTooltip
   }
 })
 

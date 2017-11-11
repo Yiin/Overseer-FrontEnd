@@ -220,8 +220,8 @@ export default {
       const inputs = {}
 
       this.options.forEach((option) => {
-        if (option.value) {
-          inputs[option.name] = option.value
+        if (typeof option.getValue === 'function' && option.getValue()) {
+          inputs[option.name] = option.getValue()
         }
       })
 

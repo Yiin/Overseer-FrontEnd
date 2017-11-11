@@ -43,11 +43,11 @@
         </template>
         <template slot="columns" slot-scope="{ row }">
           <column width="17%">
-            <a :href="`#${row.uuid}`" @click="edit(row)">{{ row.name }}</a>
+            <a href="#" @click.prevent="edit(row)">{{ row.name }}</a>
           </column>
           <column width="23%">
             <span>{{ row.vat.vatNumber }}</span>
-            <vat-info :vat="row.vat.vatNumber"></vat-info>
+            <vat-info :vat="row.vat"></vat-info>
           </column>
           <column width="21%">
             <span>{{ row.phone }}</span>
@@ -63,7 +63,12 @@
         <template slot="table-controls-left"></template>
       </documents-table>
 
-      <table-footer :table-name="name"></table-footer>
+      <table-footer
+        :table-name="name"
+        :calculator-options="[
+          { text: $t('fields.balance'), value: 'balance', type: 'money' }
+        ]"
+      ></table-footer>
     </template>
   </div>
 </template>
@@ -98,14 +103,16 @@ import {
   CreateDocument,
   Archive,
   Delete,
-  Restore,
+  Unarchive,
+  Recover,
   Preview,
   EditDocument,
   NewInvoice,
   NewQuote,
   EnterPayment,
   EnterExpense,
-  EnterCredit
+  EnterCredit,
+  HistoryList
 } from '@/modules/table/cm-actions'
 
 export default {
@@ -124,7 +131,7 @@ export default {
         SearchByText.extend({ key: 'phone', name: 'contact_number', placeholder: this.$t('search_by.contact_number') }),
         { type: 'separator' },
         SearchByText.extend({ key: 'email', name: 'email', placeholder: this.$t('search_by.client_email') }),
-        SearchByDate.extend({ key: 'created_at', name: 'date_created', placeholder: this.$t('search_by.date_created') }),
+        SearchByDate.extend({ key: 'createdAt', name: 'date_created', placeholder: this.$t('search_by.date_created') }),
         SearchByValue.extend({ key: 'balance', name: 'balance', placeholder: this.$t('search_by.balance') })
       ]
     },
@@ -132,9 +139,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
-        Restore.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.client_table'
@@ -147,6 +155,7 @@ export default {
         SELECTED_DOCUMENT.extend({ documentType: 'client' }),
         Preview,
         EditDocument.extend({ title: 'actions.edit_client' }),
+        HistoryList,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         NewInvoice,
         NewQuote,
@@ -156,8 +165,9 @@ export default {
         EnterCredit,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
+        Unarchive,
         Delete,
-        Restore
+        Recover
       ]
     },
 
@@ -181,9 +191,9 @@ export default {
     },
 
     countries() {
-      const countries = this.$store.getters[`table/${this.name}/filteredItems`]
-        .filter((client) => client.country)
-        .map((client) => client.country)
+      const countries = this.$store.getters[`table/${this.name}/activeItems`]
+        .filter((client) => client.address.country)
+        .map((client) => client.address.country)
 
       return this.filterAndOrder(countries, {
         filterBy: 'id',
@@ -192,12 +202,12 @@ export default {
     },
 
     currencies() {
-      const currencies = this.$store.getters[`table/${this.name}/filteredItems`]
+      const currencies = this.$store.getters[`table/${this.name}/activeItems`]
         .filter((client) => client.currency)
         .map((client) => client.currency)
 
       return this.filterAndOrder(currencies, {
-        filterBy: 'id',
+        filterBy: 'code',
         orderBy: 'name'
       })
     }
@@ -205,11 +215,11 @@ export default {
 
   methods: {
     create() {
-      this.$store.dispatch('form/client/OPEN_CREATE_FORM')
+      this.createDocument('client')
     },
 
     edit(data) {
-      this.$store.dispatch('form/client/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'client')
     }
   }
 }

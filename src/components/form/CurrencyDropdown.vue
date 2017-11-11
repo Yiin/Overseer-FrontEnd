@@ -1,12 +1,22 @@
 <template>
-  <form-field catch-errors="currency_code" :label="$t('labels.currency')">
+  <form-field :errors="errors" :label="$t('labels.currency')">
 
     <form-dropdown-input
       v-model="localValue"
       :items="currencies"
+      v-bind="$attrs"
+      searchable
     >
       <template slot="option" slot-scope="{ item, parent }">
-
+        <v-list-tile avatar @click="parent.select(item)" tag="div">
+          <v-list-tile-avatar>
+            <img :src="`http://www.xe.com/themes/xe/images/flags/svg/${item.code.toLowerCase()}.svg`">
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title v-html="item.code"></v-list-tile-title>
+            <v-list-tile-sub-title v-html="item.name"></v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
       </template>
     </form-dropdown-input>
   </form-field>
@@ -17,6 +27,10 @@ export default {
   props: {
     value: {
       type: [String, Number]
+    },
+    errors: {
+      type: Array,
+      default: () => []
     }
   },
 
@@ -40,15 +54,11 @@ export default {
 
   computed: {
     currencies() {
-      return this.$store.state.passive.currencies.map((currency) => {
+      return this.$store.getters['documents/repositories/currency/AVAILABLE_ITEMS'].map((currency) => {
         return Object.assign({}, currency, {
           text: currency.code
         })
       })
-    },
-
-    settings() {
-      return this.$store.state.settings
     }
   }
 }

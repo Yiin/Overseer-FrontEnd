@@ -18,12 +18,14 @@ export default {
   },
 
   /**
-   * Add new item to taskbar, and activate after
+   * Add new item to taskbar and activate after
    * @param {string} options.type   Type of the item / Name of the module
    * @param {object} options.item   Item data
    */
   ADD_ITEM({ commit, dispatch, state, rootState }, { type, data }) {
-    const taskbarItem = { type, data, isNew: true, moduleState: null }
+    const colorIndex = state.items.length ? (state.items[state.items.length - 1].colorIndex % 7) + 1 : 1
+    const taskbarItem = { type, data, isNew: true, itemState: null, colorIndex }
+
     commit('ADD_ITEM', taskbarItem)
 
     // new item is always last item
@@ -37,7 +39,7 @@ export default {
    * @param {[type]} options.item            Item data
    */
   ACTIVATE_ITEM({ dispatch, state }, item) {
-    const index = state.items.findIndex((taskbarItem) => taskbarItem.data === item.data)
+    const index = state.items.findIndex((taskbarItem) => taskbarItem.data.key === item.data.key)
 
     // exists, open
     if (index > -1) {
@@ -55,9 +57,8 @@ export default {
     }
     commit('SET_ACTIVE_ITEM', index)
 
-    // if there is saved data, load it to form
+    // if there is saved data - load it to the form
     if (state.items[index].itemState) {
-      console.log('itemState', state.items[index].itemState)
       commit(`${state.items[index].data.module}/SET_FORM_STATE`, state.items[index].itemState, { root: true })
     }
 
@@ -68,13 +69,14 @@ export default {
   DEACTIVATE_ITEM({ commit, dispatch, state, rootState }, data) {
     commit('RESET_ACTIVE_ITEM')
 
-    const index = state.items.findIndex((taskbarItem) => taskbarItem.data === data)
+    const index = state.items.findIndex((taskbarItem) => taskbarItem.data.key === data.key)
 
     if (index > -1) {
+      const itemState = JSON.parse(JSON.stringify(data.module.split('/').reduce((val, key) => val[key], rootState)))
       commit('SAVE_ITEM_DATA', index)
       commit('SAVE_ITEM_STATE', {
         index,
-        itemState: data.module.split('/').reduce((val, key) => val[key], rootState)
+        itemState
       })
 
       const ACTION_PREFIX = state.items[index].type
@@ -88,7 +90,7 @@ export default {
   },
 
   REMOVE_ITEM({ dispatch, state }, item) {
-    const index = state.items.findIndex((taskbarItem) => taskbarItem.data === item)
+    const index = state.items.findIndex((taskbarItem) => taskbarItem.data.key === item.key)
 
     if (index > -1) {
       dispatch('REMOVE_ITEM_AT_INDEX', index)
@@ -99,6 +101,7 @@ export default {
     if (index < 0 || index >= state.items.length) {
       return
     }
+
     const ACTION_PREFIX = state.items[index].type
     dispatch(ACTION_PREFIX + '/HANDLE_TASKBAR_CLOSE', state.items[index].data, { root: true })
 

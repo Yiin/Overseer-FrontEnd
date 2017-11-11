@@ -11,6 +11,7 @@
             v-if="dropdownOptions.clients.length"
             v-model="client_uuid"
             :items="dropdownOptions.clients"
+            :last-item-value="form.newClientUuid"
             :placeholder="$t('placeholders.type_client_name')"
             :readonly="preview"
           ></form-inline-select-input>
@@ -31,15 +32,15 @@
       <modal-tab :title="$t('tabs.details')">
         <form-container>
           <form-row>
-            <form-field :label="$t('labels.amount')">
+            <form-field :errors="validationErrors.balance" :label="form.fields.uuid ? $t('labels.balance') : $t('labels.amount')">
               <!--
                 Amount
               -->
               <form-formatted-input
                 type="number"
                 :label="currency.code"
-                v-model="amount"
-                name="amount"
+                v-model="balance"
+                name="balance"
                 :readonly="preview"
               ></form-formatted-input>
             </form-field>
@@ -47,21 +48,21 @@
             <!--
               Currency
             -->
-            <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
+            <form-currency-dropdown :Errors="validationErrors.currency_code" v-model="currency_code" :readonly="preview"></form-currency-dropdown>
           </form-row>
           <form-row>
 
             <!--
               Credit Date
             -->
-            <form-field catch-errors="credit_date" :label="$t('labels.credit_date')">
+            <form-field :errors="validationErrors.credit_date" :label="$t('labels.credit_date')">
               <form-date-input current-date v-model="credit_date" name="credit_date" :readonly="preview"></form-date-input>
             </form-field>
 
             <!--
               Credit Number
             -->
-            <form-field catch-errors="credit_number" :label="$t('labels.credit_number')">
+            <form-field :errors="validationErrors.credit_number" :label="$t('labels.credit_number')">
               <form-text-input v-model="credit_number" name="credit_number" :readonly="preview"></form-text-input>
             </form-field>
 
@@ -89,7 +90,7 @@ export default {
   mixins: [
     FormMixin('credit', [
       'client_uuid',
-      'amount',
+      'balance',
       'currency_code',
       'credit_date',
       'credit_number'
@@ -144,6 +145,7 @@ export default {
   methods: {
     createClient() {
       createDocument('client').then((client) => {
+        this.$store.commit('form/credit/SET_NEW_CLIENT', client.uuid)
         this.$store.dispatch('form/credit/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
@@ -160,7 +162,7 @@ export default {
   height: 617px;
 
   .modal-tabs {
-    width: 750px;
+    width: 950px;
   }
 }
 </style>

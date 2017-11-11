@@ -1,47 +1,53 @@
-import ContextMenuAction from './cm-action'
-import pluralize from 'pluralize'
-import moment from 'moment'
+import S from 'string'
+import print from 'print-js'
 import $store from '@/store'
-import print from '@/vendor/print.js/print.min'
 import Statuses from '@/modules/documents/statuses'
-import { getFormName } from '@/modules/documents/helpers'
+import ContextMenuAction from './cm-action'
 
-function getSelectedRows(state, tableName, row) {
-  let selectedRows = state.table[tableName].selection.length
+import {
+  getTableName
+} from '@/modules/documents/helpers'
 
-  if (row) {
-    if (!state.table[tableName].selection.find((r) => r.uuid === row.uuid)) {
-      selectedRows++
-    }
-  }
-  return selectedRows
+import {
+  createDocument,
+  editDocument,
+  reviewDocumentState,
+  patchDocument,
+  archiveDocuments,
+  archiveDocument,
+  unarchiveDocuments,
+  unarchiveDocument,
+  deleteDocuments,
+  deleteDocument,
+  recoverDocuments,
+  recoverDocument
+} from '@/modules/documents/actions'
+
+/**
+ * Get array of selected table rows
+ */
+function selection(scope) {
+  const tableName = getTableName(scope)
+
+  return $store.state.table[tableName].selection
 }
 
-function showUndoNotification(message, action) {
-  return (responseData) => {
-    if (Array.isArray(responseData)) {
-      $store.dispatch('notification/SHOW', {
-        message,
-        action: action.bind(null, responseData),
-        actionText: 'UNDO'
-      })
-    } else {
-      $store.dispatch('notification/SHOW', {
-        message,
-        action: action.bind(null, responseData),
-        actionText: 'UNDO'
-      })
-    }
-  }
+/**
+ * Get clicked on table row
+ */
+function selectedRow(scope) {
+  return $store.state.table[getTableName(scope)].selectedRow
 }
 
-// visibility filters
-export const whenMoreThanOneRowIsSelected = (tableName, { state }, row) => {
-  return getSelectedRows(state, tableName, row) > 1
+/**
+ * visibility filters
+ */
+export const whenMoreThanOneRowIsSelected = (scope) => {
+  return selection(scope).length > 1
 }
 
-export const whenSpecificRowIsSelected = (tableName, store, row) => {
-  return !!row
+export const whenSpecificRowIsSelected = (scope) => {
+  return !!selectedRow(scope)
 }
 
 // static options
@@ -51,55 +57,47 @@ export const __SEPARATOR__ = ContextMenuAction({
 })
 
 export const SELECTED_ROWS = ContextMenuAction({
+  custom: true,
+  component: 'cm-item-selected-rows',
   isStatic: true,
-  isSelectedRowsCounter: true,
   class: 'heading',
 
-  visible(tableName, { state }, row) {
-    return getSelectedRows(state, tableName, row) > 1
+  visible(tableName) {
+    return whenMoreThanOneRowIsSelected(tableName)
   }
 })
 
 export const SELECTED_DOCUMENT = ContextMenuAction({
+  custom: true,
+  component: 'cm-item-selected-document-name',
   isStatic: true,
-  isSelectedDocumentName: true,
   class: 'heading',
-  documentType: '',
 
-  visible(tableName, store, row) {
-    return !!row
-  },
-
-  documentName: function (document) {
-    switch (this.documentType) {
-    case 'invoice':
-      return document.invoice_number
-    case 'quote':
-      return document.quote_number
-    case 'vendor':
-      return document.company_name
-    }
-    return document.name || 'Null'
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
   }
 })
 
 export const TableName = ContextMenuAction({
+  title: '',
   isStatic: true,
   class: 'heading',
 
-  visible(tableName, store, row) {
-    return !row
+  visible(tableName) {
+    return !whenSpecificRowIsSelected(tableName)
   }
 })
 
 // Active options
 export const CreateDocument = ContextMenuAction({
-  visible(tableName, store, row) {
-    return !row
+  documentType: '',
+
+  visible(tableName) {
+    return !whenSpecificRowIsSelected(tableName)
   },
 
-  handler: function (meta, { dispatch }) {
-    dispatch(`form/${this.documentType}/OPEN_CREATE_FORM`)
+  handler: function () {
+    createDocument(this.documentType)
   }
 })
 
@@ -108,32 +106,32 @@ export const CreateDocument = ContextMenuAction({
  */
 export const Archive = ContextMenuAction({
   title: 'actions.archive',
-  icon: 'icon-dropdown-archive',
+  icon: {
+    type: 'material',
+    name: 'archive'
+  },
+  moreThanOne: false,
 
-  visible(tableName, store, row) {
-    return Statuses.generic.active.meetsCondition(row)
+  visible(tableName) {
+    if (this.moreThanOne) {
+      return selection(tableName).length > 1 && selection(tableName).filter(Statuses.generic.active.meetsCondition).length
+    } else {
+      return whenSpecificRowIsSelected(tableName) && Statuses.generic.active.meetsCondition(selectedRow(tableName))
+    }
   },
 
-  handler({ repositoryPath, tableName }, { dispatch, state }, row) {
-    const rows = state.table[tableName].selection.slice()
-    if (row && rows.indexOf(row) < 0) {
-      rows.push(row)
-    }
+  handler(scope) {
+    const tableName = getTableName(scope)
+    const rows = selection(tableName)
 
     if (rows.length > 1) {
-      const uuids = rows.map((row) => row.uuid)
+      const uuids = rows.filter(Statuses.generic.active.meetsCondition).map((row) => row.uuid)
 
-      dispatch(`${repositoryPath}/API_ARCHIVE_MANY`, uuids)
-        .then(showUndoNotification(`Archived ${uuids.length} documents.`, () => {
-          dispatch(`${repositoryPath}/API_UNARCHIVE_MANY`, uuids)
-        }))
+      archiveDocuments(uuids, tableName)
     } else {
       const row = rows[0]
 
-      dispatch(`${repositoryPath}/API_ARCHIVE`, row)
-        .then(showUndoNotification('Archived one document', () => {
-          dispatch(`${repositoryPath}/API_UNARCHIVE`, row)
-        }))
+      archiveDocument(row, tableName)
     }
   }
 })
@@ -143,95 +141,119 @@ export const Archive = ContextMenuAction({
  */
 export const Delete = ContextMenuAction({
   title: 'actions.delete',
-  icon: 'icon-dropdown-delete',
+  icon: {
+    type: 'material',
+    name: 'delete'
+  },
+  moreThanOne: false,
 
-  visible(tableName, store, row) {
-    return Statuses.generic.active.meetsCondition(row)
+  visible(tableName) {
+    if (this.moreThanOne) {
+      return selection(tableName).length > 1 && (
+        selection(tableName).filter(Statuses.generic.active.meetsCondition).length ||
+        selection(tableName).filter(Statuses.generic.archived.meetsCondition).length
+      )
+    } else {
+      return whenSpecificRowIsSelected(tableName) && (
+        Statuses.generic.active.meetsCondition(selectedRow(tableName)) ||
+        Statuses.generic.archived.meetsCondition(selectedRow(tableName))
+      )
+    }
   },
 
-  handler({ repositoryPath, tableName }, { dispatch, state }, row) {
-    const rows = state.table[tableName].selection.slice()
-    if (row && rows.indexOf(row) < 0) {
-      rows.push(row)
-    }
+  handler(scope) {
+    const rows = selection(scope)
 
     if (rows.length > 1) {
-      const uuids = rows.map((row) => row.uuid)
+      const uuids = rows
+        .filter((row) => Statuses.generic.active.meetsCondition(row) || Statuses.generic.archived.meetsCondition(row))
+        .map((row) => row.uuid)
 
-      dispatch(`${repositoryPath}/API_DELETE_MANY`, uuids)
-        .then(showUndoNotification(`Deleted ${uuids.length} documents`, () => {
-          dispatch(`${repositoryPath}/API_RESTORE_MANY`, uuids)
-        }))
+      deleteDocuments(uuids, scope)
     } else {
       const row = rows[0]
 
-      dispatch(`${repositoryPath}/API_DELETE`, row)
-        .then(showUndoNotification('Deleted one document', () => {
-          dispatch(`${repositoryPath}/API_RESTORE`, row)
-        }))
+      deleteDocument(row, scope)
     }
   }
 })
 
 /**
- * Dispatch action to restore selected row(s)
+ * Dispatch action to recover selected row(s)
  */
-export const Restore = ContextMenuAction({
-  title: 'actions.restore',
-  icon: 'icon-dropdown-restore',
+export const Recover = ContextMenuAction({
+  title: 'actions.recover',
+  icon: {
+    type: 'material',
+    name: 'restore'
+  },
+  moreThanOne: false,
 
-  visible(tableName, store, row) {
-    return !Statuses.generic.active.meetsCondition(row)
+  visible(tableName) {
+    if (this.moreThanOne) {
+      return selection(tableName).length > 1 && selection(tableName).filter(Statuses.generic.deleted.meetsCondition).length
+    } else {
+      return whenSpecificRowIsSelected(tableName) && Statuses.generic.deleted.meetsCondition(selectedRow(tableName))
+    }
   },
 
-  handler({ repositoryPath, tableName }, { dispatch, state }, row) {
-    const rows = state.table[tableName].selection.slice()
-    if (row && rows.indexOf(row) < 0) {
-      rows.push(row)
-    }
+  handler(scope) {
+    const uuids = selection(scope)
+      .filter(Statuses.generic.deleted.meetsCondition)
+      .map((row) => row.uuid)
 
-    if (rows.length > 1) {
-      const archivedUuids = rows.filter(Statuses.generic.archived.meetsCondition).map((row) => row.uuid)
-      const deletedUuids = rows.filter(Statuses.generic.deleted.meetsCondition).map((row) => row.uuid)
-
-      Promise.all([
-        dispatch(`${repositoryPath}/API_RESTORE_MANY`, deletedUuids),
-        dispatch(`${repositoryPath}/API_UNARCHIVE_MANY`, archivedUuids)
-      ]).then(() => {
-        showUndoNotification(`Restored ${archivedUuids.length + deletedUuids.length} documents`, () => {
-          dispatch(`${repositoryPath}/API_DELETE_MANY`, deletedUuids)
-          dispatch(`${repositoryPath}/API_ARCHIVE_MANY`, archivedUuids)
-        })
-      })
+    if (uuids.length > 1) {
+      recoverDocuments(uuids, scope)
     } else {
-      const row = rows[0]
+      recoverDocument(selectedRow(scope), scope)
+    }
+  }
+})
 
-      if (Statuses.generic.deleted.meetsCondition(row)) {
-        dispatch(`${repositoryPath}/API_RESTORE`, row)
-          .then(showUndoNotification('Restored one document', () => {
-            dispatch(`${repositoryPath}/API_DELETE`, row)
-          }))
-      } else if (Statuses.generic.archived.meetsCondition(row)) {
-        dispatch(`${repositoryPath}/API_UNARCHIVE`, row)
-          .then(showUndoNotification('Restored one document', () => {
-            dispatch(`${repositoryPath}/API_ARCHIVE`, row)
-          }))
-      }
+/**
+ * Dispatch action to unarchive selected row(s)
+ */
+export const Unarchive = ContextMenuAction({
+  title: 'actions.unarchive',
+  icon: {
+    type: 'material',
+    name: 'restore'
+  },
+  moreThanOne: false,
+
+  visible(tableName) {
+    if (this.moreThanOne) {
+      return selection(tableName).length > 1 && selection(tableName).filter(Statuses.generic.archived.meetsCondition).length
+    } else {
+      return whenSpecificRowIsSelected(tableName) && Statuses.generic.archived.meetsCondition(selectedRow(tableName))
+    }
+  },
+
+  handler(scope) {
+    const uuids = selection(scope)
+      .filter(Statuses.generic.archived.meetsCondition)
+      .map((row) => row.uuid)
+
+    if (uuids.length > 1) {
+      unarchiveDocuments(uuids, scope)
+    } else {
+      unarchiveDocument(selectedRow(scope), scope)
     }
   }
 })
 
 export const PrintDocument = ContextMenuAction({
   title: 'actions.print_document',
-  icon: 'icon-dropdown-mark',
+  icon: {
+    type: 'material',
+    name: 'print'
+  },
 
   visible(tableName, store, row) {
     return !!row
   },
 
-  // TODO: Print functionality
   handler(tableName, { dispatch }, row) {
-    console.log(row)
     if (typeof row === 'undefined') {
       return
     }
@@ -241,7 +263,7 @@ export const PrintDocument = ContextMenuAction({
     if (!row.pdfs.length) {
       return
     }
-    print('/api/storage/pdf/' + row.pdfs[0].id + '/' + row.pdfs[0].pdfable_id)
+    print(row.getLatestPdf().getFileUrl())
   }
 })
 
@@ -250,15 +272,17 @@ export const PrintDocument = ContextMenuAction({
  */
 export const Preview = ContextMenuAction({
   title: 'actions.preview',
-  icon: 'icon-dropdown-preview',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'remove_red_eye'
   },
 
-  handler(tableName, { dispatch }, row) {
-    const formName = pluralize.singular(tableName)
-    dispatch(`form/${formName}/OPEN_PREVIEW_FORM`, row)
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
+
+  handler(tableName) {
+    editDocument(selectedRow(tableName), tableName)
   }
 })
 
@@ -267,15 +291,17 @@ export const Preview = ContextMenuAction({
  */
 export const EditDocument = ContextMenuAction({
   title: 'actions.edit',
-  icon: 'icon-dropdown-edit',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'mode_edit'
   },
 
-  handler({ tableName }, { dispatch }, row) {
-    const formName = getFormName(tableName)
-    dispatch(`form/${formName}/OPEN_EDIT_FORM`, row)
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
+
+  handler(tableName) {
+    editDocument(selectedRow(tableName), tableName)
   }
 })
 
@@ -286,8 +312,8 @@ export const NewTask = ContextMenuAction({
   title: 'actions.new_task',
   icon: 'icon-dropdown-new_task',
 
-  visible(tableName, store, row) {
-    return row
+  visible() {
+    return false
   },
 
   handler() {
@@ -302,12 +328,15 @@ export const NewInvoice = ContextMenuAction({
   title: 'actions.new_invoice',
   icon: 'icon-dropdown-new_invoice',
 
-  visible(tableName, store, row) {
-    return !!row
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
   },
 
-  handler(tableName, { dispatch }, row) {
-    dispatch('form/invoice/OPEN_CREATE_FORM')
+  handler(tableName) {
+    const data = {}
+    let tabIndex = 0
+
+    const row = selectedRow(tableName)
 
     switch (tableName) {
     /**
@@ -315,13 +344,11 @@ export const NewInvoice = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/invoice/SET_FIELD_VALUE', {
-        field: 'client_uuid',
-        value: row.uuid
-      })
+      data.client_uuid = row.uuid
+
       // Skip first modal tab, since we
       // already picked client for the user
-      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
+      tabIndex = 1
       break
 
     /**
@@ -331,6 +358,9 @@ export const NewInvoice = ContextMenuAction({
     case 'quotes':
       break
     }
+    createDocument('invoice', data, {
+      tabIndex
+    })
   }
 })
 
@@ -338,12 +368,12 @@ export const NewQuote = ContextMenuAction({
   title: 'actions.new_quote',
   icon: 'icon-dropdown-quote',
 
-  visible(tableName, store, row) {
-    return !!row
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
   },
 
-  handler(tableName, { dispatch }, row) {
-    dispatch('form/quote/OPEN_CREATE_FORM')
+  handler(tableName) {
+    const row = selectedRow(tableName)
 
     switch (tableName) {
     /**
@@ -351,28 +381,31 @@ export const NewQuote = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/quote/SET_FIELD_VALUE', {
-        field: 'client_uuid',
-        value: row.uuid
+      createDocument('quote', {
+        client_uuid: row.uuid
+      }, {
+        tabIndex: 1
       })
-      // Skip first modal tab, since we
-      // already picked client for the user
-      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
+    default:
+      createDocument('quote')
     }
   }
 })
 
 export const EnterPayment = ContextMenuAction({
   title: 'actions.enter_payment',
-  icon: 'icon-dropdown-payment',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'attach_money'
   },
 
-  handler(tableName, { dispatch }, row) {
-    dispatch('form/payment/OPEN_CREATE_FORM')
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
+
+  handler(tableName) {
+    const row = selectedRow(tableName)
 
     switch (tableName) {
     /**
@@ -380,38 +413,42 @@ export const EnterPayment = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/payment/SET_FIELD_VALUE', {
-        field: 'client_uuid',
-        value: row.uuid
+      createDocument('payment', {
+        client_uuid: row.uuid
+      }, {
+        tabIndex: 1
       })
-      // Skip first modal tab, since we
-      // already picked client for the user
-      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
 
     case 'invoices':
-      dispatch('form/payment/OPEN_CREATE_FORM')
-      dispatch('form/payment/SET_FORM_DATA', {
+      createDocument('payment', {
         client_uuid: row.client ? row.client.uuid : null,
         invoice_uuid: row.uuid,
-        amount: row.amount - row.paid_in
+        amount: row.amount.get() - row.paidIn.get(),
+        currency_code: row.currency.code
+      }, {
+        tabIndex: 2
       })
-      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 2)
       break
+    default:
+      createDocument('payment')
     }
   }
 })
 
 export const EnterExpense = ContextMenuAction({
   title: 'actions.enter_expense',
-  icon: 'icon-dropdown-expense',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'money_off'
   },
 
-  handler(tableName, { dispatch }, row) {
-    dispatch('form/expense/OPEN_CREATE_FORM')
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
+
+  handler(tableName) {
+    const row = selectedRow(tableName)
 
     switch (tableName) {
     /**
@@ -419,35 +456,39 @@ export const EnterExpense = ContextMenuAction({
      * document information.
      */
     case 'clients':
-      dispatch('form/expense/SET_FORM_DATA', {
+      createDocument('expense', {
         client_uuid: row.uuid,
-        currency_code: row.currency_code || null
+        currency_code: row.currency.code
       })
       break
 
     case 'vendors':
-      dispatch('form/expense/SET_FORM_DATA', {
+      createDocument('expense', {
         vendor_uuid: row.uuid,
-        currency_code: row.currency_code || null
+        currency_code: row.currency.code
+      }, {
+        tabIndex: 1
       })
-      // Skip first modal tab, since we
-      // already picked vendor for the user
-      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
+    default:
+      createDocument('expense')
     }
   }
 })
 
 export const EnterCredit = ContextMenuAction({
   title: 'actions.enter_credit',
-  icon: 'icon-dropdown-credit',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'card_giftcard'
   },
 
-  handler(tableName, { dispatch }, row) {
-    dispatch('form/credit/OPEN_CREATE_FORM')
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
+
+  handler(tableName) {
+    const row = tableName
 
     switch (tableName) {
     /**
@@ -455,14 +496,14 @@ export const EnterCredit = ContextMenuAction({
      * client information.
      */
     case 'clients':
-      dispatch('form/credit/SET_FIELD_VALUE', {
-        field: 'client_uuid',
-        value: row.uuid
+      createDocument('credit', {
+        client_uuid: row.uuid
+      }, {
+        tabIndex: 1
       })
-      // Skip first modal tab, since we
-      // already picked client for the user
-      dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
       break
+    default:
+      createDocument('credit')
     }
   }
 })
@@ -471,67 +512,101 @@ export const ApplyCredit = ContextMenuAction({
   title: 'actions.apply_credit',
   icon: 'icon-dropdown-credit',
 
-  visible(tableName, store, row) {
-    return !!row
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
   },
 
-  handler(tableName, { dispatch, state }, row) {
-    dispatch('form/payment/OPEN_CREATE_FORM')
-    dispatch('form/payment/SET_FORM_DATA', {
+  handler(tableName) {
+    const row = selectedRow(tableName)
+
+    createDocument('payment', {
       client_uuid: row.client.uuid,
-      payment_type_id: state.passive.paymentTypes.find((type) => {
+      payment_type_id: $store.getters['documents/repositories/paymentType/AVAILABLE_ITEMS'].find((type) => {
         return type.name === 'Apply Credit'
       }).id
+    }, {
+      tabIndex: 1
     })
-    dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
   }
 })
 
 export const CloneDocument = ContextMenuAction({
   title: 'actions.clone_invoice',
-  icon: 'icon-dropdown-clone',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'content_copy'
   },
 
-  handler(tableName, { dispatch, state }, row) {
-    const formName = pluralize.singular(tableName)
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
 
-    dispatch(`form/${formName}/OPEN_CREATE_FORM`)
-    dispatch(`form/${formName}/SET_FORM_DATA`, Object.assign({}, row, { uuid: null }))
+  handler(tableName) {
+    createDocument(tableName, Object.assign({}, selectedRow(tableName), { uuid: null }))
   }
 })
 
-export const ViewHistory = ContextMenuAction({
+export const HistoryList = ContextMenuAction({
+  isList: true,
   title: 'actions.view_history',
-  icon: 'icon-dropdown-history',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'history'
   },
 
-  handler(tableName, { dispatch, state }, row) { // eslint-disable-line
-    //
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
+
+  makeList(tableName) {
+    const list = selectedRow(tableName).history.map((activity, index) => {
+      const action = S(activity.action).capitalize().s
+      const date = activity.timestamp.format('MMM D, YYYY')
+
+      return PreviewDocumentState.extend({
+        title: `${action} on ${date}`,
+        activity: activity,
+        isCurrentVersion: !index
+      })
+    })
+    if (list.length > 1) {
+      list.splice(1, 0, __SEPARATOR__)
+    }
+
+    return list
+  }
+})
+
+export const PreviewDocumentState = ContextMenuAction({
+  custom: true,
+  component: 'cm-item-preview-document-state',
+
+  documentState: null,
+  handler(tableName) {
+    if (!this.isCurrentVersion) {
+      reviewDocumentState(this.activity.document.data.uuid, tableName, {
+        title: this.title,
+        activity: this.activity
+      })
+    } else {
+      editDocument(this.activity.document.data.uuid, tableName)
+    }
   }
 })
 
 export const MarkSent = ContextMenuAction({
   title: 'actions.mark_sent',
-  icon: 'icon-dropdown-mark',
-
-  visible(tableName, store, row) {
-    return !!row
+  icon: {
+    type: 'material',
+    name: 'check'
   },
 
-  handler(tableName, { dispatch, state }, row) {
-    dispatch('form/invoice/SET_FORM_DATA', Object.assign({}, row, { sent_at: moment().unix() }))
-    dispatch('table/invoices/SAVE_DOCUMENT', {
-      uuid: row.uuid,
-      data: {
-        invoice: state.form.invoice
-      }
-    })
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName)
+  },
+
+  handler(tableName) {
+    Statuses.invoice.sent.apply(selectedRow(tableName))
   }
 })
 
@@ -539,18 +614,13 @@ export const MarkPaid = ContextMenuAction({
   title: 'actions.mark_paid',
   icon: 'icon-dropdown-mark',
 
-  visible(tableName, store, invoice) {
-    return invoice && invoice.paid_in < invoice.amount
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName) &&
+      selectedRow(tableName).paidIn.get() < selectedRow(tableName).amount.get()
   },
 
-  handler(tableName, { dispatch, state }, invoice) {
-    dispatch('form/invoice/SET_FORM_DATA', Object.assign({}, invoice, { status: 'paid' }))
-    dispatch('table/invoices/SAVE_DOCUMENT', {
-      uuid: invoice.uuid,
-      data: {
-        invoice: state.form.invoice
-      }
-    })
+  handler(tableName) {
+    Statuses.invoice.paid.apply(selectedRow(tableName))
   }
 })
 
@@ -558,47 +628,48 @@ export const RefundPayment = ContextMenuAction({
   title: 'actions.refund_payment',
   icon: 'icon-dropdown-refund',
 
-  visible(tableName, store, payment) {
-    return payment && payment.refunded < payment.amount
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName) &&
+      selectedRow(tableName).refunded.get() < selectedRow(tableName).amount.get()
   },
 
-  handler(tableName, { dispatch, state }, payment) {
-    dispatch('form/payment/SET_FORM_DATA', Object.assign({}, payment, { refunded: payment.amount }))
-    dispatch('table/payments/SAVE_DOCUMENT', {
-      uuid: payment.uuid,
-      data: {
-        payment: state.form.payment
-      }
+  handler(tableName) {
+    const payment = selectedRow(tableName)
+
+    patchDocument(payment, 'payment', {
+      refunded: payment.amount.get()
     })
   }
 })
 
 export const ConvertToInvoice = ContextMenuAction({
   title: 'actions.convert_to_invoice',
-  icon: 'icon-dropdown-convert',
-
-  visible(tableName, { state }, quote) {
-    return quote && !quote.invoice
+  icon: {
+    class: 'convert-invoice-icon-svg',
+    name: ''
   },
 
-  handler(tableName, { dispatch, state }, quote) {
-    if (!quote) {
-      return
-    }
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName) && !selectedRow(tableName).invoice
+  },
 
-    dispatch('form/invoice/OPEN_CREATE_FORM')
-    dispatch('form/invoice/SET_FORM_DATA', {
+  handler(tableName) {
+    const quote = selectedRow(tableName)
+
+    createDocument('invoice', {
+      uuid: null,
       client_uuid: quote.client ? quote.client.uuid : null,
       items: quote.items.slice(),
-      partial: quote.partial,
-      currency_code: quote.currency_code || null,
-      discount_type: quote.discount_type,
-      discount_value: quote.discount_value,
-      note_to_client: quote.note_to_client,
+      partial: quote.partial.amount,
+      currency_code: quote.currency.code,
+      discount_type: quote.discount.serialize().type,
+      discount_value: quote.discount.serialize().value,
+      note_to_client: quote.noteToClient,
       terms: quote.terms,
       footer: quote.footer
+    }, {
+      tabIndex: 1
     })
-    dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
   }
 })
 
@@ -606,47 +677,22 @@ export const InvoiceExpense = ContextMenuAction({
   title: 'actions.invoice_expense',
   icon: 'icon-dropdown-expense',
 
-  visible(tableName, { state }, expense) {
-    let rows = state.table[tableName].selection.slice()
-    if (expense && rows.indexOf(expense) < 0) {
-      rows.push(expense)
-    }
-    rows = rows.filter((row) => !row.invoice)
-    return rows.length > 0
+  visible() {
+    return false
   },
 
-  handler(tableName, { dispatch, state }, expense) { // eslint-disable-line
-    // let rows = state.table[tableName].selection.slice()
-    // if (rows.indexOf(expense) < 0) {
-    //   rows.push(expense)
-    // }
-    // rows = rows.filter((row) => !row.invoice)
-
-    // dispatch('form/payment/OPEN_CREATE_FORM')
-    // dispatch('form/payment/SET_FORM_DATA', {
-    //   expenses: rows.map((row) => row.uuid),
-    //   items: rows.map((row) => {
-    //     return {
-    //       product: row.category
-    //     }
-    //   })
-    // })
-    // dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', 1)
-  }
+  handler() {}
 })
 
 export const ViewInvoice = ContextMenuAction({
   title: 'actions.view_invoice',
   icon: 'icon-dropdown-refund',
 
-  visible(tableName, store, quote) {
-    return quote && !!quote.invoice
+  visible(tableName) {
+    return whenSpecificRowIsSelected(tableName) && selectedRow(tableName).invoice
   },
 
-  handler(tableName, { dispatch, state }, quote) {
-    dispatch(`form/invoice/OPEN_EDIT_FORM`, {
-      uuid: quote.invoice.uuid,
-      data: quote.invoice
-    })
+  handler(tableName) {
+    editDocument(selectedRow(tableName).invoice, 'invoice')
   }
 })

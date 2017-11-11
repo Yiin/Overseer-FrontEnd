@@ -2,6 +2,21 @@
 
 > Front-End
 
+## Future TODO List:
+
+### Product items
+
+Ability to create product items and treat product as
+template for the items, e.g. user may have 50 pens he
+wants to sell, but each of the pen is has unique color.
+Instead of adding 50 different products, he may create
+a single product "Pen" and add/import 50 items with same
+properties as its product, but custom color property.
+
+That would allow to keep track of individual items without
+cluttering the products list or losing important item
+information (i.e. the color of the pen).
+
 ## Naming rules:
 
 ### Api request
@@ -15,6 +30,9 @@ some_documents
 
 ### Form Module
 some_document
+
+### Repository
+someDocument
 
 ## Build Setup
 

@@ -38,45 +38,50 @@
           <column width="17%">{{ $t('fields.transaction_reference') }}</column>
           <column width="16%">{{ $t('fields.invoice') }}</column>
           <column width="20%">{{ $t('fields.client_name') }}</column>
-          <column width="12%">{{ $t('fields.method') }}</column>
-          <column width="12%">{{ $t('fields.amount') }}</column>
+          <column width="11%">{{ $t('fields.method') }}</column>
+          <column width="11%">{{ $t('fields.amount') }}</column>
           <column width="11%">{{ $t('fields.date_created') }}</column>
-          <column width="12%" class="column--center">{{ $t('fields.status') }}</column>
+          <column width="14%" class="column--center">{{ $t('fields.status') }}</column>
         </template>
         <template slot="columns" slot-scope="{ row }">
           <column width="17%">
-            <a href="`#${row.key}`" @click.prevent="editDocument(row, 'payment')">
+            <a href="#" @click.prevent="editDocument(row, 'payment')">
               {{ row.paymentReference }}
             </a>
           </column>
           <column width="16%">
-            <a :href="`#${row.key}`" @click.prevent="editDocument(row.invoice, 'invoice')">
+            <a href="#" @click.prevent="editDocument(row.invoice, 'invoice')">
               {{ row.invoice.invoiceNumber }}
             </a>
           </column>
           <column width="20%">
-            <a :href="`#${row.key}`" @click.prevent="editDocument(row.client, 'client')">
+            <a href="#" @click.prevent="editDocument(row.client, 'client')">
               {{ row.client.name }}
             </a>
           </column>
-          <column width="12%">
-            <span>{{ row.paymentType.name }}</span>
+          <column width="11%">
+            <span>{{ row.paymentType ? row.paymentType.name : '-' }}</span>
           </column>
-          <column width="12%">
+          <column width="11%">
             <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
             <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
           </column>
           <column width="11%">
             <span>{{ row.paymentDate | date }}</span>
           </column>
-          <column width="12%" class="column--center">
-            <statuses-list type="payment" :document="row"></statuses-list>
+          <column width="14%" class="column--center">
+            <statuses-list type="payment" :document-uuid="row.uuid"></statuses-list>
           </column>
         </template>
         <template slot="table-controls-left"></template>
       </documents-table>
 
-      <table-footer :table-name="name"></table-footer>
+      <table-footer
+        :table-name="name"
+        :calculator-options="[
+          { text: $t('fields.amount'), value: 'amount', type: 'money' }
+        ]"
+      ></table-footer>
     </template>
   </div>
 </template>
@@ -90,6 +95,7 @@ import {
   IsPaymentCompletedFilter,
   IsRefundedFilter,
   PaymentMethodsFilter,
+  CurrenciesFilter,
   ClientsFilter,
   InvoiceProductsFilter,
 
@@ -110,9 +116,12 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Unarchive,
+  Recover,
   Preview,
   EditDocument,
-  RefundPayment
+  RefundPayment,
+  HistoryList
 } from '@/modules/table/cm-actions'
 
 export default {
@@ -127,9 +136,9 @@ export default {
 
     searchBy() {
       return [
-        SearchByText.extend({ key: 'invoice.invoice_number', name: 'invoice_number', placeholder: this.$t('search_by.invoice_number') }),
-        SearchByDate.extend({ key: 'created_at', name: 'payment_date', placeholder: this.$t('search_by.payment_date') }),
-        SearchByValue.extend({ key: 'amount', name: 'payment_amount', placeholder: this.$t('search_by.payment_amount') }),
+        SearchByText.extend({ key: 'invoice.invoiceNumber', name: 'invoice_number', placeholder: this.$t('search_by.invoice_number') }),
+        SearchByDate.extend({ key: 'createdAt', name: 'payment_date', placeholder: this.$t('search_by.payment_date') }),
+        SearchByValue.extend({ key: 'amount.amount', name: 'payment_amount', placeholder: this.$t('search_by.payment_amount') }),
         { type: 'separator' },
         SearchByText.extend({ key: 'client.name', name: 'client_name', placeholder: this.$t('search_by.client_name') }),
         SearchByItemsProduct.extend({ key: 'invoice', name: 'product_name', placeholder: this.$t('search_by.product_name') })
@@ -139,8 +148,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.payment_table'
@@ -154,9 +165,12 @@ export default {
         Preview.extend({ title: 'actions.preview' }),
         EditDocument.extend({ title: 'actions.edit_payment' }),
         RefundPayment,
+        HistoryList,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Unarchive,
+        Delete,
+        Recover
       ]
     },
 
@@ -170,6 +184,7 @@ export default {
         IsRefundedFilter,
         { type: 'separator' },
         PaymentMethodsFilter.make(this.paymentMethods),
+        CurrenciesFilter.make(this.currencies),
         { type: 'separator' },
         ClientsFilter.make(this.clients),
         InvoiceProductsFilter.make(this.products)
@@ -177,10 +192,10 @@ export default {
     },
 
     paymentMethods() {
-      const paymentTypes = this.$store.getters[`table/${this.name}/filteredItems`].map((payment) => {
+      const paymentTypes = this.$store.getters[`table/${this.name}/activeItems`].map((payment) => {
         return {
-          id: payment.method_id,
-          name: payment.method
+          id: payment.paymentType.id,
+          name: payment.paymentType.name
         }
       })
       return this.filterAndOrder(paymentTypes, {
@@ -190,9 +205,21 @@ export default {
     },
 
     clients() {
-      const clients = this.$store.getters[`table/${this.name}/filteredItems`].map((payment) => payment.client)
+      const clients = this.$store.getters[`table/${this.name}/activeItems`].map((payment) => payment.client)
+
       return this.filterAndOrder(clients, {
         filterBy: 'uuid',
+        orderBy: 'name'
+      })
+    },
+
+    currencies() {
+      const currencies = this.$store.getters[`table/${this.name}/activeItems`]
+        .filter((payment) => payment.currency)
+        .map((payment) => payment.currency)
+
+      return this.filterAndOrder(currencies, {
+        filterBy: 'code',
         orderBy: 'name'
       })
     },
@@ -201,7 +228,7 @@ export default {
       let products = []
 
       // Get all invoices products
-      this.$store.getters[`table/${this.name}/filteredItems`].forEach((invoice) => {
+      this.$store.getters[`table/${this.name}/activeItems`].forEach((invoice) => {
         if (!invoice.items) {
           return
         }
@@ -219,11 +246,11 @@ export default {
 
   methods: {
     create() {
-      this.$store.dispatch('form/payment/OPEN_CREATE_FORM')
+      this.createDocument('payment')
     },
 
     edit(data) {
-      this.$store.dispatch('form/payment/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'payment')
     }
   }
 }

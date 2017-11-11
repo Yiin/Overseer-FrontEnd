@@ -1,6 +1,6 @@
 <template>
   <div class="modal-form">
-    <modal-tabs @save="save" @cancel="cancel" :hide-buttons="preview">
+    <modal-tabs @save="save" @cancel="cancel">
       <modal-tab :title="$t('tabs.details')">
 
         <form-container>
@@ -8,7 +8,7 @@
             <!--
               project Name
             -->
-            <form-field :label="$t('labels.project_name')" catch-errors="name">
+            <form-field :label="$t('labels.project_name')" :errors="validationErrors.name">
               <form-text-input v-model="name" name="name" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>

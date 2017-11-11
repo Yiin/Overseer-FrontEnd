@@ -5,19 +5,20 @@ const state = FormState('product', {
     uuid: '',
 
     name: '',
+
+    /**
+     * If product is a service,
+     * we should ignore its qty.
+     */
+    is_service: false,
     qty: 1,
+
     description: '',
     identification_number: '',
 
-    price: '',
+    price: '0',
     currency_code: ''
   },
-
-  /**
-   * If product is a service,
-   * we should ignore its qty.
-   */
-  is_service: false,
 
   tabs: [
     [

@@ -59,7 +59,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
-  Restore,
+  Unarchive,
+  Recover,
   Preview,
   EditDocument
 } from '@/modules/table/cm-actions'
@@ -87,8 +88,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.project_table'
@@ -103,8 +106,9 @@ export default {
         EditDocument.extend({ title: 'actions.edit_client' }),
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
+        Unarchive,
         Delete,
-        Restore
+        Recover
       ]
     },
 
@@ -127,11 +131,11 @@ export default {
     },
 
     create() {
-      this.$store.dispatch('form/project/OPEN_CREATE_FORM')
+      this.createDocument('project')
     },
 
     edit(data) {
-      this.$store.dispatch('form/project/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'project')
     }
   }
 }

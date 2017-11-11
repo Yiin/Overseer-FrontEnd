@@ -13,7 +13,14 @@
     </div>
     <div class="inline-select-head">
       <div class="inline-select-column"><!-- Checkbox --></div>
-      <div v-for="column in columns" class="inline-select-column" :style="{ width: column.width }" :class="column.classList">
+      <div
+        v-for="column in columns"
+        class="inline-select-column"
+        :style="{ width: column.width }"
+        :class="{
+          'inline-select-column--center': column.align === 'center'
+        }"
+      >
         {{ column.title }}
       </div>
     </div>
@@ -22,7 +29,14 @@
         <div class="inline-select-column">
           <input type="radio" v-model="localValue" :value="item[itemValue]" class="radio-option">
         </div>
-        <div v-for="(column, index) in columns" class="inline-select-column" :style="{ width: column.width }" :classList="column.classList">
+        <div
+          v-for="(column, index) in columns"
+          class="inline-select-column"
+          :style="{ width: column.width }"
+          :class="{
+            'inline-select-column--center': column.align === 'center'
+          }"
+        >
           <slot :name="`column-${index}`" :item="item">
             {{ item[itemText] }}
           </slot>
@@ -33,7 +47,7 @@
 </template>
 
 <script>
-const Medium = require('@/vendor/medium.js/medium.patched').Medium
+const Medium = require('@/vendor/medium.js/medium.patched')
 
 export default {
   name: 'form-inline-table-select',
@@ -56,7 +70,8 @@ export default {
       type: String,
       default: 'value'
     },
-    value: {}
+    value: {},
+    lastItemValue: {}
   },
 
   data() {
@@ -69,10 +84,20 @@ export default {
 
   computed: {
     filteredItems() {
+      let items = this.items
+
+      // we have a value that we need to show first
+      if (this.lastItemValue) {
+        const currentIndex = items.findIndex((item) => item.value === this.lastItemValue)
+
+        if (currentIndex > -1) {
+          items.splice(0, 0, items.splice(currentIndex, 1)[0])
+        }
+      }
       if (!this.query) {
-        return this.items
+        return items
       } else {
-        return this.items.filter(this.filterByQuery)
+        return items.filter(this.filterByQuery)
       }
     }
   },

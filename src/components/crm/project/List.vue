@@ -78,7 +78,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
-  Restore,
+  Unarchive,
+  Recover,
   Preview,
   EditDocument
 } from '@/modules/table/cm-actions'
@@ -121,8 +122,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.project_table'
@@ -137,13 +140,14 @@ export default {
         EditDocument.extend({ title: 'actions.edit_project' }),
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
+        Unarchive,
         Delete,
-        Restore
+        Recover
       ]
     },
 
     clients() {
-      const clients = this.$store.getters[`table/${this.name}/filteredItems`]
+      const clients = this.$store.getters[`table/${this.name}/activeItems`]
         .filter((project) => project.client)
         .map((project) => project.client)
       return this.filterAndOrder(clients, {
@@ -159,11 +163,11 @@ export default {
     },
 
     create() {
-      this.$store.dispatch('form/project/OPEN_CREATE_FORM')
+      this.createDocument('project')
     },
 
     edit(data) {
-      this.$store.dispatch('form/project/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'project')
     }
   }
 }

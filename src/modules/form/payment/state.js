@@ -1,6 +1,9 @@
 import FormState from '../base/state'
 
 const state = FormState('payment', {
+  newClientUuid: null,
+  newInvoiceUuid: null,
+
   fields: {
     uuid: '',
 
@@ -27,7 +30,8 @@ const state = FormState('payment', {
       'currency_code',
       'payment_type_id',
       'payment_date',
-      'payment_reference'
+      'payment_reference',
+      'applied_credits'
     ]
   ]
 })

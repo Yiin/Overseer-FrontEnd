@@ -1,33 +1,30 @@
 <template>
   <div>
     <div class="row row--options">
-      <dropdown searchable scrollable class="dropdown--dashboard-options"
-        :watch="currencies"
-        @input="changeCurrency"
+      <form-dropdown-input class="dropdown--primary dropdown--dashboard-options"
+        :items="currencies"
+        v-model="selectedCurrencyCode"
       >
-        <dropdown-option
-          v-for="currency in currencies" :key="currency.id"
-          :value="currency.id"
-          :selected="currency.id === selectedCurrency.id"
-        >
-          {{ currency.code }}
-        </dropdown-option>
-      </dropdown>
+        <template slot="option" slot-scope="{ item, parent }">
+          <v-list-tile avatar @click="parent.select(item)" tag="div">
+            <v-list-tile-avatar>
+              <img :src="`http://www.xe.com/themes/xe/images/flags/svg/${item.code.toLowerCase()}.svg`">
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title v-html="item.code"></v-list-tile-title>
+              <v-list-tile-sub-title v-html="item.name"></v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </template>
+      </form-dropdown-input>
 
-      <dropdown class="dropdown--dashboard-options"
-        @input="changeGraphInterval"
-      >
-        <dropdown-option
-          v-for="interval in graphIntervals" :key="interval.key"
-          :value="interval.key"
-          :selected="interval.key === selectedGraphInterval.key"
-        >
-          {{ interval.name }}
-        </dropdown-option>
-      </dropdown>
+      <form-dropdown-input class="dropdown--primary dropdown--dashboard-options"
+        :items="graphIntervals"
+        v-model="selectedGraphInterval"
+      ></form-dropdown-input>
 
       <range-date-picker
-        class="dropdown--dashboard-options dropdown--datepicker"
+        class="dropdown--primary dropdown--dashboard-options dropdown--datepicker"
         v-model="statisticsDateRange"
         @input="changeDateRange"
         @selected-key="updateDateRangeKey"
@@ -42,12 +39,12 @@
         <div class="block__body block__body--dashboard-statistics">
           <div class="value value__dashboard value__dashboard--total">
             {{ selectedCurrency.symbol }}
-            {{ totalRevenue }}
+            {{ totalRevenue | currency }}
           </div>
           <div class="time-frame-total">
             <div class="value value__dashboard value__dashboard--time-framed">
               {{ selectedCurrency.symbol }}
-              {{ totalRevenueInDateRange }}
+              {{ totalRevenueInDateRange | currency }}
             </div>
             <div class="time-frame">
               {{ $t('datetime.' + (statisticsDateRangeKey || 'custom_range')) }}
@@ -62,12 +59,12 @@
         <div class="block__body block__body--dashboard-statistics">
           <div class="value value__dashboard value__dashboard--total">
             {{ selectedCurrency.symbol }}
-            {{ totalExpenses }}
+            {{ totalExpenses | currency }}
           </div>
           <div class="time-frame-total">
             <div class="value value__dashboard value__dashboard--time-framed">
               {{ selectedCurrency.symbol }}
-              {{ totalExpensesInDateRange }}
+              {{ totalExpensesInDateRange | currency }}
             </div>
             <div class="time-frame">
               {{ $t('datetime.' + (statisticsDateRangeKey || 'custom_range')) }}
@@ -82,12 +79,12 @@
         <div class="block__body block__body--dashboard-statistics">
           <div class="value value__dashboard value__dashboard--total">
             {{ selectedCurrency.symbol }}
-            {{ totalOutstanding }}
+            {{ totalOutstanding | currency }}
           </div>
           <div class="time-frame-total">
             <div class="value value__dashboard value__dashboard--time-framed">
               {{ selectedCurrency.symbol }}
-              {{ totalOutstandingInDateRange }}
+              {{ totalOutstandingInDateRange | currency }}
             </div>
             <div class="time-frame">
               {{ $t('datetime.' + (statisticsDateRangeKey || 'custom_range')) }}
@@ -102,8 +99,9 @@
 <script>
 import moment from 'moment'
 import _ from 'lodash'
+import { methods as CurrencyRepository } from '@/modules/documents/repositories/currency'
+import Money from '@/modules/documents/models/money'
 import RangeDatePicker from '@/components/common/DatePicker/RangeDatePicker.vue'
-import Statuses from '@/modules/documents/statuses'
 
 export default {
   components: {
@@ -112,34 +110,52 @@ export default {
 
   computed: {
     selectedCurrency() {
-      return this.$store.state.dashboard.currency
+      return this.$store.state.dashboard.currency || this.$store.state.settings.currency
+    },
+
+    selectedCurrencyCode: {
+      get() {
+        return this.selectedCurrency.code
+      },
+      set(code) {
+        this.changeCurrency(code)
+      }
     },
 
     currencies() {
       let currencies = [this.selectedCurrency]
-        .concat(this.$store.getters['documents/repositories/product/AVAILABLE_ITEMS'].map((product) => product.price.currency))
-        .concat(this.$store.getters['documents/repositories/invoice/AVAILABLE_ITEMS'].map((invoice) => invoice.currency))
-        .concat(this.$store.getters['documents/repositories/payment/AVAILABLE_ITEMS'].map((payment) => payment.amount.currency))
-        .concat(this.$store.getters['documents/repositories/credit/AVAILABLE_ITEMS'].map((credit) => credit.amount.currency))
-        .concat(this.$store.getters['documents/repositories/quote/AVAILABLE_ITEMS'].map((quote) => quote.currency))
-        .concat(this.$store.getters['documents/repositories/expense/AVAILABLE_ITEMS'].map((expense) => expense.amount.currency))
+        .concat(this.$store.getters['documents/repositories/product/AA_ITEMS'].map((product) => product.price.currency))
+        .concat(this.$store.getters['documents/repositories/invoice/AA_ITEMS'].map((invoice) => invoice.currency))
+        .concat(this.$store.getters['documents/repositories/payment/AA_ITEMS'].map((payment) => payment.amount.currency))
+        .concat(this.$store.getters['documents/repositories/credit/AA_ITEMS'].map((credit) => credit.amount.currency))
+        .concat(this.$store.getters['documents/repositories/quote/AA_ITEMS'].map((quote) => quote.currency))
+        .concat(this.$store.getters['documents/repositories/expense/AA_ITEMS'].map((expense) => expense.amount.currency))
         .filter((currency) => !!currency)
+        .map((currency) => {
+          return Object.assign({
+            value: currency.code,
+            text: currency.code
+          }, currency)
+        })
 
-      return _.uniqBy(currencies, 'id')
+      return _.uniqBy(currencies, 'code')
     },
 
     graphIntervals() {
       return [
-        { key: 'day', name: this.$t('common.day') },
-        { key: 'week', name: this.$t('common.week') },
-        { key: 'month', name: this.$t('common.month') }
+        { value: 'day', text: this.$t('common.day') },
+        { value: 'week', text: this.$t('common.week') },
+        { value: 'month', text: this.$t('common.month') }
       ]
     },
 
-    selectedGraphInterval() {
-      return this.graphIntervals.find((interval) => {
-        return this.$store.state.dashboard.statisticsGraphInterval === interval.key
-      })
+    selectedGraphInterval: {
+      get() {
+        return this.$store.state.dashboard.statisticsGraphInterval
+      },
+      set(value) {
+        this.changeGraphInterval(value)
+      }
     },
 
     statisticsDateRange: {
@@ -155,7 +171,7 @@ export default {
 
     totalRevenue() {
       return this.payments.reduce((sum, payment) => {
-        return sum + parseFloat(payment.amount)
+        return sum + payment.amount.getIn(this.selectedCurrency)
       }, 0)
     },
 
@@ -169,13 +185,13 @@ export default {
           this.statisticsDateRange.end
         )
       }).reduce((sum, payment) => {
-        return sum + parseFloat(payment.amount)
+        return sum + payment.amount.getIn(this.selectedCurrency)
       }, 0)
     },
 
     totalExpenses() {
       return this.expenses.reduce((sum, expense) => {
-        return sum + parseFloat(expense.amount)
+        return sum + expense.amount.getIn(this.selectedCurrency)
       }, 0)
     },
 
@@ -189,13 +205,16 @@ export default {
           this.statisticsDateRange.end
         )
       }).reduce((sum, expense) => {
-        return sum + parseFloat(expense.amount)
+        return sum + expense.amount.getIn(this.selectedCurrency)
       }, 0)
     },
 
     totalOutstanding() {
       return this.invoices.reduce((sum, invoice) => {
-        return sum + Math.max(0, parseFloat(invoice.amount) - parseFloat(invoice.paid_in))
+        return sum + Money.create({
+          amount: Math.max(0, parseFloat(invoice.amount.amount) - parseFloat(invoice.paidIn.amount)),
+          currency: invoice.currency
+        }).getIn(this.selectedCurrency)
       }, 0)
     },
 
@@ -209,7 +228,10 @@ export default {
           this.statisticsDateRange.end
         )
       }).reduce((sum, invoice) => {
-        return sum + Math.max(0, parseFloat(invoice.amount) - parseFloat(invoice.paid_in))
+        return sum + Money.create({
+          amount: Math.max(0, parseFloat(invoice.amount.amount) - parseFloat(invoice.paidIn.amount)),
+          currency: invoice.currency
+        }).getIn(this.selectedCurrency)
       }, 0)
     },
 
@@ -226,6 +248,12 @@ export default {
     }
   },
 
+  mounted() {
+    if (!this.$store.state.dashboard.currency) {
+      this.$store.dispatch('dashboard/CHANGE_CURRENCY', this.$store.state.settings.currency)
+    }
+  },
+
   methods: {
     changeDateRange(dateRange) {
       this.$store.dispatch('dashboard/CHANGE_DATE_RANGE', dateRange)
@@ -235,8 +263,9 @@ export default {
       this.$store.dispatch('dashboard/UPDATE_DATE_RANGE_KEY', key)
     },
 
-    changeCurrency(currencyId) {
-      this.$store.dispatch('dashboard/CHANGE_CURRENCY', currencyId)
+    changeCurrency(currencyCode) {
+      const currency = CurrencyRepository.findOrDefault(currencyCode)
+      this.$store.dispatch('dashboard/CHANGE_CURRENCY', currency)
     },
 
     changeGraphInterval(graphInterval) {

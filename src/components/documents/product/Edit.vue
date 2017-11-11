@@ -4,46 +4,47 @@
       <modal-tab :title="$t('tabs.details')">
 
         <form-row>
-          <form-field catch-errors="name" :label="$t('labels.product_name')">
+          <form-field :errors="validationErrors.name" :label="$t('labels.product_name')">
             <form-text-input v-model="name" name="product_name" :readonly="preview"></form-text-input>
           </form-field>
-          <form-currency-dropdown v-model="currency_code" :readonly="preview"></form-currency-dropdown>
+          <form-currency-dropdown :errors="validationErrors.currency_code" v-model="currency_code" :readonly="preview"></form-currency-dropdown>
         </form-row>
 
         <form-row>
           <form-field :label="$t('labels.product_type')">
             <form-dropdown-input
               :items="productTypes"
-              v-model="isService"
-            >
-              <dropdown-option :value="false">
-                Physical
-              </dropdown-option>
-              <dropdown-option :value="true">
-                Service
-              </dropdown-option>
-            </form-dropdown-input>
+              v-model="is_service"
+              :readonly="preview"
+            ></form-dropdown-input>
           </form-field>
 
-          <form-field :label="$t('labels.quantity')">
+          <form-field v-show="!is_service" :errors="validationErrors.qty" :label="$t('labels.quantity')">
             <form-text-input
               label="Quantity"
               v-model="qty"
+              :readonly="preview"
             ></form-text-input>
           </form-field>
         </form-row>
 
         <form-row>
-          <form-field :label="$t('labels.price')">
-            <form-text-input
-              label="Price"
-              name="price"
+          <form-field :errors="validationErrors.price" :label="$t('labels.price')">
+            <form-formatted-input
+              type="number"
+              :label="currency_code"
               v-model="price"
-            ></form-text-input>
+              name="price"
+              :readonly="preview"
+            ></form-formatted-input>
           </form-field>
 
-          <form-field catch-errors="identification_number" :label="$t('labels.identification_number')">
-            <form-text-input v-model="identification_number" name="identification_number" :readonly="preview"></form-text-input>
+          <form-field :label="$t('labels.identification_number')">
+            <form-text-input
+              v-model="identification_number"
+              name="identification_number"
+              :readonly="preview"
+            ></form-text-input>
           </form-field>
 
         </form-row>
@@ -53,6 +54,7 @@
             <form-textarea-input
               label="Description"
               v-model="description"
+              :readonly="preview"
             ></form-textarea-input>
           </form-field>
         </form-row>
@@ -82,6 +84,7 @@
 
 <script>
 import FormMixin from '@/mixins/FormMixin'
+import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
 
 export default {
@@ -92,6 +95,7 @@ export default {
        */
       'name',
       'identification_number',
+      'is_service',
       'qty',
       'price',
       'currency_code',
@@ -100,24 +104,32 @@ export default {
   ],
 
   components: {
+    FormFormattedInput,
     FormCurrencyDropdown
   },
 
   computed: {
-    isService: {
-      set(value) {
-        this.$store.commit('form/product/IS_SERVICE', value)
-      },
-      get() {
-        return this.form.is_service
-      }
-    },
-
     productTypes() {
       return [
         { text: 'Physical', value: false },
         { text: 'Service', value: true }
       ]
+    }
+  },
+
+  watch: {
+    is_service(isService) {
+      if (isService) {
+        this.qty = null
+      } else {
+        this.qty = 1
+      }
+    }
+  },
+
+  mounted() {
+    if (!this.form.fields.uuid) {
+      this.currency_code = this.settings.currency.code
     }
   }
 }

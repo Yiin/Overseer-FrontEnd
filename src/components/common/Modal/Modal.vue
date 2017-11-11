@@ -1,6 +1,5 @@
 <template>
-  <div class="modal" :class="{ 'modal--visible': !isClosed }">
-    <div class="background-dim" ref="dim" @mousedown.self="closeOrHide"></div>
+  <div class="modal" :class="{ 'modal--visible': !isClosed }" @click.self="closeOrHide">
     <div ref="modal" class="modal-container">
       <div class="modal__title">
         {{ $t(title) }}
@@ -15,7 +14,7 @@
         </div>
       </div>
       <div class="modal__body">
-        <component keep-alive :is="component" :data="data.data" @cancel="close"></component>
+        <component :is="component" :data="data.data" @cancel="close"></component>
       </div>
     </div>
   </div>
@@ -32,6 +31,7 @@ export default {
       hasChanges: false,
       isClosed: true,
       isClosing: false,
+      isHiding: false,
       cachedData: {},
       cachedIndex: 0
     }
@@ -63,6 +63,10 @@ export default {
 
     component() {
       return this.data.component
+    },
+
+    ratio() {
+      return this.$store.state.scale.ratio
     }
   },
 
@@ -75,13 +79,15 @@ export default {
           this.animateOpenFromTaskbar()
         }
       } else {
-        this.animateMoveToTaskbar()
+        if (this.isHiding) {
+          this.animateMoveToTaskbar()
+        } else {
+          this.animateCloseCompletely()
+        }
       }
     },
 
     '$store.state.taskbar.activeIndex': function (current, previous) {
-      console.log('activeIndex', previous, '->', current)
-
       if (current !== null && previous !== null) {
         if (this.taskbarItem.parent) {
           this.animateMoveToTaskbar()
@@ -116,23 +122,48 @@ export default {
       }
     },
 
+    getModalBoundingRect() {
+      const parentRect = this.$el.getBoundingClientRect()
+      const modalRect = this.$refs.modal.getBoundingClientRect()
+      const r = this.ratio
+
+      const rect = {
+        width: modalRect.width / r,
+        height: modalRect.height / r
+      }
+
+      // const wd = rect.width - modalRect.width
+      // const hd = rect.height - modalRect.height
+
+      rect.x = modalRect.x - parentRect.x
+      rect.y = modalRect.y - parentRect.y
+      rect.left = rect.x
+      rect.right = window.innerWidth - (rect.x + rect.width)
+      rect.bottom = window.innerHeight - (rect.y + rect.height)
+      rect.top = rect.y
+
+      return rect
+    },
+
     animateBackgroundFadeIn() {
       // fade in background dim
-      TweenLite.fromTo(this.$refs.dim, 0.3, {
-        opacity: 0
+      TweenLite.fromTo(document.getElementById('background-dim'), 0.3, {
+        opacity: 0,
+        display: 'block'
       }, {
         opacity: 0.4,
-        ease: Power2.easeIn
+        ease: Power2.easeOut
       }, 0)
     },
 
     animateBackgroundFadeOut() {
       // fade in background dim
-      TweenLite.fromTo(this.$refs.dim, 0.3, {
+      TweenLite.fromTo(document.getElementById('background-dim'), 0.3, {
         opacity: 0.4
       }, {
         opacity: 0,
-        ease: Power2.easeIn
+        ease: Power2.easeOut,
+        clearProps: 'all'
       }, 0)
     },
 
@@ -140,140 +171,144 @@ export default {
      * Animate modal opening animation
      */
     animateOpenNew() {
-      console.log('animateOpenNew')
       this.isClosing = false
+      this.isHiding = false
       this.isClosed = false
 
       this.$nextTick(() => {
-        const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
+        const modalBoundingRect = this.getModalBoundingRect()
 
         const modalFinalPosition = {
-          x: (window.innerWidth - modalBoundingRect.width) / 2,
-          y: window.innerHeight - modalBoundingRect.height
+          x: Math.round((window.innerWidth - modalBoundingRect.width) / 2),
+          y: Math.round(window.innerHeight - modalBoundingRect.height)
         }
 
         const modalInitialPosition = {
-          x: (window.innerWidth - modalBoundingRect.width) / 2,
-          y: window.innerHeight
+          x: Math.round((window.innerWidth - modalBoundingRect.width) / 2),
+          y: Math.round(window.innerHeight)
         }
 
-        TweenLite.fromTo(this.$refs.modal, 0.4, {
-          opacity: 0,
-          x: modalInitialPosition.x,
-          y: modalInitialPosition.y
-        }, {
-          opacity: 1,
-          scale: 1,
-          x: modalFinalPosition.x,
-          y: modalFinalPosition.y,
-          ease: Power2.easeOut
-        })
+        this.$nextTick(() => {
+          TweenLite.fromTo(this.$refs.modal, 0.3, {
+            opacity: 0,
+            x: modalInitialPosition.x,
+            y: modalInitialPosition.y
+          }, {
+            opacity: 1,
+            scale: 1,
+            x: modalFinalPosition.x,
+            y: modalFinalPosition.y,
+            ease: Power2.easeOut
+          })
 
-        this.animateBackgroundFadeIn()
+          this.animateBackgroundFadeIn()
+        })
       })
     },
 
     animateUpdatePosition() {
-      const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
+      const modalBoundingRect = this.getModalBoundingRect()
 
       const modalFinalPosition = {
-        x: (window.innerWidth - modalBoundingRect.width) / 2,
-        y: window.innerHeight - modalBoundingRect.height
+        x: Math.round((window.innerWidth - modalBoundingRect.width) / 2),
+        y: Math.round(window.innerHeight - modalBoundingRect.height)
       }
 
       TweenLite.to(this.$refs.modal, 0.1, modalFinalPosition)
     },
 
     animateOpenFromTaskbar() {
-      console.log('animateOpenFromTaskbar')
       this.isClosing = false
+      this.isHiding = false
       this.isClosed = false
 
       this.$nextTick(() => {
         const taskbarItemBoundingRect = this.getTaskbarItemBoundingRect()
-        const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
+        const modalBoundingRect = this.getModalBoundingRect()
 
         const ratio = taskbarItemBoundingRect.width / modalBoundingRect.width
 
         const modalFinalPosition = {
-          x: (window.innerWidth - modalBoundingRect.width) / 2,
-          y: window.innerHeight - modalBoundingRect.height
+          x: Math.round((window.innerWidth - modalBoundingRect.width) / 2),
+          y: Math.round(window.innerHeight - modalBoundingRect.height)
         }
 
         const modalInitialPosition = {
-          x: taskbarItemBoundingRect.x - (modalBoundingRect.width - modalBoundingRect.width * ratio) / 2,
-          y: taskbarItemBoundingRect.y - (modalBoundingRect.height - modalBoundingRect.height * ratio) / 2
+          x: Math.round(taskbarItemBoundingRect.x - (modalBoundingRect.width - modalBoundingRect.width * ratio) / 2),
+          y: Math.round(taskbarItemBoundingRect.y - (modalBoundingRect.height - modalBoundingRect.height * ratio) / 2)
         }
 
-        TweenLite.fromTo(this.$refs.modal, 0.4, {
-          opacity: 1,
-          scale: ratio,
-          x: modalInitialPosition.x,
-          y: modalInitialPosition.y,
-          ease: Power2.easeOut
-        }, {
-          // opacity: 1,
-          scale: 1,
-          x: modalFinalPosition.x,
-          y: modalFinalPosition.y
-        })
+        this.$nextTick(() => {
+          TweenLite.fromTo(this.$refs.modal, 0.3, {
+            opacity: 1,
+            scale: ratio,
+            x: modalInitialPosition.x,
+            y: modalInitialPosition.y,
+            ease: Power2.easeOut
+          }, {
+            // opacity: 1,
+            scale: 1,
+            x: modalFinalPosition.x,
+            y: modalFinalPosition.y
+          })
 
-        this.animateBackgroundFadeIn()
+          this.animateBackgroundFadeIn()
+        })
       })
     },
 
     animateMoveToTaskbar() {
-      console.log('animateMoveToTaskbar')
       const taskbarItemBoundingRect = this.getTaskbarItemBoundingRect()
-      const modalBoundingRect = this.$refs.modal.getBoundingClientRect()
+      const modalBoundingRect = this.getModalBoundingRect()
 
       const ratio = taskbarItemBoundingRect.width / modalBoundingRect.width
 
       const modalInitialPosition = {
-        x: (window.innerWidth - modalBoundingRect.width) / 2,
-        y: window.innerHeight - modalBoundingRect.height
+        x: Math.round((window.innerWidth - modalBoundingRect.width) / 2),
+        y: Math.round(window.innerHeight - modalBoundingRect.height)
       }
 
       const modalFinalPosition = {
-        x: taskbarItemBoundingRect.x - (modalBoundingRect.width - modalBoundingRect.width * ratio) / 2,
-        y: taskbarItemBoundingRect.y - (modalBoundingRect.height - modalBoundingRect.height * ratio) / 2
+        x: Math.round(taskbarItemBoundingRect.x - (modalBoundingRect.width - modalBoundingRect.width * ratio) / 2),
+        y: Math.round(taskbarItemBoundingRect.y - (modalBoundingRect.height - modalBoundingRect.height * ratio) / 2)
       }
 
-      // fade out background dim
-      this.animateBackgroundFadeOut()
+      this.$nextTick(() => {
+        TweenLite.fromTo(this.$refs.modal, 0.3, {
+          scale: 1,
+          x: modalInitialPosition.x,
+          y: modalInitialPosition.y
+        }, {
+          opacity: 0,
+          scale: ratio,
+          x: modalFinalPosition.x,
+          y: modalFinalPosition.y,
+          clearProps: 'all',
+          onComplete: () => {
+            this.isClosing = false
+            this.isHiding = false
+            this.isClosed = true
+          }
+        })
 
-      TweenLite.fromTo(this.$refs.modal, 0.4, {
-        scale: 1,
-        x: modalInitialPosition.x,
-        y: modalInitialPosition.y
-      }, {
-        opacity: 0,
-        scale: ratio,
-        x: modalFinalPosition.x,
-        y: modalFinalPosition.y,
-        clearProps: 'all',
-        onComplete: () => {
-          this.isClosing = false
-          this.isClosed = true
-        }
-      }, 0)
+        // fade out background dim
+        this.animateBackgroundFadeOut()
+      })
     },
 
     animateCloseCompletely() {
-      console.log('animateCloseCompletely')
+      this.$nextTick(() => {
+        TweenLite.to(this.$refs.modal, 0.2, {
+          opacity: 0,
+          clearProps: 'all',
+          onComplete: () => {
+            this.isClosing = false
+            this.isHiding = false
+            this.isClosed = true
+          }
+        })
 
-      this.animateBackgroundFadeOut()
-
-      TweenLite.fromTo(this.$refs.modal, 0.4, {
-        scale: 1
-      }, {
-        opacity: 0,
-        scale: 0.2,
-        clearProps: 'all',
-        onComplete: () => {
-          this.isClosing = false
-          this.isClosed = true
-        }
+        this.animateBackgroundFadeOut()
       })
     },
 
@@ -285,6 +320,7 @@ export default {
     hide() {
       this.cacheData()
       this.isClosing = true
+      this.isHiding = true
       this.$store.dispatch('modal/HIDE')
     },
 
@@ -295,6 +331,10 @@ export default {
     },
 
     closeOrHide() {
+      if (!this.isOpen) {
+        // ignore
+        return
+      }
       if (this.hasChanges) {
         this.hide()
       } else {

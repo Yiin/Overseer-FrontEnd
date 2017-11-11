@@ -30,18 +30,18 @@
       <modal-tab :title="$t('tabs.details')">
         <form-container>
           <form-row>
-            <form-field :label="$t('labels.quote_date')">
+            <form-field :errors="validationErrors.quote_date" :label="$t('labels.quote_date')">
               <form-date-input current-date v-model="quote_date" name="quote_date" :readonly="preview"></form-date-input>
             </form-field>
-            <form-field :label="$t('labels.quote_number')">
+            <form-field :errors="validationErrors.quote_number" :label="$t('labels.quote_number')">
               <form-text-input v-model="quote_number" name="quote_number" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
           <form-row>
-            <form-field :label="$t('labels.due_date')">
+            <form-field :errors="validationErrors.due_date" :label="$t('labels.due_date')">
               <form-date-input v-model="due_date" name="due_date" :readonly="preview"></form-date-input>
             </form-field>
-            <form-field :label="$t('labels.po_number')">
+            <form-field :errors="validationErrors.po_number" :label="$t('labels.po_number')">
               <form-text-input v-model="po_number" name="po_number" :readonly="preview"></form-text-input>
             </form-field>
           </form-row>
@@ -49,7 +49,7 @@
             <!--
               Partial Deposit
             -->
-            <form-field catch-errors="partial" :label="$t('labels.partial')">
+            <form-field :errors="validationErrors.partial" :label="$t('labels.partial')">
               <form-inputs-group>
                 <form-formatted-input
                   type="number"
@@ -62,7 +62,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown :errors="validationErrors.currency_code" v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
               </form-inputs-group>
             </form-field>
 

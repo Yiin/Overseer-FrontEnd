@@ -22,6 +22,10 @@
         transform: scale(.7);
     }
 
+    .dropdown
+    {
+        // z-index: 1;
+    }
     .dropdown__input
     {
         background: #edf1fc;
@@ -32,6 +36,10 @@
         &.scrollable
         {
             border-right: none;
+        }
+        &-wrapper
+        {
+            max-height: 268px;
         }
     }
     &__inline-inputs
@@ -95,6 +103,7 @@
         &:not(textarea)
         {
             height: 44px;
+            line-height: 44px;
         }
         &:focus
         {
@@ -103,6 +112,8 @@
         &-error
         {
             margin-left: 10px;
+
+            text-transform: initial;
 
             color: $color-red;
         }
@@ -487,5 +498,106 @@ textarea.form__input
         display: inline-block;
 
         margin-left: 22px;
+    }
+}
+
+/**
+ * Client and Vendor forms
+ */
+.modal-form--client,
+.modal-form--vendor
+{
+    display: flex;
+
+    height: 617px;
+
+    .modal-tabs
+    {
+        width: 1165px;
+        &__content
+        {
+            padding-right: 330px;
+        }
+    }
+
+    .modal-buttons-group--right
+    {
+        margin-right: 330px;
+    }
+
+    .result__list--empty
+    {
+        position: relative;
+
+        height: 100%;
+        max-height: 297px;
+        margin-top: 0;
+
+        border-top: none;
+        background-image: url(../assets/images/placeholders/VatGirl.svg);
+        background-position-x: -31px;
+        background-position-y: -14px;
+        background-size: 295px auto;
+
+        .placeholder__text
+        {
+            font-size: 16px;
+            line-height: 20px;
+
+            position: absolute;
+            bottom: 5px;
+
+            margin: 30px 30px 23px 32px;
+
+            text-align: center;
+        }
+    }
+
+    .modal-sidebar
+    {
+        position: absolute;
+        z-index: 1;
+        right: 0;
+
+        width: 330px;
+        height: 100%;
+        margin-top: 54px;
+        padding: 38px 45px 0;
+
+        border-left: 4px solid #f5f5f5;
+        background: #fff;
+    }
+
+    .dropdown--member-states
+    {
+        .dropdown__options
+        {
+            max-height: 330px;
+        }
+    }
+
+    // Contact index
+    .contact__index
+    {
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 29px;
+
+        position: absolute;
+        top: 17px;
+        right: 35px;
+
+        letter-spacing: 2px;
+
+        color: $color-main;
+    }
+
+    .contact__index span
+    {
+        font-weight: 800;
+
+        padding-left: 5px;
+
+        color: $color-main;
     }
 }

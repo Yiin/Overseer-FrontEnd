@@ -1,21 +1,23 @@
-import { ObjectModel } from 'objectmodel'
+import Model from './model'
 
 /**
  * Currency model
- * @type {ObjectModel}
  */
-const Currency = new ObjectModel({
-  code: String,
-  name: String,
-  symbol: [String]
-})
+class Currency extends Model {
+  static create(data) {
+    const rates = {}
 
-Currency.create = function (data) {
-  return new Currency({
-    code: data.code,
-    name: data.name,
-    symbol: data.symbol
-  })
+    data.rates.forEach((rate) => {
+      rates[rate.to] = rate.rate
+    })
+
+    return new Currency({
+      code: data.code,
+      name: data.name,
+      symbol: data.symbol,
+      rates
+    })
+  }
 }
 
 export default Currency

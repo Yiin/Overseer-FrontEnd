@@ -5,7 +5,8 @@
 
 html
 {
-    overflow-y: auto;
+    overflow-x: auto;
+    overflow-y: scroll;
 }
 
 body
@@ -15,21 +16,37 @@ body
     line-height: .8;
     background: $color-page-bg !important;
 
-    // overflow-y: scroll;
-
     margin: 0;
-    // padding: $height-navbar 0 0 0;
+
+    &.--disable-scaling {
+        min-width: 1500px;
+    }
+}
+
+.--hide-overflow {
+    overflow: hidden !important;
 }
 
 .page-content
 {
     position: relative;
 
-    width: 1200px;
+    width: 1316px;
     min-height: calc(100vh - 50px);
-    padding: 20px 28px 200px 0;
+    padding: 20px 0 200px 0;
     margin-left: calc(50vw - 1390px / 2 + 167px);
-    padding-left: 105px;
+}
+
+.router-view {
+    position: absolute;
+    width: 100%;
+    padding-bottom: 65px;
+}
+
+.router-view > .placeholder-area {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .logo {
@@ -53,7 +70,7 @@ span.highlight__text {
 }
 
 /* Links */
-a[href]:not(.--do-not-style-link):not(.list__tile--link)
+a[href]:not(.--do-not-style-link):not(.list__tile--link):not([href^="javascript:"])
 {
     position: relative;
 
@@ -66,7 +83,7 @@ a[href]:not(.--do-not-style-link):not(.list__tile--link)
         &::before
         {
             position: absolute;
-            bottom: -6px;
+            bottom: -3px;
 
             width: 100%;
 
@@ -91,6 +108,7 @@ iframe
 .currency
 {
     font-weight: $font-weight-bold;
+    color: $color-mine-shaft;
     &--primary
     {
         color: $color-main;
@@ -202,6 +220,7 @@ iframe
 .scrollable::-webkit-scrollbar-track
 {
     margin-top: 6px;
+    margin-bottom: 6px;
 
     border-radius: 5px;
     background-color: $color-wild-sand;
@@ -269,7 +288,7 @@ iframe
 
 .results__list
 {
-    max-height: 242px;
+    max-height: 250px;
 }
 
 .result

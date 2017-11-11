@@ -10,18 +10,13 @@ export default (mutations = {}) => Object.assign({
     state._preview = preview
   },
 
-  SET_FORM_DATA(state, data) {
-    for (let field in data) {
-      Vue.set(state.fields, field, data[field])
+  SET_ACTIVITY(state, activity) {
+    state.activity = activity
+  },
 
-      if (data[field] && typeof data[field] === 'object') {
-        if (typeof data[field].id !== 'undefined') {
-          Vue.set(state.fields, field + '_id', data[field].id)
-        }
-        if (typeof data[field].uuid !== 'undefined') {
-          Vue.set(state.fields, field + '_uuid', data[field].uuid)
-        }
-      }
+  SET_FORM_DATA(state, data) {
+    for (let field in JSON.parse(JSON.stringify(data))) {
+      Vue.set(state.fields, field, data[field])
     }
   },
 
@@ -44,6 +39,7 @@ export default (mutations = {}) => Object.assign({
   },
 
   SET_ERRORS(state, errors) {
+    state.validationErrors = {}
     for (let field in errors) {
       state.validationErrors[field] = errors[field]
     }

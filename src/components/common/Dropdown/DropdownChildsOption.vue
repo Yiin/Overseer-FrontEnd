@@ -24,7 +24,7 @@
 
 <script>
 import he from 'he'
-const Medium = require('@/vendor/medium.js/medium.patched').Medium
+const Medium = require('@/vendor/medium.js/medium.patched')
 
 export default {
   name: 'dropdown-childs-option',

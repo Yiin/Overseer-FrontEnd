@@ -1,0 +1,47 @@
+.profileContainer {
+    hr {
+        border: none;
+        border-bottom: 1px dashed #ccc;
+    }
+}
+
+.profileHeader {
+    text-align: center;
+    padding-bottom: 22px;
+
+    .profilePicture img {
+        border-radius: 100%;
+        pointer-events: none;
+    }
+    .profileTitle {
+        padding: 11px 0 5px 0;
+        font-size: 22px;
+        font-weight: 600;
+    }
+    .profileSubtitle {
+        font-size: 14px;
+        color: $primary-color;
+        font-weight: 600;
+    }
+}
+
+.profileBlock {
+    padding: 20px 0;
+
+    .profileBlockTitle {
+        padding-bottom: 15px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .profileBlockEntry {
+        padding: 10px 0;
+        font-size: 15px;
+
+        .profileBlockEntryTitle {
+            color: $primary-color;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    }
+}

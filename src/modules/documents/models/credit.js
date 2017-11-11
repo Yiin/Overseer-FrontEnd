@@ -1,55 +1,61 @@
 import Document from './document'
+import CreditTransformer from '../transformers/credit'
 import { methods as ClientRepository } from '../repositories/client'
 import { methods as CurrencyRepository } from '../repositories/currency'
 import moment from 'moment'
-import Client from './client'
 import Money from './money'
 
 /**
  * Credit model
- * @type {ObjectModel}
  */
-const Credit = Document.extend({
-  client: Client,
-  amount: Money,
-  creditDate: moment,
-  creditNumber: String
-})
+class Credit extends Document {
+  static create(data) {
+    return new this(this.parse(data))
+  }
 
-/**
- * Constructor
- */
-Credit.create = Document.create.bind(Credit)
+  getTitle() {
+    return this.creditNumber
+  }
 
-/**
- * Parse credit data that came from api
- */
-Credit.parse = function (data) {
-  const modelData = {}
+  /**
+   * Parse credit data that came from api
+   */
+  static parse(data) {
+    const modelData = super.parse(data)
 
-  modelData.client = ClientRepository.findOrCreate(data.client)
-  modelData.amount = Money.create({
-    amount: data.amount,
-    currency: CurrencyRepository.findOrCreate(data.currency)
-  })
-  modelData.balance = Money.create({
-    amount: data.balance,
-    currency: CurrencyRepository.findOrCreate(data.currency)
-  })
-  modelData.creditDate = data.credit_date && moment(data.credit_date.date)
-  modelData.creditNumber = data.credit_number
+    modelData.client = ClientRepository.findByKey(data.client_uuid)
 
-  return modelData
-}
+    const currency = CurrencyRepository.findOrDefault(data.currency)
 
-Credit.prototype.serialize = function () {
-  return {
-    uuid: this.uuid,
-    client_uuid: this.client.uuid,
-    amount: this.amount.amount,
-    currency_code: this.amount.currency.code,
-    credit_date: this.creditDate.format('YYYY-MM-DD'),
-    credit_number: this.creditNumber
+    modelData.currency = currency
+    modelData.amount = Money.create({
+      amount: data.amount,
+      currency
+    })
+    modelData.balance = Money.create({
+      amount: data.balance,
+      currency
+    })
+
+    modelData.creditDate = data.credit_date && moment(data.credit_date.date)
+    modelData.creditNumber = data.credit_number
+
+    return modelData
+  }
+
+  static transformProps(...props) {
+    return CreditTransformer(...props)
+  }
+
+  serialize() {
+    return {
+      uuid: this.uuid,
+      client_uuid: this.client.uuid,
+      balance: this.balance.amount,
+      currency_code: this.amount.currency.code,
+      credit_date: this.creditDate.format('YYYY-MM-DD'),
+      credit_number: this.creditNumber
+    }
   }
 }
 

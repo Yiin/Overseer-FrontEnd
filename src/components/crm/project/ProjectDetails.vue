@@ -72,7 +72,7 @@
                     class="task" :class="{ 'task--completed': task.is_completed }"
                   >
                     <div class="task__date">
-                      {{ task.created_at | date }}
+                      {{ task.createdAt | date }}
                     </div>
                     <div class="task__creator">
                       {{ task.user.full_name }}

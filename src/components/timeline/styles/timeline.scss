@@ -1,0 +1,99 @@
+.timeline {
+    max-height: 530px;
+    width: 100%;
+    line-height: initial;
+    padding-left: 15px;
+}
+
+.year {
+    font-size: 16px;
+    margin: 8px 0 23px;
+}
+
+.events {
+    margin-left: 10px;
+}
+
+.event {
+    position: relative;
+    padding-left: 117px;
+    padding-top: 4px;
+    &:not(:last-child) {
+        padding-bottom: 15px;
+        &::before {
+            position: absolute;
+            content: '';
+            border-left: 2px solid #f5f5f5;
+            height: 100%;
+            left: -2px;
+            top: 10px;
+        }
+    }
+
+    @for $i from 1 through length($list-of-colors)
+    {
+        &--c-#{$i} {
+            &::before,
+            .eventDate::before {
+                border-color: nth($list-of-colors, $i) !important;
+            }
+            &.event--top-of-the-day,
+            &.event--bottom-of-the-day {
+                .eventDate::before {
+                    background: nth($list-of-colors, $i) !important;
+                }
+            }
+            &.event--bottom-of-the-day {
+                &::before {
+                    border-color: transparent !important;
+                }
+            }
+        }
+    }
+}
+
+.eventIcon {
+    position: absolute;
+    top: 1px;
+    left: 85px;
+    transform: scale(0.8);
+}
+
+.eventDate {
+    position: absolute;
+    top: 4px;
+    left: 25px;
+    font-size: 14px;
+    &::before {
+        content: "";
+        left: -33px;
+        position: absolute;
+        border-radius: 50%;
+        top: 4px;
+        background: #ffffff;
+        display: block;
+        border: 3px solid $color-main;
+        width: 14px;
+        height: 14px;
+    }
+}
+
+.eventTitle {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.eventContent {
+    padding: 5px 0;
+    a {
+        font-weight: 600;
+        color: $color-main !important;
+    }
+}
+
+.eventMeta {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(55, 55, 55, 0.7);
+}

@@ -11,6 +11,7 @@
             v-if="dropdownOptions.clients.length"
             v-model="client_uuid"
             :items="dropdownOptions.clients"
+            :last-item-value="form.newClientUuid"
             :placeholder="$t('placeholders.type_client_name')"
           ></form-inline-select-input>
 
@@ -33,14 +34,15 @@
             v-if="clientInvoices.length"
             v-model="invoice_uuid"
             :items="clientInvoices"
+            :lastItemValue="form.newInvoiceUuid"
             item-value="uuid"
             :placeholder="$t('placeholders.type_invoice_number')"
             :columns="[
               { width: '25%', title: $t('fields.invoice_number') },
               { width: '24%', title: $t('fields.client_name') },
-              { width: '18%', title: $t('fields.total_amount') },
-              { width: '18%', title: $t('fields.paid_in') },
-              { width: '15%', title: $t('fields.status'), align: 'center' }
+              { width: '15%', title: $t('fields.total_amount') },
+              { width: '15%', title: $t('fields.paid_in') },
+              { width: '21%', title: $t('fields.status'), align: 'center' }
             ]"
           >
             <template slot="column-0" slot-scope="{ item }">
@@ -80,7 +82,24 @@
       <modal-tab :title="$t('tabs.details')">
         <form-container>
           <form-row>
-            <form-field :catch-errors="[ 'amount', 'currency_code' ]" :label="$t('labels.amount')">
+
+            <!--
+              Payment Date
+            -->
+            <form-field :errors="validationErrors.payment_date" :label="$t('labels.payment_date')">
+              <form-date-input current-date v-model="payment_date" name="payment_date" :readonly="preview"></form-date-input>
+            </form-field>
+
+            <!--
+              Payment Reference
+            -->
+            <form-field :errors="validationErrors.payment_reference" :label="$t('labels.payment_reference')">
+              <form-text-input v-model="payment_reference" name="payment_reference" :readonly="preview"></form-text-input>
+            </form-field>
+          </form-row>
+
+          <form-row>
+            <form-field :errors="validationErrors.amount" :label="$t('labels.payment_amount')">
               <form-inputs-group>
                 <form-formatted-input
                   type="number"
@@ -93,7 +112,7 @@
                 <!--
                   Currency
                 -->
-                <form-currency-dropdown v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
+                <form-currency-dropdown :errors="validationErrors.currency_code" v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
               </form-inputs-group>
             </form-field>
             <form-field :label="$t('labels.payment_type')">
@@ -104,22 +123,7 @@
               ></form-dropdown-input>
             </form-field>
           </form-row>
-          <form-row>
 
-            <!--
-              Payment Date
-            -->
-            <form-field catch-errors="payment_date" :label="$t('labels.payment_date')">
-              <form-date-input current-date v-model="payment_date" name="payment_date" :readonly="preview"></form-date-input>
-            </form-field>
-
-            <!--
-              Payment Reference
-            -->
-            <form-field catch-errors="payment_reference" :label="$t('labels.payment_reference')">
-              <form-text-input v-model="payment_reference" name="payment_reference" :readonly="preview"></form-text-input>
-            </form-field>
-          </form-row>
         </form-container>
       </modal-tab>
 
@@ -150,6 +154,7 @@ export default {
     FormMixin('payment', [
       'client_uuid',
       'invoice_uuid',
+      'applied_credits',
       'amount',
       'currency_code',
       'payment_type_id',
@@ -167,9 +172,9 @@ export default {
   computed: {
     clientInvoices() {
       if (this.client_uuid) {
-        return this.invoices.filter((invoice) => invoice.client.uuid === this.client_uuid)
+        return this.dropdownOptions.invoices.filter((invoice) => invoice.client.uuid === this.client_uuid)
       } else {
-        return this.invoices
+        return this.dropdownOptions.invoices
       }
     },
 
@@ -240,11 +245,15 @@ export default {
     if (!this.currency_code) {
       this.currency_code = this.currency.code
     }
+    if (!this.form.fields.uuid && !this.payment_type_id) {
+      this.payment_type_id = 3
+    }
   },
 
   methods: {
     createClient() {
       createDocument('client').then((client) => {
+        this.$store.commit('form/payment/SET_NEW_CLIENT', client.uuid)
         this.$store.dispatch('form/payment/SET_FORM_DATA', {
           client_uuid: client.uuid
         })
@@ -255,7 +264,10 @@ export default {
     createInvoice() {
       createDocument('invoice', {
         client_uuid: this.form.client_uuid
-      }, this.form.client_uuid ? 1 : 0).then((invoice) => {
+      }, {
+        tabIndex: this.form.client_uuid ? 1 : 0
+      }).then((invoice) => {
+        this.$store.commit('form/payment/SET_NEW_INVOICE', invoice.uuid)
         this.$store.dispatch('form/payment/SET_FORM_DATA', {
           invoice_uuid: invoice.uuid
         })

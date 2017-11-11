@@ -1,8 +1,7 @@
-import { ArrayModel, FunctionModel } from 'objectmodel'
 import faker from 'faker'
-import { getStoreModule } from '@/store'
+import store from '@/store'
 import Document from './document'
-import { StringNotBlank } from './common'
+import ClientTransformer from '../transformers/client'
 import { methods as CurrencyRepository } from '../repositories/currency'
 import { methods as LanguageRepository } from '../repositories/language'
 import { methods as IndustryRepository } from '../repositories/industry'
@@ -10,120 +9,119 @@ import { methods as CompanySizeRepository } from '../repositories/company-size'
 import Vat from './vat'
 import Address from './address'
 import Money from './money'
-import Currency from './currency'
 import Contact from './contact'
-import Language from './language'
-import Industry from './industry'
-import CompanySize from './company-size'
 
 /**
  * Client model
- * @type {ObjectModel}
  */
-const Client = Document.extend({
-  name: StringNotBlank,
-  registrationNumber: [String],
-  vat: [Vat],
-  website: [String],
-  phone: [String],
-  address: [Address],
-  contacts: [new ArrayModel(Contact)],
-  currency: [Currency],
-  language: [Language],
-  industry: [Industry],
-  companySize: [CompanySize],
-  paymentTerms: [Number]
-})
+class Client extends Document {
+  constructor(data) {
+    super(data)
 
-/**
- * Methods
- */
-Client.prototype.getPrimaryEmail = FunctionModel().return(String)(
-  function () {
-    return this.contacts.length ? this.contacts[0].profile.email : ''
+    store.watch(() => store.getters['documents/repositories/credit/AVAILABLE_ITEMS'].filter((credit) => {
+      return credit.client.uuid === this.uuid
+    }), this.updateBalance.bind(this))
+
+    store.watch(() => store.getters['documents/repositories/invoice/AVAILABLE_ITEMS'].filter((invoice) => {
+      return invoice.client.uuid === this.uuid
+    }), this.updateBalance.bind(this))
   }
-)
 
-Client.prototype.balance = FunctionModel().return(Money)(
-  function () {
-    return new Money({
-      amount: getStoreModule(['documents', 'repositories', 'credit']).getters.AVAILABLE_ITEMS
-        .filter((credit) => credit.client.uuid === this.uuid)
-        .reduce((sum, credit) => {
-          return sum + credit.amount.getAmountIn(this.currency)
-        }, 0),
-      currency: this.currency
+  static create(data) {
+    return new this(this.parse(data))
+  }
+
+  getPrimaryEmail() {
+    return this.contacts.length ? this.contacts[0].profile.email || '' : ''
+  }
+
+  credits() {
+    return store.getters['documents/repositories/credit/AA_ITEMS'].filter((credit) => {
+      return credit.client.uuid === this.uuid
     })
   }
-)
 
-/**
- * Constructor
- */
-Client.create = Document.create.bind(Client)
+  invoices() {
+    return store.getters['documents/repositories/invoice/AA_ITEMS'].filter((invoice) => {
+      return invoice.client.uuid === this.uuid
+    })
+  }
 
-/**
- * Parse client data that came from API
- */
-Client.parse = function (data) {
-  const modelData = {}
+  updateBalance() {
+    this.balance.amount = this.credits().reduce((sum, credit) => {
+      return sum + credit.balance.getIn(this.currency)
+    }, this.invoices().reduce((sum, invoice) => {
+      return sum + (invoice.amount.getIn(this.currency) - invoice.paidIn.getIn(this.currency))
+    }, 0))
+  }
 
-  modelData.name = data.name
-  modelData.registrationNumber = data.registration_number
-  modelData.vat = Vat.create(data.vat_number)
-  modelData.website = data.website
-  modelData.phone = data.phone
-  modelData.address = Address.create(data)
-  modelData.contacts = data.contacts.map(Contact.create)
-  modelData.currency = CurrencyRepository.findOrCreate(data.currency)
-  modelData.language = LanguageRepository.findOrCreate(data.language)
-  modelData.industry = IndustryRepository.findOrCreate(data.industry)
-  modelData.companySize = CompanySizeRepository.findOrCreate(data.company_size)
-  modelData.paymentTerms = data.payment_terms
-  modelData.balance = Money.create({
-    amount: 0,
-    currency: modelData.currency
-  })
+  /**
+   * Parse client data that came from API
+   */
+  static parse(data) {
+    const modelData = super.parse(data)
 
-  return modelData
-}
+    modelData.name = data.name
+    modelData.registrationNumber = data.registration_number
+    modelData.vat = Vat.create(data.vat_number, data.vat_number_checks)
+    modelData.website = data.website
+    modelData.phone = data.phone
+    modelData.address = Address.create(data)
+    modelData.contacts = (data.contacts || []).map(Contact.create, Contact)
+    modelData.currency = CurrencyRepository.findOrDefault(data.currency)
+    modelData.language = LanguageRepository.find(data.language)
+    modelData.industry = IndustryRepository.find(data.industry)
+    modelData.companySize = CompanySizeRepository.find(data.company_size)
+    modelData.paymentTerms = data.payment_terms
+    modelData.balance = Money.create({
+      amount: 0,
+      currency: modelData.currency
+    })
 
-Client.prototype.serialize = function () {
-  return Object.assign({
-    uuid: this.uuid,
-    name: this.name,
-    registration_number: this.registrationNumber,
-    vat_number: this.vat.vatNumber,
-    website: this.website,
-    phone: this.phone,
-    contacts: this.contacts.map((contact) => contact.serialize),
-    currency_code: this.currency.code,
-    language_id: this.language.id,
-    industry_id: this.industry.id,
-    company_size_id: this.companySize.id,
-    payment_terms: this.paymentTerms
-  }, this.address.serialize())
-}
+    return modelData
+  }
 
-/**
- * Create product with random fake data.
- *
- * FOR DEBUGGING PURPOSES ONLY
- */
-Client.fakeData = function () {
-  return Object.assign({
-    name: faker.company.companyName(),
-    registration_number: faker.random.number({ min: 100000, max: 999999 }).toString(),
-    vat_number: faker.random.arrayElement(['IE9700053D', 'IE6336982T', 'IE6336982T', 'IE6346967G']),
-    website: faker.internet.url(),
-    phone: faker.phone.phoneNumber(),
-    contacts: Array.from({length: ((faker.random.number() % 3) + 1)}).map(Contact.fakeData),
-    currency_code: faker.random.arrayElement(['EUR', 'USD', 'GBP']),
-    language_id: 1,
-    industry_id: (faker.random.number() % 55) + 1,
-    company_size_id: (faker.random.number() % 6) + 1,
-    payment_terms: faker.random.arrayElement([7, 14, 15, 30, 60, 90, 0])
-  }, Address.fakeData())
+  static transformProps(data) {
+    return ClientTransformer(data)
+  }
+
+  serialize() {
+    return Object.assign({
+      uuid: this.uuid,
+      name: this.name,
+      registration_number: this.registrationNumber,
+      vat_number: this.vat.vatNumber,
+      website: this.website,
+      phone: this.phone,
+      contacts: this.contacts.map((contact) => contact.serialize()),
+      currency_code: (this.currency || null) && this.currency.code,
+      language_id: (this.language || null) && this.language.id,
+      industry_id: (this.industry || null) && this.industry.id,
+      company_size_id: (this.companySize || null) && this.companySize.id,
+      payment_terms: this.paymentTerms
+    }, this.address.serialize())
+  }
+
+  /**
+   * Create product with random fake data.
+   *
+   * FOR DEBUGGING PURPOSES ONLY
+   */
+  static fakeData() {
+    return Object.assign({
+      name: faker.company.companyName(),
+      registration_number: faker.random.number({ min: 100000, max: 999999 }).toString(),
+      vat_number: faker.random.arrayElement(['IE9700053D', 'IE6336982T', 'IE6336982T', 'IE6346967G']),
+      website: faker.internet.url(),
+      phone: faker.phone.phoneNumber(),
+      contacts: Array.from({length: ((faker.random.number() % 3) + 1)}).map(Contact.fakeData),
+      currency_code: faker.random.arrayElement(['EUR', 'USD', 'GBP']),
+      language_id: 1,
+      industry_id: (faker.random.number() % 55) + 1,
+      company_size_id: (faker.random.number() % 6) + 1,
+      payment_terms: faker.random.arrayElement([7, 14, 15, 30, 60, 90, 0])
+    }, Address.fakeData())
+  }
 }
 
 export default Client

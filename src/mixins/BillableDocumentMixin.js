@@ -1,15 +1,10 @@
+import BillItemsList from '@/components/form/BillItemsList.vue'
+import BillItemForm from '@/components/form/BillItemForm.vue'
+
 export default {
-  data() {
-    return {
-      itemModel: {
-        product: {},
-        product_name: '',
-        qty: 1,
-        cost: 0,
-        discount: 0,
-        tax_rate: null
-      }
-    }
+  components: {
+    BillItemsList,
+    BillItemForm
   },
 
   computed: {

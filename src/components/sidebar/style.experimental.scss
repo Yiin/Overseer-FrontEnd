@@ -1,0 +1,281 @@
+@media (max-width: 1400px) {
+    /**
+     * Main
+     */
+    body
+    {
+        font-size: 13px;
+    }
+
+    /**
+     * Sidebar
+     */
+    .sidebar
+    {
+        position: absolute;
+        top: 85px;
+
+        width: 200px;
+        padding-bottom: 50px;
+
+        hr
+        {
+            height: 0;
+            margin-top: 10px;
+            margin-bottom: 4px;
+
+            border: none;
+            border-top: 1px solid #eee;
+        }
+
+        &-icon
+        {
+            height: 23px;
+        }
+    }
+
+    .nav-category
+    {
+        font-weight: 700;
+        font-style: normal;
+        line-height: 20px;
+
+        margin-right: 11px;
+        margin-bottom: 5px;
+        padding: 0 40px 0;
+
+        text-transform: uppercase;
+
+        color: $color-main;
+    }
+
+    .nav-link
+    {
+        display: flex;
+
+        cursor: pointer;
+
+        align-items: center;
+        &:hover,
+        &:focus
+        {
+            text-decoration: none;
+
+            border: none;
+            outline: none;
+        }
+        &--active:not(&--disabled)
+        {
+            background: #ebeceb;
+            .nav-link__border
+            {
+                background: #5867c2;
+            }
+        }
+        &:hover,
+        &--active:not(&--disabled)
+        {
+            color: #000;
+            .sidebar-icon--appointments
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Appointments hover.svg');
+            }
+            .sidebar-icon--products
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Products hover.svg');
+            }
+            .sidebar-icon--clients
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Client hover.svg');
+            }
+            .sidebar-icon--credits
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Credits hover.svg');
+            }
+            .sidebar-icon--currency
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Currency hover.svg');
+            }
+            .sidebar-icon--expenses
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Expenses hover.svg');
+            }
+            .sidebar-icon--invoices
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Invoice hover.svg');
+            }
+            .sidebar-icon--overview
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Overview hover.svg');
+            }
+            .sidebar-icon--payments
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Payment hover.svg');
+            }
+            .sidebar-icon--personel
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Personel hover.svg');
+            }
+            .sidebar-icon--projects
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Projects hover.svg');
+            }
+            .sidebar-icon--quotes
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Quotes hover.svg');
+            }
+            .sidebar-icon--reports
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Reports hover.svg');
+            }
+            .sidebar-icon--vendors
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Vendors hover.svg');
+            }
+            .sidebar-icon--settings
+            {
+                background-image: url('../../assets/icons/sidebar/hover/1__Settings hover.svg');
+            }
+        }
+        &__border
+        {
+            width: 6px;
+            height: 32px;
+        }
+        &__icon
+        {
+            width: 30px;
+            margin-left: 30px;
+        }
+        &__text
+        {
+            font-size: 1em;
+
+            margin-left: 5px;
+
+            color: $color-mulled-wine;
+        }
+    }
+
+    /**
+     * Page Content
+     */
+    .breadcrumb
+    {
+        display: none;
+    }
+
+    .page-content
+    {
+        position: relative;
+
+        width: calc(100% - 235px) !important;
+        min-height: calc(100vh - 50px);
+        margin-left: 250px;
+    }
+
+    /**
+     * Table area
+     */
+    .table__heading {
+        font-size: initial;
+    }
+
+    .button--create
+    {
+        font-size: 1.1rem;
+        line-height: initial;
+
+        display: flex;
+
+        min-width: 150px;
+        height: 40px;
+        margin: 0;
+
+        justify-content: center;
+    }
+
+    .dropdown--primary > .dropdown__input
+    {
+        position: relative;
+
+        display: flex;
+
+        height: 38px;
+
+        border: none;
+
+        align-items: center;
+    }
+
+    .dropdown__option--checkbox .option-label
+    {
+        font-size: 1rem;
+        line-height: initial;
+
+        overflow: hidden;
+
+        max-width: 160px;
+        margin-left: 18px;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .table__body {
+        font-size: 1rem;
+    }
+
+    /**
+     * Modals
+     */
+    .modal-container {
+        padding: 60px 0 0;
+    }
+    .modal__title {
+        font-size: 15px;
+        left: 27px;
+        height: 60px;
+    }
+    .modal-form {
+        max-height: 550px;
+        .modal-tabs {
+            width: 760px;
+        }
+        .modal__tab {
+            font-size: 1rem;
+            .tab-title {
+                height: 49px;
+                padding: 0 25px;
+            }
+        }
+        .modal-tab {
+            padding: 26px 35px 0;
+        }
+        .form__inline-inputs {
+            margin: 17px 0;
+        }
+        .form__input:not(textarea):not(.form__input--file-upload),
+        .dropdown__input:not(textarea),
+        .modal-form__input:not(textarea) {
+            height: 40px;
+        }
+        .form__input-wrapper{
+            margin-top: 20px;
+        }
+    }
+    .modal-sidebar {
+        margin-top: 49px;
+
+        .result__list--empty {
+            background-size: 200px auto;
+            background-position-x: 16px;
+            .placeholder__text {
+                bottom: 71px;
+            }
+        }
+    }
+    .modal-buttons {
+        bottom: 25px;
+    }
+}

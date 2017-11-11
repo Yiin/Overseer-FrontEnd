@@ -1,70 +1,88 @@
 <template>
   <div>
-    <div class="popup__header">
-      Status Conflicts Resolution
-    </div>
-
-    <div class="popup__body">
-      <div v-if="errors.length">
-        <h4>In order to change document's status to {{ statusWeAreTryingToApply }}, following conflicts must be resolved</h4>
-        <ul>
-          <li v-for="error in errors">
-            <template v-if="error.message">
-              {{ error.message }}
-            </template>
-            <button v-if="error.solve" @click="solveError(error)">
-              Resolve
-            </button>
-            <template v-if="error.availableOptions">
-              Suggestions:
-              <ul>
-                <li v-for="suggestion in error.availableOptions">
-                  {{ suggestion.message }}
-                </li>
-              </ul>
-            </template>
-          </li>
-        </ul>
-      </div>
-      <template v-else>
-        <div v-if="warnings.length">
-          <h3>Warning</h3>
-          <ul>
-            <li v-for="warning in warnings">
-              <template v-if="warning.message">
-                {{ warning.message }}
+    <v-dialog v-model="$store.state.popup.isOpen">
+      <v-card>
+        <v-card-title class="headline">Status Conflicts Resolution</v-card-title>
+        <template v-if="errors.length">
+          <v-card-text>
+            In order to change document's status to {{ statusWeAreTryingToApply }}, following conflicts must be resolved
+          </v-card-text>
+          <v-card-text>
+            <li v-for="error in errors">
+              <template v-if="error.message">
+                {{ error.message }}
               </template>
-              <p>
-                <template v-if="warning.tip">
-                  Tip:
-                  {{ warning.tip }}
-                </template>
-              </p>
-              <template v-if="warning.availableOptions">
+              <button v-if="error.solve" @click="solveError(error)">
+                Resolve
+              </button>
+              <template v-if="error.availableOptions">
                 Suggestions:
                 <ul>
-                  <li v-for="suggestion in warning.availableOptions">
+                  <li v-for="suggestion in error.availableOptions">
                     {{ suggestion.message }}
                   </li>
                 </ul>
               </template>
             </li>
-          </ul>
-        </div>
-        <div v-if="solution">
-          <h3> </h3>
-          In order to change document's status to {{ statusWeAreTryingToApply }}, {{ solution.message }}
-        </div>
-        <button v-if="warnings.length" @click="solve">I understand, continue</button>
-        <button v-if="solution" @click="solve">Apply solution</button>
-      </template>
+          </v-card-text>
+        </template>
+        <template v-else>
+          <v-card-text v-if="warnings.length">
+            <h3>Warning</h3>
+            <ul>
+              <li v-for="warning in warnings">
+                <template v-if="warning.message">
+                  {{ warning.message }}
+                </template>
+                <p>
+                  <template v-if="warning.tip">
+                    Tip:
+                    {{ warning.tip }}
+                  </template>
+                </p>
+                <template v-if="warning.availableOptions">
+                  Suggestions:
+                  <ul>
+                    <li v-for="suggestion in warning.availableOptions">
+                      {{ suggestion.message }}
+                    </li>
+                  </ul>
+                </template>
+              </li>
+            </ul>
+          </v-card-text>
+          <v-card-text v-if="solution">
+            In order to change document's status to {{ statusWeAreTryingToApply }}, {{ solution.message }}
+          </v-card-text>
+        </template>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn v-if="warnings.length" @click.native="solve" color="green darken-1" flat="flat">
+            I understand, continue
+          </v-btn>
+          <v-btn v-if="solution" @click.native="solve" color="green darken-1" flat="flat">
+            Apply solution
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     </div>
   </div>
 </template>
 
 <script>
+import {
+  VDialog,
+  VBtn
+} from 'vuetify'
+
 export default {
   name: 'status-conflicts-resolution-window',
+
+  components: {
+    VDialog,
+    VBtn
+  },
 
   props: {
     data: {
@@ -80,15 +98,15 @@ export default {
 
   computed: {
     warnings() {
-      return this.conflictState.conflicts ? this.conflictState.conflicts.filter((conflict) => conflict.type === 'warning') : []
+      return this.conflictState && this.conflictState.conflicts ? this.conflictState.conflicts.filter((conflict) => conflict.type === 'warning') : []
     },
 
     errors() {
-      return this.conflictState.conflicts ? this.conflictState.conflicts.filter((conflict) => conflict.type === 'error') : []
+      return this.conflictState && this.conflictState.conflicts ? this.conflictState.conflicts.filter((conflict) => conflict.type === 'error') : []
     },
 
     solution() {
-      return this.conflictState.solution
+      return this.conflictState && this.conflictState.solution
     },
 
     statusWeAreTryingToApply() {
@@ -123,7 +141,7 @@ export default {
             // solve final conflicts
             this.conflictState = this.conflictState.solve(this.data.document)
 
-            if (this.conflictState.solution) {
+            if (this.conflictState && this.conflictState.solution) {
               return
             }
           }

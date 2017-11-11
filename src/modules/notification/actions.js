@@ -7,7 +7,7 @@ export default {
     commit('SET_OPTIONS', options)
 
     commit('SET_VISIBLE', false) // reset timeout timer
-    commit('SET_VISIBLE', true)
+    setTimeout(() => commit('SET_VISIBLE', true))
   },
 
   CLOSE({ commit }) {

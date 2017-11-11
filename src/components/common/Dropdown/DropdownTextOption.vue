@@ -1,10 +1,22 @@
 <template>
   <div class="dropdown__option dropdown__option--text">
-    <div ref="input"
-         class="dropdown__option--text-input mediumjs-input"
-         :data-placeholder="placeholder"
-    ></div>
-    <div v-show="value && value.length"
+    <div
+      class="dropdown__option--text-input mediumjs-input"
+      :class="{
+        'dropdown__option--focused': isFocused
+      }"
+      @mousedown="$refs.input.focus()"
+    >
+      <input
+        :placeholder="placeholder"
+        ref="input"
+        type="text"
+        v-model="localValue"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
+      >
+    </div>
+    <div v-show="localValue && localValue.length"
          @click="clear"
          class="mediumjs-input-clear"
     ></div>
@@ -12,9 +24,6 @@
 </template>
 
 <script>
-import he from 'he'
-const Medium = require('@/vendor/medium.js/medium.patched').Medium
-
 export default {
   name: 'dropdown-text-option',
 
@@ -25,52 +34,47 @@ export default {
     name: {
       type: String,
       required: true
-    }
+    },
+    value: {}
   },
 
   data() {
     return {
-      medium: null,
-      value: ''
+      localValue: '',
+      isFocused: false
+    }
+  },
+
+  watch: {
+    value(value) {
+      if (value !== this.localValue) {
+        this.localValue = value
+      }
+    },
+
+    localValue(localValue) {
+      this.$emit('input-changed', {
+        name: this.name,
+        value: localValue
+      })
     }
   },
 
   methods: {
     clear() {
-      this.medium.value('')
-      this.$set(this, 'value', '')
-
-      this.$emit('input-changed', {
-        name: this.name,
-        value: ''
-      })
+      this.localValue = ''
     },
 
-    setValue(value) {
-      value = he.decode(value).trim()
-      this.medium.value(value)
-      this.$set(this, 'value', value)
+    getValue() {
+      return this.localValue
     }
-  },
-
-  mounted() {
-    this.medium = new Medium({
-      element: this.$refs.input,
-      mode: Medium.inlineMode
-    })
-
-    this.$refs.input.addEventListener('keyup', () => {
-      let value = this.medium.value().trim()
-
-      if (this.value !== value) {
-        this.$set(this, 'value', value)
-
-        this.$emit('input-changed', {
-          name: this.name,
-          value: he.decode(this.value).trim()
-        })
-      }
-    })
   }
 }
 </script>
+
+<style>
+.mediumjs-input input {
+  width: 100%;
+  height: 100%;
+}
+</style>

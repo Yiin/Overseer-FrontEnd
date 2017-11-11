@@ -26,13 +26,13 @@
             <column width="20%">{{ $t('labels.payment_date') }}</column>
             <column width="20%">{{ $t('fields.amount') }}</column>
           </template>
-          <template slot="columns" slot-scope="props">
-            <column width="30%">{{ props.row.invoice.invoice_number }}</column>
-            <column width="30%">{{ props.row.client.name }}</column>
-            <column width="20%">{{ props.row.payment_date | date }}</column>
+          <template slot="columns" slot-scope="{ row }">
+            <column width="30%">{{ row.invoice.invoiceNumber }}</column>
+            <column width="30%">{{ row.client.name }}</column>
+            <column width="20%">{{ row.paymentDate | date }}</column>
             <column width="20%">
-              <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-              <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+              <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+              <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
             </column>
           </template>
         </documents-table>
@@ -70,6 +70,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Unarchive,
+  Recover,
   EditDocument,
   RefundPayment
 } from '@/modules/table/cm-actions'
@@ -106,8 +108,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.payment_table'
@@ -122,7 +126,9 @@ export default {
         RefundPayment,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Unarchive,
+        Delete,
+        Recover
       ]
     },
 
@@ -132,7 +138,7 @@ export default {
 
     visiblePayments() {
       return this.payments.filter((payment) => {
-        return !this.dateRange || moment(payment.payment_date)
+        return !this.dateRange || moment(payment.paymentDate)
           .isBetween(
             moment(this.dateRange.start),
             moment(this.dateRange.end),
@@ -167,45 +173,44 @@ export default {
     dateRange() {
       return this.$store.state.dashboard.statisticsDateRange || (
           this.payments && this.payments.length ? {
-            end: this.payments[this.payments.length - 1].payment_date,
-            start: this.payments[0].payment_date
+            end: this.payments[this.payments.length - 1].paymentDate,
+            start: this.payments[0].paymentDate
           } : null
         )
     },
 
+    selectedCurrency() {
+      return this.$store.state.dashboard.currency || this.$store.state.settings.currency
+    },
+
     paymentsSumByMonth() {
-      // let data = {}
+      let data = {}
 
-      const startDate = moment(this.dateRange.start).startOf('day')
-      const currentDate = moment(this.dateRange.start).startOf('day')
-      const endDate = moment(this.dateRange.end).endOf('day')
-
-      const steps = {}
+      const startDate = moment(this.dateRange.start)
+      const endDate = moment(this.dateRange.end).add(1, this.graphInterval)
 
       do {
-        const date = currentDate.format(this.graphIntervalFormat)
-        const key = currentDate.format('YYYYMMDD')
+        const nextDate = startDate.clone().add(1, this.graphInterval)
+        const date = startDate.format(this.graphIntervalFormat)
 
-        steps[key] = {
-          date,
-          value: 0
+        if (!data[date]) {
+          data[date] = 0
         }
 
-        currentDate.add(1, this.graphInterval)
+        this.visiblePayments.forEach((payment) => {
+          if (payment.paymentDate.isSameOrAfter(startDate) && payment.paymentDate.isBefore(nextDate)) {
+            data[date] += payment.amount.getIn(this.selectedCurrency)
+          }
+        })
+        startDate.add(1, this.graphInterval)
       }
-      while (currentDate.isBetween(startDate, endDate, '[]'))
+      while (!startDate.isSameOrAfter(endDate, this.graphInterval))
 
-      this.visiblePayments.forEach((payment) => {
-        const paymentDate = moment(payment.payment_date).format('YYYYMMDD')
-
-        steps[paymentDate].value += parseFloat(payment.amount)
-      })
-
-      return steps
+      return data
     },
 
     graphLabels() {
-      const labels = Object.values(this.paymentsSumByMonth).map((val) => val.date)
+      const labels = Object.keys(this.paymentsSumByMonth)
 
       labels.unshift('')
       labels.push('')
@@ -214,7 +219,7 @@ export default {
     },
 
     graphDataSets() {
-      const data = Object.values(this.paymentsSumByMonth).map((val) => val.value)
+      const data = Object.values(this.paymentsSumByMonth)
 
       data.unshift(null)
       data.push(null)
@@ -269,15 +274,15 @@ export default {
       }, 1000)
     },
 
-    updateTabWidth: function () {
+    updateTabWidth() {
       if (!this.$el) {
         return
       }
       this.tabWidth = this.$el.getBoundingClientRect().width
-      if (this.$refs.chart) {
+      if (this.$refs.chart && this.$refs.chart._chart) {
         this.$refs.chart._chart.update()
       }
-    }.bind(this),
+    },
 
     updateChartTabState(isActive) {
       if (this.chartTabTimeout) {

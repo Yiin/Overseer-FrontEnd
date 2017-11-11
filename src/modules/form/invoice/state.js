@@ -1,6 +1,8 @@
 import FormState from '../base/state'
 
 const state = FormState('invoice', {
+  newClientUuid: null,
+
   fields: {
     uuid: '',
 
@@ -14,16 +16,10 @@ const state = FormState('invoice', {
     discount_type: 'percentage',
     discount_value: 0,
 
-    items: [
-      /* {
-        product_uuid // uuid (products)
-        product_name // new product
-        price
-        qty
-        discount // %
-        taxRate // uuid (tax_rates)
-      } */
-    ],
+    applied_credits: [],
+
+    items: [],
+
     documents: [
       /* array of document files */
     ],

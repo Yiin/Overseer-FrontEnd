@@ -19,13 +19,15 @@
 
 .dropdown--dashboard-options
 {
-    width: 128px;
     margin-bottom: 38px;
 
-    box-shadow: $box-shadow;
+    &:first-child {
+        width: 215px;
+    }
     &:not(:first-child)
     {
         margin-left: 31px;
+        width: 128px;
     }
 }
 

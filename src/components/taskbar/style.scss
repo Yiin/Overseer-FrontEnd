@@ -8,6 +8,7 @@
     width: 100%;
 
     user-select: none;
+    transform-origin: 100% 100%;
 }
 
 .taskbar__item
@@ -21,9 +22,11 @@
 
     display: flex;
 
-    width: 200px;
+    min-width: 200px;
     height: 50px;
+    padding-right: 40px;
     padding-bottom: 10px;
+    padding-left: 40px;
 
     cursor: pointer;
     transition: all .1s;
@@ -62,22 +65,11 @@
             }
         }
     }
-
-    &:nth-child(4n+1)
+    @for $i from 1 through length($list-of-colors)
     {
-        background: #6871b1;
-    }
-    &:nth-child(4n+2)
-    {
-        background: #ec8b46;
-    }
-    &:nth-child(4n+3)
-    {
-        background: #836cb2;
-    }
-    &:nth-child(4n+4)
-    {
-        background: $color-emerald;
+        &--c-#{$i} {
+            background: nth($list-of-colors, $i);
+        }
     }
 }
 

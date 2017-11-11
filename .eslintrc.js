@@ -30,6 +30,8 @@ module.exports = {
 
     "standard/no-callback-literal": 0,
 
+    'no-throw-literal': 0,
+
     'space-before-function-paren': ['error', {
       'anonymous': 'always',
       'named': 'never',

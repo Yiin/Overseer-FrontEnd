@@ -13,6 +13,11 @@ export default (name, state = {}) => {
     _preview: false,
 
     /**
+     * Current revision
+     */
+    activity: null,
+
+    /**
      * Form fields
      */
     fields: {},

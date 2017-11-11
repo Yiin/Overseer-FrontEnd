@@ -3,3 +3,33 @@
 
     src: url('../assets/fonts/Lintel Heavy.ttf') format('truetype');
 }
+
+@font-face {
+    font-family: 'CalibreWeb';
+    src: url(../assets/fonts/CalibreWeb-Light.eot);
+    src: url(../assets/fonts/CalibreWeb-Light.eot?#iefix) format("embedded-opentype"),
+         url(../assets/fonts/CalibreWeb-Light.woff2) format("woff2"),
+         url(../assets/fonts/CalibreWeb-Light.woff) format("woff");
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'CalibreWeb';
+    src: url(../assets/fonts/CalibreWeb-Regular.eot);
+    src: url(../assets/fonts/CalibreWeb-Regular.eot?#iefix) format("embedded-opentype"),
+         url(../assets/fonts/CalibreWeb-Regular.woff2) format("woff2"),
+         url(../assets/fonts/CalibreWeb-Regular.woff) format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face{
+    font-family: 'CalibreWeb';
+    src: url(../assets/fonts/CalibreWeb-Semibold.eot);
+    src: url(../assets/fonts/CalibreWeb-Semibold.eot?#iefix) format("embedded-opentype"),
+         url(../assets/fonts/CalibreWeb-Semibold.woff2) format("woff2"),
+         url(../assets/fonts/CalibreWeb-Semibold.woff) format("woff");
+    font-weight: bold;
+    font-style: normal;
+}

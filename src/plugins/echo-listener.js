@@ -11,12 +11,22 @@ export default {
       const repositoryPath = `documents/repositories/${repositoryName}`
 
       switch (event) {
+      /**
+       * Base documents like products, clients, invoices, expenses, vendors etc
+       */
       case 'App\\Domain\\Events\\Document\\DocumentWasCreated':
         store.dispatch(`${repositoryPath}/ADD_ITEM`, documentModel)
         break
       case 'App\\Domain\\Events\\Document\\DocumentWasUpdated':
       case 'App\\Domain\\Events\\Document\\DocumentWasDeleted':
         store.dispatch(`${repositoryPath}/UPDATE_ITEM`, documentModel)
+        break
+
+      /**
+       * Generated new pdf, save it and assign it to correct document
+       */
+      case 'App\\Domain\\Events\\Document\\PdfWasCreated':
+        store.dispatch(`${repositoryPath}/ASSIGN_PDF`, documentModel)
         break
       }
     })
@@ -26,7 +36,7 @@ export default {
 
       switch (event) {
       case 'App\\Domain\\Events\\System\\RegisteredNewActivity':
-        store.dispatch(`system/SET_ACTIVITY_LOG`, payload.activity)
+        store.dispatch('documents/repositories/activity/ADD_ITEM', payload.activity)
         break
       }
     })

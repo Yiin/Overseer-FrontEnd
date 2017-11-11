@@ -2,6 +2,7 @@
   <div v-clickaway="closeDatePicker" class="dropdown" :class="{ 'datepicker--open': isOpen }">
     <div @click="toggle" class="dropdown__input-wrapper">
       <input class     = "dropdown__input --datepicker"
+             :class    = "{ 'dropdown__input--nil': nil }"
              v-model   = "date"
              :name     = "name"
              type      = "text"

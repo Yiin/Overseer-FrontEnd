@@ -167,6 +167,7 @@ $thumb-size: 115px;
 
 .form__input--file-upload {
   height: 128px;
+  line-height: 0.8;
 
   display: flex;
   justify-content: center;

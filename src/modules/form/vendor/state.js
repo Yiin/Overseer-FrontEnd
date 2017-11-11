@@ -5,7 +5,7 @@ const state = FormState('vendor', {
     uuid: '',
 
     // Organization
-    company_name: '',
+    name: '',
     registration_number: '',
     vat_number: '',
     website: '',
@@ -37,7 +37,7 @@ const state = FormState('vendor', {
 
   tabs: [
     [
-      'company_name',
+      'name',
       'registration_number',
       'vat_number',
       'website',

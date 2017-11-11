@@ -41,28 +41,33 @@
           <column width="15%">{{ $t('fields.expenses') }}</column>
           <column width="12%">{{ $t('fields.date_created') }}</column>
         </template>
-        <template slot="columns" slot-scope="props">
+        <template slot="columns" slot-scope="{ row }">
           <column width="23%">
-            <a :href="`#${props.row.key}`" @click="edit(props.row)">{{ props.row.company_name }}</a>
+            <a href="#" @click.prevent="edit(row)">{{ row.name }}</a>
           </column>
           <column width="25%">
-            <span>{{ props.row.phone }}</span>
+            <span>{{ row.phone }}</span>
           </column>
           <column width="25%">
-            <span>{{ props.row.email }}</span>
+            <span>{{ row.getPrimaryEmail() }}</span>
           </column>
           <column width="15%">
-            <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-            <span class="currency currency--primary">{{ props.row.expenses | currency }}</span>
+            <span class="currency">{{ row.currency | currencySymbol }}</span>
+            <span class="currency currency--primary">{{ row.expenses.amount | currency }}</span>
           </column>
           <column width="12%">
-            <span>{{ props.row.created_at | date }}</span>
+            <span>{{ row.createdAt | date }}</span>
           </column>
         </template>
         <template slot="table-controls-left"></template>
       </documents-table>
 
-      <table-footer :table-name="name"></table-footer>
+      <table-footer
+        :table-name="name"
+        :calculator-options="[
+          { text: $t('fields.expenses'), value: 'expenses', type: 'money' }
+        ]"
+      ></table-footer>
     </template>
   </div>
 </template>
@@ -92,6 +97,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Unarchive,
+  Recover,
   Preview,
   EditDocument,
   EnterExpense
@@ -109,20 +116,22 @@ export default {
 
     searchBy() {
       return [
-        SearchByText.extend({ key: 'company_name', name: 'vendor_name', placeholder: this.$t('search_by.vendor_name') }),
+        SearchByText.extend({ key: 'name', name: 'vendor_name', placeholder: this.$t('search_by.vendor_name') }),
         SearchByText.extend({ key: 'phone', name: 'contact_number', placeholder: this.$t('search_by.contact_number') }),
         SearchByText.extend({ key: 'email', name: 'email', placeholder: this.$t('search_by.vendor_email') }),
         { type: 'separator' },
-        SearchByDate.extend({ key: 'created_at', name: 'date_created', placeholder: this.$t('search_by.date_created') }),
-        SearchByValue.extend({ key: 'expenses', name: 'expenses', placeholder: this.$t('search_by.expenses_amount') })
+        SearchByDate.extend({ key: 'createdAt', name: 'date_created', placeholder: this.$t('search_by.date_created') }),
+        SearchByValue.extend({ key: 'expenses.amount', name: 'expenses', placeholder: this.$t('search_by.expenses_amount') })
       ]
     },
 
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.vendor_table'
@@ -139,7 +148,9 @@ export default {
         EnterExpense,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Unarchive,
+        Delete,
+        Recover
       ]
     },
 
@@ -155,9 +166,9 @@ export default {
     },
 
     countries() {
-      const countries = this.$store.getters[`table/${this.name}/filteredItems`]
-        .filter((client) => client.country)
-        .map((client) => client.country)
+      const countries = this.$store.getters[`table/${this.name}/activeItems`]
+        .filter((vendor) => vendor.address.country)
+        .map((vendor) => vendor.address.country)
 
       return this.filterAndOrder(countries, {
         filterBy: 'id',
@@ -166,12 +177,12 @@ export default {
     },
 
     currencies() {
-      const currencies = this.$store.getters[`table/${this.name}/filteredItems`]
-        .filter((client) => client.currency)
-        .map((client) => client.currency)
+      const currencies = this.$store.getters[`table/${this.name}/activeItems`]
+        .filter((vendor) => vendor.currency)
+        .map((vendor) => vendor.currency)
 
       return this.filterAndOrder(currencies, {
-        filterBy: 'id',
+        filterBy: 'code',
         orderBy: 'name'
       })
     }
@@ -179,11 +190,11 @@ export default {
 
   methods: {
     create() {
-      this.$store.dispatch('form/vendor/OPEN_CREATE_FORM')
+      this.createDocument('vendor')
     },
 
     edit(data) {
-      this.$store.dispatch('form/vendor/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'vendor')
     }
   }
 }

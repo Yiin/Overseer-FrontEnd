@@ -1,7 +1,7 @@
 .sidebar
 {
     position: fixed;
-    left: calc(50vw - 1450px / 2);
+    left: calc(50vw - 1660px / 2);
 
     width: $sidebar-width;
 
@@ -24,7 +24,7 @@
     &__nav
     {
         width: 220px;
-        margin: 27px 25px;
+        margin: 32px 25px;
 
         text-align: left;
         letter-spacing: .1px;
@@ -41,6 +41,7 @@
         {
             font-size: 15px;
             line-height: 26px;
+            position: relative;
 
             display: flex;
 
@@ -84,7 +85,7 @@
                 .sidebar-icon--payments {
                     background-image: url('../../assets/icons/sidebar/hover/1__Payment hover.svg');
                 }
-                .sidebar-icon--personel {
+                .sidebar-icon--personnel {
                     background-image: url('../../assets/icons/sidebar/hover/1__Personel hover.svg');
                 }
                 .sidebar-icon--projects {

@@ -136,9 +136,11 @@ $button-text-color: $color-white;
 
             background: $color-storm-gray;
 
-            opacity: 0;
-
             @include smooth($color-storm-gray);
+
+            &-hidden {
+                opacity: 0;
+            }
         }
         &--cancel
         {
@@ -199,15 +201,16 @@ $button-text-color: $color-white;
 .dropdown--invoice {
   display: inline-flex;
   background: #f0f0f0;
-  width: 200px;
+  width: 160px;
   cursor: pointer;
-  .dropdown__input::before,
-  .dropdown__input-wrapper::before {
+  vertical-align: bottom;
+  .dropdown__input::after,
+  .dropdown__input-wrapper::after {
     border-top-color: $color-white;
   }
   &.dropdown--open {
-    .dropdown__input::before,
-    .dropdown--open .dropdown__input-wrapper::before {
+    .dropdown__input::after,
+    .dropdown--open .dropdown__input-wrapper::after {
       border-top-color: transparent;
       border-bottom-color: $color-white;
     }

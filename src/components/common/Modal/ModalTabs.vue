@@ -20,14 +20,20 @@
     </div>
     <div class="modal-tabs__content">
       <slot></slot>
-      <div v-if="!hideButtons" slot="nav-buttons" class="modal-buttons">
+      <div slot="nav-buttons" class="modal-buttons">
         <div class="modal-buttons-group modal-buttons-group--left">
-          <div @click="$emit('fill')" class="button button__modal button__modal--test">Test Data</div>
+          <div v-if="type !== 'revision'" @click="$emit('fill')" class="button button__modal button__modal--test" :class="{
+            'button__modal--test-hidden': !isGuest
+          }">Test Data</div>
         </div>
         <div class="modal-buttons-group modal-buttons-group--right">
-          <slot name="right-buttons--left"></slot>
-          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">Cancel</div>
-          <slot name="right-buttons">
+          <slot v-if="type !== 'revision'" name="right-buttons--left"></slot>
+          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">
+            {{ type === 'revision' ? 'Close' : 'Cancel' }}
+          </div>
+
+          <div v-if="type === 'revision'" @click="$emit('save')" class="button button__modal button__modal--save">Restore</div>
+          <slot v-else name="right-buttons">
             <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>
           </slot>
         </div>
@@ -37,19 +43,27 @@
 </template>
 
 <script>
+/**
+ * It's actually more like form-tabs than modal ones,
+ * but there is no time for naming change atm.
+ *
+ * TODO: either rewrite this whole form stuff or
+ * rename components to correctly reflect their usage.
+ */
 export default {
   name: 'modal-tabs',
 
-  props: {
-    hideButtons: {
-      type: Boolean,
-      default: false
-    }
-  },
-
   computed: {
+    isGuest() {
+      return this.$store.state.auth.user.guest_key
+    },
+
     tabs() {
       return this.$children
+    },
+
+    type() {
+      return this.$store.state.modal.data.type
     },
 
     activeTabIndex() {

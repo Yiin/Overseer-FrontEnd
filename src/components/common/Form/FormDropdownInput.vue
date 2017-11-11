@@ -1,17 +1,56 @@
 <template>
-  <div class="dropdown" v-clickaway="hide">
+  <div
+    class="dropdown"
+    :class="{
+      'dropdown--open': isOpen,
+      'dropdown--dense': dense
+    }"
+    v-clickaway="hide"
+  >
     <!--
       List of dropdown options
     -->
     <div
       ref="reversibleEl"
-      class="dropdown__options-wrapper"
+      class="dropdown__options-wrapper scrollable"
       :class="{
         'dropdown__options-wrapper--reversed': isReversed,
         'dropdown__options-wrapper--visible': isOpen
       }"
+      v-if="isOpen"
     >
-      <v-list class="dropdown__options-list">
+      <v-list class="dropdown__options-list" :dense="dense">
+        <v-list-tile
+          v-if="canAddItem"
+          @click="addItem"
+        >
+          <v-list-tile-action>
+            <v-icon>playlist_add</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{ query }}
+            </v-list-tile-title>
+            <v-list-tile-sub-title>
+              Add and Select
+            </v-list-tile-sub-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <template v-for="item in filteredCustomItems">
+          <v-list-tile @click="selectCustom(item)">
+            <v-list-tile-action>
+              <v-icon>playlist_add_check</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ item }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                Custom item
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            </v-list-tile>
+        </template>
         <template v-for="(item, index) in filteredItems">
           <slot name="option" :item="item" :index="index" :parent="_self">
             <v-list-tile @click="select(item)">
@@ -28,16 +67,36 @@
       between input ant bottom of the screen.
     -->
     <div class="dropdown__input-wrapper">
-      <input
-        type="text"
-        v-model="query"
-        :placeholder="placeholder"
+      <template v-if="!readonly && (searchable || allowCustom)">
+        <v-text-field
+          v-if="vuetify"
+          v-model="query"
+          :label="placeholder"
+          data-lpignore="true"
+          @mousedown="onFocus"
+          @focus="onFocus"
+          @input="onInput"
+        ></v-text-field>
+        <input
+          v-else
+          type="text"
+          v-model="query"
+          :placeholder="placeholder"
+          class="dropdown__input"
+          data-lpignore="true"
+          @mousedown="onFocus"
+          @focus="onFocus"
+          @input="onInput"
+        >
+      </template>
+      <div
+        v-else
         class="dropdown__input"
-        data-lpignore="true"
-        @mousedown="show"
+        @mousedown="onFocus"
         @focus="onFocus"
-        @input="onInput"
       >
+        {{ query || placeholder }}
+      </div>
     </div>
   </div>
 </template>
@@ -63,6 +122,26 @@ export default {
       type: [Array, Object],
       default: () => []
     },
+    searchable: {
+      type: Boolean,
+      default: false
+    },
+    allowCustom: {
+      type: Boolean,
+      default: false
+    },
+    vuetify: {
+      type: Boolean,
+      default: false
+    },
+    dense: {
+      type: Boolean,
+      default: false
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
     value: {}
   },
 
@@ -70,7 +149,8 @@ export default {
     return {
       query: '',
       selectedItem: null,
-      isTyping: false
+      isTyping: false,
+      customItems: []
     }
   },
 
@@ -81,6 +161,32 @@ export default {
       } else {
         return this.items.filter(this.filterByQuery)
       }
+    },
+
+    filteredCustomItems() {
+      if (!this.isTyping) {
+        return this.customItems
+      } else {
+        return this.customItems.filter(this.filterByQuery)
+      }
+    },
+
+    canAddItem() {
+      if (!this.allowCustom) {
+        return false
+      }
+      if (!this.query) {
+        return false
+      }
+      if (this.customItems.indexOf(this.query) !== -1) {
+        return false
+      }
+      if (this.selectedItem && this.selectedItem.value) {
+        if (this.selectedItem.text === this.query) {
+          return false
+        }
+      }
+      return true
     }
   },
 
@@ -117,7 +223,7 @@ export default {
 
   methods: {
     filterByQuery(item) {
-      return item.text.toLowerCase().indexOf(this.query.toLowerCase()) > -1
+      return (typeof item === 'string' ? item : item.text).toLowerCase().indexOf(this.query.toLowerCase()) > -1
     },
 
     selectByValue() {
@@ -132,6 +238,20 @@ export default {
       if (item) {
         this.select(item)
       }
+    },
+
+    addItem() {
+      this.customItems.push(this.query)
+      this.selectCustom(this.query)
+    },
+
+    selectCustom(text) {
+      this.selectedItem = {
+        text
+      }
+      this.query = text
+      this.$emit('input-custom', text)
+      this.hide()
     },
 
     select(item) {
@@ -150,6 +270,9 @@ export default {
     },
 
     onFocus() {
+      if (this.readonly) {
+        return
+      }
       this.show()
     },
 
@@ -163,6 +286,30 @@ export default {
 <style lang="scss">
 .form .dropdown {
   line-height: initial;
+}
+
+.list--dense .list__tile__sub-title {
+  padding: 0 0 6px;
+}
+
+.list--dense .list__tile:not(.list__tile--avatar) {
+  height: 44px;
+}
+
+.dropdown--dense {
+  .dropdown__options-wrapper:not(.dropdown__options-wrapper--reversed) {
+    top: 48px;
+  }
+  .list--dense .list__tile__title,
+  .list--dense .list__tile__sub-title {
+    font-size: 14px;
+  }
+}
+
+.dropdown {
+  .input-group__input {
+    padding-right: 30px;
+  }
 }
 
 .dropdown__options-wrapper {

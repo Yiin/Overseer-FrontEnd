@@ -1,32 +1,27 @@
 import Document from './document'
-import { StringNotBlank } from './common'
 import { methods as TaskRepository } from '../repositories/task'
 
-const TaskList = Document.extend({
-  name: StringNotBlank,
-  color: String
-})
+class TaskList extends Document {
+  static create(data) {
+    return new this(this.parse(data))
+  }
 
-/**
- * Constructor
- */
-TaskList.create = Document.create.bind(TaskList)
+  static parse(data) {
+    const parsedData = super.parse(data)
 
-TaskList.parse = function (data) {
-  const modelData = {}
+    parsedData.name = data.name
+    parsedData.color = data.color
+    parsedData.tasks = data.tasks.map(TaskRepository.findOrCreate)
 
-  modelData.name = data.name
-  modelData.color = data.color
-  modelData.tasks = data.tasks.map(TaskRepository.findOrCreate)
+    return parsedData
+  }
 
-  return modelData
-}
-
-TaskList.prototype.serialize = function () {
-  return {
-    uuid: this.uuid,
-    name: this.name,
-    color: this.color
+  serialize() {
+    return {
+      uuid: this.uuid,
+      name: this.name,
+      color: this.color
+    }
   }
 }
 

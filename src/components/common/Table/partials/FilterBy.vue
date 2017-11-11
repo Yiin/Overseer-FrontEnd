@@ -15,7 +15,8 @@
 
             <dropdown-checkbox-option v-for="child in option.list"
                                       :key="child[option.keyName]"
-                                      :value="option.name + ':' + child[option.keyName]"
+                                      :checked="filterBy.indexOf(option.scope + '.' + option.name + ':' + child[option.keyName]) !== -1 && !filterBy.length"
+                                      :value="option.scope + '.' + option.name + ':' + child[option.keyName]"
                                       :title="child.name">
               {{ child.name }}
             </dropdown-checkbox-option>
@@ -25,7 +26,11 @@
 
       </template>
 
-      <dropdown-checkbox-option ref="checkboxOption" v-else :value="option.name">
+      <dropdown-checkbox-option
+        ref="checkboxOption" v-else
+        :checked="filterBy.indexOf(option.scope + '.' + option.name) !== -1 ? (filterBy.length ? true : false) : false"
+        :value="option.scope + '.' + option.name"
+      >
         {{ $t(option.placeholder) }}
       </dropdown-checkbox-option>
     </template>
@@ -48,6 +53,12 @@ export default {
   data() {
     return {
       values: []
+    }
+  },
+
+  computed: {
+    filterBy() {
+      return this.$store.state.table[this.name].filterBy
     }
   },
 

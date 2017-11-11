@@ -1,30 +1,25 @@
 import Document from './document'
-import { StringNotBlank } from './common'
 
-const Task = Document.extend({
-  name: StringNotBlank,
-  isCompleted: Boolean
-})
+class Task extends Document {
+  static create(data) {
+    return new this(this.parse(data))
+  }
 
-/**
- * Constructor
- */
-Task.create = Document.create.bind(Task)
+  static parse(data) {
+    const modelData = Document.parse(data)
 
-Task.parse = function (data) {
-  const modelData = {}
+    modelData.name = data.name
+    modelData.isCompleted = data.is_completed
 
-  modelData.name = data.name
-  modelData.isCompleted = data.is_completed
+    return modelData
+  }
 
-  return modelData
-}
-
-Task.prototype.serialize = function () {
-  return {
-    uuid: this.uuid,
-    name: this.name,
-    is_completed: this.isCompleted
+  serialize() {
+    return {
+      uuid: this.uuid,
+      name: this.name,
+      is_completed: this.isCompleted
+    }
   }
 }
 

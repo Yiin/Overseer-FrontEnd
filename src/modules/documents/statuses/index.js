@@ -57,8 +57,9 @@ const Statuses = {
       priority: 98,
 
       meetsCondition(document) {
-        return document.archivedAt
+        return document.archivedAt && !Statuses.generic.deleted.meetsCondition(document)
       },
+
       apply(document, documentType) {
         let conflicts = []
 
@@ -86,7 +87,7 @@ const Statuses = {
       priority: 99,
 
       meetsCondition(document) {
-        return document.deletedAt
+        return !!document.deletedAt
       },
       apply(document, documentType) {
         let conflicts = []
@@ -259,8 +260,8 @@ const Statuses = {
 
       meetsCondition(invoice) {
         return (
-          invoice.paid_in > 0 &&
-          invoice.paid_in < invoice.amount &&
+          invoice.paidIn.get() > 0 &&
+          invoice.paidIn.get() < invoice.amount.get() &&
           !Statuses.invoice.draft.meetsCondition(invoice)
         )
       },
@@ -283,12 +284,14 @@ const Statuses = {
             }
             return {
               solution: {
-                message: i18n.t('text.create_a_payment_with_amount_less_than_x', { x: invoice.amount }),
+                message: i18n.t('text.create_a_payment_with_amount_less_than_x', { x: invoice.amount.get() - invoice.paidIn.get() }),
                 solve() {
                   createDocument('payment', {
                     client_uuid: invoice.client.uuid,
                     invoice_uuid: invoice.uuid
-                  }, 2)
+                  }, {
+                    tabIndex: 2
+                  })
                 }
               }
             }
@@ -308,7 +311,7 @@ const Statuses = {
       priority: 5,
 
       meetsCondition(document) {
-        return document.due_date && moment().isAfter(moment(document.due_date))
+        return document.dueDate && moment().isAfter(document.dueDate)
       },
 
       apply(invoice, status) {
@@ -328,7 +331,9 @@ const Statuses = {
               solution: {
                 message: i18n.t('text.set_due_date_to_date_in_the_past'),
                 solve() {
-                  editDocument(invoice, 'invoice', 1)
+                  editDocument(invoice, 'invoice', {
+                    tabIndex: 1
+                  })
                 }
               }
             }
@@ -348,7 +353,7 @@ const Statuses = {
       priority: 6,
 
       meetsCondition(document) {
-        return document.paid_in >= document.amount
+        return document.paidIn.get() >= document.amount.get()
       },
 
       apply(invoice) {
@@ -364,13 +369,16 @@ const Statuses = {
             }
             return {
               solution: {
-                message: i18n.t('text.create_a_payment_of_x_or_more', { x: invoice.amount - invoice.paid_in }),
+                message: i18n.t('text.create_a_payment_of_x_or_more', { x: invoice.amount.get() - invoice.paidIn.get() }),
                 solve() {
                   createDocument('payment', {
                     client_uuid: invoice.client.uuid,
                     invoice_uuid: invoice.uuid,
-                    amount: invoice.amount - invoice.paid_in
-                  }, 2)
+                    amount: invoice.amount.get() - invoice.paidIn.get(),
+                    currency_code: invoice.currency.code
+                  }, {
+                    tabIndex: 2
+                  })
                 }
               }
             }
@@ -423,7 +431,7 @@ const Statuses = {
       name: i18n.t('status.refunded'),
 
       meetsCondition(document) {
-        return document.refunded > 0
+        return document.refunded.get() > 0
       },
 
       apply(payment) {

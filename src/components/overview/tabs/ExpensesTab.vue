@@ -16,7 +16,7 @@
     <tabs v-else ref="tabs" labels>
       <simple-tab fade title="Table">
         <documents-table simple
-          :documents="activeExpenses"
+          :data="list"
         >
           <template slot="head">
             <column width="30%">{{ $t('fields.vendor_name') }}</column>
@@ -25,12 +25,12 @@
             <column width="20%">{{ $t('fields.amount') }}</column>
           </template>
           <template slot="columns" slot-scope="{ row }">
-            <column width="30%">{{ row.vendor.company_name }}</column>
+            <column width="30%">{{ row.vendor.name }}</column>
             <column width="30%">{{ row.client.name }}</column>
             <column width="20%">{{ row.date | date }}</column>
             <column width="20%">
-              <span class="currency">{{ row.currency | currencySymbol }}</span>
-              <span class="currency currency--primary">{{ row.amount | currency }}</span>
+              <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+              <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
             </column>
           </template>
         </documents-table>
@@ -38,6 +38,7 @@
 
       <simple-tab fade @state-changed="updateChartTabState" title="Chart">
         <expenses-chart ref="chart" v-if="chartTabIsActive" @update="updateChart"
+          class="chart__tab"
           :chart-data="chartData"
           :options="{ responsive: false, legend: { display: false } }"
           :height="473"
@@ -65,6 +66,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Unarchive,
+  Recover,
   EditDocument,
   InvoiceExpense
 } from '@/modules/table/cm-actions'
@@ -108,8 +111,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.expense_table'
@@ -124,8 +129,14 @@ export default {
         InvoiceExpense,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Unarchive,
+        Delete,
+        Recover
       ]
+    },
+
+    pageItems() {
+      return this.visibleExpenses
     },
 
     activeExpenses() {
@@ -178,13 +189,18 @@ export default {
         )
     },
 
+    selectedCurrency() {
+      return this.$store.state.dashboard.currency || this.$store.state.settings.currency
+    },
+
     expensesSumByMonth() {
       let data = {}
 
       const startDate = moment(this.dateRange.start)
-      const endDate = moment(this.dateRange.end).add(1, 'day')
+      const endDate = moment(this.dateRange.end).add(1, this.graphInterval)
 
       do {
+        const nextDate = startDate.clone().add(1, this.graphInterval)
         const date = startDate.format(this.graphIntervalFormat)
 
         if (!data[date]) {
@@ -192,16 +208,13 @@ export default {
         }
 
         this.visibleExpenses.forEach((expense) => {
-          const expenseDate = moment(expense.date).format(this.graphIntervalFormat)
-
-          if (expenseDate === date) {
-            data[date] += parseFloat(expense.amount)
-          } else {
+          if (expense.date.isSameOrAfter(startDate) && expense.date.isBefore(nextDate)) {
+            data[date] += expense.amount.getIn(this.selectedCurrency)
           }
         })
         startDate.add(1, this.graphInterval)
       }
-      while (!startDate.isSame(endDate, this.graphInterval))
+      while (!startDate.isSameOrAfter(endDate, this.graphInterval))
 
       return data
     },
@@ -225,7 +238,7 @@ export default {
         {
           label: 'Expenses',
           backgroundColor: 'transparent',
-          borderColor: '#5867c2',
+          borderColor: '#f54d4d',
           data
         }
       ]
@@ -235,21 +248,23 @@ export default {
   watch: {
     isActive: function (isActive, wasActive) {
       if (!wasActive && isActive) {
-        this.$refs.tabs.reset()
+        if (this.$refs.tabs) {
+          this.$refs.tabs.reset()
+        }
       }
     }
   },
 
   updated() {
-    this.updateTabWidth()
+    // this.updateTabWidth()
   },
 
   mounted() {
-    window.addEventListener('resize', this.updateTabWidth)
+    // window.addEventListener('resize', this.updateTabWidth)
   },
 
   beforeDestroy() {
-    window.removeEventListener('resize', this.updateTabWidth)
+    // window.removeEventListener('resize', this.updateTabWidth)
   },
 
   methods: {
@@ -267,15 +282,15 @@ export default {
       })
     },
 
-    updateTabWidth: function () {
+    updateTabWidth() {
       if (!this.$el) {
         return
       }
       this.tabWidth = this.$el.getBoundingClientRect().width
-      if (this.$refs.chart) {
+      if (this.$refs.chart && this.$refs.chart._chart) {
         this.$refs.chart._chart.update()
       }
-    }.bind(this),
+    },
 
     updateChartTabState(isActive) {
       this.chartTabIsActive = isActive
@@ -293,6 +308,12 @@ export default {
 <style lang="scss">
 .tab--dashboard {
   display: flex;
+}
+
+.chart__tab {
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+  padding: 15px;
 }
 </style>
 </script>

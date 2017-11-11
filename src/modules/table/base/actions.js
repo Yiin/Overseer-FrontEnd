@@ -18,6 +18,13 @@ export default (actions = {}) => Object.assign({
     }
   },
 
+  RESET_ALL_FILTERS_BUT({ commit, state }, keep = []) {
+    commit('SEARCH_BY', {})
+    commit('FILTER_BY', state.filterBy.filter((filter) => {
+      return keep.indexOf(filter) !== -1
+    }))
+  },
+
   SET_PAGE({ commit }, page) {
     commit('SET_PAGE', page)
   },

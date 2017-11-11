@@ -1,19 +1,15 @@
-import { ObjectModel } from 'objectmodel'
+import Model from './model'
 
 /**
  * PaymentType model
- * @type {ObjectModel}
  */
-const PaymentType = new ObjectModel({
-  id: Number,
-  name: String
-})
-
-PaymentType.create = function (data) {
-  return new PaymentType({
-    id: data.id,
-    name: data.name
-  })
+class PaymentType extends Model {
+  static create(data) {
+    return new PaymentType({
+      id: data.id,
+      name: data.name
+    })
+  }
 }
 
 export default PaymentType

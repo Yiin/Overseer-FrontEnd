@@ -29,6 +29,12 @@ export default {
     }
   },
 
+  watch: {
+    checked(checked) {
+      this.isChecked = checked
+    }
+  },
+
   computed: {
     text() {
       return he.decode(this.$slots.default[0].text).trim()

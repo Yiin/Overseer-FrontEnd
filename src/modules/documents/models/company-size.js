@@ -1,28 +1,24 @@
-import { ObjectModel } from 'objectmodel'
+import Model from './model'
 
 /**
  * CompanySize model
- * @type {ObjectModel}
  */
-const CompanySize = new ObjectModel({
-  id: Number,
-  name: String
-})
+class CompanySize extends Model {
+  static create(data) {
+    return new CompanySize(CompanySize.parse(data))
+  }
 
-/**
- * Parse company size data that came from api
- */
-CompanySize.parse = function (data) {
-  const modelData = {}
+  /**
+   * Parse company size data that came from api
+   */
+  static parse(data) {
+    const modelData = {}
 
-  modelData.id = data.id
-  modelData.name = data.name
+    modelData.id = data.id
+    modelData.name = data.name
 
-  return modelData
-}
-
-CompanySize.create = function (data) {
-  return new CompanySize(CompanySize.parse(data))
+    return modelData
+  }
 }
 
 export default CompanySize

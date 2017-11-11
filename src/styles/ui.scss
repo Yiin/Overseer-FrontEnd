@@ -25,6 +25,12 @@ a:not(.md-button):not(.md-bottom-bar-item):hover {
     -webkit-backface-visibility: hidden;
 }
 
+.list__tile__action .input-group__details {
+    display: flex;
+    padding: 0 !important;
+    min-height: 1px;
+}
+
 /**
  * Fix line height for form elements
  */
@@ -43,20 +49,6 @@ input, textarea {
     color: $color-mulled-wine;
 }
 
-/**
- * Vuetify dropdowns styling,
- * to match our original style
- */
-.input-group {
-    padding-top: 0;
-}
-
-.input-group__input {
-    min-height: 44px;
-    background: #edf1fc;
-    padding-left: 15px;
-}
-
-.input-group__details::before, .input-group__details::after {
-    display: none;
+.menu__content {
+    box-shadow: $box-shadow;
 }

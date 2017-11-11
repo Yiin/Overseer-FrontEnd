@@ -1,4 +1,5 @@
 import Vue from 'vue'
+// import away from 'away'
 import store from '@/store'
 
 /**
@@ -45,6 +46,17 @@ export default {
    */
   install(Vue) {
     Vue.prototype.$auth = Vue.auth = this
+
+    // const timer = away(5 * 60 * 1000)
+    // timer.on('idle', () => {
+    //   store.dispatch('auth/LOCK')
+    // })
+
+    // window.addEventListener('keydown', (e) => {
+    //   if (e.keyCode === 76) {
+    //     store.dispatch('auth/LOCK')
+    //   }
+    // })
   },
 
   /**
@@ -82,7 +94,7 @@ export default {
   },
 
   logout() {
-    store.dispatch('LOGOUT')
+    store.dispatch('auth/LOGOUT')
   },
 
   /**
@@ -150,6 +162,8 @@ export default {
     const status = response.status
     const error = response.data.message
 
-    return ((status === 401 || error === 'invalid_token') && error !== 'invalid_credentials')
+    return (
+      status === 401 && ['invalid_credentials', 'invalid_pin'].indexOf(error) === -1
+    ) || error === 'invalid_token'
   }
 }

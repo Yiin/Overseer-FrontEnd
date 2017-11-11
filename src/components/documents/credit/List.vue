@@ -48,7 +48,7 @@
             </a>
           </column>
           <column width="20%">
-            <a :href="`#${row.key}`" @click="editDocument(row.client, 'client')">
+            <a href="#" @click.prevent="editDocument(row.client, 'client')">
               {{ row.client.name }}
             </a>
           </column>
@@ -67,7 +67,13 @@
         <template slot="table-controls-left"></template>
       </documents-table>
 
-      <table-footer :table-name="name"></table-footer>
+      <table-footer
+        :table-name="name"
+        :calculator-options="[
+          { text: $t('fields.amount'), value: 'amount', type: 'money' },
+          { text: $t('fields.balance'), value: 'balance', type: 'money' }
+        ]"
+      ></table-footer>
     </template>
   </div>
 </template>
@@ -78,6 +84,7 @@ import {
   IsActiveFilter,
   IsArchivedFilter,
   IsDeletedFilter,
+  CurrenciesFilter,
   ClientsFilter,
 
   // Search By
@@ -96,6 +103,8 @@ import {
   CreateDocument,
   Archive,
   Delete,
+  Unarchive,
+  Recover,
   Preview,
   EditDocument,
   ApplyCredit
@@ -114,18 +123,20 @@ export default {
     searchBy() {
       return [
         SearchByText.extend({ key: 'client.name', name: 'client_name', placeholder: this.$t('search_by.client_name') }),
-        SearchByDate.extend({ key: 'credit_date', name: 'credit_date', placeholder: this.$t('search_by.credit_date') }),
+        SearchByDate.extend({ key: 'creditDate', name: 'credit_date', placeholder: this.$t('search_by.credit_date') }),
         { type: 'separator' },
-        SearchByValue.extend({ key: 'amount', name: 'credit_amount', placeholder: this.$t('search_by.amount') }),
-        SearchByValue.extend({ key: 'balance', name: 'balance', placeholder: this.$t('search_by.balance') })
+        SearchByValue.extend({ key: 'amount.amount', name: 'credit_amount', placeholder: this.$t('search_by.amount') }),
+        SearchByValue.extend({ key: 'balance.amount', name: 'balance', placeholder: this.$t('search_by.balance') })
       ]
     },
 
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.credit_table'
@@ -141,7 +152,9 @@ export default {
         ApplyCredit,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
-        Delete
+        Unarchive,
+        Delete,
+        Recover
       ]
     },
 
@@ -151,12 +164,14 @@ export default {
         IsArchivedFilter,
         IsDeletedFilter,
         { type: 'separator' },
+        CurrenciesFilter.make(this.currencies),
+        { type: 'separator' },
         ClientsFilter.make(this.clients)
       ]
     },
 
     clients() {
-      const clients = this.$store.getters[`table/${this.name}/filteredItems`]
+      const clients = this.$store.getters[`table/${this.name}/activeItems`]
         .filter((credit) => credit.client)
         .map((credit) => credit.client)
 
@@ -164,16 +179,27 @@ export default {
         filterBy: 'uuid',
         orderBy: 'name'
       })
+    },
+
+    currencies() {
+      const currencies = this.$store.getters[`table/${this.name}/activeItems`]
+        .filter((credit) => credit.currency)
+        .map((credit) => credit.currency)
+
+      return this.filterAndOrder(currencies, {
+        filterBy: 'code',
+        orderBy: 'name'
+      })
     }
   },
 
   methods: {
     create() {
-      this.$store.dispatch('form/credit/OPEN_CREATE_FORM')
+      this.createDocument('credit')
     },
 
     edit(data) {
-      this.$store.dispatch('form/credit/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'credit')
     }
   }
 }

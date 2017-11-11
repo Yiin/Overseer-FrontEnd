@@ -3,8 +3,50 @@ import Router from 'vue-router'
 import store from '@/store'
 import * as Routes from './routes.js'
 import Overview from '@/components/overview/Overview.vue'
+import Profile from '@/pages/profile/Index.vue'
+import { getApiRequestName, getTableName } from '@/modules/documents/helpers'
 
 Vue.use(Router)
+
+function makeDocumentRoutes(name, {
+    component
+  } = {}
+) {
+  const path = '/' + getApiRequestName(name)
+
+  return {
+    path,
+    name: getTableName(name),
+    parentName: Routes.OVERVIEW,
+    component,
+    beforeEnter: checkIfAuthenticated,
+    children: [
+      {
+        path: `/${name}/create`,
+        name: `${name}.create`,
+        meta: {
+          actionable: true
+        }
+      },
+      {
+        path: `/${name}/:uuid/edit`,
+        name: `${name}.edit`,
+        props: true,
+        meta: {
+          actionable: true
+        }
+      },
+      {
+        path: `/${name}/:uuid/revision/:activity`,
+        name: `${name}.revision`,
+        props: true,
+        meta: {
+          actionable: true
+        }
+      }
+    ]
+  }
+}
 
 const router = new Router({
   mode: 'history',
@@ -15,17 +57,11 @@ const router = new Router({
     {
       path: '/login',
       name: Routes.LOGIN,
-      // component: function (resolve) {
-      //   require(['@/components/login/Login.vue'], resolve)
-      // },
       beforeEnter: checkIfGuest
     },
     {
       path: '/register',
       name: Routes.REGISTER,
-      // component: function (resolve) {
-      //   require(['@/components/register/Register.vue'], resolve)
-      // },
       beforeEnter: checkIfGuest
     },
     {
@@ -49,15 +85,29 @@ const router = new Router({
      */
     {
       path: '/',
+      name: 'index',
       redirect: {
         name: Routes.OVERVIEW
       }
     },
     {
+      path: '/me',
+      name: 'me',
+      component: Profile,
+      beforeEnter: checkIfAuthenticated
+    },
+    {
+      path: '/profile/:who',
+      name: 'profile',
+      props: true,
+      component: Profile,
+      beforeEnter: checkIfAuthenticated
+    },
+    {
       path: '/overview',
       name: Routes.OVERVIEW,
       component: Overview,
-      beforeEnter: checkIfLoggedIn
+      beforeEnter: checkIfAuthenticated
     },
     {
       path: '/appointments',
@@ -65,7 +115,11 @@ const router = new Router({
     },
     {
       path: '/personnel',
-      name: 'personnel'
+      name: 'personnel',
+      component: function (resolve) {
+        require(['@/pages/personnel/Index.vue'], resolve)
+      },
+      beforeEnter: checkIfAuthenticated
     },
     {
       path: '/finances',
@@ -77,7 +131,7 @@ const router = new Router({
       component: function (resolve) {
         require(['@/pages/currency/Index.vue'], resolve)
       },
-      beforeEnter: checkIfLoggedIn
+      beforeEnter: checkIfAuthenticated
     },
 
     /**
@@ -85,322 +139,163 @@ const router = new Router({
      *
      * Projects
      */
-    {
-      path: '/projects',
-      name: Routes.LIST_PROJECTS,
-      parentName: Routes.OVERVIEW,
+    makeDocumentRoutes('project', {
       component(resolve) {
         require(['@/components/crm/project/List.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+      }
+    }),
 
     /**
      * Client
      */
-    {
-      path: '/clients',
-      name: Routes.LIST_CLIENTS,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('client', {
+      component(resolve) {
         require(['@/components/documents/client/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/clients/:uuid',
-    //   name: Routes.VIEW_CLIENT,
-    //   parentName: Routes.LIST_CLIENTS,
-    //   beforeEnter: (to, from, next) => {
-    //     // store.dispatch('modal/OPEN', {
-    //     //   to.params.uuid
-
-    //     // })
-    //   }
-    // },
-    {
-      path: '/client/:id/edit',
-      name: Routes.EDIT_CLIENT,
-      parentName: Routes.LIST_CLIENTS,
-      component: function (resolve) {
-        require(['@/components/documents/client/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Product
      */
-    {
-      path: '/products',
-      name: Routes.LIST_PRODUCTS,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('product', {
+      component(resolve) {
         require(['@/components/documents/product/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/product/:id',
-    //   name: Routes.VIEW_PRODUCT,
-    //   parentName: Routes.LIST_PRODUCTS,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/product/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/product/:id/edit',
-      name: Routes.EDIT_PRODUCT,
-      parentName: Routes.LIST_PRODUCTS,
-      component: function (resolve) {
-        require(['@/components/documents/product/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Invoice
      */
-    {
-      path: '/invoices',
-      name: Routes.LIST_INVOICES,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('invoice', {
+      component(resolve) {
         require(['@/components/documents/invoice/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/invoice/:id',
-    //   name: Routes.VIEW_INVOICE,
-    //   parentName: Routes.LIST_INVOICES,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/invoice/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/invoice/:id/edit',
-      name: Routes.EDIT_INVOICE,
-      parentName: Routes.LIST_INVOICES,
-      component: function (resolve) {
-        require(['@/components/documents/invoice/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Payment
      */
-    {
-      path: '/payments',
-      name: Routes.LIST_PAYMENTS,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('payment', {
+      component(resolve) {
         require(['@/components/documents/payment/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/payment/:id',
-    //   name: Routes.VIEW_PAYMENT,
-    //   parentName: Routes.LIST_PAYMENTS,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/payment/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/payment/:id/edit',
-      name: Routes.EDIT_PAYMENT,
-      parentName: Routes.LIST_PAYMENTS,
-      component: function (resolve) {
-        require(['@/components/documents/payment/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Recurring invoice
      */
-    {
-      path: '/recurring-invoices',
-      name: Routes.LIST_RECURRING_INVOICES,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('recurring-invoice', {
+      component(resolve) {
         require(['@/components/documents/recurring-invoice/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/recurring-invoice/:id',
-    //   name: Routes.VIEW_RECURRING_INVOICE,
-    //   parentName: Routes.LIST_RECURRING_INVOICES,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/recurring-invoice/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/recurring-invoice/:id/edit',
-      name: Routes.EDIT_RECURRING_INVOICE,
-      parentName: Routes.LIST_RECURRING_INVOICES,
-      component: function (resolve) {
-        require(['@/components/documents/recurring-invoice/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Credit
      */
-    {
-      path: '/credits',
-      name: Routes.LIST_CREDITS,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('credit', {
+      component(resolve) {
         require(['@/components/documents/credit/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/credit/:id',
-    //   name: Routes.VIEW_CREDIT,
-    //   parentName: Routes.LIST_CREDITS,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/credit/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/credit/:id/edit',
-      name: Routes.EDIT_CREDIT,
-      parentName: Routes.LIST_CREDITS,
-      component: function (resolve) {
-        require(['@/components/documents/credit/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Quote
      */
-    {
-      path: '/quotes',
-      name: Routes.LIST_QUOTES,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('quote', {
+      component(resolve) {
         require(['@/components/documents/quote/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/quote/:id',
-    //   name: Routes.VIEW_QUOTE,
-    //   parentName: Routes.LIST_QUOTES,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/quote/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/quote/:id/edit',
-      name: Routes.EDIT_QUOTE,
-      parentName: Routes.LIST_QUOTES,
-      component: function (resolve) {
-        require(['@/components/documents/quote/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Expense
      */
-    {
-      path: '/expenses',
-      name: Routes.LIST_EXPENSES,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('expense', {
+      component(resolve) {
         require(['@/components/documents/expense/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/expense/:id',
-    //   name: Routes.VIEW_EXPENSE,
-    //   parentName: Routes.LIST_EXPENSES,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/expense/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/expense/:id/edit',
-      name: Routes.EDIT_EXPENSE,
-      parentName: Routes.LIST_EXPENSES,
-      component: function (resolve) {
-        require(['@/components/documents/expense/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
 
     /**
      * Vendor
      */
-    {
-      path: '/vendors',
-      name: Routes.LIST_VENDORS,
-      parentName: Routes.OVERVIEW,
-      component: function (resolve) {
+    makeDocumentRoutes('vendor', {
+      component(resolve) {
         require(['@/components/documents/vendor/List.vue'], resolve)
-      },
-      beforeEnter: (...params) => {
-        checkIfLoggedIn(...params)
       }
-    },
-    // {
-    //   path: '/vendor/:id',
-    //   name: Routes.VIEW_VENDOR,
-    //   parentName: Routes.LIST_VENDORS,
-    //   component: function (resolve) {
-    //     require(['@/components/documents/vendor/View.vue'], resolve)
-    //   },
-    //   beforeEnter: checkIfLoggedIn
-    // },
-    {
-      path: '/vendor/:id/edit',
-      name: Routes.EDIT_VENDOR,
-      parentName: Routes.LIST_VENDORS,
-      component: function (resolve) {
-        require(['@/components/documents/vendor/Edit.vue'], resolve)
-      },
-      beforeEnter: checkIfLoggedIn
-    },
+    }),
+
+    /**
+     * 404
+     */
     {
       path: '*',
       name: 'NOT_FOUND',
-      redirect: {
-        name: Routes.OVERVIEW
+      component: function (resolve) {
+        require(['@/pages/error/404.vue'], resolve)
+      },
+      beforeEnter: (to, from, next) => {
+        router.app.$options.store.commit('HIDE_SIDEBAR', true)
+        next()
       }
     }
   ]
+})
+
+function documentAction(to) {
+  const [ documentType, action ] = to.name.split('.')
+
+  switch (action) {
+  case 'create':
+    // do nothing
+    setTimeout(() => {
+      window.history.replaceState(null, document.title, router.currentRoute.meta.goBack)
+    }, 100)
+    break
+  case 'edit':
+    require('@/modules/documents/actions').editDocument(to.params.uuid, documentType)
+    break
+  case 'revision':
+    require('@/modules/documents/actions').reviewDocumentState(to.params.uuid, documentType, {
+      activity: to.params.activity
+    })
+    break
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  if (from.meta.actionable) {
+    if (from.meta.previous) {
+      if (to.fullPath !== from.meta.previous) {
+        next(from.meta.previous)
+      } else {
+        next()
+      }
+    }
+  } else if (to.meta.actionable) {
+    if (from.name) {
+      from.meta.goBack = from.fullPath
+      window.history.replaceState(null, document.title, to.fullPath)
+
+      if (to.params.action) {
+        documentAction(to)
+      }
+    } else {
+      to.meta.previous = to.matched[0].path
+      next()
+    }
+  } else {
+    next()
+  }
+})
+
+router.afterEach((to, from) => {
+  if (to.meta.actionable) {
+    if (!from.name) {
+      documentAction(to)
+    }
+  }
 })
 
 function checkIfGuest(to, from, next) {
@@ -415,8 +310,7 @@ function checkIfGuest(to, from, next) {
   }
 }
 
-function checkIfLoggedIn(to, from, next) {
-  // work-around to get to the Vuex store (as of Vue 2.0)
+function checkIfAuthenticated(to, from, next) {
   const auth = router.app.$options.store.state.auth
 
   if (!auth.isLoggedIn) {

@@ -1,0 +1,23 @@
+.pageContent {
+    display: flex;
+    line-height: initial;
+    margin-top: 60px;
+}
+
+.profileContainer,
+.tabsContainer {
+    border-radius: 5px;
+    box-shadow: $primary-box-shadow;
+    background: #fff;
+}
+
+.profileContainer {
+    width: 30%;
+    padding: 32px;
+}
+
+.tabsContainer {
+    width: 70%;
+    margin-left: 30px;
+    padding: 15px 32px;
+}

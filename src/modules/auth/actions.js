@@ -17,6 +17,7 @@ export default {
 
     commit('UPDATE_ACCESS_TOKEN', accessToken)
     commit('UPDATE_USER', user)
+    commit('SET_LOCKED', false)
 
     localStorage.setItem('state.auth', JSON.stringify(state))
 
@@ -41,7 +42,33 @@ export default {
     commit('LOAD')
   },
 
-  LOGOUT({ commit }, { redirect = true }) {
+  LOCK({ commit, state }) {
+    if (state.isLocked) {
+      return
+    }
+    // dispatch('ENCRYPT', null, { root: true })
+    commit('SET_LOCKED', true)
+
+    localStorage.setItem('state.auth', JSON.stringify(state))
+  },
+
+  UNLOCK({ commit, dispatch, state, rootState }, { pin }) {
+    return Api.post('unlock', {
+      pin
+    }).then(() => {
+      commit('SET_LOCKED', false)
+
+      try {
+        // dispatch('DECRYPT', '0000', { root: true })
+      } catch (e) {
+        // console.log(e)
+      }
+
+      localStorage.setItem('state.auth', JSON.stringify(state))
+    })
+  },
+
+  LOGOUT({ commit }, { redirect = true } = {}) {
     Api.post('logout')
 
     const preloadedJsonEl = document.getElementById('preloaded_json')

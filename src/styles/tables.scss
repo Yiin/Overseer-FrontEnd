@@ -10,6 +10,7 @@
     &--simple
     {
         box-shadow: none;
+        border: 1px solid #e1e1e1;
     }
     &__heading
     {
@@ -43,14 +44,12 @@
         user-select: none;
 
         color: $color-main-dark;
-        //border-top: 1px solid #e6ebf1;
         border-bottom: 1px solid #e6ebf1;
         border-radius: $table-border-radius $table-border-radius 0 0;
         background: #f7f8fc;
         .table--simple &
         {
-            border-right: 1px solid #e6ebf1;
-            border-left: 1px solid #e6ebf1;
+            border-bottom: 1px solid #e1e1e1;
         }
         .column
         {
@@ -168,12 +167,14 @@
     }
     .column
     {
-        display: flex;
-        // padding-left: 21px;
+        &:not(th):not(td) {
+            display: flex;
+            // padding-left: 21px;
 
-        vertical-align: middle;
+            vertical-align: middle;
 
-        align-items: center;
+            align-items: center;
+        }
         &:not(.column--center)
         {
              > span,

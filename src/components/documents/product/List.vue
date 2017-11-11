@@ -24,7 +24,7 @@
         </button>
 
         <div class="table__dropdowns">
-          <filter-by ref="filterByComponent" :name="name" :options="filterBy"></filter-by>
+          <filter-by ref="filterByComponent" :watch="{ currencies }" :name="name" :options="filterBy"></filter-by>
           <search-by :name="name" :options="searchBy"></search-by>
         </div>
       </div>
@@ -43,7 +43,7 @@
         </template>
         <template slot="columns" slot-scope="{ row }">
           <column width="21%">
-            <a :href="`#${row.uuid}`" @click="edit(row)">{{ row.name }}</a>
+            <a href="#" @click.prevent="edit(row)">{{ row.name }}</a>
           </column>
           <column width="21%">
             <span>{{ row.identificationNumber }}</span>
@@ -64,7 +64,13 @@
         <template slot="table-controls-left"></template>
       </documents-table>
 
-      <table-footer :table-name="name"></table-footer>
+      <table-footer
+        :table-name="name"
+        :calculator-options="[
+          { text: $t('fields.price'), value: 'price', type: 'money' },
+          { text: $t('fields.quantity'), value: 'qty' }
+        ]"
+      ></table-footer>
     </template>
   </div>
 </template>
@@ -79,6 +85,7 @@ import {
   IsInStockFilter,
   IsOutOfStockFilter,
   IsServiceFilter,
+  CurrenciesFilter,
 
   // Search By
   SearchByText,
@@ -94,10 +101,12 @@ import {
   TableName,
   CreateDocument,
   Archive,
+  Unarchive,
   Delete,
-  Restore,
+  Recover,
   Preview,
-  EditDocument
+  EditDocument,
+  HistoryList
 } from '@/modules/table/cm-actions'
 
 export default {
@@ -117,7 +126,7 @@ export default {
     searchBy() {
       return [
         SearchByText.extend({ key: 'name', name: 'product_name', placeholder: this.$t('search_by.product_name') }),
-        SearchByValue.extend({ key: 'price', name: 'product_price', placeholder: this.$t('search_by.product_price') }),
+        SearchByValue.extend({ key: 'price.amount', name: 'product_price', placeholder: this.$t('search_by.product_price') }),
         SearchByText.extend({ key: 'description', name: 'description', placeholder: this.$t('search_by.words_in_description') }),
         SearchByValue.extend({ key: 'qty', name: 'stock_amount', placeholder: this.$t('search_by.stock_amount') })
       ]
@@ -126,8 +135,10 @@ export default {
     contextMenuActions() {
       return [
         SELECTED_ROWS,
-        Archive.isVisible(whenMoreThanOneRowIsSelected),
-        Delete.isVisible(whenMoreThanOneRowIsSelected),
+        Archive.extend({ moreThanOne: true }),
+        Unarchive.extend({ moreThanOne: true }),
+        Recover.extend({ moreThanOne: true }),
+        Delete.extend({ moreThanOne: true }),
         __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
         TableName.extend({
           title: 'common.product_table'
@@ -140,10 +151,12 @@ export default {
         SELECTED_DOCUMENT.extend({ documentType: 'product' }),
         Preview.extend({ title: 'actions.preview' }),
         EditDocument.extend({ title: 'actions.edit_product' }),
+        HistoryList,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         Archive,
+        Unarchive,
         Delete,
-        Restore
+        Recover
       ]
     },
 
@@ -155,18 +168,31 @@ export default {
         { type: 'separator' },
         IsInStockFilter,
         IsOutOfStockFilter,
-        IsServiceFilter
+        IsServiceFilter,
+        { type: 'separator' },
+        CurrenciesFilter.make(this.currencies)
       ]
+    },
+
+    currencies() {
+      const currencies = this.$store.getters[`table/${this.name}/activeItems`]
+        .filter((product) => product.price.currency)
+        .map((product) => product.price.currency)
+
+      return this.filterAndOrder(currencies, {
+        filterBy: 'code',
+        orderBy: 'name'
+      })
     }
   },
 
   methods: {
     create() {
-      this.$store.dispatch('form/product/OPEN_CREATE_FORM')
+      this.createDocument('product')
     },
 
     edit(data) {
-      this.$store.dispatch('form/product/OPEN_EDIT_FORM', data)
+      this.editDocument(data, 'product')
     }
   }
 }

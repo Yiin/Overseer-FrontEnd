@@ -8,9 +8,8 @@ import { methods as CurrencyRepository } from '@/modules/documents/repositories/
 export const currencySymbol = (val) => {
   if (!val) {
     val = store.state.settings.currency.symbol
-    console.warn('Currency is not defined, defaulting to ', val)
   }
-  const currency = CurrencyRepository.findOrCreate(val)
+  const currency = CurrencyRepository.findOrDefault(val)
 
   if (currency.symbol) {
     return currency.symbol
@@ -20,7 +19,8 @@ export const currencySymbol = (val) => {
 }
 
 export const currency = (val) => {
-  return numeral(parseFloat(typeof val === 'object' ? val.value : val)).format('0,0.00')
+  const value = parseFloat(typeof val === 'object' ? val.value : val).toFixed(2)
+  return numeral(value).format(value.toString().length > 8 ? '0,0.00a' : '0,0.00')
 }
 
 export const t = (val) => {
@@ -81,7 +81,7 @@ export const paymentStatus = (document) => {
     return commonStatus
   }
 
-  if (document.refunded) {
+  if (document.refunded.get() > 0) {
     return 'refunded'
   } else {
     return 'completed'

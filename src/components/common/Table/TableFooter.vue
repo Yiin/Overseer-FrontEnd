@@ -5,16 +5,27 @@
       <div class="table__footer-text">
         {{ $t('table.total') }}
       </div>
-      <dropdown v-model="calc" placeholder="Select" class="dropdown--primary dropdown--table-footer dropdown--calculator">
-        <dropdown-option value="Price">
-          Price
-        </dropdown-option>
-        <dropdown-option value="Balance">
-          Balance
-        </dropdown-option>
-      </dropdown>
+      <form-dropdown-input
+        :items="calculatorOptions"
+        v-model="calculate"
+        placeholder="Select"
+        class="dropdown--primary dropdown--table-footer dropdown--calculator"
+      ></form-dropdown-input>
       <div class="table__footer-text">
         {{ $t('table.for_selected_is') }}
+        <span v-if="selectedCalculatorOption" class="calculator-result">
+          <template v-if="selectedCalculatorOption.type === 'money'">
+            <span class="currency">
+              {{ calculatorResult.currency | currencySymbol }}
+            </span>
+            <span class="currency currency--primary">
+              {{ calculatorResult.amount | currency }}
+            </span>
+          </template>
+          <template v-else>
+            {{ calculatorResult }}
+          </template>
+        </span>
       </div>
     </div>
 
@@ -24,7 +35,7 @@
       </div>
       <div class="table__footer-page">
         <div @click="prevPage" v-show="!isFirstPage" class="nav-page nav-page--left">«</div>
-        <input v-model="currentPage" class="table__footer-page-input" type="text">
+        <input v-model="currentPage" class="table__footer-page-input" type="text" data-lpignore="true">
         <div @click="nextPage" v-show="!isLastPage" class="nav-page nav-page--right">»</div>
       </div>
       <div class="table__footer-text">
@@ -35,15 +46,11 @@
           {{ $tc('table.showing_some_entries', to - from, { from, to, total }) }}
         </template>
       </div>
-      <dropdown @input="changeRowsPerPage" class="dropdown--primary dropdown--table-footer dropdown--page">
-        <dropdown-option v-for="rpp in [10, 20, 50, 9007199254740991]"
-                        :key="rpp"
-                        :value="rpp"
-                        :selected="rpp === tableState.rows_per_page"
-        >
-          {{ rpp === 9007199254740991 ? $t('common.all') : rpp }}
-        </dropdown-option>
-      </dropdown>
+      <form-dropdown-input
+        :items="rowsPerPageOptions"
+        v-model="rowsPerPage"
+        class="dropdown--primary dropdown--table-footer dropdown--page"
+      ></form-dropdown-input>
       <div class="table__footer-text">
         {{ $t('table.rows') }}
       </div>
@@ -57,32 +64,83 @@ export default {
     tableName: {
       type: String,
       required: true
+    },
+
+    calculatorOptions: {
+      type: Array,
+      default: () => []
     }
   },
 
   data() {
     return {
-      calc: '',
+      calculate: this.calculatorOptions.length ? this.calculatorOptions[0].value : null,
       currentPage: this.$store.state.table[this.tableName].page + 1
     }
   },
 
   watch: {
-    currentPage: function (page) {
+    currentPage(page) {
       const _page = parseInt(page)
       if (_page > 0 && _page <= this.pagesCount) {
         this.changePage(_page - 1)
       }
     },
 
-    page: function (page) {
+    page(page) {
       this.currentPage = page
     }
   },
 
   computed: {
+    rowsPerPageOptions() {
+      return [10, 20, 50, Number.MAX_SAFE_INTEGER].map((value) => {
+        return {
+          text: value === Number.MAX_SAFE_INTEGER ? this.$t('common.all') : value,
+          value
+        }
+      })
+    },
+
+    rowsPerPage: {
+      get() {
+        return this.rows
+      },
+      set(value) {
+        this.changeRowsPerPage(value)
+      }
+    },
+
     tableState() {
       return this.$store.state.table[this.tableName]
+    },
+
+    defaultCurrency() {
+      return this.$store.state.settings.currency
+    },
+
+    selectedCalculatorOption() {
+      return this.calculatorOptions.find((option) => option.value === this.calculate)
+    },
+
+    calculatorResult() {
+      if (this.calculate) {
+        const option = this.selectedCalculatorOption
+
+        if (option.type === 'money') {
+          return {
+            amount: this.tableState.selection.reduce((sum, row) => {
+              return sum + row[this.calculate].getIn(this.defaultCurrency)
+            }, 0),
+            currency: this.defaultCurrency
+          }
+        } else {
+          return this.tableState.selection.reduce((sum, row) => {
+            return sum + row[this.calculate]
+          }, 0)
+        }
+      }
+      return null
     },
 
     page() {
@@ -152,13 +210,19 @@ export default {
   width: auto;
   margin: 0;
   &.dropdown--calculator {
-    min-width: 158px;
+    width: 158px;
     margin: 0 13px 0 20px;
   }
   &.dropdown--page {
-    min-width: 83px;
+    width: 83px;
     margin: 0 17px 0 18px;
   }
+}
+
+span.calculator-result {
+    padding-left: 5px;
+    color: $color-main;
+    font-weight: 700;
 }
 
 .table__footer-page-input {

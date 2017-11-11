@@ -1,18 +1,33 @@
+import router from '@/router'
+
 /**
  * Modal actions
  */
 
 export default {
   HANDLE_TASKBAR_OPEN({ commit, dispatch }, data) {
+    if (data.route && router.currentRoute.name && router.currentRoute.name !== data.route.name) {
+      router.push(data.route)
+    }
     commit('OPEN', data)
   },
 
   HANDLE_TASKBAR_HIDE({ commit, dispatch }, data) {
+    if (router.currentRoute.meta.goBack) {
+      window.history.replaceState(null, document.title, router.currentRoute.meta.goBack)
+    } else if (router.currentRoute.meta.previous) {
+      router.push(router.currentRoute.meta.previous)
+    }
     dispatch(`${data.module}/RESET_FORM_DATA`, null, { root: true })
     commit('HIDE')
   },
 
   HANDLE_TASKBAR_CLOSE({ commit, dispatch }, data) {
+    if (router.currentRoute.meta.goBack) {
+      window.history.replaceState(null, document.title, router.currentRoute.meta.goBack)
+    } else if (router.currentRoute.meta.previous) {
+      router.push(router.currentRoute.meta.previous)
+    }
     dispatch(`${data.module}/RESET_FORM_DATA`, null, { root: true })
     commit('CLOSE')
   },

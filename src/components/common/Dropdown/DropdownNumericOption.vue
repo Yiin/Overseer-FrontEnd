@@ -105,6 +105,10 @@ export default {
       this.onInput()
     },
 
+    getValue() {
+      return this.value
+    },
+
     onInput() {
       this.$emit('input-changed')
     }
@@ -115,6 +119,7 @@ export default {
 <style lang="scss" scoped>
 .dropdown__option--numeric {
     position: relative;
+    display: block;
 }
 
 .dropdown__option--numeric.dropdown__option--open {
@@ -148,8 +153,8 @@ export default {
     color: $color-white;
     font-size: 16px;
     font-weight: 600;
-    max-width: 215px;
-    padding-left: 10px;
+    width: 215px;
+    padding-left: 0;
 }
 
 .value__input:focus {

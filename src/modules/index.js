@@ -11,6 +11,7 @@ import settings from './settings'
 import system from './system'
 import documents from './documents'
 import notification from './notification'
+import contextmenu from './contextmenu'
 
 export default {
   auth,
@@ -25,5 +26,6 @@ export default {
   settings,
   system,
   documents,
-  notification
+  notification,
+  contextmenu
 }

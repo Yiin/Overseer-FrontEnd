@@ -1,14 +1,14 @@
-@media (max-width: 1500px) {
-    .sidebar {
-        left: 0 !important;
-    }
-
-    .application {
-        transform-origin: 50% 0%;
-    }
-
-    .page-content {
-        width: calc(100vw - 235px) !important;
-        margin-left: 150px !important;
+@media (max-width: 1480px)
+{
+    .--disable-scaling
+    {
+        .sidebar
+        {
+            left: 20px;
+        }
+        .page-content
+        {
+            margin-left: 352px;
+        }
     }
 }

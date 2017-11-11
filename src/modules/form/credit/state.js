@@ -1,6 +1,8 @@
 import FormState from '../base/state'
 
 const state = FormState('credit', {
+  newClientUuid: null,
+
   fields: {
     uuid: '',
 
@@ -8,7 +10,7 @@ const state = FormState('credit', {
     client_uuid: '', // uuid
 
     // Details
-    amount: 0,
+    balance: 0,
     currency_code: null, // id
     credit_date: null, // YYYY-MM-DD
     credit_number: ''
@@ -19,7 +21,7 @@ const state = FormState('credit', {
       'client_uuid'
     ],
     [
-      'amount',
+      'balance',
       'currency_code',
       'credit_date',
       'credit_number'
