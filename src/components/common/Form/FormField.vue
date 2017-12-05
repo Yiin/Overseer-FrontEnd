@@ -1,18 +1,18 @@
-<template>
-  <div class = "form__input-wrapper">
+<template lang="pug">
+  .form__input-wrapper
 
-    <label class = "form__label">
-      {{ label }}
+    label.form__label {{ label }}
 
-      <span v-for = "error in errors"
-            class = "form__input-error"
-      >
-        {{ error }}
-      </span>
-    </label>
-    <slot></slot>
+      //- v-tooltip(v-if='hint' top)
+      //-   v-icon(slot='activator') info
+      //-   span {{ hint }}
 
-  </div>
+      span(
+        v-for='error in errors'
+        class='form__input-error'
+      ) {{ error }}
+
+    slot
 </template>
 
 <script>
@@ -24,6 +24,10 @@ export default {
       type: String,
       default: undefined
     },
+    hint: {
+      type: String,
+      default: null
+    },
     errors: {
       type: Array,
       default: () => []
@@ -31,3 +35,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.form__label > .tooltip {
+  display: inline !important;
+}
+</style>

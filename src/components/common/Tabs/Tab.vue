@@ -1,24 +1,33 @@
-<template>
-  <transition name="fade">
-    <div v-show="isActive" class="tab__holder" :class="{ '--relative': fade, '--disable-transition': !fade }">
-      <div class="tab">
-        <slot></slot>
-      </div>
-    </div>
-  </transition>
+<template lang="pug">
+  transition(name='fade')
+    .tab__holder(
+      v-show='isActive'
+      :class='tabClasses'
+    )
+      .tab
+        slot
 </template>
 
 <script>
 export default {
   name: 'tab',
 
+  inject: ['addTabItem', 'removeTabItem'],
+
   props: {
     active: {
       default: false
     },
+
     title: {
-      required: true
+      type: String
     },
+
+    tabKey: {
+      type: String,
+      default: null
+    },
+
     fade: {
       type: Boolean,
       default: false
@@ -34,6 +43,33 @@ export default {
   data() {
     return {
       isActive: !!this.active
+    }
+  },
+
+  computed: {
+    tabClasses() {
+      return {
+        '--relative': this.fade,
+        '--disable-transition': !this.fade
+      }
+    }
+  },
+
+  mounted() {
+    this.addTabItem({
+      title: this.title,
+      key: this.tabKey || this.title,
+      setActive: this.setActive
+    })
+  },
+
+  beforeDestroy() {
+    this.removeTabItem(this.tabKey || this.title)
+  },
+
+  methods: {
+    setActive(isActive) {
+      this.isActive = isActive
     }
   }
 }

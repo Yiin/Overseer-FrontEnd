@@ -439,7 +439,10 @@ export const SearchByText = {
   id: 'text',
   type: 'text',
   searchBy: function (document, key, value) {
-    const val = _.get(document, key)
+    const val = typeof key === 'function'
+      ? key(document)
+      : _.get(document, key)
+
     return val && val.toLowerCase().indexOf(value.toLowerCase()) > -1
   },
   extend: function (data) {
@@ -451,7 +454,9 @@ export const SearchByValue = {
   id: 'value',
   type: 'numeric',
   searchBy: function (document, key, value) {
-    const val = _.get(document, key)
+    const val = typeof key === 'function'
+      ? key(document)
+      : _.get(document, key)
 
     const higherThanMin = value.from === null || val >= parseFloat(value.from)
     const lowerThanMax = value.to === null || val <= parseFloat(value.to)
@@ -467,7 +472,9 @@ export const SearchByDate = {
   id: 'date',
   type: 'date',
   searchBy: function (document, key, value) {
-    let val = _.get(document, key)
+    let val = typeof key === 'function'
+      ? key(document)
+      : _.get(document, key)
 
     if (!(val instanceof moment)) {
       if (typeof val === 'string') {
@@ -493,7 +500,12 @@ export const SearchByItemsProduct = {
   id: 'items_product_name',
   type: 'text',
   searchBy: function (document, key, value) {
-    const val = key ? _.get(document, key) : document
+    const val = key
+      ? typeof key === 'function'
+        ? key(document)
+        : _.get(document, key)
+      : document
+
     return !!val.items.map((item) => item.product)
       .find((product) => product.name.toLowerCase().indexOf(value.toLowerCase()) > -1) ||
       !!val.items.find((item) => item.name.toLowerCase().indexOf(value.toLowerCase()) > -1)

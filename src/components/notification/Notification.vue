@@ -89,6 +89,7 @@ export default {
 
 .snack__content {
   line-height: initial;
+  min-width: 245px;
 
   .btn {
     background-color: transparent !important;
@@ -99,6 +100,9 @@ export default {
 
   .btn--action {
     color: #a1c2fa !important;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
   }
 
   .btn--close-snack {

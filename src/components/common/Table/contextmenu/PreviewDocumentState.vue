@@ -1,36 +1,49 @@
 <template lang="pug">
-  v-list-tile(avatar)
-    v-list-tile-content(class='limitWidth', :title='title')
-      v-list-tile-title {{ action }} by {{ item.activity.user.fullName }}
-      v-list-tile-sub-title {{ date }} at {{ time }}
+  cm-item(
+    v-bind='$attrs'
+    v-on='$listeners'
+    :item='item'
+  )
+    v-list-tile(avatar)
+      v-list-tile-content(class='limitWidth', :title='title')
+        v-list-tile-title {{ action }} by {{ who }}
+        v-list-tile-sub-title {{ date }} at {{ time }}
 </template>
 
 <script>
 import S from 'string'
+import ContextMenuItemMixin from '@/components/contextmenu/context-menu-item-mixin'
 
 export default {
-  props: {
-    item: {
-      type: Object,
-      required: true
-    }
-  },
+  mixins: [
+    ContextMenuItemMixin
+  ],
 
   computed: {
     title() {
-      return `${this.action} by ${this.item.activity.user.fullName} on ${this.date} at ${this.time}`
+      return `${this.action} by ${this.who} on ${this.date} at ${this.time}`
+    },
+
+    activity() {
+      return this.item.props.activity
     },
 
     action() {
-      return S(this.item.activity.action).capitalize().s
+      return S(this.activity.action).capitalize().s
+    },
+
+    who() {
+      return this.activity.user
+        ? this.activity.user.getFullName()
+        : 'System'
     },
 
     date() {
-      return this.item.activity.timestamp.format('MMM D, YYYY')
+      return this.activity.timestamp.format('MMM D, YYYY')
     },
 
     time() {
-      return this.item.activity.timestamp.format('h:mma')
+      return this.activity.timestamp.format('h:mma')
     }
   }
 }

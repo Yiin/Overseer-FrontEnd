@@ -12,7 +12,7 @@
     <documents-table v-else simple
       :documents="overdueInvoices"
       :data="tableData"
-      :context-menu-actions="contextMenuActions"
+      :context-menu-builder="contextMenuBuilder"
     >
       <template slot="head">
         <column width="18%">{{ $t('fields.invoice_number') }}</column>
@@ -30,7 +30,7 @@
           <span>{{ row.client ? row.client.name : '-' }}</span>
         </column>
         <column width="17%">
-          <span>{{ row.invoiceDate | date }}</span>
+          <span>{{ row.date | date }}</span>
         </column>
         <column width="17%">
           <span>{{ row.dueDate | date }}</span>
@@ -57,25 +57,7 @@
 import Tab from '@/components/common/Tabs/Tab.vue'
 import TableMixin from '@/mixins/TableMixin'
 
-import {
-  whenMoreThanOneRowIsSelected,
-  whenSpecificRowIsSelected,
-  __SEPARATOR__,
-  SELECTED_ROWS,
-  SELECTED_DOCUMENT,
-  TableName,
-  CreateDocument,
-  Archive,
-  Delete,
-  Unarchive,
-  Recover,
-  EditDocument,
-  CloneDocument,
-  ViewHistory,
-  MarkSent,
-  MarkPaid,
-  EnterPayment
-} from '@/modules/table/cm-actions'
+import TableCmItems from '@/modules/table/contextmenu/items'
 
 export default {
   extends: Tab,
@@ -93,36 +75,37 @@ export default {
       return 'invoices'
     },
 
-    contextMenuActions() {
-      return [
-        SELECTED_ROWS,
-        Archive.extend({ moreThanOne: true }),
-        Unarchive.extend({ moreThanOne: true }),
-        Recover.extend({ moreThanOne: true }),
-        Delete.extend({ moreThanOne: true }),
-        __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
-        TableName.extend({
-          title: 'common.invoice_table'
-        }),
-        CreateDocument.extend({
-          documentType: 'invoice',
-          title: 'actions.new_invoice',
-          icon: 'icon-new-invoice-btn-icon'
-        }),
-        SELECTED_DOCUMENT.extend({ documentType: 'invoice' }),
-        EditDocument.extend({ title: 'actions.edit_invoice' }),
-        CloneDocument.extend({ title: 'actions.clone_invoice' }),
-        ViewHistory,
-        __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
-        MarkSent,
-        MarkPaid,
-        EnterPayment,
-        __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
-        Archive,
-        Unarchive,
-        Delete,
-        Recover
-      ]
+    contextMenuBuilder() {
+      return this.$contextMenu.init({
+        tableStateName: this.name
+      }).addItem(TableCmItems.SELECTED_ROWS)
+        .addItem(TableCmItems.ARCHIVE_MANY)
+        .addItem(TableCmItems.UNARCHIVE_MANY)
+        .addItem(TableCmItems.DELETE_MANY)
+        .addItem(TableCmItems.RECOVER_MANY)
+        .addSeparator()
+        .addItem(TableCmItems.TABLE_NAME)
+        .addItem(TableCmItems.CREATE_DOCUMENT.extend({
+          title: this.$t('actions.new_invoice')
+        }))
+        .addItem(TableCmItems.SELECTED_DOCUMENT)
+        .addItem(TableCmItems.PREVIEW)
+        .addItem(TableCmItems.EDIT_DOCUMENT)
+        .addItem(TableCmItems.HISTORY_LIST)
+        .addSeparator()
+        .addItem(TableCmItems.CLONE_DOCUMENT.extend({
+          title: this.$t('actions.clone_invoice')
+        }))
+        .addItem(TableCmItems.PRINT_DOCUMENT.extend({
+          title: this.$t('actions.print_invoice')
+        }))
+        .addSeparator()
+        .addItem(TableCmItems.ENTER_PAYMENT)
+        .addSeparator()
+        .addItem(TableCmItems.ARCHIVE)
+        .addItem(TableCmItems.UNARCHIVE)
+        .addItem(TableCmItems.DELETE)
+        .addItem(TableCmItems.RECOVER)
     },
 
     overdueInvoices() {

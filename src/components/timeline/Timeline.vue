@@ -3,33 +3,20 @@
     .timelineItem(v-for='(events, date) in timeline')
       .year {{ date }}
       .events
-        .event(
+        timeline-event(
           v-for='event in events'
-          :class=`[\`event--c-\${event.colorIndex}\`, {
-            "event--top-of-the-day": event.topOfTheDay,
-            "event--bottom-of-the-day": event.bottomOfTheDay
-          }]`
+          :key='event.id'
+          :event='event'
         )
-          .eventDate {{ event.timestamp.format('MMM D') }}
-          .eventIcon
-            i.sidebar-icon(:class='[`sidebar-icon--${event.documentType}s`]')
-          .eventTitle
-            event-title(:event='event')
-          .eventContent
-            event-summary(:event='event')
-          .eventMeta {{ event.timestamp.format('h:mma') }}
 </template>
 
 <script>
-import EventTitle from '@/components/timeline/EventTitle.vue'
-import EventSummary from '@/components/timeline/EventSummary.vue'
+import TimelineEvent from './TimelineEvent.vue'
 import Event from '@/modules/documents/models/event'
-import { editDocument } from '@/modules/documents/actions'
 
 export default {
   components: {
-    EventTitle,
-    EventSummary
+    TimelineEvent
   },
 
   props: {
@@ -87,9 +74,7 @@ export default {
       } else {
         return Event.create(activity)
       }
-    },
-
-    editDocument
+    }
   }
 }
 </script>

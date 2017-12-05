@@ -8,7 +8,7 @@ export default (repository = {}, getters = null) => {
      * @return {[type]} [description]
      */
     items(state, getters, rootState, rootGetters) {
-      return rootGetters[repository.join('/') + '/AVAILABLE_ITEMS']
+      return rootGetters[repository.join('/') + '/AVAILABLE_COMPANY_ITEMS']
     },
 
     /**

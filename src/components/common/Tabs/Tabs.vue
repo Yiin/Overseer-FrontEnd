@@ -1,37 +1,43 @@
-<template>
-  <div class="tabs tabs--with-overflow" :class="{ 'tabs--labeled': labels, 'tabs--no-tabs': noTabs }">
-    <div v-if="!noTabs" class="tabs__list">
-      <div v-for="tab in tabs"
-          @mousedown="selectTab(tab)"
-           class="tab__title"
-          :class="{ 'tab__title--active': tab.isActive }"
-          :title="tab.title"
-      >
-        {{ tab.title }}
-      </div>
-    </div>
-    <div class="tabs__content">
-      <slot></slot>
-    </div>
-  </div>
+<template lang="pug">
+  .tabs.tabs--with-overflow(
+    :class='tabsClasses'
+  )
+
+    .tabs__list
+
+      .tab__title(
+        v-for="tab in tabs"
+        @mousedown="selectTab(tab.key)"
+        :class="{ 'tab__title--active': activeTabKey === tab.key }"
+        :title="tab.title"
+      )
+        slot(
+          name='tab'
+          :tab='tab'
+        ) {{ tab.title }}
+
+    .tabs__content
+      slot
+
 </template>
 
 <script>
 export default {
   name: 'tabs',
 
+  provide() {
+    return {
+      addTabItem: ({ title, key, setActive }) => {
+        this.registerTabItem(title, key, setActive)
+      },
+      removeTabItem: (title) => {
+        this.unregisterTabItem(title)
+      }
+    }
+  },
+
   props: {
     labels: {
-      type: Boolean,
-      default: false
-    },
-
-    noTabs: {
-      type: Boolean,
-      default: false
-    },
-
-    visualsOnly: {
       type: Boolean,
       default: false
     },
@@ -43,7 +49,16 @@ export default {
 
   data() {
     return {
-      tabs: []
+      tabs: [],
+      activeTabKey: null
+    }
+  },
+
+  computed: {
+    tabsClasses() {
+      return {
+        'tabs--labeled': this.labels
+      }
     }
   },
 
@@ -54,46 +69,31 @@ export default {
   },
 
   methods: {
-    selectTab(tab, initial = false) {
-      if (this.visualsOnly && !initial) {
-        this.$emit('change', typeof tab === 'string' ? tab : tab.title)
-        return
-      }
-
-      if (typeof tab === 'string') {
-        tab = this.tabs.find((_tab) => _tab.title === tab)
-        if (!tab) {
-          return
-        }
-      }
-      this.activeTab = tab
-
-      this.tabs.forEach((_tab) => {
-        _tab.isActive = (_tab === tab)
-      })
-
-      if (!initial) {
-        this.$emit('change', tab.title)
-      }
+    registerTabItem(title, key, setActive) {
+      this.tabs.push({ title, key, setActive })
     },
 
-    reset() {
-      if (this.visualsOnly) {
-        return
-      }
-      this.selectTab(this.tabs[0])
+    unregisterTabItem(key) {
+      this.tabs = this.tabs.filter((tab) => tab.key !== key)
+    },
+
+    selectTab(tabKey) {
+      this.activeTabKey = tabKey
+
+      this.tabs.forEach((tab) => {
+        tab.setActive(tab.key === tabKey)
+      })
     }
   },
 
   mounted() {
-    this.tabs = this.$children
-
-    const defaultTab = this.tabs.find((tab) => tab.title === this.tab)
-
-    if (defaultTab) {
-      this.selectTab(defaultTab, true)
+    if (this.tabs.length < 1) {
+      throw new Error(`Tabs should contain at least 1 tab.`)
+    }
+    if (this.tab) {
+      this.selectTab(this.tab)
     } else {
-      this.selectTab(this.tabs[0], true)
+      this.selectTab(this.tabs[0].key)
     }
   }
 }

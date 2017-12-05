@@ -12,8 +12,16 @@ export default {
     state.isLocked = isLocked
   },
 
-  UPDATE_USER(state, user) {
+  SET_ACCOUNT(state, account) {
+    state.account = account
+  },
+
+  SET_USER(state, user) {
     state.user = user
+  },
+
+  SET_CURRENT_COMPANY(state, company) {
+    state.user.company = company
   },
 
   LOAD(state) {
@@ -37,14 +45,6 @@ export default {
 
     for (let key in copy) {
       state[key] = copy[key]
-    }
-  },
-
-  PROCEED_WITH_THE_ANIMATION(state, step = undefined) {
-    if (typeof step !== 'undefined') {
-      state.animation.currentStep = state.animation.steps.indexOf(step)
-    } else {
-      state.animation.currentStep++
     }
   }
 }

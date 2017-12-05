@@ -6,6 +6,7 @@
              :name     = "name"
              type      = "text"
              :readonly = "readonly"
+             data-lpignore="true"
       >
       <i class="icon-calendar-weekly"></i>
     </div>

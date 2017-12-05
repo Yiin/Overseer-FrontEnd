@@ -1,21 +1,23 @@
 <template lang="pug">
-  i18n(path='table.selected_rows')
-    span.highlight {{ count }}
+  .context-menu__list-item(
+    v-if='isVisible'
+    :class='itemClasses'
+  )
+    i18n(path='table.selected_rows')
+      span.highlight {{ count }}
 </template>
 
 <script>
+import ContextMenuItemMixin from '@/components/contextmenu/context-menu-item-mixin'
+
 export default {
+  mixins: [
+    ContextMenuItemMixin
+  ],
+
   computed: {
-    scope() {
-      return this.$store.state.contextmenu.scope
-    },
-
-    table() {
-      return this.$store.state.table[this.scope]
-    },
-
     count() {
-      return this.table.selection.length
+      return this.item.builder.getSelection().length
     }
   }
 }

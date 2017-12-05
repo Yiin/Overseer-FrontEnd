@@ -105,10 +105,6 @@ export default {
       return this.$store.state.auth.registration.step === this.$store.state.auth.registration.steps.length - 1
     },
 
-    currentAnimationStep() {
-      return this.$store.state.auth.animation.steps[this.$store.state.auth.animation.currentStep]
-    },
-
     isAuthenticated() {
       return this.$store.state.auth.isLoggedIn
     },

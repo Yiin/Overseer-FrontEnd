@@ -12,7 +12,7 @@ export const DEFAULT_PRECISION = 2
 class Money extends Model {
   static create(data) {
     return new Money({
-      currency: CurrencyRepository.findOrDefault(data.currency),
+      currency: CurrencyRepository.findByKey(data.currency.code),
       amount: Number(accounting.toFixed(data.amount, DEFAULT_PRECISION))
     })
   }
@@ -83,8 +83,12 @@ class Money extends Model {
   /**
    * Get formated amount
    */
-  format(precision = DEFAULT_PRECISION) {
+  formatAmount(precision = DEFAULT_PRECISION) {
     return accounting.formatNumber(this.amount, precision)
+  }
+
+  format(precision = DEFAULT_PRECISION) {
+    return accounting.formatMoney(this.amount, this.currency.symbol, precision)
   }
 }
 

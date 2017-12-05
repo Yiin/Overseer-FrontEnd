@@ -7,11 +7,12 @@
     >
       <input :placeholder   = "displayText"
               v-model       = "localValue"
-              class         = "dropdown__input ------lastpass-search"
+              class         = "dropdown__input"
               type          = "text"
              @focus         = "$emit('focus', $event)"
              @blur          = "$emit('blur', $event)"
              @keydown       = "$emit('keydown', $event)"
+             data-lpignore  = "true"
       ></input>
     </div>
 
@@ -19,11 +20,15 @@
       else just show simple div with current value or placeholder text
      -->
     <div v-else
+         class = "dropdown__input-wrapper"
+    >
+      <div
          @click = "$emit('click', $event)"
           class = "dropdown__input"
          :class = "{ '--placeholder': !isValueSet }"
-    >
-      {{ displayText }}
+      >
+        {{ displayText }}
+      </div>
     </div>
 </template>
 
@@ -39,9 +44,7 @@ export default {
     isValueSet: {
       type: Boolean
     },
-    value: {
-      required: true
-    },
+    value: {},
     readonly: {
       type: Boolean,
       default: false

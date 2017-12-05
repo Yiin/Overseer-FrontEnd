@@ -76,7 +76,7 @@ export default {
 
   computed: {
     products() {
-      return this.$store.getters['documents/repositories/product/ACTIVE_ITEMS']
+      return this.$store.getters['documents/repositories/product/ACTIVE_COMPANY_ITEMS']
     }
   },
 

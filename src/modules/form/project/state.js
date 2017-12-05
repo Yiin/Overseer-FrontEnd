@@ -12,6 +12,4 @@ const state = FormState({
   errors: {}
 })
 
-state.__initial = JSON.parse(JSON.stringify(state))
-
 export default state

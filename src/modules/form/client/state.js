@@ -9,7 +9,7 @@ const state = FormState('client', {
     registration_number: '',
     vat_number: '',
     website: '',
-    phone: '',
+    email: '',
     logo: null,
 
     // Address
@@ -25,7 +25,7 @@ const state = FormState('client', {
       {
         first_name: '',
         last_name: '',
-        job_position: '',
+        job_title: '',
         email: '',
         phone: ''
       }
@@ -44,7 +44,7 @@ const state = FormState('client', {
       'registration_number',
       'vat_number',
       'website',
-      'phone',
+      'email',
       'logo'
     ],
     [
@@ -67,7 +67,5 @@ const state = FormState('client', {
     ]
   ]
 })
-
-state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

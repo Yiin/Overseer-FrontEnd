@@ -120,7 +120,7 @@ const Statuses = {
       priority: 10,
 
       meetsCondition(document) {
-        return document.status === 'draft'
+        return Statuses.generic.active.meetsCondition(document) && document.status === 'draft'
       },
 
       /**
@@ -155,7 +155,7 @@ const Statuses = {
       priority: 1,
 
       meetsCondition(document) {
-        return document.status === 'pending'
+        return Statuses.generic.active.meetsCondition(document) && document.status === 'pending'
       },
 
       /**
@@ -191,7 +191,7 @@ const Statuses = {
       priority: 2,
 
       meetsCondition(document) {
-        return document.status === 'sent'
+        return Statuses.generic.active.meetsCondition(document) && document.status === 'sent'
       },
 
       /**
@@ -225,7 +225,7 @@ const Statuses = {
       priority: 3,
 
       meetsCondition(document) {
-        return document.status === 'viewed'
+        return Statuses.generic.active.meetsCondition(document) && document.status === 'viewed'
       },
 
       /**

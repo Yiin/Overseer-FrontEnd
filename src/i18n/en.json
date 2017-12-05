@@ -11,6 +11,11 @@
         "add_new_contact": "Add New Contact",
         "print_invoice": "Print Invoice",
         "print_quote": "Print Quote",
+        "print_document": "Print Document",
+        "new_task": "New Task",
+        "new_document": "New Document",
+        "view_invoice": "View Invoice",
+        "assign_user": "Assign User",
         "archive": "Archive",
         "delete": "Delete",
         "restore": "Restore",
@@ -29,8 +34,23 @@
         "edit_project": "Edit Project",
         "edit_recurring_invoice": "Edit Recurring",
         "edit_vendor": "Edit Vendor",
+        "edit_employee": "Edit Employee",
         "convert_to_invoice": "Convert to Invoice",
+
+        "clone_company": "Clone Company",
+        "clone_client": "Clone Client",
+        "clone_credit": "Clone Credit",
+        "clone_expense": "Clone Expense",
         "clone_invoice": "Clone Invoice",
+        "clone_payment": "Clone Payment",
+        "clone_product": "Clone Product",
+        "clone_quote": "Clone Quote",
+        "clone_recurring_invoice": "Clone Recurring",
+        "clone_vendor": "Clone Vendor",
+        "clone_employee": "Clone Employee",
+        "clone_project": "Clone Project",
+
+        "new_company": "New Company",
         "new_client": "New Client",
         "new_credit": "New Credit",
         "new_expense": "New Expense",
@@ -40,6 +60,7 @@
         "new_quote": "New Quote",
         "new_recurring_invoice": "New Recurring",
         "new_vendor": "New Vendor",
+        "new_employee": "New Employee",
         "new_project": "New Project",
         "search_by": "Search by",
         "select_to_show": "Select to show",
@@ -57,6 +78,8 @@
     "common": {
         "appointments": "Appointments",
         "personnel": "Personnel",
+        "employee": "Employee",
+        "employees": "Personnel",
         "project": "Project",
         "day": "Day",
         "week": "Week",
@@ -106,6 +129,11 @@
         "percent": "Percent"
     },
     "fields": {
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "password-optional": "Password (optional)",
+        "phone": "Phone",
+        "job_title": "Job Title",
         "identification_number": "Identification Number",
         "credit_number": "Credit Number",
         "method": "Method",
@@ -145,7 +173,8 @@
         "valid_until": "Valid Until",
         "vat_number": "VAT Number",
         "vendor_name": "Vendor Name",
-        "name": "Name"
+        "name": "Name",
+        "role": "Role"
     },
     "filters": {
         "active": "Active",
@@ -217,7 +246,7 @@
         "invoice_due_date": "Due Date",
         "invoice_number": "Invoice Number",
         "item": "Item",
-        "job_position": "Job Position",
+        "job_title": "Job Position",
         "language": "Language",
         "last_name": "Last Name",
         "logo": "Logo",
@@ -265,6 +294,7 @@
         "please_select_a_product": "Enter Product Name"
     },
     "search_by": {
+        "employee_name": "Employee Name",
         "amount": "Amount",
         "balance": "Balance",
         "client_email": "Email",
@@ -313,6 +343,8 @@
     },
     "tabs": {
         "additional_info": "Additional info",
+        "roles": "Roles",
+        "account": "Account",
         "address": "Address",
         "client": "Client",
         "contacts": "Contacts",

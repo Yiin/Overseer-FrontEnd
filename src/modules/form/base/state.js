@@ -8,7 +8,7 @@ export default (name, state = {}) => {
     state.validationErrors[field] = []
   }
 
-  return JSON.parse(JSON.stringify(Object.assign({
+  const formState = JSON.parse(JSON.stringify(Object.assign({
     _name: typeof name === 'string' ? name : '',
     _preview: false,
 
@@ -44,4 +44,7 @@ export default (name, state = {}) => {
       update: []
     }
   }, state)))
+
+  formState.__initial = JSON.parse(JSON.stringify(formState))
+  return formState
 }

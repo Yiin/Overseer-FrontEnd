@@ -1,61 +1,79 @@
-<template>
-  <div class="table__footer">
+<template lang="pug">
+  .table__footer
 
-    <div class="table__footer-block table__footer-block--left">
-      <div class="table__footer-text">
-        {{ $t('table.total') }}
-      </div>
-      <form-dropdown-input
+    //-
+      Table values calculator
+
+    .table__footer-block.table__footer-block--left(v-if="calculatorOptions.length")
+      .table__footer-text {{ $t('table.total') }}
+
+      //-
+        Dropdown with available columns that we can sum
+
+      form-dropdown-input.dropdown--primary.dropdown--table-footer.dropdown--calculator(
         :items="calculatorOptions"
         v-model="calculate"
         placeholder="Select"
-        class="dropdown--primary dropdown--table-footer dropdown--calculator"
-      ></form-dropdown-input>
-      <div class="table__footer-text">
-        {{ $t('table.for_selected_is') }}
-        <span v-if="selectedCalculatorOption" class="calculator-result">
-          <template v-if="selectedCalculatorOption.type === 'money'">
-            <span class="currency">
-              {{ calculatorResult.currency | currencySymbol }}
-            </span>
-            <span class="currency currency--primary">
-              {{ calculatorResult.amount | currency }}
-            </span>
-          </template>
-          <template v-else>
-            {{ calculatorResult }}
-          </template>
-        </span>
-      </div>
-    </div>
+      )
 
-    <div class="table__footer-block table__footer-block--right">
-      <div class="table__footer-text">
-        {{ $t('table.page') }}
-      </div>
-      <div class="table__footer-page">
-        <div @click="prevPage" v-show="!isFirstPage" class="nav-page nav-page--left">«</div>
-        <input v-model="currentPage" class="table__footer-page-input" type="text" data-lpignore="true">
-        <div @click="nextPage" v-show="!isLastPage" class="nav-page nav-page--right">»</div>
-      </div>
-      <div class="table__footer-text">
-        <template v-if="showing_all && total > 0">
-          {{ $t('table.showing_all_entries') }}
-        </template>
-        <template v-else>
-          {{ $tc('table.showing_some_entries', to - from, { from, to, total }) }}
-        </template>
-      </div>
-      <form-dropdown-input
-        :items="rowsPerPageOptions"
+      //-
+        Result
+
+      .table__footer-text {{ $t('table.for_selected_is') }}
+        span.calculator-result(v-if="selectedCalculatorOption")
+          template(v-if="selectedCalculatorOption.type === 'money'")
+            span.currency {{ calculatorResult.currency | currencySymbol }}
+            span.currency.currency--primary {{ calculatorResult.amount | currency }}
+
+          template(v-else) {{ calculatorResult }}
+
+    //-
+      Current page & left/right navigation
+
+    .table__footer-block.table__footer-block--right
+      .table__footer-text {{ $t('table.page') }}
+
+      .table__footer-page
+
+        //-
+          Go to previous page
+
+        .nav-page.nav-page--left(
+          v-show="!isFirstPage"
+          @click="prevPage"
+        ) «
+
+        //-
+           Current page
+
+        input.table__footer-page-input(
+          v-model="currentPage"
+          type="text"
+          data-lpignore="true"
+        )
+
+        //-
+          Go to next page
+
+        .nav-page.nav-page--right(
+          v-show="!isLastPage"
+          @click="nextPage"
+        ) »
+
+      //-
+        Table data summary
+
+      .table__footer-text
+        template(v-if="showing_all && total > 0")
+          | {{ $t('table.showing_all_entries') }}
+        template(v-else)
+          | {{ $tc('table.showing_some_entries', to - from, { from, to, total }) }}
+
+      form-dropdown-input.dropdown--primary.dropdown--table-footer.dropdown--page(
         v-model="rowsPerPage"
-        class="dropdown--primary dropdown--table-footer dropdown--page"
-      ></form-dropdown-input>
-      <div class="table__footer-text">
-        {{ $t('table.rows') }}
-      </div>
-    </div>
-  </div>
+        :items="rowsPerPageOptions"
+      )
+      .table__footer-text {{ $t('table.rows') }}
 </template>
 
 <script>

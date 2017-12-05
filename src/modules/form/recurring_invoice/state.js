@@ -66,6 +66,4 @@ const state = FormState('recurring_invoice', {
   ]
 })
 
-state.__initial = JSON.parse(JSON.stringify(state))
-
 export default state

@@ -75,7 +75,7 @@ import {
   Recover,
   EditDocument,
   CloneDocument,
-  ViewHistory,
+  HistoryList,
   MarkSent,
   MarkPaid,
   EnterPayment
@@ -116,7 +116,7 @@ export default {
         SELECTED_DOCUMENT.extend({ documentType: 'invoice' }),
         EditDocument.extend({ title: 'actions.edit_invoice' }),
         CloneDocument.extend({ title: 'actions.clone_invoice' }),
-        ViewHistory,
+        HistoryList,
         __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
         MarkSent,
         MarkPaid,

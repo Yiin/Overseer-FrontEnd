@@ -39,7 +39,7 @@
         }
         &-wrapper
         {
-            max-height: 268px;
+            max-height: 280px;
         }
     }
     &__inline-inputs
@@ -564,7 +564,7 @@ textarea.form__input
         margin-top: 54px;
         padding: 38px 45px 0;
 
-        border-left: 4px solid #f5f5f5;
+        border-left: 4px solid $color-wild-sand;
         background: #fff;
     }
 

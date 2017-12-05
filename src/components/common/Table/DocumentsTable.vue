@@ -4,7 +4,7 @@
     <div class="table__head">
       <!-- Checkbox for page-wide rows toggling at once -->
       <div class="column column__checkbox column--center">
-        <input @click="togglePageRows" class="checkbox checkbox--center" type="checkbox" :checked="isWholePageSelected">
+        <x-checkbox @click.native="togglePageRows" :checked="isWholePageSelected" center manual></x-checkbox>
       </div>
       <!-- Table columns -->
       <slot name="head"></slot>
@@ -43,6 +43,7 @@
         <div
           ref="rows"
           class="table__row"
+          :key='row.uuid'
           :class="{
             'table__row--selected': isRowSelected(row),
             'table__row--hover': isMouseDown && isItemSelected($refs.rows[index]) || (selectedRow === row),
@@ -55,7 +56,7 @@
         >
           <!-- Row checkbox which indicates if row is selected -->
           <div class="column column__checkbox column--center">
-            <input class="checkbox checkbox--center" type="checkbox" :checked="isRowSelected(row)">
+            <x-checkbox :checked="isRowSelected(row)" center manual></x-checkbox>
           </div>
           <!-- Table columns with row data -->
           <slot name="columns" :row="row"></slot>
@@ -72,6 +73,7 @@
 import TableMixin from '@/mixins/TableMixin'
 import DragSelectMixin from '@/mixins/DragSelect'
 import { Delete } from '@/modules/table/cm-actions'
+import TableContextMenuBuilder from '@/modules/table/contextmenu/builder'
 
 export default {
   name: 'documents-table',
@@ -85,8 +87,8 @@ export default {
     data: {
       type: Object
     },
-    contextMenuActions: {
-      type: Array
+    contextMenuBuilder: {
+      type: TableContextMenuBuilder
     },
     simple: {
       type: Boolean,
@@ -133,7 +135,7 @@ export default {
      * @return {Boolean}
      */
     isWholePageSelected() {
-      return this.pageRows.length && this.pageRows.every((row) => this.isRowSelected(row))
+      return !!(this.pageRows.length && this.pageRows.every((row) => this.isRowSelected(row)))
     },
 
     selectedRow() {
@@ -193,21 +195,24 @@ export default {
       window.addEventListener('keydown', (e) => {
         switch (e.keyCode) {
         case 46:
-          Delete.handler(this.data.name)
+          Delete.handle(this.data.name)
           break
         }
       })
     },
 
     initContextMenu() {
+      const routerViewEl = document.getElementsByClassName('router-view')[0]
       const pageContentEl = document.getElementsByClassName('page-content')[0]
 
-      pageContentEl.addEventListener('contextmenu', (e) => {
-        e.preventDefault()
+      ;[routerViewEl, pageContentEl].forEach((el) => {
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault()
 
-        if (e.target === pageContentEl) {
-          this.openContextMenu(e)
-        }
+          if (e.target === el) {
+            this.openContextMenu(e)
+          }
+        })
       })
     },
 
@@ -281,7 +286,9 @@ export default {
      * @return {Boolean}     Is row selected
      */
     isRowSelected(row) {
-      return this.data.selection.findIndex((selectedRow) => row.uuid === selectedRow.uuid) > -1 || (this.contextMenu.selectedRow && this.contextMenu.selectedRow.uuid === row.uuid)
+      return row && this.data.selection.findIndex((selectedRow) => row.uuid === selectedRow.uuid) > -1 || (
+        this.contextMenu.selectedRow && this.contextMenu.selectedRow.uuid === row.uuid
+      )
     },
 
     /**
@@ -312,7 +319,7 @@ export default {
      * Context menu
      */
     openContextMenu(event, row = undefined) {
-      if (!this.contextMenuActions || this.contextMenuActions.length === 0) {
+      if (!this.contextMenuBuilder) {
         return
       }
 
@@ -341,7 +348,7 @@ export default {
           top: event.y
         },
         scope: this.data.name,
-        items: this.contextMenuActions
+        items: this.contextMenuBuilder.build()
       })
     },
 

@@ -1,26 +1,58 @@
 import pluralize from 'pluralize'
 import S from 'string'
 
+export const getNormalizedName = (name) => {
+  return S(pluralize.singular(name)).slugify().s.toLowerCase()
+}
+
+function singular(name) {
+  const map = {
+  }
+  const normalizedName = getNormalizedName(name)
+
+  if (normalizedName in map) {
+    return map[normalizedName]
+  }
+  return pluralize.singular(name)
+}
+
+function plural(name) {
+  const map = {
+  }
+  const normalizedName = getNormalizedName(name)
+
+  if (normalizedName in map) {
+    return map[normalizedName]
+  }
+  return pluralize(name)
+}
+
 // some_documents
 export const getTableName = (name) => {
-  return S(pluralize(name)).underscore().s
+  return S(plural(name)).underscore().s
 }
 
 // some_document
 export const getFormName = (name) => {
-  return S(pluralize.singular(name)).underscore().s
+  return S(singular(name)).underscore().s
 }
 
-// some document / some documents
+/**
+ * Get name as title
+ *
+ * @param  {string} name Name to convert
+ * @param  {string} type List of rules to apply in rule1|rule2 format
+ * @return {string}      Converted name
+ */
 export const getDocumentTitle = (name, type = 'singular|lowercase') => {
   const rules = type.split('|')
 
   return rules.reduce((name, rule) => {
     switch (rule) {
     case 'singular':
-      return pluralize.singular(name)
+      return singular(name)
     case 'plural':
-      return pluralize(name)
+      return plural(name)
     case 'capitalize':
       return S(name).capitalize().s
     case 'lowercase':
@@ -43,5 +75,5 @@ export const getResourceName = (name) => {
 
 // someDocument
 export const getRepositoryName = (name) => {
-  return S(pluralize.singular(name.toLowerCase())).camelize().s
+  return S(singular(name.toLowerCase())).camelize().s
 }

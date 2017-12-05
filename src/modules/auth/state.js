@@ -1,52 +1,31 @@
 let state = {
+  // state flags
   isLoggedIn: false,
   isLocked: false,
   isLoaded: false,
+
+  // are we currently redirecting user?
   isRedirecting: false,
+
+  // where are we redirecting the user.
   redirectingTo: null,
+
+  // did user came here from redirection?
   wasRedirected: false,
+
+  // Access token for API
   accessToken: null,
 
-  // user data
-  user: {
-    guest_key: null,
-    uuid: null,
-    profile: {
-      first_name: null,
-      last_name: null,
-      email: null,
-      phone: null,
-      job_position: null
-    },
-    site_address: '',
-    username: null,
-    company: null,
-    settings: {},
-    preferences: {}
-  },
-
-  animation: {
-    steps: [
-      'chill',
-      'hide-text',
-      'expand-button',
-      'fade-out',
-      'finished',
-      'revert'
-    ],
-    currentStep: 0
-  }
+  /**
+   * Update this instance ONLY through mutations.
+   * The only reason I put auth user object here
+   * is to keep reactivity working.
+   *
+   * @var {AuthUser}  Currently authenticated user data
+   */
+  user: {}
 }
 
 state.__initial_state = JSON.parse(JSON.stringify(state))
-
-// Sync with local storage.
-if (localStorage.getItem('state.auth')) {
-  const savedState = localStorage.getItem('state.auth')
-
-  if (savedState) {
-    state = Object.assign(state, typeof savedState === 'string' ? JSON.parse(savedState) : savedState)
-  }
-}
 
 export default state

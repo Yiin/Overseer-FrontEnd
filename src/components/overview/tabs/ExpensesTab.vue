@@ -16,7 +16,9 @@
     <tabs v-else ref="tabs" labels>
       <simple-tab fade title="Table">
         <documents-table simple
-          :data="list"
+          :documents="visibleExpenses"
+          :data="tableData"
+          :context-menu-builder="contextMenuBuilder"
         >
           <template slot="head">
             <column width="30%">{{ $t('fields.vendor_name') }}</column>
@@ -56,21 +58,7 @@ import ExpensesChart from './charts/ExpensesChart'
 import TableMixin from '@/mixins/TableMixin'
 import { createDocument } from '@/modules/documents/actions'
 
-import {
-  whenMoreThanOneRowIsSelected,
-  whenSpecificRowIsSelected,
-  __SEPARATOR__,
-  SELECTED_ROWS,
-  SELECTED_DOCUMENT,
-  TableName,
-  CreateDocument,
-  Archive,
-  Delete,
-  Unarchive,
-  Recover,
-  EditDocument,
-  InvoiceExpense
-} from '@/modules/table/cm-actions'
+import TableCmItems from '@/modules/table/contextmenu/items'
 
 export default {
   extends: Tab,
@@ -108,31 +96,28 @@ export default {
       }
     },
 
-    contextMenuActions() {
-      return [
-        SELECTED_ROWS,
-        Archive.extend({ moreThanOne: true }),
-        Unarchive.extend({ moreThanOne: true }),
-        Recover.extend({ moreThanOne: true }),
-        Delete.extend({ moreThanOne: true }),
-        __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
-        TableName.extend({
-          title: 'common.expense_table'
-        }),
-        CreateDocument.extend({
-          documentType: 'expense',
-          title: 'actions.new_expense',
-          icon: 'icon-new-expense-btn-icon'
-        }),
-        SELECTED_DOCUMENT.extend({ documentType: 'expense' }),
-        EditDocument.extend({ title: 'actions.edit_expense' }),
-        InvoiceExpense,
-        __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
-        Archive,
-        Unarchive,
-        Delete,
-        Recover
-      ]
+    contextMenuBuilder() {
+      return this.$contextMenu.init({
+        tableStateName: this.name
+      })
+        .addItem(TableCmItems.SELECTED_ROWS)
+        .addItem(TableCmItems.ARCHIVE_MANY)
+        .addItem(TableCmItems.UNARCHIVE_MANY)
+        .addItem(TableCmItems.DELETE_MANY)
+        .addItem(TableCmItems.RECOVER_MANY)
+        .addSeparator()
+        .addItem(TableCmItems.TABLE_NAME)
+        .addItem(TableCmItems.CREATE_DOCUMENT)
+        .addItem(TableCmItems.SELECTED_DOCUMENT)
+        .addItem(TableCmItems.PREVIEW)
+        .addItem(TableCmItems.EDIT_DOCUMENT)
+        .addItem(TableCmItems.INVOICE_EXPENSE)
+        .addItem(TableCmItems.HISTORY_LIST)
+        .addSeparator()
+        .addItem(TableCmItems.ARCHIVE)
+        .addItem(TableCmItems.UNARCHIVE)
+        .addItem(TableCmItems.DELETE)
+        .addItem(TableCmItems.RECOVER)
     },
 
     pageItems() {

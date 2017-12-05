@@ -10,26 +10,27 @@ export default {
       router.push(data.route)
     }
     commit('OPEN', data)
+    commit('OVERLAY', 'modal', { root: true })
   },
 
-  HANDLE_TASKBAR_HIDE({ commit, dispatch }, data) {
+  HANDLE_TASKBAR_HIDE({ commit }) {
     if (router.currentRoute.meta.goBack) {
       window.history.replaceState(null, document.title, router.currentRoute.meta.goBack)
     } else if (router.currentRoute.meta.previous) {
       router.push(router.currentRoute.meta.previous)
     }
-    dispatch(`${data.module}/RESET_FORM_DATA`, null, { root: true })
     commit('HIDE')
+    commit('UNDERLAY', 'modal', { root: true })
   },
 
-  HANDLE_TASKBAR_CLOSE({ commit, dispatch }, data) {
+  HANDLE_TASKBAR_CLOSE({ commit }) {
     if (router.currentRoute.meta.goBack) {
       window.history.replaceState(null, document.title, router.currentRoute.meta.goBack)
     } else if (router.currentRoute.meta.previous) {
       router.push(router.currentRoute.meta.previous)
     }
-    dispatch(`${data.module}/RESET_FORM_DATA`, null, { root: true })
     commit('CLOSE')
+    commit('UNDERLAY', 'modal', { root: true })
   },
 
   CREATE: ({ dispatch }, data) => {

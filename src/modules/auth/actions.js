@@ -1,27 +1,49 @@
+import parseDomain from 'parse-domain'
 import Echo from '@/echo'
 import Api from '@/api'
 import { OVERVIEW } from '@/router/routes'
 import router from '@/router'
-import parseDomain from 'parse-domain'
+import AuthUser from '@/modules/documents/models/auth-user'
 
 export default {
   AUTHENTICATE({ commit, state, dispatch }, { preloaded = false, accessToken, user, preloadedData }) {
+    /**
+     * Redirect user to correct subdomain after authentication
+     */
     if (!preloaded) {
       const domain = parseDomain(window.location.href)
-      if (!domain.subdomain || domain.subdomain !== user.site_address) {
+      if (!domain.subdomain || domain.subdomain !== preloadedData.account.site_address) {
         commit('REDIRECTING', window.location.protocol + '//' + user.site_address + '.' + domain.domain + '.' + domain.tld + '/overview')
         commit('SET_AUTHENTICATED', true)
         return
       }
     }
 
+    /**
+     * Update access token for API requests
+     */
     commit('UPDATE_ACCESS_TOKEN', accessToken)
-    commit('UPDATE_USER', user)
+
+    /**
+     * Load companies
+     */
+    dispatch('documents/repositories/company/SET_ITEMS', preloadedData.data.companies, { root: true })
+    dispatch('documents/repositories/employee/ADD_ITEMS', preloadedData.data.companies.reduce((employees, company) => {
+      return employees.concat(company.employees)
+    }, []), { root: true })
+
+    /**
+     * Set account and user data
+     */
+    commit('SET_ACCOUNT', preloadedData.account)
+    dispatch('SET_USER', user)
+
+    /**
+     * If we just logged in, we should not be locked.
+     */
     commit('SET_LOCKED', false)
 
-    localStorage.setItem('state.auth', JSON.stringify(state))
-
-    dispatch('INIT', preloadedData.data, { root: true })
+    dispatch('INIT', preloadedData, { root: true })
 
     if (!preloaded) {
       router.push({
@@ -84,5 +106,9 @@ export default {
     if (redirect) {
       router.push({ name: 'login' })
     }
+  },
+
+  SET_USER({ commit }, user) {
+    commit('SET_USER', AuthUser.create(user))
   }
 }

@@ -55,6 +55,4 @@ const state = FormState('invoice', {
   ]
 })
 
-state.__initial = JSON.parse(JSON.stringify(state))
-
 export default state

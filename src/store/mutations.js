@@ -17,8 +17,18 @@ export default {
   },
 
   RESET_SCALE(state) {
-    state.scale.ratio = 1
+    state.scale.ratio = ''
     state.scale.offset = 0
+  },
+
+  OVERLAY(state, item) {
+    state.ui.overlay.items.push(item)
+  },
+
+  UNDERLAY(state, item) {
+    state.ui.overlay.items = state.ui.overlay.items.filter((overlayItem) => {
+      return overlayItem !== item
+    })
   },
 
   HIDE_SIDEBAR(state, isHidden) {

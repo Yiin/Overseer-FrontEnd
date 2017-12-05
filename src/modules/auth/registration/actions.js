@@ -6,8 +6,8 @@ export default {
     return Auth.register(data)
       .then((response) => {
         const accessToken = response.body.access_token
-        const user = response.body.user
         const preloadedData = response.body.preloadedData
+        const user = preloadedData.user
 
         dispatch('auth/AUTHENTICATE', { accessToken, user, preloadedData }, { root: true })
       })

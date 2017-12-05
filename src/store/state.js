@@ -8,11 +8,22 @@ export default {
    * TODO: Make shit responsive yo
    */
   scale: {
-    ratio: 1,
+    ratio: '',
     offset: 0
   },
 
   ui: {
+    overlay: {
+      /**
+       * Overlay items that are currently active
+       * e.g. employee dialog + product edit modal
+       *
+       * Used to hide overflow on document body when it's
+       * overlayed and non-interactable.
+       */
+      items: []
+    },
+
     sidebar: {
       isHidden: false
     }

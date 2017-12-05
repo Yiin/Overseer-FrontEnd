@@ -37,6 +37,4 @@ const state = FormState('expense', {
   errors: {}
 })
 
-state.__initial = JSON.parse(JSON.stringify(state))
-
 export default state

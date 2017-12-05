@@ -8,6 +8,8 @@
 export default {
   name: 'modal-tab',
 
+  inject: ['addTabItem', 'removeTabItem'],
+
   props: {
     title: {
       required: true
@@ -17,6 +19,20 @@ export default {
   data() {
     return {
       isActive: false
+    }
+  },
+
+  mounted() {
+    this.addTabItem(this.title, this.setActive)
+  },
+
+  beforeDestroy() {
+    this.removeTabItem(this.title)
+  },
+
+  methods: {
+    setActive(isActive) {
+      this.isActive = isActive
     }
   }
 }

@@ -101,6 +101,7 @@ import moment from 'moment'
 import _ from 'lodash'
 import { methods as CurrencyRepository } from '@/modules/documents/repositories/currency'
 import Money from '@/modules/documents/models/money'
+import { SELECTED_COMPANY_ITEMS } from '@/modules/documents/helpers/filters'
 import RangeDatePicker from '@/components/common/DatePicker/RangeDatePicker.vue'
 
 export default {
@@ -124,12 +125,21 @@ export default {
 
     currencies() {
       let currencies = [this.selectedCurrency]
-        .concat(this.$store.getters['documents/repositories/product/AA_ITEMS'].map((product) => product.price.currency))
-        .concat(this.$store.getters['documents/repositories/invoice/AA_ITEMS'].map((invoice) => invoice.currency))
-        .concat(this.$store.getters['documents/repositories/payment/AA_ITEMS'].map((payment) => payment.amount.currency))
-        .concat(this.$store.getters['documents/repositories/credit/AA_ITEMS'].map((credit) => credit.amount.currency))
-        .concat(this.$store.getters['documents/repositories/quote/AA_ITEMS'].map((quote) => quote.currency))
-        .concat(this.$store.getters['documents/repositories/expense/AA_ITEMS'].map((expense) => expense.amount.currency))
+
+      currencies = currencies.concat([
+        'product',
+        'invoice',
+        'payment',
+        'credit',
+        'quote',
+        'expense'
+      ].reduce((arr, documentType) => {
+        return arr.concat(
+          this.$store.getters[`documents/repositories/${documentType}/AA_ITEMS`]
+            .filter(SELECTED_COMPANY_ITEMS)
+            .map((document) => document.currency)
+        )
+      }, []))
         .filter((currency) => !!currency)
         .map((currency) => {
           return Object.assign({

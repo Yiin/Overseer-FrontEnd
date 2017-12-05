@@ -2,21 +2,15 @@
   <div ref="dd"
        v-clickaway = "close"
        class       = "dropdown"
-       tabindex    = "0"
+       tabindex    = "1"
       :class       = "{
-        'dropdown--open': isOpen,
-        'dropdown--primary': primary,
-        'dropdown--reversed': shouldBeReversed
+        'dropdown--open': isOpen
       }"
       @keydown.self.enter.space = "toggle"
   >
     <dropdown-input
       v-if="!shouldBeReversed"
-      :searchable="searchable"
       :display-text="displayText"
-      :is-value-set="isValueSet"
-      :readonly="readonly"
-      v-model="query"
       @focus="open"
       @blur="close"
       @keydown.enter="addOption"
@@ -27,16 +21,13 @@
       dropdown list of options
      -->
     <div ref    = "dropdownOptions"
-         v-show = "isOpen && (visibleOptions.length || primary || (document && newEntryValue && query))"
-         class  = "dropdown__options"
+         v-show = "isOpen"
+         class  = "dropdown__options-wrapper"
         :class  = "{
-          'scrollable': isOpen && scrollable && visibleOptions.length > 5,
-          'dropdown__options--reversed': shouldBeReversed
+          'dropdown__options-wrapper--reversed': shouldBeReversed,
+          'dropdown__options-wrapper--visible': isOpen
         }"
     >
-      <dropdown-option @select="selectCustom(query)" v-if="document && newEntryValue && query">
-        {{ query }}
-      </dropdown-option>
       <!--
         user can use whatever dropdown-option components he wants
        -->
@@ -46,9 +37,7 @@
     <dropdown-input
       v-if="shouldBeReversed"
       :display-text="displayText"
-      :is-value-set="isValueSet"
       :readonly="readonly"
-      v-model="query"
       @focus="open"
       @blur="close"
       @keydown.enter="addOption"
@@ -59,7 +48,6 @@
 </template>
 
 <script>
-import he from 'he'
 import DropdownInput from './DropdownInput.vue'
 
 export default {
@@ -73,35 +61,15 @@ export default {
     placeholder: {
       default: ''
     },
-    searchable: {
-      type: Boolean,
-      default: false
-    },
-    scrollable: {
-      type: Boolean,
-      default: false
-    },
-    primary: {
-      type: Boolean,
-      default: false
+    watch: {
+      default: undefined
     },
     value: {
       default: ''
     },
-    withText: {
+    shouldBeReversed: {
       type: Boolean,
       default: false
-    },
-    watch: {
-      default: undefined
-    },
-    document: {
-      type: Boolean,
-      default: false
-    },
-    newEntryValue: {
-      type: String,
-      default: undefined
     },
     readonly: {
       type: Boolean,
@@ -112,50 +80,16 @@ export default {
   data() {
     return {
       isMounted: false,
-      isOpen: false, // should dropdown options list be visible?
-      query: '', // query to filter dropdown options,
-      valueText: undefined
+      isOpen: false // should dropdown options list be visible?
     }
   },
 
   computed: {
     /**
-     * We're checking only some of the negatives, because value
-     * can actually be both Boolean(false) and 0.
-     * @return {Boolean} [description]
-     */
-    isValueSet() {
-      if (typeof this.value === 'undefined') {
-        return false
-      }
-      if (this.value === null) {
-        return false
-      }
-      if (this.value === '') {
-        return false
-      }
-      if (typeof this.value === 'object') {
-        if (typeof this.value.value === 'undefined') {
-          return false
-        }
-        if (this.value.value === null) {
-          return false
-        }
-        if (this.value.value === '') {
-          return false
-        }
-        if (!this.value.uuid && !this.value.id) {
-          return false
-        }
-      }
-      return true
-    },
-
-    /**
      * Text that is displayed in dropdown field
      */
     displayText() {
-      if (this.isValueSet || this.valueText) {
+      if (this.valueText) {
         return this.valueText || (typeof this.value === 'object' ? this.value.text : this.value)
       }
       return this.placeholder
@@ -166,7 +100,7 @@ export default {
      */
     options() {
       /**
-       * A hack-ish way to access components of dropdown options
+       * I was young and naive
        */
       if (!this.isMounted || !this.$slots || !this.$slots.default) {
         return []
@@ -179,13 +113,6 @@ export default {
         .filter((option) => {
           return option && option.value !== '__ALL__'
         })
-    },
-
-    /**
-     * List of visible options
-     */
-    visibleOptions() {
-      return this.searchable ? this.options.filter((option) => option.isVisible) : this.options
     },
 
     /**
@@ -214,7 +141,6 @@ export default {
 
     /**
      * Array of text inputs
-     * @return {[type]} [description]
      */
     inputs() {
       const inputs = {}
@@ -226,65 +152,6 @@ export default {
       })
 
       return inputs
-    },
-
-    /**
-     * Normalize query
-     * @return {[type]} [description]
-     */
-    searchQuery() {
-      return he.decode(this.query || '')
-          .trim()
-          .toLowerCase()
-    },
-
-    /**
-     * Split query to search terms
-     */
-    searchTerms() {
-      return (
-          this.searchQuery
-          .match(/[^\s"]+|"([^"]*)"/gi) || []
-        ).map((term) => term.replace(/"/g, ''))
-    },
-
-    /**
-     * If list of options is longer than available space
-     * between dropdown and the window bottom, show list
-     * above dropdown.
-     */
-    shouldBeReversed() {
-      // update everytime visibleOptionsChanges
-      if (!this.isOpen || !this.$refs.dropdownOptions) {
-        return false
-      }
-      const rect = this.$refs.dropdownOptions.getBoundingClientRect()
-
-      return rect.bottom > window.innerHeight
-    }
-  },
-
-  watch: {
-    query: function () {
-      this.options.forEach((option) => {
-        option.isVisible = this.shouldBeVisible(option)
-      })
-    },
-    isOpen: function () {
-      this.recalculateComputedProperty('shouldBeReversed')
-    },
-    visibleOptions: function () {
-      this.recalculateComputedProperty('shouldBeReversed')
-    },
-    value: function (value) {
-      if (typeof value === 'object' && value !== null && typeof value.text !== 'undefined') {
-        this.valueText = value.text
-      } else {
-        this.findAndSelect(value)
-      }
-      if (this.searchable) {
-        this.query = this.displayText
-      }
     }
   },
 
@@ -295,41 +162,13 @@ export default {
     if (this.watch) {
       this.$watch(() => this.watch, this.recalculateOptions)
     }
-    if (this.value !== '') {
-      this.findAndSelect(this.value)
-    }
   },
 
   methods: {
-    selectCustom(text) {
-      if (this.document && this.newEntryValue) {
-        this.setValue({
-          text,
-          value: {
-            [this.newEntryValue]: text
-          }
-        })
-      } else {
-        this.setValue({
-          text,
-          value: text
-        })
-      }
-      this.close()
-    },
-
     recalculateOptions() {
       this.recalculateComputedProperty('options')
       this.$nextTick(() => {
         this.initOptions()
-        this.recalculateComputedProperty('visibleOptions')
-
-        if (this.value) {
-          this.setValue({
-            text: '',
-            value: ''
-          })
-        }
       })
     },
 
@@ -348,49 +187,11 @@ export default {
       }
     },
 
-    addOption() {
-      if (!this.addable) {
-        return
-      }
-
-      this.addedOptions.unshift(he.decode(this.query).trim())
-    },
-
-    // option should be visible only
-    shouldBeVisible(option) {
-      // if we're not searching for anything specific
-      if (!this.searchTerms.length) {
-        return true
-      }
-      // or this option matches search terms
-      const searchable = option.searchable
-      const query = [this.searchQuery] // this.searchTerms
-
-      for (let i = 0; i < query.length; ++i) {
-        if (searchable.indexOf(query[i]) > -1) {
-          return true
-        }
-      }
-      // else ignore it completely
-      return false
-    },
-
     initOptions() {
       if (!this.options.length) {
         return
       }
-      this.setDefaultValue()
       this.initOptionsListeners()
-    },
-
-    setDefaultValue() {
-      let option = this.options.find((option) => option.selected)
-
-      if (option) {
-        this.setValue(option)
-        return true
-      }
-      return false
     },
 
     initOptionsListeners() {
@@ -433,21 +234,7 @@ export default {
     },
 
     setValue(option) {
-      if (typeof option === 'object') {
-        this.valueText = option.text
-
-        if (this.withText) {
-          this.$emit('input', {
-            __valueWithText: true,
-            value: option.value,
-            text: option.text
-          })
-        } else {
-          this.$emit('input', option.value)
-        }
-      } else {
-        this.$emit('input', option)
-      }
+      this.$emit('input', option)
     },
 
     resetValue() {
@@ -483,3 +270,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.dropdown__options-wrapper {
+  overflow: visible;
+  max-height: initial;
+}
+</style>

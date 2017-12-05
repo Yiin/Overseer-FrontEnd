@@ -3,7 +3,11 @@ import {
   createDocument,
   patchDocument
 } from '@/modules/documents/actions'
+import {
+  getFormName
+} from '@/modules/documents/helpers'
 import Statuses from '@/modules/documents/statuses'
+import TableContextMenuBuilder from '@/modules/table/contextmenu/builder'
 
 export default {
   computed: {
@@ -13,6 +17,10 @@ export default {
 
     state() {
       return this.$store.state.table[this.tableName]
+    },
+
+    selectedRow() {
+      return this.state.selectedRow
     },
 
     availableItems() {
@@ -34,6 +42,10 @@ export default {
         selection: this.state.selection
       }
     }
+  },
+
+  created() {
+    this.$contextMenu = new TableContextMenuBuilder(this.tableName)
   },
 
   mounted() {
@@ -106,8 +118,33 @@ export default {
       }, 100)
     },
 
-    editDocument,
-    createDocument,
-    patchDocument
+    editLink(document) {
+      const formName = getFormName(this.tableName)
+
+      return {
+        name: `${formName}.edit`,
+        params: { uuid: document.uuid, action: true }
+      }
+    },
+
+    create() {
+      this.createDocument(this.tableName)
+    },
+
+    edit(row) {
+      this.editDocument(row, this.tableName)
+    },
+
+    editDocument(...args) {
+      return editDocument(...args)
+    },
+
+    createDocument(...args) {
+      return createDocument(...args)
+    },
+
+    patchDocument(...args) {
+      return patchDocument(...args)
+    }
   }
 }

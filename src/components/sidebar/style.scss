@@ -1,16 +1,18 @@
 .sidebar
 {
     position: fixed;
+    top: 0;
     left: calc(50vw - 1660px / 2);
-
-    width: $sidebar-width;
+    min-width: $sidebar-width;
 
     &__content
     {
+        display: flex;
+        flex-direction: column;
+
         margin-top: 40px;
 
         user-select: none;
-        text-align: center;
     }
     .profile-area
     {
@@ -41,6 +43,7 @@
         {
             font-size: 15px;
             line-height: 26px;
+
             position: relative;
 
             display: flex;
@@ -58,49 +61,64 @@
             &--active
             {
                 color: #000 !important;
-                .sidebar-icon--appointments {
+                .sidebar-icon--appointments
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Appointments hover.svg');
                 }
-                .sidebar-icon--products {
+                .sidebar-icon--products
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Products hover.svg');
                 }
-                .sidebar-icon--clients {
+                .sidebar-icon--clients
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Client hover.svg');
                 }
-                .sidebar-icon--credits {
+                .sidebar-icon--credits
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Credits hover.svg');
                 }
-                .sidebar-icon--currency {
+                .sidebar-icon--currency
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Currency hover.svg');
                 }
-                .sidebar-icon--expenses {
+                .sidebar-icon--expenses
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Expenses hover.svg');
                 }
-                .sidebar-icon--invoices {
+                .sidebar-icon--invoices
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Invoice hover.svg');
                 }
-                .sidebar-icon--overview {
+                .sidebar-icon--overview
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Overview hover.svg');
                 }
-                .sidebar-icon--payments {
+                .sidebar-icon--payments
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Payment hover.svg');
                 }
-                .sidebar-icon--personnel {
+                .sidebar-icon--personnel
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Personel hover.svg');
                 }
-                .sidebar-icon--projects {
+                .sidebar-icon--projects
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Projects hover.svg');
                 }
-                .sidebar-icon--quotes {
+                .sidebar-icon--quotes
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Quotes hover.svg');
                 }
-                .sidebar-icon--reports {
+                .sidebar-icon--reports
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Reports hover.svg');
                 }
-                .sidebar-icon--vendors {
+                .sidebar-icon--vendors
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Vendors hover.svg');
                 }
-                .sidebar-icon--settings {
+                .sidebar-icon--settings
+                {
                     background-image: url('../../assets/icons/sidebar/hover/1__Settings hover.svg');
                 }
             }
@@ -131,7 +149,6 @@
 
                     color: $color-dusty-gray !important;
                     background: none;
-                    // font-weight: normal;
                 }
             }
             i
@@ -145,7 +162,8 @@
                 width: 32px;
                 margin-right: 3px;
 
-                &.sidebar-icon--credit {
+                &.sidebar-icon--credit
+                {
                     top: 8px !important;
                 }
             }
@@ -167,51 +185,92 @@
     }
 }
 
-.sidebar2
+.company
 {
-    &__nav
-    {
-        &-link
-        {
-            font-size: 15px;
-            font-weight: normal;
-            line-height: 20px;
+    position: relative;
 
-            color: $color-mine-shaft !important;
+    width: 100%;
+    height: 52px;
+    margin-left: 65px;
 
-            &:hover
-            {
-                font-weight: $font-weight-semibold;
+    cursor: pointer;
+}
 
-                // color: $color-navbar-link-hover !important;
-            }
-            &--active
-            {
-                font-weight: $font-weight-semibold;
+.companyInfo
+{
+    position: absolute;
+    top: 16px;
+    right: 17px;
+    left: 40px;
 
-                // color: $color-navbar-link-active !important;
-            }
-            &--disabled
-            {
-                color: $color-dusty-gray !important;
-                &:hover
-                {
-                    font-weight: normal;
+    pointer-events: none;
+}
 
-                    cursor: default;
+.companyName
+{
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 30px;
 
-                    color: $color-dusty-gray !important;
-                    background: none;
-                }
-            }
-        }
+    overflow: hidden;
+
+    transition: transform .2s ease-in-out,opacity .2s ease-in-out;
+    transform-origin: 0 50%;
+    white-space: pre;
+    text-overflow: ellipsis;
+
+    color: #424770;
+}
+
+.companyLogo
+{
+    position: absolute;
+    top: 16px;
+    left: 0;
+
+    overflow: hidden;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px 0 rgba(49,49,93,.1), 0 1px 2px 0 rgba(0,0,0,.08);
+
+    flex-shrink: 0;
+}
+
+.companyLogoContent
+{
+    overflow: hidden;
+
+    width: 30px;
+    height: 30px;
+
+    transition: opacity .2s ease-in-out;
+
+    border-radius: 15px;
+    background-position: 50%;
+    background-size: 100% 100%;
+
+    .company--newCompany & {
+        background-image: url(../../assets/icons/companyAdd.svg);
+        background-size: 16px 16px;
+        background-repeat: no-repeat;
     }
 }
 
-.profile-picture
+.companyLogo--none .companyLogoContent::after
 {
-    width: 90px;
-    margin-bottom: 10px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
 
-    border-radius: 50%;
+    content: '';
+
+    background-position: 50%;
+    background-size: 100% 100%;
+    background-image: url(../../assets/icons/company.svg);
 }

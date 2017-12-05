@@ -16,9 +16,9 @@ class TaskList extends Document {
     return parsedData
   }
 
-  serialize() {
+  serialize(options = {}) {
     return {
-      uuid: this.uuid,
+      uuid: options.fresh ? null : this.uuid,
       name: this.name,
       color: this.color
     }

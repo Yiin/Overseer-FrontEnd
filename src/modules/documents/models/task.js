@@ -14,9 +14,9 @@ class Task extends Document {
     return modelData
   }
 
-  serialize() {
+  serialize(options = {}) {
     return {
-      uuid: this.uuid,
+      uuid: options.fresh ? null : this.uuid,
       name: this.name,
       is_completed: this.isCompleted
     }

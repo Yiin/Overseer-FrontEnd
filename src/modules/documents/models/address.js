@@ -5,7 +5,7 @@ import { methods as CountryRepository } from '../repositories/country'
 class Address extends Model {
   static create(data) {
     return new Address({
-      country: CountryRepository.find(data.country),
+      country: CountryRepository.findByKey(data.country_id),
       state: data.state,
       city: data.city,
       postalCode: data.postal_code,

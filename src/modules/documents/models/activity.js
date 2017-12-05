@@ -1,4 +1,5 @@
 import moment from 'moment'
+import S from 'string'
 import Model from './model'
 import User from './user'
 import Client from './client'
@@ -12,6 +13,7 @@ import Quote from './quote'
 import TaskList from './task-list'
 import Task from './task'
 import Vendor from './vendor'
+import Employee from './employee'
 
 class Activity extends Model {
   static create(data) {
@@ -26,7 +28,8 @@ class Activity extends Model {
       'task-list': TaskList,
       'task': Task,
       'invoice': Invoice,
-      'vendor': Vendor
+      'vendor': Vendor,
+      'employee': Employee
     }
 
     if (!('document' in data) || !(data.document.type in map)) {
@@ -34,14 +37,14 @@ class Activity extends Model {
     }
 
     const timestamp = moment(data.timestamp.date)
-    const colorIndex = (timestamp.date() % 7)
+    const colorIndex = (timestamp.date() % 7) + 1
 
     return new Activity({
       id: data.id,
       user: data.user && User.create(data.user),
       action: data.action,
       document: {
-        data: map[data.document.type].create(data.document.data),
+        data: map[data.document.type].create(Object.assign({ is_history: true }, data.document.data)),
         type: data.document.type,
         fromBackup: data.document.from_backup
       },
@@ -50,6 +53,13 @@ class Activity extends Model {
       timestamp,
       colorIndex
     })
+  }
+
+  getTitle() {
+    const action = S(this.action).capitalize().s
+    const date = this.timestamp.format('MMM D, YYYY')
+
+    return `${action} on ${date}`
   }
 }
 

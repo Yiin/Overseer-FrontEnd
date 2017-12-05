@@ -1,6 +1,5 @@
 import Document from './document'
 import moment from 'moment'
-import RecurringInvoiceTransformer from '../transformers/recurring-invoice'
 import { methods as ClientRepository } from '../repositories/client'
 import { methods as CurrencyRepository } from '../repositories/currency'
 import Money from './money'
@@ -33,7 +32,7 @@ class RecurringInvoice extends Document {
     modelData.invoiceNumber = data.invoice_number
     modelData.poNumber = data.po_number
 
-    const currency = CurrencyRepository.findOrDefault(data.currency)
+    const currency = CurrencyRepository.findByKey(data.currency_code)
 
     modelData.currency = currency
     modelData.partial = Money.create({
@@ -57,13 +56,9 @@ class RecurringInvoice extends Document {
     return modelData
   }
 
-  static transformProps(...props) {
-    return RecurringInvoiceTransformer(...props)
-  }
-
-  serialize() {
+  serialize(options = {}) {
     return {
-      uuid: this.uuid,
+      uuid: options.fresh ? null : this.uuid,
       client_uuid: this.client.uuid,
       start_date: this.startDate.format('YYYY-MM-DD'),
       end_date: this.endDate.format('YYYY-MM-DD'),
@@ -76,7 +71,7 @@ class RecurringInvoice extends Document {
       partial: this.partial.amount,
       discount_type: this.discount.type,
       discount_value: this.discount.value instanceof Money ? this.discount.value.amount : this.discount.value,
-      items: this.items.map((item) => item.serialize()),
+      items: this.items.map((item) => item.serialize(options)),
       note_to_client: this.noteToClient,
       terms: this.terms,
       footer: this.footer,

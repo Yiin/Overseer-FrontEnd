@@ -1,7 +1,7 @@
 import i18n from '@/i18n'
 import {
   archiveDocument,
-  restoreDocument
+  recoverDocument
 } from '@/modules/documents/actions'
 import Statuses from './index'
 
@@ -24,7 +24,7 @@ function checkForGenericConflicts(document, documentType, status) {
       type: 'warning',
       message: i18n.t('text.document_will_be_restored', { documentType }),
       solve() {
-        restoreDocument(document, documentType)
+        recoverDocument(document, documentType)
       }
     })
   }

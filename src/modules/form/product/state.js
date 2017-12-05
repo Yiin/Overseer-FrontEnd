@@ -36,6 +36,4 @@ const state = FormState('product', {
   ]
 })
 
-state.__initial = JSON.parse(JSON.stringify(state))
-
 export default state

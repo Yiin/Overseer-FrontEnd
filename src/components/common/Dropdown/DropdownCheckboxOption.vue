@@ -1,10 +1,12 @@
-<template>
-  <div v-show="isVisible" @click="check" class="dropdown__option dropdown__option--checkbox">
-    <input @click.prevent class="checkbox" type="checkbox" v-model="isChecked">
-    <div class="option-label">
-      <slot></slot>
-    </div>
-  </div>
+<template lang="pug">
+  .dropdown__option.dropdown__option--checkbox(
+    v-show="isVisible"
+    @click="check"
+  )
+    x-checkbox(v-model="isChecked")
+    .option-label
+      slot
+
 </template>
 
 <script>
@@ -14,10 +16,13 @@ export default {
   name: 'dropdown-checkbox-option',
 
   props: {
-    value: {
-      required: true
+    value: {},
+    manual: {
+      type: Boolean,
+      default: false
     },
     checked: {
+      type: Boolean,
       default: false
     }
   },
@@ -25,13 +30,13 @@ export default {
   data() {
     return {
       isVisible: true,
-      isChecked: this.checked
+      isChecked: !!this.checked
     }
   },
 
   watch: {
     checked(checked) {
-      this.isChecked = checked
+      this.isChecked = !!checked
     }
   },
 
@@ -47,6 +52,10 @@ export default {
 
   methods: {
     check() {
+      if (this.manual) {
+        return
+      }
+
       this.isChecked = !this.isChecked
       this.$emit('toggle', {
         value: this.value,

@@ -13,8 +13,8 @@
          url('../assets/fonts/icomoon.svg') format('svg');
 }
 
-[class^='icon-'],
-[class*=' icon-']
+[class^='icon-']:not(.material-icons),
+[class*=' icon-']:not(.material-icons)
 {
     /* use !important to prevent issues with browser extensions that change fonts */
     font-family: 'icomoon' !important;

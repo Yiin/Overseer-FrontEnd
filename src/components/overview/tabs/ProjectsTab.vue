@@ -47,7 +47,7 @@
 <script>
 import Tab from '@/components/common/Tabs/Tab.vue'
 import TableMixin from '@/mixins/TableMixin'
-import ProjectDetails from '@/components/crm/project/ProjectDetails.vue'
+import ProjectDetails from '@/pages/projects/ProjectDetails.vue'
 
 import {
   whenMoreThanOneRowIsSelected,

@@ -3,8 +3,8 @@ import Router from 'vue-router'
 import store from '@/store'
 import * as Routes from './routes.js'
 import Overview from '@/components/overview/Overview.vue'
-import Profile from '@/pages/profile/Index.vue'
 import { getApiRequestName, getTableName } from '@/modules/documents/helpers'
+import AuthorizationService from '@/services/authorization'
 
 Vue.use(Router)
 
@@ -14,18 +14,28 @@ function makeDocumentRoutes(name, {
 ) {
   const path = '/' + getApiRequestName(name)
 
+  const routeName = getTableName(name)
+
   return {
     path,
-    name: getTableName(name),
+    name: routeName,
     parentName: Routes.OVERVIEW,
     component,
     beforeEnter: checkIfAuthenticated,
+    meta: {
+      authorize() {
+        return AuthorizationService.accessController.canAccessPage(name)
+      }
+    },
     children: [
       {
         path: `/${name}/create`,
         name: `${name}.create`,
         meta: {
-          actionable: true
+          actionable: true,
+          authorize() {
+            return AuthorizationService.accessController.canCreateDocument(name)
+          }
         }
       },
       {
@@ -33,7 +43,21 @@ function makeDocumentRoutes(name, {
         name: `${name}.edit`,
         props: true,
         meta: {
-          actionable: true
+          actionable: true,
+          authorize({ uuid }) {
+            return AuthorizationService.accessController.canEditDocument(name, uuid)
+          }
+        }
+      },
+      {
+        path: `/${name}/:uuid/view`,
+        name: `${name}.view`,
+        props: true,
+        meta: {
+          actionable: true,
+          authorize({ uuid }) {
+            return AuthorizationService.accessController.canViewDocument(name, uuid)
+          }
         }
       },
       {
@@ -41,7 +65,10 @@ function makeDocumentRoutes(name, {
         name: `${name}.revision`,
         props: true,
         meta: {
-          actionable: true
+          actionable: true,
+          authorize({ uuid }) {
+            return AuthorizationService.accessController.canViewDocument(name, uuid)
+          }
         }
       }
     ]
@@ -81,7 +108,7 @@ const router = new Router({
     },
 
     /**
-     * Basic routes
+     * Redirect index to overview
      */
     {
       path: '/',
@@ -90,29 +117,65 @@ const router = new Router({
         name: Routes.OVERVIEW
       }
     },
+
+    /**
+     * Settings page
+     */
+    {
+      path: '/settings',
+      name: 'settings',
+      component(resolve) {
+        require(['@/pages/settings/Index.vue'], resolve)
+      },
+      beforeEnter: checkIfAuthenticated
+    },
+
+    /**
+     * Authenticated user profile page
+     */
     {
       path: '/me',
       name: 'me',
-      component: Profile,
+      component(resolve) {
+        require(['@/pages/profile/Index.vue'], resolve)
+      },
       beforeEnter: checkIfAuthenticated
     },
+
+    /**
+     * Some other user profile page
+     */
     {
-      path: '/profile/:who',
+      path: '/profile/:who/:slug',
       name: 'profile',
       props: true,
-      component: Profile,
+      component(resolve) {
+        require(['@/pages/profile/Index.vue'], resolve)
+      },
       beforeEnter: checkIfAuthenticated
     },
+
+    /**
+     * Overview
+     */
     {
       path: '/overview',
       name: Routes.OVERVIEW,
       component: Overview,
       beforeEnter: checkIfAuthenticated
     },
+
+    /**
+     * Appointments page
+     */
     {
       path: '/appointments',
       name: 'appointments'
     },
+
+    /**
+     * Personnel page
+     */
     {
       path: '/personnel',
       name: 'personnel',
@@ -135,13 +198,27 @@ const router = new Router({
     },
 
     /**
+     * Company form
+     */
+    {
+      path: '/create-company',
+      name: 'company.create',
+      parentName: Routes.OVERVIEW,
+      component: Overview,
+      beforeEnter: checkIfAuthenticated,
+      meta: {
+        actionable: true
+      }
+    },
+
+    /**
      * CRM
      *
      * Projects
      */
     makeDocumentRoutes('project', {
       component(resolve) {
-        require(['@/components/crm/project/List.vue'], resolve)
+        require(['@/pages/projects/Index.vue'], resolve)
       }
     }),
 
@@ -150,7 +227,7 @@ const router = new Router({
      */
     makeDocumentRoutes('client', {
       component(resolve) {
-        require(['@/components/documents/client/List.vue'], resolve)
+        require(['@/pages/clients/Index.vue'], resolve)
       }
     }),
 
@@ -159,7 +236,7 @@ const router = new Router({
      */
     makeDocumentRoutes('product', {
       component(resolve) {
-        require(['@/components/documents/product/List.vue'], resolve)
+        require(['@/pages/products/Index.vue'], resolve)
       }
     }),
 
@@ -168,7 +245,7 @@ const router = new Router({
      */
     makeDocumentRoutes('invoice', {
       component(resolve) {
-        require(['@/components/documents/invoice/List.vue'], resolve)
+        require(['@/pages/invoices/Index.vue'], resolve)
       }
     }),
 
@@ -177,25 +254,25 @@ const router = new Router({
      */
     makeDocumentRoutes('payment', {
       component(resolve) {
-        require(['@/components/documents/payment/List.vue'], resolve)
+        require(['@/pages/payments/Index.vue'], resolve)
       }
     }),
 
     /**
      * Recurring invoice
      */
-    makeDocumentRoutes('recurring-invoice', {
-      component(resolve) {
-        require(['@/components/documents/recurring-invoice/List.vue'], resolve)
-      }
-    }),
+    // makeDocumentRoutes('recurring-invoice', {
+    //   component(resolve) {
+    //     require(['@/pages/recurring-invoices/Index.vue'], resolve)
+    //   }
+    // }),
 
     /**
      * Credit
      */
     makeDocumentRoutes('credit', {
       component(resolve) {
-        require(['@/components/documents/credit/List.vue'], resolve)
+        require(['@/pages/credits/Index.vue'], resolve)
       }
     }),
 
@@ -204,7 +281,7 @@ const router = new Router({
      */
     makeDocumentRoutes('quote', {
       component(resolve) {
-        require(['@/components/documents/quote/List.vue'], resolve)
+        require(['@/pages/quotes/Index.vue'], resolve)
       }
     }),
 
@@ -213,7 +290,7 @@ const router = new Router({
      */
     makeDocumentRoutes('expense', {
       component(resolve) {
-        require(['@/components/documents/expense/List.vue'], resolve)
+        require(['@/pages/expenses/Index.vue'], resolve)
       }
     }),
 
@@ -222,7 +299,16 @@ const router = new Router({
      */
     makeDocumentRoutes('vendor', {
       component(resolve) {
-        require(['@/components/documents/vendor/List.vue'], resolve)
+        require(['@/pages/vendors/Index.vue'], resolve)
+      }
+    }),
+
+    /**
+     * Employee
+     */
+    makeDocumentRoutes('employee', {
+      component(resolve) {
+        require(['@/pages/personnel/Index.vue'], resolve)
       }
     }),
 
@@ -256,6 +342,9 @@ function documentAction(to) {
   case 'edit':
     require('@/modules/documents/actions').editDocument(to.params.uuid, documentType)
     break
+  case 'view':
+    require('@/modules/documents/actions').viewDocument(to.params.uuid, documentType)
+    break
   case 'revision':
     require('@/modules/documents/actions').reviewDocumentState(to.params.uuid, documentType, {
       activity: to.params.activity
@@ -265,6 +354,30 @@ function documentAction(to) {
 }
 
 router.beforeEach((to, from, next) => {
+  /**
+   * Check if user is authorized to access this route
+   */
+  if (to.meta && typeof to.meta.authorize === 'function') {
+    if (!to.meta.authorize(to.params)) {
+      /**
+       * Redirect to dashboard if he came directly to this url
+       */
+      if (!from.name) {
+        next('/')
+      }
+      /**
+       * Else simply ignore request for this route and do nothing
+       */
+      return
+    }
+  }
+
+  /**
+   * Check if route is actionable.
+   *
+   * Actionable routes triggers additiona action
+   * e.g. opens a modal.
+   */
   if (from.meta.actionable) {
     if (from.meta.previous) {
       if (to.fullPath !== from.meta.previous) {

@@ -1,19 +1,17 @@
-<template>
-  <div>
-    <breadcrumb :path="[$t('common.overview')]"></breadcrumb>
+<template lang="pug">
+  .overview
+    statistics
+    activities
 
-    <statistics></statistics>
-    <activities></activities>
-  </div>
 </template>
 
 <script>
-import StatistictsComponent from './Statistics.vue'
+import StatisticsComponent from './Statistics.vue'
 import ActivitiesComponent from './Activities.vue'
 
 export default {
   components: {
-    'statistics': StatistictsComponent,
+    'statistics': StatisticsComponent,
     'activities': ActivitiesComponent
   }
 }

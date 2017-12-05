@@ -25,7 +25,7 @@ const state = FormState('vendor', {
       {
         first_name: '',
         last_name: '',
-        job_position: '',
+        job_title: '',
         email: '',
         phone: ''
       }
@@ -62,7 +62,5 @@ const state = FormState('vendor', {
 
   errors: {}
 })
-
-state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

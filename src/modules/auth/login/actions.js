@@ -5,8 +5,8 @@ export default {
   LOGIN_DEMO({ dispatch }) {
     return Api.post('demo').then((response) => {
       const accessToken = response.access_token
-      const user = response.user
       const preloadedData = response.preloadedData
+      const user = preloadedData.user
 
       dispatch('auth/AUTHENTICATE', { accessToken, user, preloadedData }, { root: true })
     })
@@ -32,8 +32,8 @@ export default {
     return Auth.login(creds)
       .then((response) => {
         const accessToken = response.body.access_token
-        const user = response.body.user
         const preloadedData = response.body.preloadedData
+        const user = preloadedData.user
 
         dispatch('auth/AUTHENTICATE', { accessToken, user, preloadedData }, { root: true })
       })

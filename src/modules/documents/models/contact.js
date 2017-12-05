@@ -1,5 +1,5 @@
+import faker from 'faker'
 import Model from './model'
-import Profile from './profile'
 
 /**
  * Contact model
@@ -8,7 +8,7 @@ import Profile from './profile'
  */
 class Contact extends Model {
   static create(data = {}) {
-    return new Contact(Contact.parse(data))
+    return new this(this.parse(data))
   }
 
   /**
@@ -16,12 +16,26 @@ class Contact extends Model {
    */
   static parse(data) {
     return {
-      profile: Profile.create(data)
+      uuid: data.uuid || '',
+      firstName: data.first_name || '',
+      lastName: data.last_name || '',
+      jobTitle: data.job_title || '',
+      email: data.email || '',
+      website: data.website || '',
+      phone: data.phone || ''
     }
   }
 
-  serialize() {
-    return this.profile.serialize()
+  serialize(options = {}) {
+    return {
+      uuid: options.fresh ? null : this.uuid,
+      first_name: this.firstName,
+      last_name: this.lastName,
+      job_title: this.jobTitle,
+      website: this.website,
+      email: this.email,
+      phone: this.phone
+    }
   }
 
   /**
@@ -30,7 +44,15 @@ class Contact extends Model {
    * FOR DEBUGGING PURPOSES ONLY
    */
   static fakeData() {
-    return Profile.fakeData()
+    return {
+      uuid: '',
+      first_name: faker.name.firstName(),
+      last_name: faker.name.lastName(),
+      job_title: faker.name.jobTitle(),
+      email: faker.internet.exampleEmail(),
+      phone: faker.phone.phoneNumber(),
+      website: faker.internet.url()
+    }
   }
 }
 

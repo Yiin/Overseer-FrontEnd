@@ -1,38 +1,54 @@
 import store from '@/store'
 
+function logout() {
+  store.dispatch('auth/LOGOUT', { redirect: false })
+}
+
+function tryToAuthenticate({ redirected = true } = {}) {
+  /**
+   * No preloaded data means user wasn't authenticated on server side
+   */
+  if (!store.state.preloadedData || !store.state.preloadedData.auth) {
+    return false
+  }
+
+  /**
+   * ???
+   */
+  if (redirected && store.state.auth.isLoggedIn) {
+    console.log('what the fuck is this check')
+    return false
+  }
+
+  const accessToken = store.state.preloadedData.auth.access_token
+  const user = store.state.preloadedData.user
+  const preloadedData = store.state.preloadedData
+
+  if (accessToken && user && preloadedData) {
+    if (redirected) {
+      store.commit('auth/SET_WAS_REDIRECTED', true)
+    }
+    store.dispatch('auth/AUTHENTICATE', { preloaded: true, accessToken, user, preloadedData })
+    store.dispatch('auth/LOAD')
+    return true
+  }
+  return false
+}
+
 export default () => {
   store.dispatch('PRELOAD_DATA')
 
   if (store.state.auth.isLoggedIn) {
-    if (!store.state.preloadedData || Array.isArray(store.state.preloadedData)) {
-      store.dispatch('auth/LOGOUT', { redirect: false })
+    if (!store.state.preloadedData) {
+      logout()
     } else {
-      const accessToken = store.state.preloadedData.access_token
-      if (accessToken !== store.state.auth.accessToken) {
-        // TODO: change accessToken
+      if (!tryToAuthenticate({ redirected: false })) {
+        logout()
       }
-      store.dispatch('INIT', store.state.preloadedData.data || null)
-      store.dispatch('auth/LOAD')
     }
   } else {
-    tryToAuthenticate()
-  }
-
-  function tryToAuthenticate() {
-    if (!store.state.preloadedData) {
-      return
-    }
-    if (store.state.auth.isLoggedIn) {
-      return
-    }
-    const accessToken = store.state.preloadedData.access_token
-    const user = store.state.preloadedData.user
-    const preloadedData = store.state.preloadedData
-
-    if (accessToken && user && preloadedData) {
-      store.commit('auth/SET_WAS_REDIRECTED', true)
-      store.dispatch('auth/AUTHENTICATE', { preloaded: true, accessToken, user, preloadedData })
-      store.dispatch('auth/LOAD')
+    if (!tryToAuthenticate()) {
+      logout()
     }
   }
 }

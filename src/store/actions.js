@@ -40,13 +40,15 @@ export default {
   },
 
   INIT({ dispatch, commit, state }, preloadedData = null) {
-    if (state.preloadedData && state.preloadedData.user && state.preloadedData.user.taskbar) {
-      commit('taskbar/SET_STATE', JSON.parse(state.preloadedData.user.taskbar), { root: true })
+    if (preloadedData && 'user' in preloadedData) {
+      if (preloadedData.user.taskbar) {
+        commit('taskbar/SET_STATE', JSON.parse(preloadedData.user.taskbar), { root: true })
+      }
     }
 
     // Use preloaded data if possible, load everything if not
-    if (preloadedData) {
-      const data = preloadedData
+    if (preloadedData && 'data' in preloadedData) {
+      const data = preloadedData.data
 
       /* Initiate static data */
       dispatch('documents/repositories/currency/SET_ITEMS', data.passive.currencies)
@@ -71,7 +73,6 @@ export default {
       dispatch('documents/repositories/client/SET_ITEMS', data.documents.client)
       dispatch('documents/repositories/credit/SET_ITEMS', data.documents.credit)
       dispatch('documents/repositories/invoice/SET_ITEMS', data.documents.invoice)
-      dispatch('documents/repositories/recurringInvoice/SET_ITEMS', data.documents['recurring-invoice'])
       dispatch('documents/repositories/payment/SET_ITEMS', data.documents.payment)
       dispatch('documents/repositories/quote/SET_ITEMS', data.documents.quote)
       dispatch('documents/repositories/vendor/SET_ITEMS', data.documents.vendor)
@@ -79,8 +80,10 @@ export default {
       dispatch('documents/repositories/project/SET_ITEMS', data.crm.projects)
 
       dispatch('documents/repositories/activity/SET_ITEMS', data.system.activityLog)
-      // dispatch('system/SET_ACTIVITY_LOG', data.system.activityLog)
+      dispatch('system/SET_ACTIVITY_LOG', data.system.activityLog)
     }
+
+    commit('SET_PRELOADED_DATA', {})
 
     /* Real time updates */
     Echo.connect()

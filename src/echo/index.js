@@ -34,9 +34,8 @@ export default {
         }
       })
 
-      const { company, uuid } = store.state.auth.user
-
-      const channel = this.echo.private(`user:${company}.${uuid}`)
+      const { account, user } = store.state.auth
+      const channel = this.echo.private(`user:${account.uuid}.${user.uuid}`)
 
       this.listeners.forEach((listener) => {
         channel.listen(listener.event, listener.fn)

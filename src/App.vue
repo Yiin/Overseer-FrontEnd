@@ -1,60 +1,83 @@
-<template>
-  <v-app
-    :class="{
-      // my head hurts
-      'app--transition': $store.state.auth.wasRedirected,
-      'app--transition-active': loaded,
-      'app--transition-redirecting': isRedirecting,
-      'transitioning': isAuthenticated && !isLoaded
-    }">
+<template lang="pug">
+  v-app(
+    :class='appClasses'
+  )
 
-    <!-- Default page -->
-    <template v-if="isAuthenticated && !isRedirecting">
-      <!-- if we're not locked -->
-      <div v-show="!isLocked">
-        <!-- main content -->
-        <div class="application__content" :style="applicationContentStyle">
-          <!-- sidebar -->
-          <sidebar v-show="!hideSidebar"></sidebar>
+    //-
+      Default page
 
-          <!-- page content -->
-          <div class="page-content">
-            <transition name="slow-cross-fade">
-              <router-view class="router-view"></router-view>
-            </transition>
-          </div>
-        </div>
+    template(v-if="isAuthenticated && !isRedirecting")
 
-        <!-- overlay content, absolute positioned -->
+      //-
+        if we're not locked
 
-        <!-- content menu -->
+      div(v-show="!isLocked")
+
+        //-
+          main content
+
+        .application__content(:style="applicationContentStyle")
+
+          //-
+            sidebar
+
+          sidebar(v-show='!hideSidebar')
+
+
+          //-
+            page content
+
+          .page-content
+            transition(name='slow-cross-fade')
+              router-view.router-view
+
+        //-
+          overlay content, absolute positioned
+
+          content menu
+
         <context-menu></context-menu>
 
-        <!-- background dim -->
-        <div class="background-dim" id="background-dim"></div>
 
-        <!-- taskbar items -->
-        <taskbar></taskbar>
+        //-
+          background dim
 
-        <!-- modal -->
-        <popup></popup>
+        .background-dim(id='background-dim')
 
-        <!-- snack notification -->
-        <notification></notification>
-      </div>
 
-      <!-- if we're locked, show lock screen -->
-      <transition name="slow-cross-fade">
-        <lockscreen v-show="isLocked"></lockscreen>
-      </transition>
-    </template>
+        //-
+          taskbar items
 
-    <!-- Auth screen -->
-    <auth v-if="!isAuthenticated || !isLoaded"></auth>
+        taskbar
 
-    <!-- Move this somewhere else -->
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.8.0/css/flag-icon.min.css">
-  </v-app>
+
+        //-
+          modal
+
+        popup
+
+
+        //-
+          snack notification
+
+        notification
+
+      //-
+        if we're locked, show lock screen
+
+      transition(name='slow-cross-fade')
+        lockscreen(v-show='isLocked')
+
+    //-
+      Auth screen
+
+    auth(v-if='!isAuthenticated || !isLoaded')
+
+    //-
+      Move this somewhere else
+
+    link(rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.8.0/css/flag-icon.min.css")
+
 </template>
 
 <script>
@@ -63,7 +86,7 @@ import Taskbar from '@/components/taskbar/Taskbar.vue'
 import Auth from '@/pages/auth/Auth.vue'
 import Lockscreen from '@/pages/auth/Lockscreen.vue'
 import Notification from '@/components/notification/Notification.vue'
-import ContextMenu from '@/components/shared/ContextMenu.vue'
+import ContextMenu from '@/components/contextmenu/ContextMenu.vue'
 
 export default {
   name: 'app',
@@ -88,6 +111,33 @@ export default {
   },
 
   computed: {
+    appClasses() {
+      return {
+        /**
+         * If we're currently redirecting the user, change background color
+         * from default to plain white, so it matches background color
+         * which is set by browser in between the pages.
+         */
+        'app--transition-redirecting': this.isRedirecting,
+
+        /**
+         * If user was redirected, prepare for fade in effect
+         */
+        'app--transition': this.$store.state.auth.wasRedirected,
+
+        /**
+         * Data was loaded, fade in the content
+         */
+        'app--transition-active': this.loaded,
+
+        /**
+         * If user was authenticated, but not yet loaded, hide page overflow
+         * until loading is finished.
+         */
+        '--hide-overflow': this.isAuthenticated && !this.isLoaded
+      }
+    },
+
     isAuthenticated() {
       return this.$store.state.auth.isLoggedIn
     },
@@ -110,8 +160,12 @@ export default {
 
     applicationContentStyle() {
       return {
-        transform: `scale(${this.$store.state.scale.ratio})`
+        transform: this.$store.state.scale.ratio ? `scale(${this.$store.state.scale.ratio})` : ''
       }
+    },
+
+    isOverlayActive() {
+      return this.$store.state.ui.overlay.items.length > 0
     }
   },
 
@@ -130,6 +184,14 @@ export default {
 
     isLocked() {
       this.updateOverflow()
+    },
+
+    isOverlayActive(isActive) {
+      if (isActive) {
+        document.documentElement.classList.add('--hide-overflow')
+      } else {
+        document.documentElement.classList.remove('--hide-overflow')
+      }
     }
   },
 
@@ -268,10 +330,6 @@ export default {
   }
 }
 
-.transitioning {
-  overflow: hidden;
-}
-
 .application__content {
   transform-origin: 50% 0%;
   min-height: 830px;
@@ -288,7 +346,7 @@ export default {
 }
 
 #app {
-  background: #f5f5f5 !important;
+  background: $color-wild-sand !important;
   &.app--transition {
     filter: opacity(0);
     transition: all 0.5s;

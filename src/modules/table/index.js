@@ -8,6 +8,7 @@ import payments from './documents/payments'
 import credits from './documents/credits'
 import recurringInvoices from './documents/recurring_invoices'
 import vendors from './documents/vendors'
+import employees from './documents/employees'
 // import taxRates from './documents/tax_rates'
 
 // crm
@@ -29,6 +30,7 @@ export default {
     credits,
     recurring_invoices: recurringInvoices,
     vendors,
+    employees,
     // tax_rates: taxRates,
 
     // crm

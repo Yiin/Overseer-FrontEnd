@@ -1,7 +1,26 @@
+/**
+ * Base Repository
+ *
+ * Contains factory functions to make repository
+ * state, getters, mutations and actions for
+ * vuex store.
+ *
+ * Also provides a function to make helper methods.
+ *
+ * TODO:
+ *   - Create additional functions that
+ *     1) Checks if item exists in given array by key.
+ *     2) Checks if key exists in given array of models.
+ *
+ *   - Refactor repositories to use better pattern? This
+ *     structure is quite a mess.
+ */
+
 import moment from 'moment'
 import Api from '@/api'
 import { getStoreModule } from '@/store'
 import Statuses from '../statuses'
+import { SELECTED_COMPANY_ITEMS } from '../helpers/filters'
 
 /**
  * Base state of the repository
@@ -17,10 +36,15 @@ export const RepositoryState = (state) => Object.assign({
  * Most of the time, item key will be either
  * numeric id (e.g. 42), or uuid (e.g. 8724687b-0078-501d-8a68-302a5b45b5e7)
  * But there are cases (like vat info checks), when key may be
- * composed of item properties, in that case, we need to call
- * function with item, to get the actual key value of the item.
+ * composed of item properties, in that case, we need to call a
+ * function with passed item as a parameter, to get the actual
+ * value of the item key.
  */
 export function getItemKey(item, key) {
+  // item is already presented as a key
+  if (typeof item === 'string') {
+    return item
+  }
   if (typeof key === 'string') {
     return item[key]
   }
@@ -58,8 +82,10 @@ export const RepositoryMutations = (mutations) => Object.assign({
    */
   REMOVE_ITEMS(state, itemsToRemove) {
     state.items = state.items.filter((item) => {
+      const itemKey = getItemKey(item, state.key)
+
       // if item is not in the itemsToRemove array, keep it
-      return itemsToRemove.findIndex((itemToRemove) => getItemKey(itemToRemove, state.key) === getItemKey(item, state.key)) === -1
+      return itemsToRemove.findIndex((itemToRemove) => getItemKey(itemToRemove, state.key) === itemKey) === -1
     })
   },
 
@@ -76,6 +102,25 @@ export const RepositoryMutations = (mutations) => Object.assign({
  */
 export const RepositoryGetters = (getters) => Object.assign({
   /**
+   * Return list of available items
+   *
+   * Item is not available, if it's parent is not
+   * available (e.g. it was soft deleted).
+   */
+  AVAILABLE_ITEMS(state) {
+    return state.items.filter((item) => {
+      return !item.isDisabled
+    })
+  },
+
+  /**
+   * Return company items
+   */
+  AVAILABLE_COMPANY_ITEMS(state, getters) {
+    return getters.AVAILABLE_ITEMS.filter(SELECTED_COMPANY_ITEMS)
+  },
+
+  /**
    * Find item
    */
   FIND_ITEM(state) {
@@ -91,18 +136,6 @@ export const RepositoryGetters = (getters) => Object.assign({
   },
 
   /**
-   * Return list of available items
-   *
-   * Item is not available, if it's parent is not
-   * available (e.g. it was soft deleted).
-   */
-  AVAILABLE_ITEMS(state) {
-    return state.items.filter((item) => {
-      return !item.isDisabled
-    })
-  },
-
-  /**
    * Return list of active items
    *
    * Active items are neither deleted nor archived
@@ -111,6 +144,10 @@ export const RepositoryGetters = (getters) => Object.assign({
     return getters.AVAILABLE_ITEMS.filter((item) => {
       return Statuses.generic.active.meetsCondition(item)
     })
+  },
+
+  ACTIVE_COMPANY_ITEMS(state, getters) {
+    return getters.ACTIVE_ITEMS.filter(SELECTED_COMPANY_ITEMS)
   },
 
   /**
@@ -184,12 +221,30 @@ export const RepositoryActions = (Model, actions) => {
      * ignoring them completely?
      */
     ADD_ITEMS({ dispatch, commit, state }, items) {
-      items = items.filter((item) => {
+      items = items
+        // Filter out duplicates
+        .reduce((items, item) => {
+          const itemKey = getItemKey(item, state.key)
+
+          if (items.findIndex((uniqItem) => getItemKey(uniqItem, state.key) === itemKey) < 0) {
+            return items.concat(item)
+          }
+          return items
+        }, [])
         // Filter out existing items
-        return state.items.findIndex((existingItem) => {
-          return getItemKey(existingItem, state.key) === getItemKey(item)
-        }) === -1
-      }).map(Model.create, Model)
+        .filter((item) => {
+          const itemKey = getItemKey(item, state.key)
+
+          return state.items.findIndex((existingItem) => {
+            return getItemKey(existingItem, state.key) === itemKey
+          }) === -1
+        })
+        // Create models
+        .map(Model.create, Model)
+
+      if (!items.length) {
+        return
+      }
 
       commit('ADD_ITEMS', items)
     },
@@ -232,8 +287,10 @@ export const RepositoryActions = (Model, actions) => {
     /**
      * Send API request to create a document
      */
-    API_CREATE({ commit, dispatch, getters }, itemData) {
-      const transformedData = Model.transformProps(itemData)
+    API_CREATE({ commit, dispatch, getters, rootState }, itemData) {
+      const transformedData = Model.serializeData(itemData)
+
+      transformedData.company_uuid = rootState.auth.user.company.uuid
 
       return Api.post(getters.API_CREATE_URL, {
         [getters.API_RESOURCE_NAME]: transformedData
@@ -247,7 +304,8 @@ export const RepositoryActions = (Model, actions) => {
      * Send API request to save a document
      */
     API_UPDATE({ dispatch, getters }, itemData) {
-      const transformedData = Model.transformProps(itemData)
+      const transformedData = Model.serializeData(itemData)
+
       if ('restoredFromActivity' in itemData) {
         transformedData.restoredFromActivity = itemData.restoredFromActivity
       }
@@ -255,6 +313,8 @@ export const RepositoryActions = (Model, actions) => {
       return Api.put(getters.API_UPDATE_URL(itemData), {
         [getters.API_RESOURCE_NAME]: transformedData
       }).then((updatedItemData) => {
+        console.log('repository.API_UPDATE: finished')
+
         dispatch('UPDATE_ITEM', updatedItemData)
         return updatedItemData
       })
@@ -371,6 +431,11 @@ export const RepositoryMethods = (module, methods = () => {}) => {
   const getContext = () => getStoreModule(['documents', 'repositories', module])
 
   return Object.assign({
+    setModel(Model) {
+      this.Model = Model
+      return this
+    },
+
     /**
      * Get all available items in the repository
      */
@@ -378,8 +443,22 @@ export const RepositoryMethods = (module, methods = () => {}) => {
       return getContext().getters.AVAILABLE_ITEMS
     },
 
+    getAvailableCompanyItems() {
+      return getContext().getters.AVAILABLE_COMPANY_ITEMS
+    },
+
+    getActiveItems() {
+      return getContext().getters.ACTIVE_ITEMS
+    },
+
+    getActiveCompanyItems() {
+      return getContext().getters.ACTIVE_COMPANY_ITEMS
+    },
+
     /**
      * Add more items to the repository
+     *
+     * @return {Promise}
      */
     addItems(items) {
       return getContext().dispatch('ADD_ITEMS', items)
@@ -387,9 +466,22 @@ export const RepositoryMethods = (module, methods = () => {}) => {
 
     /**
      * Add single item to the repository
+     *
+     * @return {Model} item model instance
      */
     addItem(item) {
-      return getContext().dispatch('ADD_ITEM', item)
+      getContext().dispatch('ADD_ITEM', item)
+      return this.find(item)
+    },
+
+    first() {
+      const items = getContext().getters.AVAILABLE_ITEMS
+      return items.length ? items[0] : undefined
+    },
+
+    last() {
+      const items = getContext().getters.AVAILABLE_ITEMS
+      return items.length ? items[items.length - 1] : undefined
     },
 
     /**
@@ -433,12 +525,23 @@ export const RepositoryMethods = (module, methods = () => {}) => {
     },
 
     /**
+     * Create new item instance
+     */
+    createItem(itemData) {
+      if (typeof itemData === 'undefined' || itemData === null) {
+        return null
+      }
+
+      return this.Model.create(itemData)
+    },
+
+    /**
      * Find item by its key, and create a new one
      * with given data if no item was found.
      *
      * Also adds created item to the repository.
      */
-    findOrCreate(itemDataOrKeyValue) {
+    findOrCreate(itemDataOrKeyValue, addToRepository = true) {
       if (typeof itemDataOrKeyValue === 'undefined' || itemDataOrKeyValue === null) {
         return null
       }
@@ -452,7 +555,11 @@ export const RepositoryMethods = (module, methods = () => {}) => {
       if (item) {
         return item
       } else if (item !== null) {
-        return getContext().dispatch('ADD_ITEM', itemDataOrKeyValue)
+        if (addToRepository) {
+          return this.addItem(itemDataOrKeyValue)
+        } else {
+          return this.createItem(itemDataOrKeyValue)
+        }
       }
     }
   }, methods(getContext))

@@ -5,7 +5,7 @@
 
       h3
         small Logged In As
-        | {{ user.full_name }}
+        | {{ user.fullName }}
 
       .lockscreen-form
         v-text-field(

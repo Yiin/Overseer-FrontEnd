@@ -5,7 +5,7 @@ const state = FormState('quote', {
     uuid: '',
 
     client_uuid: '', // uuid
-    quote_date: null, // YYYY-MM-DD
+    date: null, // YYYY-MM-DD
     due_date: null, // YYYY-MM-DD
     partial: 0, // partial/deposit
     currency_code: '',
@@ -13,6 +13,8 @@ const state = FormState('quote', {
     po_number: '',
     discount_type: 'percentage',
     discount_value: 0,
+
+    applied_credits: [],
 
     items: [
       /* {
@@ -38,7 +40,7 @@ const state = FormState('quote', {
       'client_uuid'
     ],
     [
-      'quote_date',
+      'date',
       'due_date',
       'quote_number',
       'po_number',
@@ -57,7 +59,5 @@ const state = FormState('quote', {
     ]
   ]
 })
-
-state.__initial = JSON.parse(JSON.stringify(state))
 
 export default state

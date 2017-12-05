@@ -6,6 +6,7 @@
         <form-dropdown-input
           v-model="vat_checker.country_code"
           :items="dropdownOptions.memberStates"
+          avatar
         >
           <template slot="option" slot-scope="{ item, parent }">
             <v-list-tile avatar @click="parent.select(item)">
@@ -24,7 +25,7 @@
     <div class="form__inline-inputs">
       <div class="form__input-wrapper">
         <label class="form__label">{{ $t('labels.vat_number') }}</label>
-        <input v-model="vat_checker.number" class="form__input" type="text" name="vat_number">
+        <input v-model="vat_checker.number" class="form__input" type="text" name="vat_number" data-lpignore="true">
       </div>
     </div>
     <button @click="checkVat" class="button button--primary">

@@ -15,11 +15,15 @@ export default {
        * Base documents like products, clients, invoices, expenses, vendors etc
        */
       case 'App\\Domain\\Events\\Document\\DocumentWasCreated':
+      case 'App\\Domain\\Events\\Document\\UserCreatedDocument':
         store.dispatch(`${repositoryPath}/ADD_ITEM`, documentModel)
         break
       case 'App\\Domain\\Events\\Document\\DocumentWasUpdated':
+      case 'App\\Domain\\Events\\Document\\UserUpdatedDocument':
       case 'App\\Domain\\Events\\Document\\DocumentWasDeleted':
+        console.log('echo-listener.EVENT: called')
         store.dispatch(`${repositoryPath}/UPDATE_ITEM`, documentModel)
+        console.log('echo-listener.EVENT: finished')
         break
 
       /**

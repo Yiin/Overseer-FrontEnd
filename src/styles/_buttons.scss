@@ -107,6 +107,15 @@ $button-text-color: $color-white;
             }
         }
     }
+
+    &--save {
+        background-color: $color-main !important;
+        color: $color-white !important;
+        border-radius: 3px !important;
+        font-weight: 600;
+        @include smooth;
+    }
+
     /**
      * Buttons in modals
      */
@@ -204,26 +213,30 @@ $button-text-color: $color-white;
   width: 160px;
   cursor: pointer;
   vertical-align: bottom;
-  .dropdown__input::after,
   .dropdown__input-wrapper::after {
-    border-top-color: $color-white;
+    border-top: 4px solid $color-white;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
   }
   &.dropdown--open {
-    .dropdown__input::after,
-    .dropdown--open .dropdown__input-wrapper::after {
-      border-top-color: transparent;
-      border-bottom-color: $color-white;
+    .dropdown__input-wrapper::after {
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid $color-white;
+        border-left: 4px solid transparent;
     }
+  }
+  .dropdown__input-wrapper {
+    @include smooth($color-emerald);
+    text-align: center;
+    width: 100%;
   }
   .dropdown__input {
     background: $color-emerald;
     color: $color-white;
     font-weight: 600;
-    padding: 0 23px 0 0;
-    text-align: center;
-    @include smooth($color-emerald);
+    padding: 0 23px 0 23px;
   }
-  .dropdown__options--reversed {
+  .dropdown__options-wrapper--reversed {
     padding-bottom: 61px;
     bottom: 0;
   }

@@ -2,7 +2,7 @@
   <div class="bill-summary">
     <div class="bill-summary__items" :class="{ 'scrollable': items.length > 6 }">
       <div v-if="!items.length" class="placeholder-area">
-        <div class="placeholder placeholder--invoices"></div>
+        <div class="placeholder" :class="[ `placeholder--${form}s` ]"></div>
       </div>
       <bill-summary-item
         @click="navigateToItem(item)"
@@ -160,7 +160,7 @@ export default {
 
         // because it's invoice, we need to take into account all its payments
         if (repositoryName === 'invoice') {
-          sum += this.$store.getters['documents/repositories/payment/ACTIVE_ITEMS'].filter((payment) => {
+          sum += this.$store.getters['documents/repositories/payment/ACTIVE_COMPANY_ITEMS'].filter((payment) => {
             return payment.invoice.uuid === this.formFields.uuid
           }).reduce((sum, payment) => {
             return sum + payment.amount.getIn(this.formFields.currency_code)
@@ -251,7 +251,7 @@ $color-border: #DDD;
         padding: 0 23px 0 17px;
 
         &:hover {
-            background-color: #f5f5f5;
+            background-color: $color-wild-sand;
         }
     }
 
@@ -271,7 +271,7 @@ $color-border: #DDD;
     }
 
     &__item-sub-title {
-        color: #BDBDBD;
+        color: #373737; //#BDBDBD;
         font-size: 0.8em;
     }
 
@@ -286,7 +286,7 @@ $color-border: #DDD;
         justify-content: space-around;
         align-items: center;
         height: 138px;
-        border-top: 2px solid #f5f5f5;
+        border-top: 2px solid $color-wild-sand;
         padding: 18px 17px 19px;
     }
 
@@ -301,8 +301,8 @@ $color-border: #DDD;
     }
 
     &__total {
-        border-top: 2px solid #f5f5f5;
-        border-bottom: 2px solid #f5f5f5;
+        border-top: 2px solid $color-wild-sand;
+        border-bottom: 2px solid $color-wild-sand;
         padding: 20px 17px;
         display: flex;
         justify-content: space-between;

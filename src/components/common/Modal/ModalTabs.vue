@@ -1,45 +1,69 @@
-<template>
-  <div class="modal-tabs">
-    <div class="modal-tabs__list">
-      <div
-        v-for="(tab, index) in tabs"
-        v-if="tab.$vnode && tab.$vnode.tag && tab.$vnode.tag.indexOf('modal-tab') > -1"
-        @mousedown="showTab(index)"
-        class="modal__tab"
-        :class="{ 'modal__tab--active': tab.isActive }"
-      >
-        <div class="tab-title">
-          <div class="tab-number">
-            {{ index + 1 }}
-          </div>
-          <div class="tab-text">
-            {{ tab.title }}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-tabs__content">
-      <slot></slot>
-      <div slot="nav-buttons" class="modal-buttons">
-        <div class="modal-buttons-group modal-buttons-group--left">
-          <div v-if="type !== 'revision'" @click="$emit('fill')" class="button button__modal button__modal--test" :class="{
-            'button__modal--test-hidden': !isGuest
-          }">Test Data</div>
-        </div>
-        <div class="modal-buttons-group modal-buttons-group--right">
-          <slot v-if="type !== 'revision'" name="right-buttons--left"></slot>
-          <div @click="$emit('cancel')" class="button button__modal button__modal--cancel">
-            {{ type === 'revision' ? 'Close' : 'Cancel' }}
-          </div>
+<template lang="pug">
+  .modal-tabs
+    .modal-tabs__list
+      .modal__tab(
+        v-for='(tab, index) in tabs'
+        @mousedown='showTab(index)'
+        :class="{ 'modal__tab--active': index === activeTabIndex }"
+      )
+        .tab-title
+          .tab-number {{ index + 1 }}
+          .tab-text {{ tab.title }}
 
-          <div v-if="type === 'revision'" @click="$emit('save')" class="button button__modal button__modal--save">Restore</div>
-          <slot v-else name="right-buttons">
-            <div @click="$emit('save')" class="button button__modal button__modal--save">Save</div>
-          </slot>
-        </div>
-      </div>
-    </div>
-  </div>
+    .modal-tabs__content
+
+      slot
+
+      .modal-buttons(slot="nav-buttons")
+
+        //-
+          Buttons on the left
+
+        .modal-buttons-group.modal-buttons-group--left
+
+          .button.button__modal.button__modal--test(
+            v-if="type !== 'revision'"
+            @click="$emit('fill')"
+            :class="{ 'button__modal--test-hidden': !isGuest }"
+          ) Test Data
+
+        //-
+          Buttons on the right
+
+        .modal-buttons-group.modal-buttons-group--right
+          slot(
+            v-if="type !== 'revision'"
+            name="right-buttons--left"
+          )
+
+          //-
+            Cancel
+
+          .button.button__modal.button__modal--cancel(
+            @click="$emit('cancel')"
+          ) {{ type === 'revision' ? 'Close' : 'Cancel' }}
+
+          //-
+            Restore
+
+            Only visible if we're displaying previous state
+            of the document.
+
+          .button.button__modal.button__modal--save(
+            v-if="type === 'revision'"
+            @click="$emit('save')"
+          ) Restore
+
+          //-
+            Save button(s)
+
+          slot(
+            v-else
+            name="right-buttons"
+          )
+            .button.button__modal.button__modal--save(
+              @click="$emit('save')"
+            ) Save
 </template>
 
 <script>
@@ -49,17 +73,33 @@
  *
  * TODO: either rewrite this whole form stuff or
  * rename components to correctly reflect their usage.
+ *
+ * edit: on the second thought, modals are used basically
+ * exclusively for forms only, so it probably doesn't really matter..
  */
 export default {
   name: 'modal-tabs',
 
+  provide() {
+    return {
+      addTabItem: (title, setActive) => {
+        this.registerTabItem(title, setActive)
+      },
+      removeTabItem: (title) => {
+        this.unregisterTabItem(title)
+      }
+    }
+  },
+
+  data() {
+    return {
+      tabs: []
+    }
+  },
+
   computed: {
     isGuest() {
       return this.$store.state.auth.user.guest_key
-    },
-
-    tabs() {
-      return this.$children
     },
 
     type() {
@@ -90,11 +130,18 @@ export default {
       throw new Error(`ModalTabs should contain at least ${this.activeTabIndex + 1} tab(s).`)
     }
 
-    this.tabs[this.activeTabIndex].isActive = true
-    this.$forceUpdate()
+    this.showTab(this.activeTabIndex)
   },
 
   methods: {
+    registerTabItem(title, setActive) {
+      this.tabs.push({ title, setActive })
+    },
+
+    unregisterTabItem(title) {
+      this.tabs = this.tabs.filter((tab) => tab.title !== title)
+    },
+
     showTab(index) {
       if (index < 0 || index >= this.tabs.length) {
         return
@@ -102,8 +149,8 @@ export default {
 
       this.$store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', index)
 
-      this.tabs.forEach((tab, index) => {
-        tab.isActive = (index === this.activeTabIndex)
+      this.tabs.forEach((tab, tabIndex) => {
+        tab.setActive(tabIndex === this.activeTabIndex)
       })
     }
   }

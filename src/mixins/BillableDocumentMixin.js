@@ -1,10 +1,17 @@
 import BillItemsList from '@/components/form/BillItemsList.vue'
 import BillItemForm from '@/components/form/BillItemForm.vue'
+import moment from 'moment'
 
 export default {
   components: {
     BillItemsList,
     BillItemForm
+  },
+
+  data() {
+    return {
+      addItemForm: false
+    }
   },
 
   computed: {
@@ -75,6 +82,46 @@ export default {
         taxes += parseFloat(tax.rate) * parseFloat(items[i].cost) * (parseFloat(items[i].discount) / 100) / 100
       }
       return taxes
+    },
+
+    client() {
+      return this.clients.find((client) => client.uuid === this.client_uuid)
+    },
+
+    clientCredits() {
+      if (this.client_uuid) {
+        return this.dropdownOptions.credits.filter((credit) => {
+          return credit.client.uuid === this.client_uuid
+        })
+      } else {
+        return []
+      }
+    },
+
+    due_date: {
+      get() {
+        // if document is already created, leave due date as it is
+        if (this.form.fields.uuid) {
+          return this.form.fields.due_date
+        }
+
+        // else set due date by client's payment terms
+        const client = this.clients.find((client) => client.uuid === this.client_uuid)
+
+        if (client) {
+          if (client.paymentTerms !== null) {
+            return moment(this.invoice_date).add(client.paymentTerms, 'days')
+          }
+        }
+        return null
+      },
+
+      set(value) {
+        this.$store.commit(`form/invoice/SET_FIELD_VALUE`, {
+          field: 'due_date',
+          value
+        })
+      }
     }
   },
 

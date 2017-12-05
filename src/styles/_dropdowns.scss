@@ -13,17 +13,62 @@
     {
         outline: none;
     }
-    &--reversed
-    {
-        .dropdown__input
+    /**
+     * Search query input or static display of current selected value
+     */
+    &__input-wrapper {
+        position: relative;
+
+        // caret
+        &::after
         {
-            border-radius: 0 0 3px 3px !important;
+            position: absolute;
+            top: 20px;
+            right: 15px;
+
+            content: '';
+
+            border-top: 4px solid $color-mine-shaft;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
         }
     }
+    &--open > &__input-wrapper
+    {
+        .dropdown__input {
+            border-radius: $border-radius $border-radius 0 0;
+        }
+        // caret when open
+        &::after
+        {
+            top: 16px;
+
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid $color-mine-shaft;
+            border-left: 4px solid transparent;
+        }
+    }
+
+    &__input
+    {
+        @extend .form__input;
+
+        line-height: 44px;
+
+        padding: 0 35px 0 15px;
+
+        background: $color-white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
+        &:focus
+        {
+            outline: none;
+        }
+    }
+
     /**
      * List of dropdown options
      */
-    &__options
+    &__options-wrapper
     {
         position: absolute;
         z-index: 1;
@@ -39,16 +84,23 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
         &.scrollable
         {
-            max-height: 197px;
+            max-height: 280px;
         }
         &--reversed
         {
-            z-index: 0;
+            z-index: 1;
             bottom: 44px;
 
-            border-top: none;
+            border-top: none !important;
             border-bottom: 1px solid #ebebeb !important;
             border-radius: 3px 3px 0 0 !important;
+
+            + .dropdown__input-wrapper {
+                z-index: 1;
+                > .dropdown__input {
+                    border-radius: 0 0 3px 3px !important;
+                }
+            }
         }
     }
     /**
@@ -238,62 +290,6 @@
         }
     }
     /**
-     * Search query input or static display of current selected value
-     */
-    &__input
-    {
-        @extend .form__input;
-
-        line-height: 44px;
-
-        padding: 0 35px 0 15px;
-
-        background: $color-white;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, .02);
-        &:focus
-        {
-            outline: none;
-        }
-        &.--placeholder
-        {
-            // color: $color-text-placeholder;
-        }
-        // &:not(.--datepicker) {
-        // caret
-        &::after,
-        &-wrapper::after
-        {
-            position: absolute;
-            top: 20px;
-            right: 15px;
-
-            content: '';
-
-            border-top: 4px solid $color-mine-shaft;
-            border-right: 4px solid transparent;
-            border-left: 4px solid transparent;
-        }
-        // }
-        &-wrapper
-        {
-            position: relative;
-        }
-    }
-    // caret when open
-    &--open &__input,
-    &--open &__input-wrapper
-    {
-        border-radius: $border-radius $border-radius 0 0;
-        &::after
-        {
-            top: 16px;
-
-            border-top: 4px solid transparent;
-            border-bottom: 4px solid $color-mine-shaft;
-            border-left: 4px solid transparent;
-        }
-    }
-    /**
      * filter by checkbox
      */
     &--primary
@@ -333,14 +329,13 @@
         /**
          * Box shadow on dropdown menu
          */
-        > .dropdown__options,
         > .dropdown__options-wrapper
         {
             border-right: none;
             border-bottom: none;
             border-left: none;
             box-shadow: $box-shadow-primary-dropdown-options;
-            &.dropdown__options--reversed
+            &--reversed
             {
                 box-shadow: $box-shadow;
             }

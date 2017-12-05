@@ -108,6 +108,24 @@ export default {
   },
 
   /**
+   * Set authenticated user
+   *
+   * @param {User} user
+   */
+  setUser(user) {
+    this.user = user
+  },
+
+  /**
+   * Get authenticated user
+   *
+   * @return {User}
+   */
+  getUser() {
+    return this.user
+  },
+
+  /**
    * Retry the original request.
    *
    * Let's retry the user's original target request that had recieved a invalid token response

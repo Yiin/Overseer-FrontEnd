@@ -1,56 +1,65 @@
-<template>
-  <div v-show="isActive" class="tab tab--dashboard">
-    <template v-if="!payments || !payments.length">
-      <div class="placeholder-area">
-        <div class="placeholder placeholder--payments"></div>
-        <div class="placeholder placeholder--line"></div>
-        <div class="placeholder__text">
-          Add a new payment by pressing the button below.
-        </div>
-        <button @click="create" class="button button--create">
-          <span class="icon-new-payment-btn-icon"></span>
-          {{ $t('actions.new_payment') }}
-        </button>
-      </div>
-    </template>
-    <tabs v-else ref="tabs" labels>
-      <simple-tab fade title="Table">
-        <documents-table simple
-          :documents="visiblePayments"
-          :data="tableData"
-          :context-menu-actions="contextMenuActions"
-        >
-          <template slot="head">
-            <column width="30%">{{ $t('fields.invoice_number') }}</column>
-            <column width="30%">{{ $t('fields.client_name') }}</column>
-            <column width="20%">{{ $t('labels.payment_date') }}</column>
-            <column width="20%">{{ $t('fields.amount') }}</column>
-          </template>
-          <template slot="columns" slot-scope="{ row }">
-            <column width="30%">{{ row.invoice.invoiceNumber }}</column>
-            <column width="30%">{{ row.client.name }}</column>
-            <column width="20%">{{ row.paymentDate | date }}</column>
-            <column width="20%">
-              <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
-              <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
-            </column>
-          </template>
-        </documents-table>
-      </simple-tab>
+<template lang="pug">
+  .tab.tab--dashboard(v-show='isActive')
 
-      <simple-tab fade @state-changed="updateChartTabState" title="Chart">
-        <payments-chart ref="chart" v-if="chartTabIsActive" @update="updateChart"
-          :chart-data="{
-            labels: this.graphLabels,
-            datasets: this.graphDataSets
-          }"
-          :options="{ responsive: false, legend: { display: false } }"
-          :height="455"
-          :width="tabWidth"
-        ></payments-chart>
-      </simple-tab>
-    </tabs>
-  </div>
+    //-
+      Display placeholder if there are no payments to display
+
+    template(v-if='!payments || !payments.length')
+      .placeholder-area
+        .placeholder.placeholder--payments
+        .placeholder.placeholder--line
+        .placeholder__text Add a new payment by pressing the button below.
+
+        button.button.button--create(
+          v-if='canCreatePayment'
+          @click='create'
+        ) {{ $t('actions.new_payment') }}
+
+    //-
+      Else show list of the payments
+
+    tabs(
+      v-else
+      ref='tabs'
+      labels
+    )
+      simple-tab(
+        fade
+        title='Table'
+      )
+        documents-table(simple
+          :documents='visiblePayments'
+          :data='tableData'
+          :context-menu-builder='contextMenuBuilder'
+        )
+          template(slot='head')
+            column(width='30%') {{ $t('fields.invoice_number') }}
+            column(width='30%') {{ $t('fields.client_name') }}
+            column(width='20%') {{ $t('labels.payment_date') }}
+            column(width='20%') {{ $t('fields.amount') }}
+
+          template(slot='columns' slot-scope='{ row }')
+            column(width='30%') {{ row.invoice.invoiceNumber }}
+            column(width='30%') {{ row.client.name }}
+            column(width='20%') {{ row.paymentDate | date }}
+            column(width='20%')
+              span.currency {{ row.amount.currency | currencySymbol }}
+              span.currency.currency--primary {{ row.amount.amount | currency }}
+
+      simple-tab(
+        fade
+        @state-changed='updateChartTabState'
+        title='Chart'
+      )
+        payments-chart(
+          ref='chart'
+          v-if='chartTabIsActive'
+          @update='updateChart'
+          :chart-data='chartData'
+          :options='chartOptions'
+          :height='455'
+          :width='tabWidth'
+        )
 </template>
 
 <script>
@@ -59,27 +68,17 @@ import Tab from '@/components/common/Tabs/Tab.vue'
 import PaymentsChart from './charts/PaymentsChart'
 import TableMixin from '@/mixins/TableMixin'
 import { createDocument } from '@/modules/documents/actions'
+import AuthorizationHelpersMixin from '@/mixins/authorization/helpers'
 
-import {
-  whenMoreThanOneRowIsSelected,
-  whenSpecificRowIsSelected,
-  __SEPARATOR__,
-  SELECTED_ROWS,
-  SELECTED_DOCUMENT,
-  TableName,
-  CreateDocument,
-  Archive,
-  Delete,
-  Unarchive,
-  Recover,
-  EditDocument,
-  RefundPayment
-} from '@/modules/table/cm-actions'
+import TableCmItems from '@/modules/table/contextmenu/items'
 
 export default {
   extends: Tab,
 
-  mixins: [TableMixin],
+  mixins: [
+    TableMixin,
+    AuthorizationHelpersMixin
+  ],
 
   components: {
     PaymentsChart,
@@ -105,31 +104,28 @@ export default {
       return 'payments'
     },
 
-    contextMenuActions() {
-      return [
-        SELECTED_ROWS,
-        Archive.extend({ moreThanOne: true }),
-        Unarchive.extend({ moreThanOne: true }),
-        Recover.extend({ moreThanOne: true }),
-        Delete.extend({ moreThanOne: true }),
-        __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
-        TableName.extend({
-          title: 'common.payment_table'
-        }),
-        CreateDocument.extend({
-          documentType: 'payment',
-          title: 'actions.new_payment',
-          icon: 'icon-new-payment-btn-icon'
-        }),
-        SELECTED_DOCUMENT.extend({ documentType: 'payment' }),
-        EditDocument.extend({ title: 'actions.edit_payment' }),
-        RefundPayment,
-        __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
-        Archive,
-        Unarchive,
-        Delete,
-        Recover
-      ]
+    contextMenuBuilder() {
+      return this.$contextMenu.init({
+        tableStateName: this.name
+      })
+        .addItem(TableCmItems.SELECTED_ROWS)
+        .addItem(TableCmItems.ARCHIVE_MANY)
+        .addItem(TableCmItems.UNARCHIVE_MANY)
+        .addItem(TableCmItems.DELETE_MANY)
+        .addItem(TableCmItems.RECOVER_MANY)
+        .addSeparator()
+        .addItem(TableCmItems.TABLE_NAME)
+        .addItem(TableCmItems.CREATE_DOCUMENT)
+        .addItem(TableCmItems.SELECTED_DOCUMENT)
+        .addItem(TableCmItems.PREVIEW)
+        .addItem(TableCmItems.EDIT_DOCUMENT)
+        .addItem(TableCmItems.REFUND_PAYMENT)
+        .addItem(TableCmItems.HISTORY_LIST)
+        .addSeparator()
+        .addItem(TableCmItems.ARCHIVE)
+        .addItem(TableCmItems.UNARCHIVE)
+        .addItem(TableCmItems.DELETE)
+        .addItem(TableCmItems.RECOVER)
     },
 
     payments() {
@@ -153,6 +149,22 @@ export default {
         name: this.name,
         pageList: this.visiblePayments,
         selection: this.state.selection
+      }
+    },
+
+    chartData() {
+      return {
+        labels: this.graphLabels,
+        datasets: this.graphDataSets
+      }
+    },
+
+    chartOptions() {
+      return {
+        responsive: false,
+        legend: {
+          display: false
+        }
       }
     },
 

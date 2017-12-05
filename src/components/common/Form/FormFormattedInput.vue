@@ -14,6 +14,7 @@
            :name    = "name"
            ref      = "input"
            :readonly = "readonly"
+           data-lpignore = 'true'
     >
   </div>
 </template>

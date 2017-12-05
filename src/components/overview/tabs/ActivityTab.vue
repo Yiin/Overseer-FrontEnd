@@ -14,6 +14,7 @@
 <script>
 import Tab from '@/components/common/Tabs/Tab.vue'
 import Timeline from '@/components/timeline/Timeline.vue'
+import { SELECTED_COMPANY_ITEMS } from '@/modules/documents/helpers/filters'
 
 export default {
   extends: Tab,
@@ -30,7 +31,9 @@ export default {
 
   computed: {
     activityList() {
-      return this.$store.getters['documents/repositories/activity/AVAILABLE_ITEMS']
+      return this.$store.getters['documents/repositories/activity/AVAILABLE_ITEMS'].filter((activity) => {
+        return SELECTED_COMPANY_ITEMS(activity.document.data)
+      })
     }
   }
 }

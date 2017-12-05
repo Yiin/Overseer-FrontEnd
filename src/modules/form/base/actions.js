@@ -50,7 +50,7 @@ export default ({ model, repository }, actions = {}) => Object.assign({
     })
   },
 
-  OPEN_EDIT_FORM({ dispatch, state, commit }, { title = null, data }) {
+  OPEN_EDIT_FORM({ dispatch, state, commit, rootGetters }, { title = null, data }) {
     if (typeof data.serialize === 'function') {
       dispatch('SET_FORM_DATA', data.serialize())
     } else {
@@ -92,6 +92,46 @@ export default ({ model, repository }, actions = {}) => Object.assign({
     }, { root: true })
   },
 
+  OPEN_PREVIEW_FORM({ dispatch, state, commit, rootGetters }, { title = null, data }) {
+    if (typeof data.serialize === 'function') {
+      dispatch('SET_FORM_DATA', data.serialize())
+    } else {
+      dispatch('SET_FORM_DATA', data)
+    }
+
+    const isArchived = Statuses.generic.archived.meetsCondition(data)
+
+    commit('SET_PREVIEW', true)
+
+    if (!title) {
+      if (isArchived) {
+        title = 'archived document'
+      } else {
+        title = 'actions.view_' + state._name
+      }
+    }
+
+    return dispatch('modal/OPEN', {
+      // meta data
+      title,
+      // form component we're rendering when modal is open
+      component: 'edit-' + S(state._name).slugify().s,
+      // path to current form's state
+      module: `form/${state._name}`,
+      // type
+      type: 'view',
+      // key
+      key: data.uuid,
+      // route name
+      route: {
+        name: getResourceName(state._name) + '.view',
+        params: {
+          uuid: data.uuid
+        }
+      }
+    }, { root: true })
+  },
+
   OPEN_HISTORY_REVIEW_FORM({ dispatch, commit, state }, { title, data, activity }) {
     if (typeof data.serialize === 'function') {
       dispatch('SET_FORM_DATA', data.serialize())
@@ -122,11 +162,6 @@ export default ({ model, repository }, actions = {}) => Object.assign({
         }
       }
     }, { root: true })
-  },
-
-  OPEN_PREVIEW_FORM({ dispatch, commit }, data) {
-    commit('SET_PREVIEW', true)
-    return dispatch('OPEN_EDIT_FORM', data)
   },
 
   FILL({ commit }) {
@@ -161,9 +196,13 @@ export default ({ model, repository }, actions = {}) => Object.assign({
       root: true
     })
     .then((response) => {
+      console.log('form.SAVE: finished')
+
       state.listeners.update.forEach((fn) => {
         fn(response)
       })
+
+      console.log('form.SAVE: listeners called')
 
       dispatch('notification/SHOW', {
         message: `${getDocumentTitle(state._name, 'singular|capitalize')} was updated.`

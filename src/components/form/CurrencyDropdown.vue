@@ -5,6 +5,7 @@
       v-model="localValue"
       :items="currencies"
       v-bind="$attrs"
+      avatar
       searchable
     >
       <template slot="option" slot-scope="{ item, parent }">

@@ -2,23 +2,29 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import {
- Vuetify,
- VApp,
- VAvatar,
- VCard,
- VList,
- VGrid,
- VSelect,
- VMenu,
- VBtn,
- VIcon,
- VDivider,
- VTextField,
- VTooltip,
- VSwitch,
- VDataTable
+  Vuetify,
+  VApp,
+  VAvatar,
+  VCard,
+  VList,
+  VGrid,
+  VSelect,
+  VDialog,
+  VMenu,
+  VBtn,
+  VChip,
+  VIcon,
+  VDivider,
+  VTextField,
+  VTooltip,
+  VSwitch,
+  VCheckbox,
+  VDataTable,
+  VSubheader,
+  VToolbar
 } from 'vuetify'
 import VueMaterial from 'vue-material'
+import VueCroppie from 'vue-croppie'
 import { VTooltip as VTooltip2 } from 'v-tooltip'
 import VueClipboard from 'vue-clipboard2'
 import Raven from 'raven-js'
@@ -33,6 +39,7 @@ import * as plugins from './plugins'
 import * as filters from './filters'
 import * as components from './components/common'
 import * as directives from './directives'
+import * as mixins from './mixins'
 import { preload } from './scripts'
 require('objectmodel/src/devtool-formatter')
 
@@ -49,6 +56,9 @@ Vue.config.productionTip = false
 
 /* Tooltips */
 Vue.directive('tooltip', VTooltip2)
+
+/* Image croping */
+Vue.use(VueCroppie)
 
 /* Clipboard */
 Vue.use(VueClipboard)
@@ -70,14 +80,19 @@ Vue.use(Vuetify, {
     VGrid,
     VList,
     VSelect,
+    VDialog,
     VTextField,
     VMenu,
     VBtn,
+    VChip,
     VIcon,
     VDivider,
     VSwitch,
+    VCheckbox,
     VDataTable,
-    VTooltip
+    VTooltip,
+    VSubheader,
+    VToolbar
   }
 })
 
@@ -94,6 +109,11 @@ Vue.use(Auth)
 for (let key in components) {
   const name = components[key].name || key
   Vue.component(name, components[key])
+}
+
+/* Global mixins */
+for (let key in mixins) {
+  Vue.mixin(mixins[key])
 }
 
 /* Filters */

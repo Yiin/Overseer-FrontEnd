@@ -23,7 +23,7 @@ class BillItem extends Model {
     modelData.identificationNumber = data.identification_number
     modelData.cost = Money.create({
       amount: data.cost,
-      currency: CurrencyRepository.findOrDefault(data.currency)
+      currency: CurrencyRepository.findByKey(data.currency_code)
     })
     modelData.qty = data.qty
 

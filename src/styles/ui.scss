@@ -32,6 +32,13 @@ a:not(.md-button):not(.md-bottom-bar-item):hover {
 }
 
 /**
+ * Remove dropdown items spacing that came from vue-material
+ */
+ul:not(.md-list) > li + li {
+    margin-top: 8;
+}
+
+/**
  * Fix line height for form elements
  */
 input, textarea {
@@ -51,4 +58,23 @@ input, textarea {
 
 .menu__content {
     box-shadow: $box-shadow;
+    border-radius: 4px;
+}
+
+.list__tile--active .list__tile__title {
+    color: $color-main;
+    font-weight: 600;
+}
+
+.subheader {
+    font-weight: 500;
+    font-family: Roboto, sans-serif;
+}
+
+.card .toolbar.transparent {
+    box-shadow: none;
+}
+
+.dialog--fullscreen {
+    border-radius: 0;
 }

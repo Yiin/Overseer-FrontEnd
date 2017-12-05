@@ -28,6 +28,7 @@ export const t = (val) => {
 }
 
 export const date = (val) => {
+  console.log(val)
   if (!val) {
     return ''
   }

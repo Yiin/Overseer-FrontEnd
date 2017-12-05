@@ -1,5 +1,5 @@
 <template>
-  <div v-show="isVisible" @click="select" class="dropdown__option" v-tooltip="tooltip">
+  <div v-show="isVisible" @click="select" class="dropdown__option" v-tooltip="tooltipOptions">
     <div class="dropdown-option__content">
       <slot></slot>
     </div>
@@ -43,6 +43,12 @@ export default {
 
     searchable() {
       return this.text.toLowerCase()
+    },
+
+    tooltipOptions() {
+      return Object.assign(this.tooltip || {}, {
+        disposeTimeout: 0
+      })
     }
   },
 

@@ -31,7 +31,7 @@
         <table>
           <tbody>
             <tr v-for="(file, index) in listOfFiles">
-              <td><input type="checkbox" class="checkbox checkbox--center"></td>
+              <td><x-checkbox center></x-checkbox></td>
               <td class="primary">{{ file.name }}</td>
               <td>Stanislovas Janonis</td>
               <td>Just now</td>

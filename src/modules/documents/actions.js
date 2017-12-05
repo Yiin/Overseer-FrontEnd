@@ -1,6 +1,7 @@
 import S from 'string'
 import store from '@/store'
 import { getFormName, getRepositoryName, getResourceName, getDocumentTitle } from './helpers'
+import AuthorizationService from '@/services/authorization'
 
 function getRouter() {
   if (typeof getRouter.router === 'undefined') {
@@ -158,11 +159,53 @@ export const patchDocument = (document, documentType, changes) => {
  * Create document
  */
 export const createDocument = (documentType, prefilledData = {}, { tabIndex = null } = {}) => {
+  const resourceName = getResourceName(documentType)
+
+  if (!AuthorizationService.accessController.canCreateDocument(resourceName)) {
+    return Promise.reject()
+  }
+
   const formName = getFormName(documentType)
 
   const promise = store.dispatch(`form/${formName}/OPEN_CREATE_FORM`)
 
   store.dispatch(`form/${formName}/SET_FORM_DATA`, prefilledData)
+  if (tabIndex !== null) {
+    store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', tabIndex)
+  }
+
+  return promise
+}
+
+/**
+ * Preview document
+ */
+export const viewDocument = (document, documentType, { tabIndex = null, title = null } = {}) => {
+  if (typeof document === 'string') {
+    const repositoryName = getRepositoryName(documentType)
+    document = store.getters[`documents/repositories/${repositoryName}/FIND_ITEM_BY_KEY`](document)
+  }
+  if (typeof document === 'undefined' || !document) {
+    return Promise.reject()
+  }
+  const resourceName = getResourceName(documentType)
+  const formName = getFormName(documentType)
+  const router = getRouter()
+
+  if (router.currentRoute.name && router.currentRoute.name !== resourceName + '.view') {
+    router.push({
+      name: resourceName + '.view',
+      params: {
+        uuid: document.uuid
+      }
+    })
+  }
+
+  const promise = store.dispatch(`form/${formName}/OPEN_PREVIEW_FORM`, {
+    title,
+    data: document
+  })
+
   if (tabIndex !== null) {
     store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', tabIndex)
   }
@@ -179,11 +222,18 @@ export const editDocument = (document, documentType, { tabIndex = null, title = 
     document = store.getters[`documents/repositories/${repositoryName}/FIND_ITEM_BY_KEY`](document)
   }
   if (typeof document === 'undefined' || !document) {
-    return
+    return Promise.reject()
   }
   const resourceName = getResourceName(documentType)
   const formName = getFormName(documentType)
   const router = getRouter()
+
+  /**
+   * If user has no permission to edit document, try to show him preview form.
+   */
+  if (!AuthorizationService.accessController.canEditDocument(resourceName, document.uuid)) {
+    return viewDocument(document, documentType, { tabIndex, title })
+  }
 
   if (router.currentRoute.name && router.currentRoute.name !== resourceName + '.edit') {
     router.push({
@@ -194,7 +244,7 @@ export const editDocument = (document, documentType, { tabIndex = null, title = 
     })
   }
 
-  store.dispatch(`form/${formName}/OPEN_EDIT_FORM`, {
+  const promise = store.dispatch(`form/${formName}/OPEN_EDIT_FORM`, {
     title,
     data: document
   })
@@ -202,6 +252,8 @@ export const editDocument = (document, documentType, { tabIndex = null, title = 
   if (tabIndex !== null) {
     store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', tabIndex)
   }
+
+  return promise
 }
 
 /**
@@ -209,7 +261,7 @@ export const editDocument = (document, documentType, { tabIndex = null, title = 
  */
 export const reviewDocumentState = (documentState, documentType, { tabIndex = null, activity, title = null }) => {
   if (typeof documentState === 'undefined' || !documentState) {
-    return
+    return Promise.reject()
   }
 
   /**
@@ -220,7 +272,7 @@ export const reviewDocumentState = (documentState, documentType, { tabIndex = nu
     documentState = store.getters[`documents/repositories/${repositoryName}/FIND_ITEM_BY_KEY`](documentState)
 
     if (!documentState) {
-      return
+      return Promise.reject()
     }
   }
 
@@ -231,7 +283,7 @@ export const reviewDocumentState = (documentState, documentType, { tabIndex = nu
     activity = documentState.history.find((a) => Number(a.id) === Number(activity))
 
     if (!activity) {
-      return
+      return Promise.reject()
     }
   }
 
@@ -253,7 +305,7 @@ export const reviewDocumentState = (documentState, documentType, { tabIndex = nu
   }
 
   /**
-   * Generate new title if one wasnt provided
+   * Generate new title if one wasn't provided
    */
   if (!title) {
     const action = S(activity.action).capitalize().s
@@ -267,7 +319,7 @@ export const reviewDocumentState = (documentState, documentType, { tabIndex = nu
   const model = activity.document.data.constructor
   documentState = model.create(JSON.parse(activity.backup.documentTransformed)).serialize()
 
-  store.dispatch(`form/${formName}/OPEN_HISTORY_REVIEW_FORM`, {
+  const promise = store.dispatch(`form/${formName}/OPEN_HISTORY_REVIEW_FORM`, {
     title,
     data: documentState,
     activity
@@ -276,4 +328,6 @@ export const reviewDocumentState = (documentState, documentType, { tabIndex = nu
   if (tabIndex !== null) {
     store.dispatch('modal/UPDATE_ACTIVE_TAB_INDEX', tabIndex)
   }
+
+  return promise
 }

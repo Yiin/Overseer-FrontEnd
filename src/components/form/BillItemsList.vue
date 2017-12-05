@@ -146,7 +146,7 @@ export default {
 
   computed: {
     products() {
-      return this.$store.getters['documents/repositories/product/ACTIVE_ITEMS'].map((product) => {
+      return this.$store.getters['documents/repositories/product/ACTIVE_COMPANY_ITEMS'].map((product) => {
         return Object.assign({
           text: product.name,
           value: product.uuid,

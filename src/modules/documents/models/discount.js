@@ -16,7 +16,7 @@ class Discount extends Model {
     if (data.type === 'flat') {
       modelData.value = Money.create({
         amount: data.value,
-        currency: CurrencyRepository.findOrDefault(data.currency)
+        currency: CurrencyRepository.findByKey(data.currency.code)
       })
     } else {
       modelData.value = Number(data.value)

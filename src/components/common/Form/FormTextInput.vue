@@ -12,6 +12,7 @@
     class   = 'form__input'
     type    = 'text'
     :name   = 'name'
+    data-lpignore = 'true'
   )
 </template>
 

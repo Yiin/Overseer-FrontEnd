@@ -66,7 +66,7 @@ export default {
     },
 
     ratio() {
-      return this.$store.state.scale.ratio
+      return this.$store.state.scale.ratio || 1
     }
   },
 
