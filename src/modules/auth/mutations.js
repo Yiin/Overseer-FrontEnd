@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export default {
   UPDATE_ACCESS_TOKEN(state, accessToken) {
     state.isLoggedIn = true
@@ -6,6 +8,10 @@ export default {
 
   SET_AUTHENTICATED(state, isAuthenticated) {
     state.isLoggedIn = isAuthenticated
+  },
+
+  SET_ACCEPTING_INVITATION(state, isAcceptingInvitation) {
+    state.isAcceptingInvitation = isAcceptingInvitation
   },
 
   SET_LOCKED(state, isLocked) {
@@ -17,15 +23,19 @@ export default {
   },
 
   SET_USER(state, user) {
-    state.user = user
+    Vue.set(state, 'user', user)
+  },
+
+  UPDATE_USER(state) {
+    Vue.set(state, 'user', state.user)
   },
 
   SET_CURRENT_COMPANY(state, company) {
     state.user.company = company
   },
 
-  LOAD(state) {
-    state.isLoaded = true
+  SET_LOADED(state, isLoaded) {
+    state.isLoaded = isLoaded
   },
 
   REDIRECTING(state, to) {

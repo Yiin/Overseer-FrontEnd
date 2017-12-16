@@ -18,7 +18,7 @@
 </template>
 
 <script>
-// import BillItem from '@/modules/documents/models/bill-item'
+// import BillItem from '@models/bill-item'
 
 export default {
   props: {

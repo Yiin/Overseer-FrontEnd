@@ -27,13 +27,15 @@ const ExpenseSchema = (superclass) => class extends mix(superclass).with(Documen
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       vendor_uuid: this.vendor.uuid,
       client_uuid: this.client.uuid,
       amount: this.amount.amount,
       currency_code: this.amount.currency.code,
       date: this.date.format('YYYY-MM-DD')
-    })
+    }
   }
 }
 

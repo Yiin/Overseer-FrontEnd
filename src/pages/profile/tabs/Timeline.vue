@@ -10,7 +10,6 @@
 <script>
 import Tab from '@/components/common/Tabs/Tab.vue'
 import Timeline from '@/components/timeline/Timeline.vue'
-import Employee from '@/modules/documents/models/employee'
 
 export default {
   extends: Tab,
@@ -35,11 +34,7 @@ export default {
 
   computed: {
     activityList() {
-      return this.$store.getters['documents/repositories/activity/AVAILABLE_ITEMS'].filter((activity) => {
-        return activity.user && activity.user.uuid === this.profile.userUuid || (
-          activity.document.data instanceof Employee && activity.document.data.uuid === this.profile.uuid
-        )
-      })
+      return this.profile.activity
     }
   }
 }

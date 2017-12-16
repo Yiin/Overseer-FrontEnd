@@ -76,7 +76,7 @@ class Permission extends Model {
     const ret = this._can(...args)
 
     if (ret) {
-      console.log('permission.can', ...args, this)
+      // console.log('permission.can', ...args, this)
     }
 
     return ret
@@ -99,7 +99,6 @@ class Permission extends Model {
 
     const Account = require('./account').default
     const Company = require('./company').default
-    const Client = require('./client').default
 
     // actions that doesn't require document instance,
     // only it's type, e.g. 'create'
@@ -122,33 +121,6 @@ class Permission extends Model {
 
         case 'company': return this.scopeId === scope.uuid
 
-        /**
-         * Allow client level permission to take effect on company level scope
-         * for specific docuemnt types.
-         *
-         * We do this, because api should not return any documents we have
-         * no access to anyways, plus we need to be able to create new documents
-         * for client on company behalf.
-         */
-        case 'client': return [
-          'invoice',
-          'payment',
-          'credit',
-          'quote',
-          'expense',
-          'project',
-          'task-list',
-          'task'
-        ].indexOf(documentType) > -1 && this.getScopeable() && this.getScopeable().company.uuid === scope.uuid
-
-        default: return false
-        }
-      }
-      if (scope instanceof Client) {
-        switch (this.scope) {
-        case 'account': return true
-        case 'company': return this.scopeId === scope.company.uuid
-        case 'client': return this.scopeId === scope.uuid
         default: return false
         }
       }
@@ -177,22 +149,6 @@ class Permission extends Model {
         return document.company && document.company.uuid === this.scopeId
 
       /**
-       * If this permission only gives permission to documents of
-       * specific client, check if given document is assigned to
-       * our client.
-       */
-      case 'client':
-
-        /**
-         * If document is a client itself, compare uuids
-         */
-        if (document instanceof Client) {
-          return document.uuid === this.scopeId
-        }
-
-        return document.client && document.client.uuid === this.scopeId
-
-      /**
        * If this permission only gives permission to specific document,
        * check if given document is the one.
        */
@@ -200,6 +156,15 @@ class Permission extends Model {
         return document.uuid === this.scopeId
       }
       return false
+    }
+  }
+
+  serialize() {
+    return {
+      scope: this.scope,
+      scope_id: this.scopeId,
+      permissible_type: this.permissibleType,
+      action: this.action
     }
   }
 }

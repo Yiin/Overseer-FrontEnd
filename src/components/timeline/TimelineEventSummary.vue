@@ -41,7 +41,7 @@
 
 <script>
 import pluralize from 'pluralize'
-import Event from '@/modules/documents/models/event'
+import Event from '@models/event'
 
 export default {
   props: {
@@ -59,7 +59,7 @@ export default {
 
   computed: {
     userName() {
-      return this.event.user.getFullName()
+      return this.event.user ? this.event.user.getTitle() : 'System'
     },
 
     count() {

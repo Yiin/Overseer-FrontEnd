@@ -3,7 +3,7 @@ import { copyFields } from '@/scripts'
 
 export default (mutations = {}) => Object.assign({
   SET_FORM_STATE(state, newState) {
-    copyFields(newState, state)
+    copyFields(/* from */ newState, /* to */ state)
   },
 
   SET_PREVIEW(state, preview) {
@@ -32,6 +32,8 @@ export default (mutations = {}) => Object.assign({
     const copy = JSON.parse(JSON.stringify(state.__initial))
 
     copyFields(copy, state)
+
+    state.validationErrors = {}
   },
 
   SET_FIELD_ERRORS(state, { field, errors }) {

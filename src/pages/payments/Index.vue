@@ -8,17 +8,15 @@
           Here you can enter incoming payments,<br>
           manage cashflow and track revenue.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreatePayment" @click="create" class="button button--create">
           <span class="icon-new-payment-btn-icon"></span>
           {{ $t('actions.new_payment') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.payments') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreatePayment" @click="create" class="button button--create">
           <span class="icon-new-payment-btn-icon"></span>
           {{ $t('actions.new_payment') }}
         </button>
@@ -209,7 +207,9 @@ export default {
       let products = []
 
       // Get all invoices products
-      this.$store.getters[`table/${this.name}/activeItems`].forEach((invoice) => {
+      this.$store.getters[`table/${this.name}/activeItems`].forEach((payment) => {
+        const invoice = payment.invoice
+
         if (!invoice.items) {
           return
         }

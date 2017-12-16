@@ -1,6 +1,4 @@
-import _ from 'lodash'
 import { mix } from 'mixwith'
-import store from '@/store'
 import Document from '../document'
 import BelongsToCompany from '../concerns/belongs-to-company'
 import EmployeeSchema from './schema'
@@ -19,25 +17,7 @@ class Employee extends mix(Document).with(EmployeeSchema, EmployeeMethods, Emplo
     if (this.profilePicture && preloadedProfilePictures.indexOf(this.profilePicture) < 0) {
       preloadedProfilePictures.push(this.profilePicture)
 
-      console.log('preloadeProfilePicture', this.profilePicture)
-
       ;(new Image()).src = this.profilePicture
-    }
-  }
-
-  update(...args) {
-    const previous = _.cloneDeep(this)
-
-    super.update(...args)
-
-    /**
-     * If we were updated, check for changed permissions
-     * and update accessible documents list accordingly.
-     */
-    if (store.state.auth.user.uuid === this.user.uuid) {
-      store.dispatch('auth/SET_USER', args[0].user)
-
-      this.updateDocuments(previous)
     }
   }
 

@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Payment from '@/modules/documents/models/payment'
+import Payment from '@models/payment'
 
 export default FormActions({
   model: Payment,

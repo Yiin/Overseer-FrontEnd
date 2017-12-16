@@ -196,13 +196,9 @@ export default ({ model, repository }, actions = {}) => Object.assign({
       root: true
     })
     .then((response) => {
-      console.log('form.SAVE: finished')
-
       state.listeners.update.forEach((fn) => {
         fn(response)
       })
-
-      console.log('form.SAVE: listeners called')
 
       dispatch('notification/SHOW', {
         message: `${getDocumentTitle(state._name, 'singular|capitalize')} was updated.`

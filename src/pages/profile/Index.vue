@@ -15,31 +15,33 @@
             img(
               v-show='!editing'
               :src='profilePicture'
+              :class='{ changeable: canChangePicture }'
             )
 
             //-
               New picture upload overlay
 
-            .profilePictureInput(v-if='canChangePicture' v-show='!editing')
-              label(for='profile-image')
-                .profilePictureInputDim
-                  v-icon(x-large) camera_alt
-              input(id='profile-image' type='file' accept="image/*" @change='changePicture')
+            template(v-if='canChangePicture')
+              .profilePictureInput(v-show='!editing')
+                label(for='profile-image')
+                  .profilePictureInputDim
+                    v-icon(x-large) camera_alt
+                input(id='profile-image' type='file' accept="image/*" @change='changePicture')
 
-            //-
-              Uploaded picture cropping component
+              //-
+                Uploaded picture cropping component
 
-            vue-croppie(
-              v-show='editing'
-              ref='croppieRef'
-              :viewport='{ width: 128, height: 128 }'
-              :boundary='{ width: 250, height: 250 }'
-              :enableResize='false'
-            )
+              vue-croppie(
+                v-show='editing'
+                ref='croppieRef'
+                :viewport='{ width: 128, height: 128 }'
+                :boundary='{ width: 250, height: 250 }'
+                :enableResize='false'
+              )
 
-            template(v-if='editing')
-              v-btn.button--save(@click='crop') Save
-              .cancel-cropping(@click='cancelProfileImageCropping') Cancel
+              template(v-if='editing')
+                v-btn.button--save(@click='crop') Save
+                .cancel-cropping(@click='cancelProfileImageCropping') Cancel
 
           .profileTitle {{ profile.getTitle() }}
           .profileSubtitle {{ profile.jobTitle }}
@@ -165,7 +167,7 @@ export default {
     },
 
     timelineStyles() {
-      const timelineOffsetFromContainerTop = 143
+      const timelineOffsetFromContainerTop = 147
       const targetHeight = this.columnsHeight && ((this.columnsHeight - timelineOffsetFromContainerTop) + 'px')
 
       return {
@@ -190,7 +192,7 @@ export default {
 
     profile() {
       if (this.who === 'me') {
-        return this.$user.authenticable
+        return this.$store.getters['documents/repositories/employee/AVAILABLE_ITEMS'].find((employee) => employee.isMe())
       } else {
         return this.$store.getters[`documents/repositories/employee/FIND_ITEM_BY_KEY`](this.who)
       }
@@ -254,9 +256,6 @@ export default {
         this.$nextTick(() => {
           this.$refs.croppieRef.bind({
             url: URL.createObjectURL(e.target.files[0])
-          })
-          this.$refs.croppieRef.get((data) => {
-            console.log('get', data)
           })
         })
       } else {

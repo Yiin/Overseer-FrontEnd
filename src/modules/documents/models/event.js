@@ -4,7 +4,7 @@ class Event extends Model {
   static create(activity) {
     return new Event({
       id: activity.id,
-      user: activity.user,
+      user: activity.getUser(),
       action: activity.action,
       documentType: activity.document.type,
       activityList: [activity],

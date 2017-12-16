@@ -37,7 +37,18 @@ export default {
         request.headers.set('X-Socket-ID', socketId)
       }
 
-      if (request.url === 'login/refresh' || request.url === 'logout') {
+      // Let server know currently selected company,
+      // so it can check for right permissions
+      if (store.state.auth.user) {
+        request.headers.set('X-Current-Company', store.state.auth.user.company.uuid)
+      }
+
+      if ([
+        // Do not check response for invalid token
+        // in the routes listed below
+        'login/refresh',
+        'logout'
+      ].indexOf(request.url) > -1) {
         next()
       } else {
         next((response) => {

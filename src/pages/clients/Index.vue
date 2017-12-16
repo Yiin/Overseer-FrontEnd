@@ -8,17 +8,15 @@
           Here you can add customers<br>
           whom you will offer services to.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateClient" @click="create" class="button button--create">
           <span class="icon-new-client-btn-icon"></span>
           {{ $t('actions.new_client') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.clients') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateClient" @click="create" class="button button--create">
           <span class="icon-new-client-btn-icon"></span>
           {{ $t('actions.new_client') }}
         </button>
@@ -137,7 +135,11 @@ export default {
         }))
         // .addItem(TableCmItems.ASSIGN_USER)
         .addItem(TableCmItems.HISTORY_LIST)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)

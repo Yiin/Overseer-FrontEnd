@@ -10,6 +10,7 @@
         ) {{ company.name }}
 
         sidebar-company(
+          v-if='canCreateCompany'
           @click.native='createCompany'
           new-company
         )
@@ -18,9 +19,14 @@
 <script>
 import SidebarCompany from './SidebarCompany.vue'
 import { createDocument } from '@/modules/documents/actions'
-import Company from '@/modules/documents/models/company'
+import Company from '@models/company'
+import AuthorizationHelpers from '@/mixins/authorization/helpers'
 
 export default {
+  mixins: [
+    AuthorizationHelpers
+  ],
+
   components: {
     SidebarCompany
   },

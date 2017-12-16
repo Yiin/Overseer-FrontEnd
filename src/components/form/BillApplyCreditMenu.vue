@@ -1,7 +1,5 @@
 <template lang="pug">
   v-menu(
-    top=''
-    full-width=''
     min-width='430px'
     max-width='430px'
     v-model='creditsMenu'
@@ -9,14 +7,17 @@
   )
     //-
       Form input where we show sum of applied credits
-    .form__input--label-left(
-      slot='activator'
-      :data-label='currency.code'
-    )
-      .form__input {{ appliedCreditsSum.formatAmount() }}
+
+    template(slot='activator')
+      slot(name='activator')
+        .form__input--label-left(
+          :data-label='currency.code'
+        )
+          .form__input {{ appliedCreditsSum.formatAmount() }}
 
     //-
       Credits menu
+
     v-card
       v-list
         v-list-tile(avatar='')
@@ -30,9 +31,11 @@
       v-list.creditsList(
         :class="{ 'scrollable': availableCredits.length > 5 }"
       )
+
         //-
           If there are no available credits
           notify user about that
+
         v-list-tile(v-if='!availableCredits.length')
           v-list-tile-action
             v-btn(icon='' @click='createCredit()')
@@ -43,6 +46,7 @@
 
         //-
           Else show list of available toggleable credits
+
         v-list-tile(v-for='availableCredit in availableCredits', :key='availableCredit.credit.uuid')
           v-list-tile-action
             v-switch(v-model='appliedCreditsList', :value='availableCredit.credit.uuid', color='orange')
@@ -79,9 +83,9 @@
 </template>
 
 <script>
-import Client from '@/modules/documents/models/client'
-import Currency from '@/modules/documents/models/currency'
-import Money from '@/modules/documents/models/money'
+import Client from '@models/client'
+import Currency from '@models/currency'
+import Money from '@models/money'
 import { createDocument } from '@/modules/documents/actions'
 
 export default {

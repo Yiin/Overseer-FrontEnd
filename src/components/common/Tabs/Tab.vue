@@ -25,7 +25,10 @@ export default {
 
     tabKey: {
       type: String,
-      default: null
+      default() {
+        console.log('tabKey default:', this.title)
+        return this.title
+      }
     },
 
     fade: {
@@ -58,13 +61,13 @@ export default {
   mounted() {
     this.addTabItem({
       title: this.title,
-      key: this.tabKey || this.title,
+      key: this.tabKey,
       setActive: this.setActive
     })
   },
 
   beforeDestroy() {
-    this.removeTabItem(this.tabKey || this.title)
+    this.removeTabItem(this.tabKey)
   },
 
   methods: {

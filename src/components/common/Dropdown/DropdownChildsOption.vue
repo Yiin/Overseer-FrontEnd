@@ -58,7 +58,7 @@ export default {
 
   computed: {
     options() {
-      return this.$slots.options
+      return (this.$slots.options || [])
         .filter((option) => option && option.componentInstance)
         .map((option) => option.componentInstance)
     },

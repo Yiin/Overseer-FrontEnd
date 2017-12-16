@@ -5,7 +5,9 @@
   )
     i18n(path='table.selected_document')
       span {{ $t('common.' + documentType) }}
-      span.highlight {{ documentTitle }}
+      span.highlight(
+        :title='documentTitle'
+      ) {{ documentTitle }}
 </template>
 
 <script>

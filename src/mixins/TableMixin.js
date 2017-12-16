@@ -8,8 +8,13 @@ import {
 } from '@/modules/documents/helpers'
 import Statuses from '@/modules/documents/statuses'
 import TableContextMenuBuilder from '@/modules/table/contextmenu/builder'
+import AuthorizationHelpersMixin from '@/mixins/authorization/helpers'
 
 export default {
+  mixins: [
+    AuthorizationHelpersMixin
+  ],
+
   computed: {
     tableName() {
       return this.name || this.data.name

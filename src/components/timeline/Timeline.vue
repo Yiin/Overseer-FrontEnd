@@ -12,7 +12,7 @@
 
 <script>
 import TimelineEvent from './TimelineEvent.vue'
-import Event from '@/modules/documents/models/event'
+import Event from '@models/event'
 
 export default {
   components: {

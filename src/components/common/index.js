@@ -33,7 +33,9 @@ export { default as DropdownTextOption } from './Dropdown/DropdownTextOption.vue
 export { default as DropdownNumericOption } from './Dropdown/DropdownNumericOption.vue'
 
 export { default as Tabs } from './Tabs/Tabs.vue'
+export { default as TabTitle } from './Tabs/TabTitle.vue'
 export { default as Tab } from './Tabs/Tab.vue'
+export { default as TabDropdown } from './Tabs/TabDropdown.vue'
 
 export { default as FormContainer } from './Form/FormContainer.vue'
 export { default as FormRow } from './Form/FormRow.vue'

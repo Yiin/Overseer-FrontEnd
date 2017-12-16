@@ -49,7 +49,9 @@ const QuoteSchema = (superclass) => class extends mix(superclass).with(DocumentS
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       client_uuid: this.client.uuid,
       date: this.date && this.date.format('YYYY-MM-DD'),
       due_date: this.dueDate && this.dueDate.format('YYYY-MM-DD'),
@@ -65,7 +67,7 @@ const QuoteSchema = (superclass) => class extends mix(superclass).with(DocumentS
       terms: this.terms,
       footer: this.footer,
       status: this.status
-    })
+    }
   }
 }
 

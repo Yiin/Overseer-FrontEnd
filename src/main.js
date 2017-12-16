@@ -1,3 +1,5 @@
+import 'babel-polyfill'
+
 /* Vue */
 import Vue from 'vue'
 import VueResource from 'vue-resource'
@@ -21,14 +23,18 @@ import {
   VCheckbox,
   VDataTable,
   VSubheader,
-  VToolbar
+  VToolbar,
+  VDatePicker,
+  VProgressCircular
 } from 'vuetify'
 import VueMaterial from 'vue-material'
 import VueCroppie from 'vue-croppie'
 import { VTooltip as VTooltip2 } from 'v-tooltip'
 import VueClipboard from 'vue-clipboard2'
+import VueVirtualScroller from 'vue-virtual-scroller'
 import Raven from 'raven-js'
 import RavenVue from 'raven-js/plugins/vue'
+import './scripts/polyfills'
 import App from './App'
 import Api from './api'
 import Auth from './auth'
@@ -63,6 +69,9 @@ Vue.use(VueCroppie)
 /* Clipboard */
 Vue.use(VueClipboard)
 
+/* Smooth scroll with any amount of data */
+Vue.use(VueVirtualScroller)
+
 /* UI Lib */
 Vue.use(VueMaterial) /* Temporary, for input fields scaling bug fix */
 Vue.material.registerTheme('default', {
@@ -92,7 +101,9 @@ Vue.use(Vuetify, {
     VDataTable,
     VTooltip,
     VSubheader,
-    VToolbar
+    VToolbar,
+    VDatePicker,
+    VProgressCircular
   }
 })
 

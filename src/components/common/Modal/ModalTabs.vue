@@ -22,7 +22,7 @@
         .modal-buttons-group.modal-buttons-group--left
 
           .button.button__modal.button__modal--test(
-            v-if="type !== 'revision'"
+            v-if='canFillTestData'
             @click="$emit('fill')"
             :class="{ 'button__modal--test-hidden': !isGuest }"
           ) Test Data
@@ -32,7 +32,7 @@
 
         .modal-buttons-group.modal-buttons-group--right
           slot(
-            v-if="type !== 'revision'"
+            v-if="!isRevisionForm"
             name="right-buttons--left"
           )
 
@@ -50,7 +50,7 @@
             of the document.
 
           .button.button__modal.button__modal--save(
-            v-if="type === 'revision'"
+            v-if='canRestore'
             @click="$emit('save')"
           ) Restore
 
@@ -58,7 +58,7 @@
             Save button(s)
 
           slot(
-            v-else
+            v-else-if='canSave'
             name="right-buttons"
           )
             .button.button__modal.button__modal--save(
@@ -102,20 +102,67 @@ export default {
       return this.$store.state.auth.user.guest_key
     },
 
+    modal() {
+      return this.$store.state.modal
+    },
+
+    module() {
+      return this.modal.data.module
+    },
+
+    form() {
+      if (this.module) {
+        return this.module.split('/').reduce((module, key) => module[key], this.$store.state)
+      }
+      return null
+    },
+
     type() {
-      return this.$store.state.modal.data.type
+      return this.modal.data.type
     },
 
     activeTabIndex() {
-      return this.$store.state.modal.activeTabIndex
+      return this.modal.activeTabIndex
     },
 
-    isFirstTabActive() {
-      return !this.activeTabIndex
+    /**
+     * Are we currently revisioning previous state
+     * of the document?
+     */
+    isRevisionForm() {
+      return this.type === 'revision'
     },
 
-    isLastTabActive() {
-      return this.activeTabIndex === this.tabs.length - 1
+    isViewForm() {
+      return this.type === 'view'
+    },
+
+    isCreateForm() {
+      return this.type === 'create'
+    },
+
+    isEditForm() {
+      return this.type === 'edit'
+    },
+
+    canFillTestData() {
+      return !this.isRevisionForm && this.canSave
+    },
+
+    canRestore() {
+      return this.isRevisionForm && this.canSave
+    },
+
+    canSave() {
+      if (this.form) {
+        if (this.form.fields.uuid && this.isEditForm) {
+          return this.$authorization.accessController.canEditDocument(this.form._name, this.form.fields.uuid)
+        }
+        if (this.isCreateForm) {
+          return this.$authorization.accessController.canCreateDocument(this.form._name)
+        }
+      }
+      return false
     }
   },
 

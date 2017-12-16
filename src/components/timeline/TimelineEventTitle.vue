@@ -7,7 +7,7 @@
 
 <script>
 import pluralize from 'pluralize'
-import Event from '@/modules/documents/models/event'
+import Event from '@models/event'
 
 export default {
   props: {

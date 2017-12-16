@@ -8,17 +8,15 @@
           Here you can start and manage projects,<br>
           create task-lists, and convert them to invoices.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateProduct" @click="create" class="button button--create">
           <span class="icon-new-project-btn-icon"></span>
           {{ $t('actions.new_project') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.projects') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateProduct" @click="create" class="button button--create">
           <span class="icon-new-project-btn-icon"></span>
           {{ $t('actions.new_project') }}
         </button>
@@ -173,7 +171,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .table-row-details {
   padding: 20px;
 }

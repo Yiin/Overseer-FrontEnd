@@ -1,7 +1,7 @@
 import FormState from './base/state'
 import FormMutations from './base/mutations'
 import FormActions from './base/actions'
-import Employee from '@/modules/documents/models/employee'
+import Employee from '@models/employee'
 
 export default {
   namespaced: true,
@@ -18,8 +18,11 @@ export default {
       phone: '',
       account: false,
       password: '',
-      selectedCountries: [],
-      assignedClients: []
+      assign_all_countries: false,
+      assigned_countries: [],
+      assign_all_clients: false,
+      assigned_clients: [],
+      assigned_roles: []
     },
 
     tabs: [
@@ -33,8 +36,11 @@ export default {
         'password'
       ],
       [
-        'selectedCountries',
-        'assignedClients'
+        'assign_all_countries',
+        'assigned_countries',
+        'assign_all_clients',
+        'assigned_clients',
+        'assigned_roles'
       ]
     ]
   }),

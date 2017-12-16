@@ -1,26 +1,23 @@
-<template>
-  <form-field :errors="errors" :label="$t('labels.currency')">
-
-    <form-dropdown-input
-      v-model="localValue"
-      :items="currencies"
-      v-bind="$attrs"
+<template lang="pug">
+  form-field(
+    :errors='errors'
+    :label="$t('labels.currency')"
+  )
+    form-dropdown-input(
+      v-model='localValue'
+      :items='currencies'
+      v-bind='$attrs'
       avatar
       searchable
-    >
-      <template slot="option" slot-scope="{ item, parent }">
-        <v-list-tile avatar @click="parent.select(item)" tag="div">
-          <v-list-tile-avatar>
-            <img :src="`http://www.xe.com/themes/xe/images/flags/svg/${item.code.toLowerCase()}.svg`">
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title v-html="item.code"></v-list-tile-title>
-            <v-list-tile-sub-title v-html="item.name"></v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </template>
-    </form-dropdown-input>
-  </form-field>
+    )
+      template(slot='option' slot-scope='{ item, parent }')
+        v-list-tile(avatar @click='parent.select(item)' tag='div')
+          v-list-tile-avatar
+            img(:src='require(`@/assets/icons/currency/${item.code.toLowerCase()}.svg`)')
+          v-list-tile-content
+            v-list-tile-title(v-html='item.code')
+            v-list-tile-sub-title(v-html='item.name')
+
 </template>
 
 <script>
@@ -56,9 +53,11 @@ export default {
   computed: {
     currencies() {
       return this.$store.getters['documents/repositories/currency/AVAILABLE_ITEMS'].map((currency) => {
-        return Object.assign({}, currency, {
+        return {
+          ...currency,
+
           text: currency.code
-        })
+        }
       })
     }
   }

@@ -53,10 +53,12 @@ export default {
 
     products() {
       return this.$store.getters['documents/repositories/product/ACTIVE_COMPANY_ITEMS'].map((product) => {
-        return Object.assign({
+        return {
           text: product.name,
-          value: product.uuid
-        }, product)
+          value: product.uuid,
+
+          ...product
+        }
       })
     }
   },

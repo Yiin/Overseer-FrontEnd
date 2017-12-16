@@ -78,3 +78,11 @@ input, textarea {
 .dialog--fullscreen {
     border-radius: 0;
 }
+
+.btn {
+    font-weight: 600; // Open Sans doen't have font weight 500
+}
+
+.input-group--hide-details .input-group__details {
+    display: none;
+}

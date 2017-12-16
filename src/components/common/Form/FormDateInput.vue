@@ -1,15 +1,24 @@
-<template>
-  <div class="date__input" v-clickaway="hide">
-    <input type="text" v-model="formattedValue" class="form__input" @focus="show">
-    <v-date-picker landscape class="datePicker" v-show="isOpen" @input="hide" v-model="localValue" scrollable actions></v-date-picker>
-  </div>
+<template lang="pug">
+  .date__input(v-clickaway='hide')
+    input.form__input(
+      type='text'
+      v-model='formattedValue'
+      @focus='show'
+    )
+    v-date-picker(
+      landscape
+      class='datePicker'
+      v-show='isOpen'
+      @input='hide'
+      v-model='localValue'
+      scrollable
+      actions
+    )
 </template>
 
 <script>
 import moment from 'moment'
-import {
-  VDatePicker
-} from 'vuetify'
+import DateFormatsMixin from '@/mixins/date/formats'
 
 function parseDateValue(value, currentDate) {
   let localValue = null
@@ -34,11 +43,9 @@ function parseDateValue(value, currentDate) {
 }
 
 export default {
-  name: 'form-date-input',
-
-  components: {
-    VDatePicker
-  },
+  mixins: [
+    DateFormatsMixin
+  ],
 
   props: {
     currentDate: {
@@ -82,10 +89,10 @@ export default {
         if (!date.isValid()) {
           return ''
         }
-        return date.format('DD/MM/YY')
+        return date.format(this.DATE_INPUT_FORMAT)
       },
       set(value) {
-        if (value.length !== 'DD/MM/YY'.length) {
+        if (value.length !== this.DATE_INPUT_FORMAT.length) {
           if (this.clearable && !value.length) {
             this.localValue = null
           }
@@ -95,7 +102,7 @@ export default {
         value.replace(/ /g, '/')
         value.replace(/\./g, '/')
 
-        const date = moment(value, 'DD/MM/YY')
+        const date = moment(value, this.DATE_INPUT_FORMAT)
 
         if (date.isValid()) {
           this.localValue = moment(date).format('YYYY-MM-DD')

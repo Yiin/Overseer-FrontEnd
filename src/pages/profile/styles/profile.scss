@@ -26,32 +26,43 @@
 
         width: 128px;
 
+        user-select: none;
+
         border-radius: 100%;
 
         &:hover
         {
-            img
+            img.changeable
             {
                 opacity: 0;
             }
         }
 
-        &--editing {
-            border-radius: 0;
+        &--editing
+        {
             overflow: visible;
+
             width: 300px;
 
-            .profilePictureInputDim {
+            border-radius: 0;
+
+            .profilePictureInputDim
+            {
                 visibility: none;
             }
 
-            .cancel-cropping {
-                cursor: pointer;
+            .cancel-cropping
+            {
                 font-weight: 600;
-                color: $color-mine-shaft;
+
                 display: inline-block;
+
                 margin-left: 15px;
+
+                cursor: pointer;
                 transform: translateY(1px);
+
+                color: $color-mine-shaft;
             }
         }
 

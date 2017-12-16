@@ -21,9 +21,7 @@ export default {
       case 'App\\Domain\\Events\\Document\\DocumentWasUpdated':
       case 'App\\Domain\\Events\\Document\\UserUpdatedDocument':
       case 'App\\Domain\\Events\\Document\\DocumentWasDeleted':
-        console.log('echo-listener.EVENT: called')
         store.dispatch(`${repositoryPath}/UPDATE_ITEM`, documentModel)
-        console.log('echo-listener.EVENT: finished')
         break
 
       /**

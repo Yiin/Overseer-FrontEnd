@@ -51,6 +51,7 @@ export function getItemKey(item, key) {
   if (typeof key === 'function') {
     return key(item)
   }
+  return item
 }
 
 /**
@@ -313,8 +314,6 @@ export const RepositoryActions = (Model, actions) => {
       return Api.put(getters.API_UPDATE_URL(itemData), {
         [getters.API_RESOURCE_NAME]: transformedData
       }).then((updatedItemData) => {
-        console.log('repository.API_UPDATE: finished')
-
         dispatch('UPDATE_ITEM', updatedItemData)
         return updatedItemData
       })
@@ -530,6 +529,10 @@ export const RepositoryMethods = (module, methods = () => {}) => {
     createItem(itemData) {
       if (typeof itemData === 'undefined' || itemData === null) {
         return null
+      }
+
+      if (typeof this.Model === 'undefined') {
+        throw new Error(`setModel is missing for ${module} repository.`)
       }
 
       return this.Model.create(itemData)

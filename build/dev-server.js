@@ -18,7 +18,7 @@ const webpackConfig = (process.env.NODE_ENV === 'testing' || process.env.NODE_EN
 const autoOpenBrowser = !!config.dev.autoOpenBrowser
 // Define HTTP proxies to your custom API backend
 // https://github.com/chimurai/http-proxy-middleware
-const proxyTable = config.dev.proxyTable
+// const proxyTable = config.dev.proxyTable
 
 var cors = require('cors')
 const app = express()
@@ -43,12 +43,12 @@ const hotMiddleware = require('webpack-hot-middleware')(compiler, {
 //   })
 // })
 
-// cors
-app.use(cors())
-
 // enable hot-reload and state-preserving
 // compilation error display
-app.use(hotMiddleware)
+// app.use(hotMiddleware)
+
+// cors
+app.use(cors())
 
 // handle fallback for HTML5 history API
 app.use(require('connect-history-api-fallback')())
@@ -82,7 +82,7 @@ devMiddleware.waitUntilValid(() => {
       _reject(err)
     }
     process.env.PORT = port
-    var uri = 'http://localhost:' + port
+
     console.log('> Listening at ' + uri + '\n')
     // when env is testing, don't need open it
     if (autoOpenBrowser && process.env.NODE_ENV !== 'testing') {

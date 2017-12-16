@@ -6,11 +6,4 @@ export default class Document extends mix(Model).with(SerializesData) {
   getTitle() {
     return this.name || 'Undefined'
   }
-
-  update(data) {
-    this.fill(
-      this.constructor.parse(data)
-    )
-    return this
-  }
 }

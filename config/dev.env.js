@@ -4,5 +4,5 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  WS_SERVER: '"overseer.dev:6001"'
+  WS_SERVER: '"overseer.local:6001"'
 })

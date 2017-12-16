@@ -10,6 +10,7 @@ export { default as pdf } from './pdf'
 export { default as vatInfo } from './vat-info'
 export { default as activity } from './activity'
 
+export { default as role } from './role'
 export { default as company } from './company'
 export { default as user } from './user'
 

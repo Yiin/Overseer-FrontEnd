@@ -8,17 +8,15 @@
           Here you can add vendors, <br>
           whom you will purchase from.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateVendor" @click="create" class="button button--create">
           <span class="icon-new-vendor-btn-icon"></span>
           {{ $t('actions.new_vendor') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.vendors') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateVendor" @click="create" class="button button--create">
           <span class="icon-new-vendor-btn-icon"></span>
           {{ $t('actions.new_vendor') }}
         </button>
@@ -130,7 +128,11 @@ export default {
         .addItem(TableCmItems.HISTORY_LIST)
         .addSeparator()
         .addItem(TableCmItems.ENTER_EXPENSE)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)

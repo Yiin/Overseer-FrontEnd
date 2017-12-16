@@ -5,10 +5,16 @@
       @cancel='cancel'
       @fill='fill'
     )
+      //-
+        Details
+
       modal-tab(:title="$t('tabs.details')")
         form-container
           form-row
-            //- First name
+
+            //-
+              First name
+
             form-field(
               :label="$t('fields.first_name')"
               :errors='validationErrors.first_name'
@@ -18,7 +24,9 @@
                 :readonly='preview'
               )
 
-            //- Last name
+            //-
+              Last name
+
             form-field(
               :label="$t('fields.last_name')"
               :errors='validationErrors.last_name'
@@ -30,7 +38,10 @@
 
 
           form-row
-            //- Phone
+
+            //-
+              Phone
+
             form-field(
               :label="$t('fields.phone')"
               :errors='validationErrors.phone'
@@ -40,7 +51,9 @@
                 :readonly='preview'
               )
 
-            //- Email
+            //-
+              Email
+
             form-field(
               :label="$t('fields.email')"
               :errors='validationErrors.email'
@@ -51,7 +64,10 @@
               )
 
           form-row
-            //- Job Title
+
+            //-
+              Job Title
+
             form-field(
               :label="$t('fields.job_title')"
               :errors='validationErrors.job_title'
@@ -60,6 +76,10 @@
                 v-model='job_title'
                 :readonly='preview'
               )
+
+            //-
+              New Password
+
             form-field(
               v-if='account'
               :label="$t('fields.password-optional')"
@@ -70,6 +90,9 @@
                 type='password'
               )
             form-field(v-else)
+
+          //-
+            Switch to activate use account for employee
 
           form-row(v-if='canManageEmployee')
             form-field(
@@ -98,13 +121,44 @@
             form-field(label='Assign countries')
               form-dropdown-input(
                 :items='availableCountries'
-                v-model='selectedCountries'
+                :placeholder='assignedCountriesPlaceholder'
+                v-model='assigned_countries'
                 item-name='country'
                 searchable
                 multiple
-                with-select-all-option
                 with-titles
               )
+                template(slot='customOptions')
+
+                  //-
+                    Assign all countries
+
+                  v-list-tile(
+                    @click.stop='assignAllCountries'
+                  )
+                    v-list-tile-action
+                      v-switch(
+                        v-model='assignAllCountriesSwitch'
+                        color='orange'
+                        hide-details
+                      )
+                    v-list-tile-content
+                      v-list-tile-title Select All
+
+                  //-
+                    Do not assign any country
+
+                  v-list-tile(
+                    @click.stop='assignNoCountries'
+                  )
+                    v-list-tile-action
+                      v-switch(
+                        v-model='assignNoCountriesSwitch'
+                        color='orange'
+                        hide-details
+                      )
+                    v-list-tile-content
+                      v-list-tile-title Select None
 
                 v-list-tile(
                   slot='option'
@@ -124,13 +178,45 @@
             form-field(label='Assign clients')
               form-dropdown-input(
                 :items='availableClients'
-                v-model='assignedClients'
+                :placeholder='assignedClientsPlaceholder'
+                v-model='assigned_clients'
                 item-name='client'
                 searchable
                 multiple
-                with-select-all-option
                 with-titles
               )
+                template(slot='customOptions')
+
+                  //-
+                    Assign all clients
+
+                  v-list-tile(
+                    @click.stop='assignAllClients'
+                  )
+                    v-list-tile-action
+                      v-switch(
+                        v-model='assignAllClientsSwitch'
+                        color='orange'
+                        hide-details
+                      )
+                    v-list-tile-content
+                      v-list-tile-title Select All
+
+                  //-
+                    Do not assign any client
+
+                  v-list-tile(
+                    @click.stop='assignNoClients'
+                  )
+                    v-list-tile-action
+                      v-switch(
+                        v-model='assignNoClientsSwitch'
+                        color='orange'
+                        hide-details
+                      )
+                    v-list-tile-content
+                      v-list-tile-title Select None
+
                 v-list-tile(
                   slot='option'
                   slot-scope='{ item, selected, parent }'
@@ -143,6 +229,31 @@
                   v-list-tile-content
                     v-list-tile-title {{ item.getTitle() }}
                     v-list-tile-sub-title {{ item.email }}
+
+          form-row
+
+            //-
+              Clients dropdown
+
+            form-field(label='Assign roles')
+              form-dropdown-input(
+                :items='availableRoles'
+                v-model='assigned_roles'
+                item-name='role'
+                searchable
+                multiple
+                with-titles
+              )
+                v-list-tile(
+                  slot='option'
+                  slot-scope='{ item, selected, parent }'
+                  :value='selected'
+                  @click='parent.select(item)'
+                )
+                  v-list-tile-content
+                    v-list-tile-title {{ item.getTitle() }}
+
+            form-field
 
 </template>
 
@@ -159,55 +270,15 @@ export default {
       'phone',
       'account',
       'password',
-      'selectedCountries',
-      'assignedClients',
-      'selectedRoles'
+      'assign_all_countries',
+      'assigned_countries',
+      'assign_all_clients',
+      'assigned_clients',
+      'assigned_roles'
     ])
   ],
 
-  data() {
-    const permissions = {}
-
-    const permissionTypes = [
-      'product',
-      'client',
-      'invoice',
-      'payment',
-      'credit',
-      'quote',
-      'expense',
-      'vendor',
-      'employee',
-      'project'
-    ]
-
-    permissionTypes.forEach((type) => {
-      permissions[type] = {
-        view: false,
-        create: false,
-        edit: false,
-        delete: false,
-        manage: false
-      }
-    })
-
-    return {
-      permissionTypes,
-      permissions
-    }
-  },
-
   computed: {
-    actions() {
-      return [
-        'view',
-        'create',
-        'edit',
-        'delete',
-        'manage'
-      ]
-    },
-
     canManageEmployee() {
       if (!this.form.fields.uuid) {
         return this.$user.can('manage', 'employee', this.$user.company)
@@ -232,22 +303,114 @@ export default {
       }
     },
 
-    availableCountries() {
-      const availableCountries = this.clients
-        .filter((client) => client.address.country)
-        .map((client) => client.address.country.id)
+    assignedCountriesPlaceholder() {
+      if (this.assigned_countries.length) {
+        return undefined
+      }
+      if (this.assign_all_countries) {
+        return 'All countries assigned'
+      } else {
+        return 'No countries assigned'
+      }
+    },
 
-      return this.dropdownOptions.countries.filter((country) => {
-        return availableCountries.indexOf(country.id) > -1
-      })
+    availableCountries() {
+      return this.dropdownOptions.countries
+    },
+
+    assignedClientsPlaceholder() {
+      if (this.assigned_clients.length) {
+        return undefined
+      }
+      if (this.assign_all_clients) {
+        return 'All clients assigned'
+      } else {
+        return 'No clients assigned'
+      }
     },
 
     availableClients() {
-      return this.selectedCountries.length
-        ? this.dropdownOptions.clients.filter((client) => {
-          return client.address.country && this.selectedCountries.indexOf(client.address.country.id) > -1
+      return this.dropdownOptions.clients
+    },
+
+    availableRoles() {
+      return this.$user.company.roles.map((role) => {
+        return Object.assign(Object.create(role), {
+          text: role.getTitle(),
+          value: role.uuid
         })
-        : this.dropdownOptions.clients
+      })
+    },
+
+    assignAllCountriesSwitch: {
+      get() { return this.assign_all_countries && !this.assigned_countries.length },
+      set() {}
+    },
+
+    assignNoCountriesSwitch: {
+      get() { return !this.assigned_countries.length && !this.assign_all_countries },
+      set() {}
+    },
+
+    assignAllClientsSwitch: {
+      get() { return this.assign_all_clients && !this.assigned_clients.length },
+      set() {}
+    },
+
+    assignNoClientsSwitch: {
+      get() { return !this.assigned_clients.length && !this.assign_all_clients },
+      set() {}
+    }
+  },
+
+  watch: {
+    assigned_clients(assignedClients) {
+      assignedClients.forEach((clientUuid) => {
+        const client = this.clients.find((client) => client.uuid === clientUuid)
+
+        if (!client || !client.address || !client.address.country) {
+          return
+        }
+
+        if (this.assigned_countries.indexOf(client.address.country.id) < 0) {
+          this.assigned_countries.push(client.address.country.id)
+        }
+      })
+    }
+  },
+
+  mounted() {
+    if (this.assigned_countries.length === 0 && !this.assign_all_countries) {
+      this.assignNoCountries()
+    } else if (this.assign_all_countries) {
+      this.assignAllCountries()
+    }
+    if (this.assigned_clients.length === 0 && !this.assign_all_clients) {
+      this.assignNoClients()
+    } else if (this.assign_all_clients) {
+      this.assignAllClients()
+    }
+  },
+
+  methods: {
+    assignAllCountries() {
+      this.assigned_countries = []
+      this.assign_all_countries = true
+    },
+
+    assignNoCountries() {
+      this.assigned_countries = []
+      this.assign_all_countries = false
+    },
+
+    assignAllClients() {
+      this.assigned_clients = []
+      this.assign_all_clients = true
+    },
+
+    assignNoClients() {
+      this.assigned_clients = []
+      this.assign_all_clients = false
     }
   }
 }

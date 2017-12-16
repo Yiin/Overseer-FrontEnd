@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import Currency from '@/modules/documents/models/currency'
+import Currency from '@models/currency'
 import BillItemsListItem from './BillItemsListItem.vue'
 import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
 
@@ -147,11 +147,13 @@ export default {
   computed: {
     products() {
       return this.$store.getters['documents/repositories/product/ACTIVE_COMPANY_ITEMS'].map((product) => {
-        return Object.assign({
+        return {
           text: product.name,
           value: product.uuid,
-          editing: false
-        }, product)
+          editing: false,
+
+          ...product
+        }
       })
     }
   },
@@ -176,7 +178,7 @@ export default {
       if (Number(this.item.qty) <= 0) {
         return
       }
-      this.items.push(Object.assign({}, this.item))
+      this.items.push({ ...this.item })
 
       // this.item = {
       //   product_uuid: null,

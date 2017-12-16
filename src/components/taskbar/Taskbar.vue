@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="taskbar" ref="taskbar">
+    <div class="taskbar" ref="taskbar" :style="taskbarStyle">
       <div
         v-for="(item, index) in items"
         ref="item"
@@ -20,10 +20,32 @@
 </template>
 
 <script>
+import { getScrollbarWidth } from '@/scripts'
+
 export default {
+  data() {
+    return {
+      scrollbarWidth: getScrollbarWidth()
+    }
+  },
+
   computed: {
     items() {
       return this.$store.getters['taskbar/idle_items']
+    },
+
+    isOverlayActive() {
+      return this.$store.state.ui.overlay.items.length > 0
+    },
+
+    scrollbarOffset() {
+      return this.isOverlayActive ? this.scrollbarWidth : 0
+    },
+
+    taskbarStyle() {
+      return {
+        right: this.scrollbarOffset + 'px'
+      }
     }
   },
 

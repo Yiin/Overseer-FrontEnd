@@ -3,6 +3,7 @@ let state = {
   isLoggedIn: false,
   isLocked: false,
   isLoaded: false,
+  isAcceptingInvitation: false,
 
   // are we currently redirecting user?
   isRedirecting: false,
@@ -23,7 +24,7 @@ let state = {
    *
    * @var {AuthUser}  Currently authenticated user data
    */
-  user: {}
+  user: null
 }
 
 state.__initial_state = JSON.parse(JSON.stringify(state))

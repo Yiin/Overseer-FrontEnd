@@ -42,7 +42,9 @@ const ClientSchema = (superclass) => class extends mix(superclass).with(Document
    * Serialize model data for forms filling or API requests
    */
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       name: this.name,
       registration_number: this.registrationNumber,
       vat_number: this.vat.vatNumber,
@@ -53,8 +55,10 @@ const ClientSchema = (superclass) => class extends mix(superclass).with(Document
       language_id: (this.language || null) && this.language.id,
       industry_id: (this.industry || null) && this.industry.id,
       company_size_id: (this.companySize || null) && this.companySize.id,
-      payment_terms: this.paymentTerms
-    }, this.address.serialize(options))
+      payment_terms: this.paymentTerms,
+
+      ...this.address.serialize(options)
+    }
   }
 }
 

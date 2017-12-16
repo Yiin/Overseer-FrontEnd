@@ -1,220 +1,100 @@
-<template>
-  <div class="modal-form">
-    <modal-tabs @save="save" @fill="fill" @cancel="cancel" :hide-buttons="preview">
+<template lang="pug">
+  .modal-form.scrollable
+    bill-form(
+      :currency='currency'
+      :client='client'
+      @update-items='items'
+    )
+      template(slot='title') Invoice
 
-      <!--
-        Select client we're sending invoice to
-       -->
-      <modal-tab :title="$t('tabs.client')">
-        <form-container>
-          <form-inline-select-input
-            v-if="dropdownOptions.clients.length"
-            v-model="client_uuid"
-            :items="dropdownOptions.clients"
-            :last-item-value="newClientUuid"
-            :placeholder="$t('placeholders.type_client_name')"
-          ></form-inline-select-input>
+      template(slot='number')
+        input(type='text' placeholder='Number' v-model='invoiceNumber' data-lpignore='true')
 
-          <div v-else class="placeholder-area">
-            <div class="placeholder placeholder--clients"></div>
-            <div class="placeholder placeholder--line"></div>
-            <div class="placeholder__text">
-              Add a new client by pressing the button below.
-            </div>
-          </div>
-        </form-container>
-      </modal-tab>
+      template(slot='date')
+        date-picker(
+          current-date
+          v-model='invoiceDate'
+          @update-input='updateInvoiceDateInput'
+        )
+          input(
+            slot='activator'
+            slot-scope='{ parent }'
+            type='text'
+            placeholder='Date'
+            v-model='invoiceDateFormatted'
+            @focus='parent.onFocus'
+            @blur='parent.onBlur'
+            @input='parent.onInput'
+            data-lpignore='true'
+          )
 
-      <!--
-        Invoice details
-      -->
-      <modal-tab :title="$t('tabs.details')">
-        <form-container>
-          <form-row>
-            <form-field :errors="validationErrors.date" :label="$t('labels.invoice_date')">
-              <form-date-input :current-date="!form.fields.uuid" v-model="date" :readonly="preview"></form-date-input>
-            </form-field>
-            <form-field :errors="validationErrors.invoice_number" :label="$t('labels.invoice_number')">
-              <form-text-input v-model="invoice_number" name="invoice_number" :readonly="preview"></form-text-input>
-            </form-field>
-          </form-row>
-          <form-row>
-            <form-field :errors="validationErrors.due_date" :label="$t('labels.invoice_due_date')">
-              <form-date-input v-model="due_date" name="due_date" :readonly="preview"></form-date-input>
-            </form-field>
-            <form-field :errors="validationErrors.po_number" :label="$t('labels.po_number')">
-              <form-text-input v-model="po_number" name="po_number" :readonly="preview"></form-text-input>
-            </form-field>
-          </form-row>
-          <form-row>
-            <!--
-              Partial Deposit
-            -->
-            <form-field :errors="validationErrors.partial" :label="$t('labels.partial')">
-              <form-inputs-group>
-                <form-formatted-input
-                  type="number"
-                  :label="currency.code"
-                  v-model="partial"
-                  name="partial"
-                  :readonly="preview"
-                ></form-formatted-input>
+      template(slot='dueDate')
+        date-picker(
+          current-date
+          v-model='invoiceDueDate'
+          @update-input='updateInvoiceDueDateInput'
+        )
+          input(
+            slot='activator'
+            slot-scope='{ parent }'
+            type='text'
+            placeholder='Date'
+            v-model='invoiceDueDateFormatted'
+            @focus='parent.onFocus'
+            @blur='parent.onBlur'
+            @input='parent.onInput'
+            data-lpignore='true'
+          )
 
-                <!--
-                  Currency
-                -->
-                <form-currency-dropdown :errors="validationErrors.currency_code" v-model="currency_code" class="half-in-group" :readonly="preview"></form-currency-dropdown>
-              </form-inputs-group>
-            </form-field>
+      template(slot='buyerCompany' slot-scope='{ clients }')
+        form-dropdown-input(
+          :items='clients'
+          :top='36'
+          v-model='client_uuid'
+        )
+          input(
+            slot='activator'
+            slot-scope='{ parent }'
+            type='text'
+            v-model='clientName'
+            placeholder='Select Client'
+            @input='parent.input($event.target.value)'
+            @blur='parent.onBlur'
+            @focus='parent.onFocus'
+          )
 
+      template(slot='buyerName')
+        input(type='text' placeholder='Name' v-model='clientName' data-lpignore='true')
 
-            <!--
-              Discount
-            -->
-            <form-field :label="$t('labels.discount')">
-              <form-inputs-group>
-                <!--
-                  Discount value
-                -->
-                <form-formatted-input
-                  type="number"
-                  :label="discount_type === 'percentage' ? '%' : currency.code"
-                  :label-position="discount_type === 'percentage' ? 'right' : 'left'"
-                  v-model="discount_value"
-                  name="discount_value"
-                  :readonly="preview"
-                ></form-formatted-input>
+      template(slot='buyerAddress')
+        input(type='text' placeholder='Address' v-model='clientAddress' data-lpignore='true')
 
-                <!--
-                  Discount Type
-                -->
-                <form-dropdown-input
-                  v-model="discount_type"
-                  :items="dropdownOptions.discountTypes"
-                  class="dropdown--small"
-                ></form-dropdown-input>
-              </form-inputs-group>
-            </form-field>
-          </form-row>
+      template(slot='buyerCode')
+        input(type='text' placeholder='Registration Number' v-model='clientRegistrationNumber' data-lpignore='true')
 
-          <form-row>
-            <form-field :label="$t('labels.apply_credit')">
-              <bill-apply-credit-menu
-                v-model="applied_credits"
-                :client="client"
-                :currency="currency"
-                :credits="clientCredits"
-              ></bill-apply-credit-menu>
-            </form-field>
-            <form-field></form-field>
-          </form-row>
+      template(slot='buyerVatCode')
+        input(type='text' placeholder='Registration Number' v-model='clientVatNumber' data-lpignore='true')
 
-        </form-container>
-      </modal-tab>
+      template(slot='buyerPhoneNumber')
+        input(type='text' placeholder='Phone Number' v-model='clientPhoneNumber' data-lpignore='true')
 
-      <!--
-        Invoice items
-      -->
-      <modal-tab :title="$t('tabs.items')">
-        <form-container>
+      template(slot='buyerEmptyField')
+        input(type='text' placeholder='' data-lpignore='true')
 
-          <bill-items-list
-            v-model="items"
-            :currency="currency"
-            :add-item-form="addItemForm"
-          ></bill-items-list>
-
-        </form-container>
-      </modal-tab>
-
-      <!--
-        Additional info
-      -->
-      <modal-tab :title="$t('tabs.additional_info')">
-        <tabs>
-          <!--
-            Upload Documents
-          -->
-          <tab :title="$t('tabs.documents')">
-            <form-documents-input :readonly="preview"></form-documents-input>
-          </tab>
-          <tab :title="$t('tabs.note_to_client')">
-            <form-textarea-input v-model="note_to_client" :placeholder="$t('placeholders.note_to_client')" name="note_to_client" rows="12" :readonly="preview"></form-textarea-input>
-          </tab>
-          <tab :title="$t('tabs.terms')">
-            <form-textarea-input v-model="terms" :placeholder="$t('placeholders.invoice_terms')" name="terms" rows="12" :readonly="preview"></form-textarea-input>
-          </tab>
-          <tab :title="$t('tabs.footer')">
-            <form-textarea-input v-model="footer" :placeholder="$t('placeholders.invoice_footer')" name="footer" rows="12" :readonly="preview"></form-textarea-input>
-          </tab>
-        </tabs>
-      </modal-tab>
-      <template slot="right-buttons--left">
-        <div v-show="modal.activeTabIndex === 0" @click="createClient" class="button button--create">
-          <span class="icon-new-client-btn-icon"></span>
-          {{ $t('actions.new_client') }}
-        </div>
-      </template>
-      <template slot="right-buttons">
-        <dropdown @input="saveInvoice" placeholder="Finish" class="dropdown--primary dropdown--invoice" should-be-reversed>
-          <dropdown-option
-            v-if="!form.fields.uuid"
-            value="draft"
-            :tooltip="{
-              content: texts.draft,
-              placement: 'right'
-            }"
-          >
-            Save Draft
-          </dropdown-option>
-
-          <dropdown-option
-            v-if="form.fields.uuid"
-            value="save"
-          >
-            Save Invoice
-          </dropdown-option>
-
-          <dropdown-option
-            value="email"
-            :tooltip="{
-              content: texts.email,
-              placement: 'right'
-            }"
-          >
-            Email To Client
-          </dropdown-option>
-
-          <dropdown-option
-            value="sent"
-            :tooltip="{
-              content: texts.sent,
-              placement: 'right'
-            }"
-          >
-            Mark Sent
-          </dropdown-option>
-        </dropdown>
-      </template>
-    </modal-tabs>
-    <div class="modal-sidebar">
-      <bill-summary form="invoice"></bill-summary>
-    </div>
-  </div>
 </template>
 
 <script>
 import FormMixin from '@/mixins/FormMixin'
 import BillableDocumentMixin from '@/mixins/BillableDocumentMixin'
-import FormCurrencyDropdown from '@/components/form/CurrencyDropdown.vue'
-import FormFormattedInput from '@/components/common/Form/FormFormattedInput.vue'
-import BillSummary from '@/components/form/BillSummary.vue'
-import BillApplyCreditMenu from '@/components/form/BillApplyCreditMenu.vue'
+import BillForm from '@/components/form/bill-form/BillForm.vue'
 import { createDocument } from '@/modules/documents/actions'
+import DatePicker from '@/components/common/DatePicker/DatePicker.vue'
+import DateFormatsMixin from '@/mixins/date/formats'
 
 export default {
   mixins: [
     BillableDocumentMixin,
+    DateFormatsMixin,
     FormMixin('invoice', [
       'client_uuid',
       'date',
@@ -234,10 +114,24 @@ export default {
   ],
 
   components: {
-    FormCurrencyDropdown,
-    FormFormattedInput,
-    BillSummary,
-    BillApplyCreditMenu
+    BillForm,
+    DatePicker
+  },
+
+  data() {
+    return {
+      invoiceNumber: '',
+      invoiceDate: null,
+      invoiceDateFormatted: '',
+      invoiceDueDate: null,
+      invoiceDueDateFormatted: '',
+
+      clientName: '',
+      clientAddress: '',
+      clientRegistrationNumber: '',
+      clientVatNumber: '',
+      clientPhoneNumber: ''
+    }
   },
 
   computed: {
@@ -254,7 +148,51 @@ export default {
     }
   },
 
+  watch: {
+    client_uuid(uuid) {
+      const client = this.$repository('clients').activeCompanyItems.find((client) => client.uuid === uuid)
+
+      if (!client) {
+        return
+      }
+
+      this.clientName = client.name
+      this.clientAddress = client.address.format()
+      this.clientRegistrationNumber = client.registrationNumber
+      this.clientVatNumber = client.vat.vatNumber
+      this.clientPhoneNumber = client.getPrimaryPhoneNumber()
+    }
+  },
+
+  mounted() {
+    this.initiateFields()
+  },
+
   methods: {
+    initiateFields() {
+      if (this.client_uuid) {
+        const client = this.$repository('clients').activeCompanyItems.find((client) => client.uuid === this.client_uuid)
+
+        if (client) {
+          this.clientName = client.name
+          this.clientAddress = client.address.format()
+          this.clientRegistrationNumber = client.registrationNumber
+          this.clientVatNumber = client.vat.vatNumber
+          this.clientPhoneNumber = client.getPrimaryPhoneNumber()
+        }
+      }
+
+      this.invoiceDate = this.date
+    },
+
+    updateInvoiceDateInput(input) {
+      this.invoiceDateFormatted = input
+    },
+
+    updateInvoiceDueDateInput(input) {
+      this.invoiceDueDateFormatted = input
+    },
+
     createClient() {
       createDocument('client').then((client) => {
         this.$store.dispatch('form/invoice/SET_FORM_DATA', {
@@ -304,11 +242,8 @@ export default {
 <style lang="scss" scoped>
 .modal-form {
   display: flex;
-  height: 617px;
-
-  .modal-tabs {
-    width: 990px;
-  }
+  height: 890px;
+  overflow-y: auto;
 }
 
 .modal-sidebar {
@@ -343,13 +278,5 @@ export default {
   margin-right: 7px;
   margin-bottom: 2px;
 }
-
-// .button__modal--mark-sent {
-//   background:
-// }
-
-// .button__modal--email-invoice {
-//   background:
-// }
 
 </style>

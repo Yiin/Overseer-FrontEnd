@@ -33,8 +33,8 @@ export default {
     },
 
     who() {
-      return this.activity.user
-        ? this.activity.user.getFullName()
+      return this.activity.hasUser()
+        ? this.activity.getUser().getTitle()
         : 'System'
     },
 

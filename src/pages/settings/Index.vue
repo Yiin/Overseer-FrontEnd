@@ -1,17 +1,20 @@
 <template lang="pug">
   div
-    h3 Settings
     tabs
-      manage-roles
+      manage-roles(v-if='canViewRoles')
       account-settings
-
 </template>
 
 <script>
 import AccountSettings from './tabs/AccountSettings.vue'
 import ManageRoles from './tabs/ManageRoles.vue'
+import AuthorizationHelpersMixin from '@/mixins/authorization/helpers'
 
 export default {
+  mixins: [
+    AuthorizationHelpersMixin
+  ],
+
   components: {
     AccountSettings,
     ManageRoles

@@ -1,0 +1,13 @@
+.footerBlock + .footerBlock {
+    margin-top: 10px;
+}
+
+.footerLabel {
+    font-weight: 600;
+    &, & + span {
+        display: inline-block;
+    }
+    & + span {
+        margin-left: 10px;
+    }
+}

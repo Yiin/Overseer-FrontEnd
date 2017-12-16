@@ -1,5 +1,5 @@
 import { mix } from 'mixwith'
-import moment from 'moment'
+import { makeDate } from '@/scripts'
 import { methods as ClientRepository } from '../../repositories/client'
 import { methods as InvoiceRepository } from '../../repositories/invoice'
 import { methods as CurrencyRepository } from '../../repositories/currency'
@@ -30,13 +30,15 @@ const PaymentSchema = (superclass) => class extends mix(superclass).with(Documen
     })
 
     modelData.paymentType = PaymentTypeRepository.findByKey(data.payment_type_id)
-    modelData.paymentDate = data.payment_date && moment(data.payment_date.date)
+    modelData.paymentDate = makeDate(data.payment_date)
 
     return modelData
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       client_uuid: this.client.uuid,
       invoice_uuid: this.invoice.uuid,
       payment_reference: this.paymentReference,
@@ -44,7 +46,7 @@ const PaymentSchema = (superclass) => class extends mix(superclass).with(Documen
       currency_code: this.amount.currency.code,
       payment_type_id: this.paymentType ? this.paymentType.id : null,
       payment_date: this.paymentDate.format('YYYY-MM-DD')
-    })
+    }
   }
 }
 

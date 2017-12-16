@@ -1,7 +1,5 @@
 <template lang="pug">
   div
-    breadcrumb(:path="[ $t('common.personnel') ]")
-
     .table__heading
       button.button.button--create(@click="create")
         span.icon-new-credit-btn-icon
@@ -24,23 +22,20 @@
       :context-menu-builder='contextMenuBuilder'
     )
       template(slot='head')
-        column(width='18%') {{ $t('fields.first_name') }}
-        column(width='18%') {{ $t('fields.last_name') }}
+        column(width='21%') {{ $t('fields.name') }}
         column(width='18%') {{ $t('fields.phone') }}
-        column(width='18%') {{ $t('fields.email') }}
-        column(width='14%') {{ $t('fields.job_title') }}
-        column(width='14%') {{ $t('fields.role') }}
+        column(width='24%') {{ $t('fields.email') }}
+        column(width='22%') {{ $t('fields.job_title') }}
+        column(width='15%') {{ $t('fields.role') }}
 
       template(slot='columns' slot-scope='{ row }')
-        column(width='18%')
+        column(width='21%')
           profile-menu(:employee='row')
-          a(href='' @click.prevent='viewEmployee(row)') {{ row.firstName }}
-        column(width='18%')
-          a(href='' @click.prevent='viewEmployee(row)') {{ row.lastName }}
+          a(href='' @click.prevent='viewEmployee(row)') {{ row.getTitle() }}
         column(width='18%') {{ row.phone }}
-        column(width='18%') {{ row.email }}
-        column(width='14%') {{ row.jobTitle }}
-        column(width='14%') {{ row.getRoleName() }}
+        column(width='24%') {{ row.email }}
+        column(width='22%') {{ row.jobTitle }}
+        column(width='15%') {{ row.getRoleName() }}
 
     table-footer(:table-name='name')
 
@@ -66,14 +61,6 @@
             v-icon close
 
         .dialogContent
-
-          //-
-            Close icon
-
-            .modal-icon.modal-icon__close(
-              @click='showingProfile = false'
-            )
-              i.modal-icon-close
 
           //-
             Employee profile page
@@ -155,7 +142,11 @@ export default {
           title: this.$t('actions.clone_employee')
         }))
         .addItem(TableCmItems.HISTORY_LIST)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)
@@ -223,9 +214,15 @@ export default {
 
 .dialogContent {
   position: relative;
-  max-width: 1500px;
   padding: 50px 0 30px;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+  max-height: calc(100vh - 64px);
+
+  > div {
+    width: 1500px;
+  }
 
   .modal-icon__close {
     position: absolute;

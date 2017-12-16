@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Invoice from '@/modules/documents/models/invoice'
+import Invoice from '@models/invoice'
 
 export default FormActions({
   model: Invoice,

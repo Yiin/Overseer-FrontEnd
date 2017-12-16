@@ -81,7 +81,7 @@
 
 <script>
 import S from 'string'
-import Employee from '@/modules/documents/models/employee'
+import Employee from '@models/employee'
 import { editDocument } from '@/modules/documents/actions'
 import { EventBus } from '@/events'
 

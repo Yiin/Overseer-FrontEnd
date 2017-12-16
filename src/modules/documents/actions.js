@@ -150,9 +150,11 @@ export const patchDocument = (document, documentType, changes) => {
   }
   const repositoryName = getRepositoryName(documentType)
 
-  return store.dispatch(`documents/repositories/${repositoryName}/API_PATCH`, Object.assign({
-    uuid: document.uuid
-  }, changes))
+  return store.dispatch(`documents/repositories/${repositoryName}/API_PATCH`, {
+    uuid: document.uuid,
+
+    ...changes
+  })
 }
 
 /**

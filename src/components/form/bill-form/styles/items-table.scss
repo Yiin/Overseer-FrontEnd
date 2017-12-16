@@ -1,0 +1,173 @@
+.itemsList {
+    overflow: visible;
+    min-height: 610px;
+}
+
+.itemsList,
+.itemsList table
+{
+    width: 100%;
+
+    th
+    {
+        text-align: left;
+
+        &.left
+        {
+            text-align: left;
+        }
+        &.center
+        {
+            text-align: center;
+        }
+        &.right
+        {
+            text-align: right;
+        }
+    }
+
+    .field
+    {
+        position: relative;
+
+        padding: 12px 0;
+
+        border-bottom: 1px solid #e8e8e8;
+        input
+        {
+            font-size: 15px;
+        }
+        & + .field
+        {
+            padding-left: 4px;
+        }
+        &--itemName
+        {
+            width: 355px;
+        }
+        &--itemQty
+        {
+            width: 80px;
+            input {
+                text-align: center;
+            }
+        }
+        &--itemPrice
+        {
+            width: 100px;
+            input {
+                text-align: right;
+            }
+        }
+        &--itemDiscount
+        {
+            display: flex;
+            input:first-child
+            {
+                float: left;
+
+                padding: 0 6px;
+
+                text-align: center;
+
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+            input + input
+            {
+                float: left;
+
+                text-align: right;
+
+                border-left: none !important;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+        }
+        &--itemAmount
+        {
+            width: 100px;
+            input {
+                text-align: right;
+            }
+        }
+    }
+
+    .summaryRow .field
+    {
+        border-bottom: none;
+    }
+
+    .subtotal {
+        margin: 7px 0 0;
+        width: 100%;
+        color: #767e86;
+
+        th, td {
+            border-bottom: 1px solid #e8e8e8;
+            padding: 10px 0px 12px 10px;
+            font-weight: 600;
+        }
+        td {
+            text-align: right;
+            font-size: 14px;
+        }
+    }
+
+    .total {
+        th {
+            vertical-align: middle;
+        }
+        td {
+            font-weight: bold;
+            font-size: 15px;
+        }
+    }
+}
+
+.button--addRow
+{
+    font-size: 13px;
+    line-height: 30px;
+
+    height: 30px;
+    padding: 0 15px;
+}
+
+.button--applyCredit
+{
+    font-size: 13px;
+    position: absolute;
+    width: 100px;
+    line-height: 22px;
+    height: 22px;
+    top: -13px;
+    left: 13px;
+}
+
+.button--removeRow
+{
+    position: absolute;
+    top: 14px;
+    right: -52px;
+
+    display: block;
+
+    padding: 15px;
+
+    cursor: pointer;
+    &::before
+    {
+        position: absolute;
+        top: 9px;
+        left: 9px;
+
+        width: 12px;
+        height: 12px;
+
+        content: '';
+
+        background: url(../../../../assets/icons/cross.svg) no-repeat;
+        background-size: contain;
+    }
+}

@@ -1,4 +1,8 @@
 export default {
+  SHOW_GRAPHS(state, showGraphs) {
+    state.showGraphs = showGraphs
+  },
+
   CHANGE_CURRENCY(state, currency) {
     state.currency = currency
   },

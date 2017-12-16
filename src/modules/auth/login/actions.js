@@ -37,11 +37,12 @@ export default {
 
         dispatch('auth/AUTHENTICATE', { accessToken, user, preloadedData }, { root: true })
       })
-      .catch(() => {
+      .catch((response) => {
         commit('SET_ERRORS', {
           username: [],
           password: ['Wrong Login or Password. Try again.']
         })
+        throw response
       })
   }
 }

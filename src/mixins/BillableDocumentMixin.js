@@ -88,16 +88,6 @@ export default {
       return this.clients.find((client) => client.uuid === this.client_uuid)
     },
 
-    clientCredits() {
-      if (this.client_uuid) {
-        return this.dropdownOptions.credits.filter((credit) => {
-          return credit.client.uuid === this.client_uuid
-        })
-      } else {
-        return []
-      }
-    },
-
     due_date: {
       get() {
         // if document is already created, leave due date as it is

@@ -19,17 +19,29 @@ class Discount extends Model {
         currency: CurrencyRepository.findByKey(data.currency.code)
       })
     } else {
-      modelData.value = Number(data.value)
+      modelData.value = Number(data.value) || 0
     }
     modelData.type = data.type
 
     return modelData
   }
 
+  get amount() {
+    return this.value instanceof Money ? this.value.amount : this.value
+  }
+
+  calc(amount) {
+    if (this.type === 'flat') {
+      return this.value
+    } else {
+      return this.amount * amount / 100
+    }
+  }
+
   serialize() {
     return {
       type: this.type,
-      value: this.value instanceof Money ? this.value.amount : this.value
+      value: this.amount
     }
   }
 }

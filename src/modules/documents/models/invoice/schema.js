@@ -54,7 +54,9 @@ const InvoiceSchema = (superclass) => class extends mix(superclass).with(Documen
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       client_uuid: this.client.uuid,
       date: this.date && this.date.format('YYYY-MM-DD'),
       due_date: this.dueDate && this.dueDate.format('YYYY-MM-DD'),
@@ -68,7 +70,7 @@ const InvoiceSchema = (superclass) => class extends mix(superclass).with(Documen
       terms: this.terms,
       footer: this.footer,
       status: this.status
-    })
+    }
   }
 }
 

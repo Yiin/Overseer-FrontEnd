@@ -22,4 +22,4 @@ export default {
   actions,
   getters
 }
-export const methods = RepositoryMethods('activity')
+export const methods = RepositoryMethods('activity').setModel(Activity)

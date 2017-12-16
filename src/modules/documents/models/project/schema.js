@@ -15,11 +15,13 @@ const ProjectSchema = (superclass) => class extends superclass {
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       name: this.name,
       client_uuid: (this.client || null) && this.client.uuid,
       description: this.description
-    })
+    }
   }
 }
 

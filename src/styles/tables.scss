@@ -23,11 +23,12 @@
 
         align-items: center;
     }
+    .button--create + &__dropdowns {
+        margin-left: 45px;
+    }
     &__dropdowns
     {
         display: inline-block;
-
-        margin-left: 45px;
 
         vertical-align: middle;
          > .dropdown

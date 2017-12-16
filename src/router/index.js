@@ -92,6 +92,21 @@ const router = new Router({
       beforeEnter: checkIfGuest
     },
     {
+      path: '/accept-invitation/:token',
+      props: true,
+      name: 'invite',
+      beforeEnter(...args) {
+        if (!checkIfGuest(...args)) {
+          // logged in
+          return
+        }
+        store.commit('auth/SET_ACCEPTING_INVITATION', true)
+      },
+      component(resolve) {
+        require(['@/pages/auth/AcceptInvitation.vue'], resolve)
+      }
+    },
+    {
       path: '/demo',
       name: 'demo',
       beforeEnter(to, from, next) {
@@ -418,8 +433,10 @@ function checkIfGuest(to, from, next) {
     next({
       path: '/'
     })
+    return false
   } else {
     next()
+    return true
   }
 }
 

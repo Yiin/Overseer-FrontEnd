@@ -6,7 +6,7 @@
     //-
       Default page
 
-    template(v-if="isAuthenticated && !isRedirecting")
+    template(v-if='showMainScreen')
 
       //-
         if we're not locked
@@ -71,12 +71,15 @@
     //-
       Auth screen
 
-    auth(v-if='!isAuthenticated || !isLoaded')
+    auth(v-if='showAuthScreen')
 
     //-
-      Move this somewhere else
+      Something else.
 
-    link(rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/2.8.0/css/flag-icon.min.css")
+      Used for:
+        • Accepting invitation
+
+    router-view(v-else-if='!showMainScreen')
 
 </template>
 
@@ -136,6 +139,18 @@ export default {
          */
         '--hide-overflow': this.isAuthenticated && !this.isLoaded
       }
+    },
+
+    showMainScreen() {
+      return this.isAuthenticated && !this.isRedirecting
+    },
+
+    showAuthScreen() {
+      return (!this.isAuthenticated || !this.isLoaded) && !this.isAcceptingInvitation
+    },
+
+    isAcceptingInvitation() {
+      return this.$store.state.auth.isAcceptingInvitation
     },
 
     isAuthenticated() {

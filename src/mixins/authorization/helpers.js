@@ -38,17 +38,8 @@ export default {
     ...makeHelpers('expense'),
     ...makeHelpers('vendor'),
     ...makeHelpers('project'),
-
-    /**
-     * Always show coworkers.
-     */
-    canViewEmployees() {
-      return true
-    },
-
-    canCreateEmployee() {
-      this.$user
-      return this.$authorization.accessController.canCreateDocument('employee')
-    }
+    ...makeHelpers('employee'),
+    ...makeHelpers('role'),
+    ...makeHelpers('company')
   }
 }

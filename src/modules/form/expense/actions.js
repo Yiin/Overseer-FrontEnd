@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Expense from '@/modules/documents/models/expense'
+import Expense from '@models/expense'
 
 export default FormActions({
   model: Expense,

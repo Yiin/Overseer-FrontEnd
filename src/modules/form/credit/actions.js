@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Credit from '@/modules/documents/models/credit'
+import Credit from '@models/credit'
 
 export default FormActions({
   model: Credit,

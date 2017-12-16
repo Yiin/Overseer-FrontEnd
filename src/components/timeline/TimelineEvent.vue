@@ -14,7 +14,7 @@
 import TimelineEventTitle from './TimelineEventTitle.vue'
 import TimelineEventSummary from './TimelineEventSummary.vue'
 import { editDocument } from '@/modules/documents/actions'
-import Event from '@/modules/documents/models/event'
+import Event from '@models/event'
 
 export default {
   components: {

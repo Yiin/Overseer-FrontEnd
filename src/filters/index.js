@@ -4,6 +4,8 @@ import moment from 'moment'
 import i18n from '@/i18n'
 import store from '@/store'
 import { methods as CurrencyRepository } from '@/modules/documents/repositories/currency'
+import { makeDate } from '@/scripts'
+import DateService from '@/services/date'
 
 export const currencySymbol = (val) => {
   if (!val) {
@@ -28,17 +30,12 @@ export const t = (val) => {
 }
 
 export const date = (val) => {
-  console.log(val)
-  if (!val) {
+  const date = makeDate(val)
+
+  if (!date) {
     return ''
   }
-  if (val instanceof moment) {
-    return val.format('MMM D, Y')
-  }
-  if (typeof val === 'string') {
-    return moment(val).format('MMM D, Y')
-  }
-  return moment(val.date).format('MMM D, Y')
+  return date.format(DateService.formats.DATE_FORMAT)
 }
 
 export const documentStatus = (document) => {

@@ -3,7 +3,7 @@
     .sidebar__content
       sidebar-company(
         class='sidebar__companySelect'
-        :company='$user.company'
+        :company='company'
         @click.native='toggleCompanyList'
       )
       sidebar-company-switcher(
@@ -28,6 +28,12 @@ export default {
   data() {
     return {
       isCompanyListOpen: false
+    }
+  },
+
+  computed: {
+    company() {
+      return this.$user && this.$user.company
     }
   },
 

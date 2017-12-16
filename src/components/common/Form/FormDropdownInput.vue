@@ -10,7 +10,7 @@
       ref='reversibleEl'
       :class='dropdownWrapperClasses'
       :style='dropdownOptionsWrapperStyle'
-      v-show='isOpen'
+      v-show='isOpen && hasOptions'
       @mousedown='focusOptions'
     )
       v-list.dropdown__options-list.md-list(:dense='dense')
@@ -19,18 +19,7 @@
           Display select all option, but only if multiple
           mode is set
 
-        v-list-tile(
-          v-if='multiple && withSelectAllOption'
-          @click='addAllItems'
-        )
-          v-list-tile-action
-            v-switch(
-              v-model='selectAllSwitch'
-              color='orange'
-              hide-details
-            )
-          v-list-tile-content
-            v-list-tile-title Select All
+        slot(name='customOptions')
 
         //-
           Display custom option, which will be added to list of custom
@@ -52,11 +41,11 @@
         template(v-for='item in filteredCustomItems')
           v-list-tile(ref='customOption' @click='selectCustom(item)')
             v-list-tile-action
-              v-icon playlist_add_check
+              v-icon {{ customItemIcon }}
 
             v-list-tile-content
               v-list-tile-title {{ item }}
-              v-list-tile-sub-title Custom item
+              v-list-tile-sub-title {{ customItemText }}
 
         //-
           List of filtered items
@@ -65,7 +54,7 @@
           v-divider(v-if='item.divider')
           v-subheader(v-else-if='item.header' v-text='item.header')
           slot(
-            v-else
+            v-else-if='index < TOpen'
             name='option'
             :item='item'
             :selected='selectedItems.indexOf(getItemValue(item)) > -1'
@@ -92,38 +81,42 @@
       //-
         Input field if we can search the items
 
-      template(v-if='!readonly && (searchable || allowCustom)')
-        v-text-field(
-          v-if='vuetify'
-          v-model='inputText'
-          :label='placeholder'
-          data-lpignore='true'
-          @mousedown='onFocus'
-          @focus='onFocus'
-          @blur='onBlur'
-          @input='onInput'
-        )
+      div(@click='onFocus')
+        slot(name='activator' :parent='_self')
+          template(v-if='!readonly && (searchable || allowCustom)')
+            v-text-field(
+              v-if='vuetify'
+              v-model='inputText'
+              :label='placeholder'
+              data-lpignore='true'
+              @mousedown='onFocus'
+              @focus='onFocus'
+              @blur='onBlur'
+              @input='onInput'
+              @keydown.enter='onEnter'
+            )
 
-        input.dropdown__input(
-          v-else
-          type='text'
-          v-model='inputText'
-          :placeholder='placeholder'
-          data-lpignore='true'
-          @mousedown='onFocus'
-          @focus='onFocus'
-          @blur='onBlur'
-          @input='onInput'
-        )
+            input.dropdown__input(
+              v-else
+              type='text'
+              v-model='inputText'
+              :placeholder='placeholder'
+              data-lpignore='true'
+              @mousedown='onFocus'
+              @focus='onFocus'
+              @blur='onBlur'
+              @input='onInput'
+              @keydown.enter='onEnter'
+            )
 
-      //-
-        Static div if we can't search the items
+          //-
+            Static div if we can't search the items
 
-      .dropdown__input(
-        v-else
-        @mousedown='onFocus'
-        @focus='onFocus'
-      ) {{ query || placeholder }}
+          .dropdown__input(
+            v-else
+            @mousedown='onFocus'
+            @focus='onFocus'
+          ) {{ query || placeholder }}
 
 </template>
 
@@ -157,6 +150,14 @@ export default {
       type: Boolean,
       default: false
     },
+    customItemIcon: {
+      type: String,
+      default: 'playlist_add_check'
+    },
+    customItemText: {
+      type: String,
+      default: 'Custom item'
+    },
     vuetify: {
       type: Boolean,
       default: false
@@ -188,6 +189,10 @@ export default {
     withTitles: {
       type: Boolean,
       default: false
+    },
+    top: {
+      type: Number,
+      default: undefined
     },
     value: {}
   },
@@ -252,6 +257,7 @@ export default {
        * @type {Boolean}
        */
       selectAll: false,
+      selectNone: false,
 
       /**
        * Used to check if dropdown should be displayed
@@ -260,7 +266,9 @@ export default {
        * @type {[type]}
        */
       dropdownHeight: null,
-      dropdownDistToBottom: null
+      dropdownDistToBottom: null,
+
+      TOpen: 0
     }
   },
 
@@ -279,6 +287,19 @@ export default {
       }
     },
 
+    hasOptions() {
+      if (!this.searchable) {
+        return true
+      }
+      if (this.filteredItems.length) {
+        return true
+      }
+      if (this.customItems.length) {
+        return true
+      }
+      return false
+    },
+
     inputText: {
       get() {
         if (this.multiple) {
@@ -286,11 +307,10 @@ export default {
             return this.query
           } else {
             if (this.selectedItems.length < 3) {
-              const selectedItems = this.selectedItems.map((selectedItem) => {
-                return this.items.find((item) => {
-                  return this.getItemValue(item) === selectedItem
-                }).text
-              }).filter(Boolean)
+              const selectedItems = this.items.filter((item) => {
+                return this.selectedItems.indexOf(this.getItemValue(item)) > -1
+              })
+              .map((item) => item.text)
 
               return selectedItems.join(', ')
             }
@@ -333,7 +353,14 @@ export default {
      */
     selectAllSwitch: {
       get() {
-        return this.selectAll
+        return this.selectAll && !this.selectNone
+      },
+      set() {}
+    },
+
+    selectNoneSwitch: {
+      get() {
+        return this.selectNone && !this.selectAll
       },
       set() {}
     },
@@ -377,7 +404,15 @@ export default {
         }
       }
 
+      if (!this.isReversed && typeof this.top !== 'undefined') {
+        style.top = this.top + 'px'
+      }
+
       return style
+    },
+
+    serializedValue() {
+      return Array.isArray(this.value) ? JSON.stringify(this.value) : this.value
     }
   },
 
@@ -388,16 +423,24 @@ export default {
       }
     },
 
-    value() {
-      this.selectByValue()
+    serializedValue(value, previous) {
+      if (value !== previous) {
+        this.selectByValue()
+      }
     },
 
     isOpen(isOpen) {
-      if (!isOpen) {
+      if (isOpen) {
+        this.TOpen = 0
+        requestAnimationFrame(() => {
+          this.$refs.reversibleEl.scrollTop = 0
+        })
+        requestAnimationFrame(this.loadOptions)
+
+        this.calcDropdownSize()
+      } else {
         this.isTyping = false
         this.resetDropdownSize()
-      } else {
-        this.calcDropdownSize()
       }
     },
 
@@ -419,6 +462,32 @@ export default {
         // filter out non existant items
         this.selectedItems = this.selectedItems.filter((value) => this.values.indexOf(value) > -1)
       }
+
+      // Update selected item text if it changed
+      if (this.selectedItem) {
+        const item = items.find((item) => this.getItemValue(item) === this.getItemValue(this.selectedItem))
+
+        this.selectedItem = item
+
+        if (!this.isTyping) {
+          this.inputText = item ? item.text : ''
+        }
+      } else if (this.value) {
+        const item = items.find((item) => this.getItemValue(item) === this.value)
+
+        this.selectedItem = item
+
+        if (!this.isTyping) {
+          this.inputText = item ? item.text : ''
+        }
+      }
+
+      // Remove custom items, if items with same name exists in items list
+      this.customItems = this.customItems.filter((item) => {
+        return items.findIndex((existingItem) => {
+          return existingItem.text === item
+        }) < 0
+      })
     }
   },
 
@@ -427,15 +496,45 @@ export default {
   },
 
   methods: {
+    input(text) {
+      this.inputText = text
+      this.onInput()
+    },
+
+    loadOptions() {
+      if (!this.isOpen) {
+        return
+      }
+      if (this.TOpen >= this.filteredItems.length) {
+        return
+      }
+      this.TOpen += 10 + this.TOpen
+      setTimeout(this.loadOptions, 50)
+    },
+
     genTitles(items) {
       const options = []
 
       let lastChar = null
 
+      items.sort((a, b) => {
+        const [ aText, bText ] = [ a.text.toUpperCase(), b.text.toUpperCase() ]
+
+        if (aText < bText) {
+          return -1
+        } else if (aText > bText) {
+          return 1
+        } else {
+          return 0
+        }
+      })
+
       items.forEach((item) => {
-        if (!lastChar || item.text[0] !== lastChar) {
-          lastChar = item.text[0]
-          options.push({ header: lastChar })
+        const currentChar = item.text[0].toUpperCase()
+
+        if (!lastChar || currentChar !== lastChar) {
+          options.push({ header: currentChar })
+          lastChar = currentChar
         }
         options.push(item)
       })
@@ -464,11 +563,21 @@ export default {
     },
 
     selectByValue() {
+      if ((this.multiple && !this.value.length) || this.value === null) {
+        this.selectedItems = []
+        this.selectedItem = null
+
+        if (!this.isTyping) {
+          this.query = ''
+        }
+      }
       if (this.multiple) {
         const availableSelectedItems = this.value.filter((item) => this.values.indexOf(item) > -1)
 
-        console.log('availableSelectedItems', availableSelectedItems)
-        if (this.selectedItems.slice().sort().toString() !== availableSelectedItems.sort().toString()) {
+        const selectedItemsCmp = this.selectedItems.sort().toString()
+        const availableSelectedItemsCmp = availableSelectedItems.sort().toString()
+
+        if (selectedItemsCmp !== availableSelectedItemsCmp) {
           this.selectedItems = availableSelectedItems
           this.$emit('input', this.selectedItems)
         }
@@ -536,7 +645,7 @@ export default {
     },
 
     getItemValue(item) {
-      if (typeof item.value !== 'undefined') {
+      if ('value' in item) {
         return item.value
       } else {
         return item.text
@@ -545,6 +654,13 @@ export default {
 
     focusOptions() {
       this.ignoreBlur = true
+    },
+
+    onEnter() {
+      if (this.canAddItem) {
+        this.addItem()
+        this.hide()
+      }
     },
 
     onFocus() {

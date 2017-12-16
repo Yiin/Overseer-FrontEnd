@@ -25,10 +25,18 @@ export default {
       this.isOpen = !this.isOpen
     },
 
-    closeDatePicker() {
+    openDatePicker() {
       if (this.isOpen) {
-        this.isOpen = false
+        return
       }
+      this.isOpen = true
+    },
+
+    closeDatePicker() {
+      if (!this.isOpen) {
+        return
+      }
+      this.isOpen = false
     },
 
     /**

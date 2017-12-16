@@ -5,15 +5,19 @@ import AppliedCredit from '../../applied-credit'
  */
 const AppliesCreditsSchema = (superclass) => class extends superclass {
   static parse(data) {
-    return Object.assign(super.parse(data), {
+    return {
+      ...(typeof super.parse === 'function' ? super.parse(data) : {}),
+
       appliedCredits: (data.applied_credits || []).map(AppliedCredit.create, AppliedCredit)
-    })
+    }
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...(typeof super.serialize === 'function' ? super.serialize(options) : {}),
+
       applied_credits: this.appliedCredits.map((appliedCredit) => appliedCredit.serialize(options))
-    })
+    }
   }
 }
 export default AppliesCreditsSchema

@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Quote from '@/modules/documents/models/quote'
+import Quote from '@models/quote'
 
 export default FormActions({
   model: Quote,

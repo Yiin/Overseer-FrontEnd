@@ -11,6 +11,13 @@ class Model {
       this[key] = props[key]
     }
   }
+
+  update(data) {
+    this.fill(
+      this.constructor.parse(data)
+    )
+    return this
+  }
 }
 
 export default Model

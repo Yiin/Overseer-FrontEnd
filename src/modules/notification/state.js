@@ -9,5 +9,5 @@ export const defaultOptions = {
 export default {
   isVisible: false,
 
-  options: Object.assign({}, defaultOptions)
+  options: { ...defaultOptions }
 }

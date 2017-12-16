@@ -25,6 +25,10 @@ class Address extends Model {
     }
   }
 
+  format() {
+    return `${this.address1} ${this.address2} ${this.postalCode}, ${this.city}, ${this.country.name}`
+  }
+
   /**
    * Create profile with random fake data.
    *

@@ -29,7 +29,9 @@ const ProductSchema = (superclass) => class extends mix(superclass).with(Documen
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       name: this.name,
       identification_number: this.identificationNumber,
       description: this.description,
@@ -37,7 +39,7 @@ const ProductSchema = (superclass) => class extends mix(superclass).with(Documen
       qty: this.isService ? null : this.qty,
       price: this.price.amount,
       currency_code: this.price.currency.code
-    })
+    }
   }
 }
 

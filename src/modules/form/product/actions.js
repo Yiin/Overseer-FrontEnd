@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Product from '@/modules/documents/models/product'
+import Product from '@models/product'
 
 export default FormActions({
   model: Product,

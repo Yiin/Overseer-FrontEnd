@@ -1,6 +1,10 @@
 export default {
+  showGraphs: false,
   currency: null,
-  statisticsGraphInterval: 'week',
-  statisticsDateRange: null,
+  statisticsGraphInterval: 'day',
+  statisticsDateRange: {
+    start: undefined,
+    end: undefined
+  },
   statisticsDateRangeKey: 'year'
 }

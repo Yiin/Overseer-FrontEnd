@@ -2,7 +2,10 @@ import { defaultOptions } from './state'
 
 export default {
   SHOW({ commit }, options) {
-    options = Object.assign({}, defaultOptions, options)
+    options = {
+      ...defaultOptions,
+      ...options
+    }
 
     commit('SET_OPTIONS', options)
 

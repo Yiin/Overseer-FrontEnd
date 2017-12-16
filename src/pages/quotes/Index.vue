@@ -8,17 +8,15 @@
           Here you can create quotes for clients.<br>
           Quotes can be converted to invoices.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateQuote" @click="create" class="button button--create">
           <span class="icon-new-quote-btn-icon"></span>
           {{ $t('actions.new_quote') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.quotes') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateQuote" @click="create" class="button button--create">
           <span class="icon-new-quote-btn-icon"></span>
           {{ $t('actions.new_quote') }}
         </button>
@@ -147,7 +145,11 @@ export default {
         .addItem(TableCmItems.PRINT_DOCUMENT.extend({ title: this.$t('actions.print_quote') }))
         .addItem(TableCmItems.CONVERT_TO_INVOICE)
         .addItem(TableCmItems.VIEW_INVOICE)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)

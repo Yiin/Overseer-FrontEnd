@@ -2,19 +2,21 @@
   .tabs.tabs--with-overflow(
     :class='tabsClasses'
   )
+    //-
+      List of tabs.
+      Some may be dropdown that contains more tabs.
 
     .tabs__list
-
-      .tab__title(
-        v-for="tab in tabs"
-        @mousedown="selectTab(tab.key)"
-        :class="{ 'tab__title--active': activeTabKey === tab.key }"
-        :title="tab.title"
+      tab-title(
+        v-for='tab in tabs'
+        :key='tab.key'
+        :tab='tab'
+        :active-tab-key='activeTabKey'
+        @select-tab='selectTab'
       )
-        slot(
-          name='tab'
-          :tab='tab'
-        ) {{ tab.title }}
+
+    //-
+      Content of tabs
 
     .tabs__content
       slot
@@ -27,6 +29,9 @@ export default {
 
   provide() {
     return {
+      addTabDropdown: ({ key, items, selectOption }) => {
+        this.registerTabDropdown(key, items, selectOption)
+      },
       addTabItem: ({ title, key, setActive }) => {
         this.registerTabItem(title, key, setActive)
       },
@@ -40,10 +45,6 @@ export default {
     labels: {
       type: Boolean,
       default: false
-    },
-
-    tab: {
-      default: undefined
     }
   },
 
@@ -63,25 +64,62 @@ export default {
   },
 
   watch: {
-    tab(currentTab) {
-      this.selectTab(currentTab)
+    activeTabKey(key) {
+      console.log('tabs.activeTabKey changed', key, this.tabs)
     }
   },
 
   methods: {
+    /**
+     * Register tab that is dropdown.
+     *
+     * That dropdown contains more tabs.
+     */
+    registerTabDropdown(key, items, selectOption) {
+      console.log('registerTabDropdown', key, items)
+      this.tabs.push({ isDropdown: true, key, items, selectOption })
+    },
+
+    /**
+     * Register simple tab
+     */
     registerTabItem(title, key, setActive) {
       this.tabs.push({ title, key, setActive })
     },
 
+    /**
+     * Unregister tab.
+     *
+     * It will be then removed from tabs list.
+     */
     unregisterTabItem(key) {
       this.tabs = this.tabs.filter((tab) => tab.key !== key)
     },
 
+    /**
+     * Select tab, so we could see its content
+     */
     selectTab(tabKey) {
+      if (!tabKey) {
+        return
+      }
+
       this.activeTabKey = tabKey
 
       this.tabs.forEach((tab) => {
-        tab.setActive(tab.key === tabKey)
+        if (tab.isDropdown) {
+          if (tab.key === tabKey) {
+            const optionKey = tab.selectOption()
+
+            if (optionKey) {
+              this.activeTabKey = optionKey
+            }
+          } else {
+            tab.selectOption(tabKey)
+          }
+        } else {
+          tab.setActive(tab.key === tabKey)
+        }
       })
     }
   },
@@ -90,11 +128,7 @@ export default {
     if (this.tabs.length < 1) {
       throw new Error(`Tabs should contain at least 1 tab.`)
     }
-    if (this.tab) {
-      this.selectTab(this.tab)
-    } else {
-      this.selectTab(this.tabs[0].key)
-    }
+    this.selectTab(this.tabs[0].key)
   }
 }
 </script>
@@ -137,6 +171,10 @@ export default {
         display: block;
         height: 4px;
         margin-left: -20px;
+    }
+    > .tab__title--dropdown.tab__title--active::after,
+    > .tab__title--dropdown.tab__title:hover::after {
+      margin-left: 0;
     }
 
     > .tab__title--active::after {

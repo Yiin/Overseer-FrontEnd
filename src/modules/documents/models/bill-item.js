@@ -1,8 +1,9 @@
 import faker from 'faker'
-import Model from './model'
-import { methods as CurrencyRepository } from '../repositories/currency'
-import { methods as ProductRepository } from '../repositories/product'
-import Money from './money'
+import Model from '@models/model'
+import { methods as CurrencyRepository } from '@repositories/currency'
+import { methods as ProductRepository } from '@repositories/product'
+import Money from '@models/money'
+import Discount from '@models/discount'
 
 /**
  * BillItem model
@@ -21,13 +22,45 @@ class BillItem extends Model {
     modelData.product = ProductRepository.findByKey(data.product_uuid)
     modelData.name = data.name
     modelData.identificationNumber = data.identification_number
+
+    const currency = CurrencyRepository.findByKey(data.currency_code)
+
+    modelData.currency = currency
+
     modelData.cost = Money.create({
       amount: data.cost,
-      currency: CurrencyRepository.findByKey(data.currency_code)
+      currency
     })
-    modelData.qty = data.qty
+
+    modelData.discount = Discount.create({
+      type: data.discount_type,
+      value: data.discount_value,
+      currency
+    })
+
+    modelData.qty = Number(data.qty) || 0
 
     return modelData
+  }
+
+  getInitialPrice() {
+    return this.cost.get() * this.qty
+  }
+
+  getDiscount() {
+    return this.discount.calc(this.getInitialPrice())
+  }
+
+  getDiscountedPrice() {
+    return this.getInitialPrice() - this.getDiscount()
+  }
+
+  getTaxAmount() {
+    return 0
+  }
+
+  getFinalPrice() {
+    return this.getDiscountedPrice() + this.getTaxAmount()
   }
 
   serialize() {
@@ -36,6 +69,8 @@ class BillItem extends Model {
       name: this.name,
       identification_number: this.identificationNumber,
       cost: this.cost.amount,
+      discount_type: this.discount.type,
+      discount_value: this.discount.amount,
       qty: this.qty
     }
   }

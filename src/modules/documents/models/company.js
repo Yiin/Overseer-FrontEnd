@@ -1,23 +1,24 @@
 import moment from 'moment'
 import { mix } from 'mixwith'
+// import store from '@/store'
 import Model from './model'
-import Role from './role'
 import SerializesData from './concerns/serializes-data'
+import HasRoles from './concerns/has-roles'
 
-class Company extends mix(Model).with(SerializesData) {
+class Company extends mix(Model).with(SerializesData, HasRoles) {
   static create(data) {
     return new this(this.parse(data))
   }
 
   static parse(data) {
     return {
+      ...super.parse(data),
+
       uuid: data.uuid,
 
       name: data.name,
       email: data.email,
       logoUrl: data.logo_url,
-
-      roles: (data.roles || []).map(Role.create, Role),
 
       createdAt: data.created_at && moment(data.created_at),
       updatedAt: data.updated_at && moment(data.updated_at),
@@ -38,6 +39,10 @@ class Company extends mix(Model).with(SerializesData) {
     this.fill(
       this.constructor.parse(data)
     )
+
+    // if (this === ) {
+    //   store.commit('auth/UPDATE_USER')
+    // }
     return this
   }
 }

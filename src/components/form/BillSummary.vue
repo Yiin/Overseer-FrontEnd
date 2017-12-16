@@ -83,8 +83,8 @@
 
 <script>
 import BillSummaryItem from './BillSummaryItem.vue'
-// import BillItem from '@/modules/documents/models/bill-item'
-import Money from '@/modules/documents/models/money'
+// import BillItem from '@models/bill-item'
+import Money from '@models/money'
 import { getRepositoryName } from '@/modules/documents/helpers'
 
 export default {

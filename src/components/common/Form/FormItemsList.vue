@@ -55,7 +55,7 @@ export default {
 
   data() {
     return {
-      form: Object.assign({}, this.model),
+      form: { ...this.model },
       items: this.value
     }
   },
@@ -96,11 +96,9 @@ export default {
 
   methods: {
     addItem() {
-      const item = Object.assign({}, this.form)
+      const item = { ...this.form }
 
       this.items.push(item)
-
-      // this.form = Object.assign({}, this.model)
     },
 
     removeItem(item) {

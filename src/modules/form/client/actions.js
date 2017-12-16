@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Client from '@/modules/documents/models/client'
+import Client from '@models/client'
 
 export default FormActions({
   model: Client,

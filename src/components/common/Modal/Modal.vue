@@ -314,7 +314,7 @@ export default {
 
     cacheData() {
       this.cachedIndex = this.$store.state.taskbar.activeIndex
-      this.cachedData = Object.assign({}, this.data)
+      this.cachedData = { ...this.data }
     },
 
     hide() {

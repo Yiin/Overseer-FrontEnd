@@ -1,9 +1,13 @@
-<template>
-  <div class="column" :style="{ width: cssWidth }" :class="{ copied: justCopied }">
-    <span>
-      <slot></slot>
-    </span>
-  </div>
+<template lang="pug">
+  .column(
+    :style='columnStyle'
+    :class='columnClasses'
+  )
+    span(
+      :title='getText()'
+    )
+      slot
+
 </template>
 
 <script>
@@ -19,6 +23,18 @@ export default {
   },
 
   computed: {
+    columnStyle() {
+      return {
+        width: this.cssWidth
+      }
+    },
+
+    columnClasses() {
+      return {
+        copied: this.justCopied
+      }
+    },
+
     cssWidth() {
       const value = parseFloat(this.width.replace('%', '')) / 100
 

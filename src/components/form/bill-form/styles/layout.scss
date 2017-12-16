@@ -1,0 +1,43 @@
+.billForm
+{
+    position: relative;
+
+    width: $document-width;
+    min-height: $document-height;
+    margin: auto;
+    padding: 119px 78px 100px 92px;
+
+    background-color: #fff;
+
+    line-height: initial;
+}
+
+.billTitle
+{
+    font-size: 25px;
+}
+
+.billBlock {
+    display: flex;
+
+    &--companies {
+        padding: 95px 0 40px;
+    }
+    &--footer {
+        flex-flow: column;
+    }
+}
+
+.billBlockColumn {
+    width: 100%;
+
+    &:not(:first-child) {
+        margin-left: 132px;
+    }
+}
+
+.billBuyerCompany {
+    .dropdown {
+        margin-bottom: 4px;
+    }
+}

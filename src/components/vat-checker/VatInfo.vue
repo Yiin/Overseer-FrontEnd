@@ -9,8 +9,7 @@
     }"
     @mouseover="onHover"
     @mouseleave="onLeave"
-    v-tooltip="{ content, placement: 'right', classes: tooltipClasses, trigger }"
-    v-clickaway="close"
+    v-tooltip="{ content, placement: 'right', classes: tooltipClasses, trigger: 'manual' }"
     @click="check"
   >
   <template v-if="status === 'pending'">
@@ -31,9 +30,8 @@ export default {
 
   data() {
     return {
-      trigger: 'hover focus',
-      hovering: false,
-      disabled: false
+      disabled: false,
+      onLeaveBinded: this.onLeave.bind(this)
     }
   },
 
@@ -128,53 +126,107 @@ export default {
   },
 
   mounted() {
-    EventBus.$on('hide-tooltips', this.close)
+    EventBus.$on('hide-tooltips', this.hideTooltip)
     EventBus.$on('disable-tooltips', this.disable)
     EventBus.$on('enable-tooltips', this.enable)
   },
 
   destroyed() {
-    EventBus.$off('hide-tooltips', this.close)
+    EventBus.$off('hide-tooltips', this.hideTooltip)
     EventBus.$off('disable-tooltips', this.disable)
     EventBus.$off('enable-tooltips', this.enable)
   },
 
   methods: {
     check() {
-      this.hovering = true
-
       EventBus.$emit('disable-tooltips')
       this.disabled = false
 
       if (this.status === 'valid') {
-        this.$el._tooltip.show()
-        this.trigger = 'manual'
+        this.showTooltip()
       }
 
       this.vat.check().then(() => {
-        this.trigger = 'manual'
-        this.$el._tooltip.show()
+        this.showTooltip()
 
         setTimeout(() => {
           EventBus.$emit('enable-tooltips')
-          if (!this.hovering) {
-            this.$el._tooltip.hide()
+          if (!this.isTooltipHovered()) {
+            this.hideTooltip()
           }
-          this.trigger = 'hover focus'
         }, 3000)
       })
     },
 
+    /**
+     * Check if we're hovering tooltip
+     */
+    isTooltipHovered() {
+      if (this.disabled) {
+        return false
+      }
+      if (!this.$el._tooltip) {
+        return false
+      }
+      if (!this.$el._tooltip.popperInstance) {
+        return false
+      }
+      if (!this.$el._tooltip.popperInstance.popper) {
+        return false
+      }
+
+      /**
+       * Check if we're hovering trigger button
+       */
+      const triggerBtn = this.$el
+
+      if (triggerBtn && triggerBtn.parentElement && triggerBtn.parentElement.querySelector(':hover') === triggerBtn) {
+        return true
+      }
+
+      /**
+       * Check if we're hovering the tooltip itself
+       */
+      const tooltip = this.$el._tooltip.popperInstance.popper
+
+      if (tooltip && tooltip.parentElement && tooltip.parentElement.querySelector(':hover') === tooltip) {
+        return true
+      }
+
+      return false
+    },
+
     onHover() {
-      this.hovering = true
+      if (this.disabled) {
+        return
+      }
+
+      this.showTooltip()
     },
 
     onLeave() {
-      this.hovering = false
+      setTimeout(() => {
+        if (this.isTooltipHovered()) {
+          this.$el._tooltip.popperInstance.popper.addEventListener('mouseleave', this.onLeaveBinded)
+          return
+        } else {
+          this.hideTooltip()
+        }
+      }, 300)
     },
 
-    close() {
+    showTooltip() {
       if (this.$el && this.$el._tooltip) {
+        EventBus.$emit('hide-tooltips')
+        this.$el._tooltip.show()
+      }
+    },
+
+    hideTooltip() {
+      if (this.$el && this.$el._tooltip) {
+        if (this.$el._tooltip.popperInstance && this.$el._tooltip.popperInstance.popper) {
+          this.$el._tooltip.popperInstance.popper.removeEventListener('mouseleave', this.onLeaveBinded)
+        }
         this.$el._tooltip.hide()
       }
     },

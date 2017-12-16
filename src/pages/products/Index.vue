@@ -8,17 +8,15 @@
           Here you can add products.<br>
           Both physical stock and services.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateProduct" @click="create" class="button button--create">
           <span class="icon-new-product-btn-icon"></span>
           {{ $t('actions.new_product') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.products') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateProduct" @click="create" class="button button--create">
           <span class="icon-new-product-btn-icon"></span>
           {{ $t('actions.new_product') }}
         </button>
@@ -159,7 +157,11 @@ export default {
           title: this.$t('actions.clone_product')
         }))
         .addItem(TableCmItems.HISTORY_LIST)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)

@@ -14,7 +14,14 @@ class ContextMenuBuilder {
     return this
   }
 
-  addSeparator(index = null) {
+  addSeparator({
+    index = null,
+    filter = () => true
+  } = {}) {
+    if (!filter(this)) {
+      return this
+    }
+
     const separator = {
       component: 'cm-item',
       props: {

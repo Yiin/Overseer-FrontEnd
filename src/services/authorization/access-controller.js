@@ -2,7 +2,11 @@ import store from '@/store'
 import { getRepositoryName, getResourceName } from '@/modules/documents/helpers'
 
 function user() {
-  return store.state.auth.user
+  return store.state.auth.user || {
+    can() {
+      return false
+    }
+  }
 }
 
 class AccessController {

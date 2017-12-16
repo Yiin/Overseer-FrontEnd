@@ -64,10 +64,12 @@ export default {
      */
     makeDropdownOptionObj({ text = 'name', value = 'id' } = {}) {
       return (item) => {
-        return Object.assign({}, item, {
+        return {
+          ...item,
+
           text: typeof text === 'function' ? text(item) : item[text],
           value: typeof value === 'function' ? value(item) : item[value]
-        })
+        }
       }
     },
 

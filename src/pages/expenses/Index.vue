@@ -8,17 +8,15 @@
           Here you can enter expenses<br>
           and track expenditures.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateExpense" @click="create" class="button button--create">
           <span class="icon-new-expense-btn-icon"></span>
           {{ $t('actions.new_expense') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.expenses') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateExpense" @click="create" class="button button--create">
           <span class="icon-new-expense-btn-icon"></span>
           {{ $t('actions.new_expense') }}
         </button>
@@ -140,7 +138,11 @@ export default {
         }))
         .addItem(TableCmItems.INVOICE_EXPENSE)
         .addItem(TableCmItems.HISTORY_LIST)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)

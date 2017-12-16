@@ -13,7 +13,7 @@ class Money extends Model {
   static create(data) {
     return new Money({
       currency: CurrencyRepository.findByKey(data.currency.code),
-      amount: Number(accounting.toFixed(data.amount, DEFAULT_PRECISION))
+      amount: Number(accounting.toFixed(data.amount || 0, DEFAULT_PRECISION))
     })
   }
 
@@ -40,6 +40,14 @@ class Money extends Model {
     )
   }
 
+  static formatNumber(number, precision = DEFAULT_PRECISION) {
+    return accounting.formatNumber(number, precision)
+  }
+
+  static formatMoney(number, currencySymbol, precision = DEFAULT_PRECISION) {
+    return accounting.formatMoney(number, currencySymbol, precision)
+  }
+
   /**
    * Set amount
    */
@@ -48,14 +56,16 @@ class Money extends Model {
       this.amount = value.getIn(this.currency)
     } else if (typeof value === 'string') {
       this.amount = accounting.unformat(value)
-    } else {
+    } else if (typeof value === 'number') {
       this.amount = value
+    } else {
+      throw new Error('Invalid value passed to Model.set method.')
     }
   }
 
-/**
- * Adjust amount
- */
+  /**
+   * Adjust amount
+   */
   adjust(difference) {
     if (difference instanceof Money) {
       this.amount += difference.getIn(this.currency)

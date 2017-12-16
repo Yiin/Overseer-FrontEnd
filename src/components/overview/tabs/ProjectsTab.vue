@@ -1,47 +1,35 @@
-<template>
-  <div v-show="isActive" class="tab tab--dashboard">
-    <template v-if="!projects.length">
-      <div class="placeholder-area">
-        <div class="placeholder placeholder--projects"></div>
-        <div class="placeholder placeholder--line"></div>
-        <div class="placeholder__text">
-          Create a new project by pressing the button below.
-        </div>
-        <button @click="create" class="button button--create">
-          <span class="icon-new-quote-btn-icon"></span>
-          {{ $t('actions.new_project') }}
-        </button>
-      </div>
-    </template>
-    <documents-table v-else simple
+<template lang="pug">
+  .tab.tab--dashboard(v-show="isActive")
+    template(v-if="!projects.length")
+      .placeholder-area
+        .placeholder.placeholder--projects
+        .placeholder.placeholder--line
+        .placeholder__text Create a new project by pressing the button below.
+
+        button(@click="create" class="button button--create")
+          span.icon-new-quote-btn-icon
+          | {{ $t('actions.new_project') }}
+
+    documents-table(v-else simple
       ref="table"
       :documents="projects"
       :data="tableData"
       :context-menu-actions="contextMenuActions"
-    >
-      <template slot="head">
-        <column width="20%">Project Name</column>
-        <column width="20%">Progress</column>
-        <column width="60%">Description</column>
-      </template>
-      <template slot="columns" slot-scope="{ row }">
-          <column width="20%">
-            <a href="#" @click="open(row)">
-              {{ row.name }}
-            </a>
-          </column>
-          <column width="20%">
-            {{ row.tasks | projectProgress }}
-          </column>
-          <column width="60%">
-            {{ row.description }}
-          </column>
-      </template>
-      <template slot="details" slot-scope="props">
-        <project-details :project="row"></project-details>
-      </template>
-    </documents-table>
-  </div>
+    )
+      template(slot="head")
+        column(width="20%") Project Name
+        column(width="20%") Progress
+        column(width="60%") Description
+
+      template(slot="columns" slot-scope="{ row }")
+          column(width="20%")
+            a(href="#" @click="open(row)") {{ row.name }}
+          column(width="20%") {{ row.tasks | projectProgress }}
+          column(width="60%") {{ row.description }}
+
+      template(slot="details" slot-scope="props")
+        project-details(:project="row")
+
 </template>
 
 <script>

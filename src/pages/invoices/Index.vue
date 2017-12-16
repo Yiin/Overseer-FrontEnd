@@ -8,17 +8,15 @@
           Here you can create and manage invoices, <br>
           E-Mail them to clients and save drafts.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateInvoice" @click="create" class="button button--create">
           <span class="icon-new-invoice-btn-icon"></span>
           {{ $t('actions.new_invoice') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.invoices') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateInvoice" @click="create" class="button button--create">
           <span class="icon-new-invoice-btn-icon"></span>
           {{ $t('actions.new_invoice') }}
         </button>
@@ -172,7 +170,11 @@ export default {
         }))
         .addSeparator()
         .addItem(TableCmItems.ENTER_PAYMENT)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)

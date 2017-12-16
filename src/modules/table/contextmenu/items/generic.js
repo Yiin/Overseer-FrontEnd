@@ -1,7 +1,7 @@
 import i18n from '@/i18n'
 import ContextMenuItem from '@/modules/contextmenu/cm-item'
 import Statuses from '@/modules/documents/statuses'
-import * as actions from '@/modules/documents/actions'
+const actions = require('@/modules/documents/actions')
 
 /**
  * Option to open document creation form
@@ -67,6 +67,9 @@ export const ARCHIVE = new ContextMenuItem({
 .addFilter(function () {
   return this.builder.selectedSpecificRow() && Statuses.generic.active.meetsCondition(this.builder.getSelectedRow())
 })
+.addFilter(function () {
+  return this.$user.can('edit', this.builder.getSelectedRow())
+})
 .setHandler(function () {
   actions.archiveDocument(this.builder.getSelectedRow(), this.builder.getTableStateName())
 })
@@ -83,6 +86,9 @@ export const ARCHIVE_MANY = new ContextMenuItem({
 })
 .addFilter(function () {
   return this.builder.selectedMoreThanOneRow() && this.builder.atLeastOne(Statuses.generic.active.meetsCondition)
+})
+.addFilter(function () {
+  return this.builder.atLeastOne((row) => this.$user.can('edit', row))
 })
 .setHandler(function () {
   const uuids = this.builder.getSelection()
@@ -105,6 +111,9 @@ export const DELETE = new ContextMenuItem({
 .addFilter(function () {
   return this.builder.selectedSpecificRow() && !Statuses.generic.deleted.meetsCondition(this.builder.getSelectedRow())
 })
+.addFilter(function () {
+  return this.$user.can('delete', this.builder.getSelectedRow())
+})
 .setHandler(function () {
   actions.deleteDocument(this.builder.getSelectedRow(), this.builder.getTableStateName())
 })
@@ -121,6 +130,9 @@ export const DELETE_MANY = new ContextMenuItem({
 })
 .addFilter(function () {
   return this.builder.selectedMoreThanOneRow() && this.builder.atLeastOne((row) => !Statuses.generic.deleted.meetsCondition(row))
+})
+.addFilter(function () {
+  return this.builder.atLeastOne((row) => this.$user.can('delete', row))
 })
 .setHandler(function () {
   const uuids = this.builder.getSelection()
@@ -143,6 +155,9 @@ export const RECOVER = new ContextMenuItem({
 .addFilter(function () {
   return this.builder.selectedSpecificRow() && Statuses.generic.deleted.meetsCondition(this.builder.getSelectedRow())
 })
+.addFilter(function () {
+  return this.$user.can('delete', this.builder.getSelectedRow())
+})
 .setHandler(function () {
   actions.recoverDocument(this.builder.getSelectedRow(), this.builder.getTableStateName())
 })
@@ -159,6 +174,9 @@ export const RECOVER_MANY = new ContextMenuItem({
 })
 .addFilter(function () {
   return this.builder.selectedMoreThanOneRow() && this.builder.atLeastOne(Statuses.generic.deleted.meetsCondition)
+})
+.addFilter(function () {
+  return this.builder.atLeastOne((row) => this.$user.can('delete', row))
 })
 .setHandler(function () {
   const uuids = this.builder.getSelection()
@@ -181,6 +199,9 @@ export const UNARCHIVE = new ContextMenuItem({
 .addFilter(function () {
   return this.builder.selectedSpecificRow() && Statuses.generic.archived.meetsCondition(this.builder.getSelectedRow())
 })
+.addFilter(function () {
+  return this.$user.can('edit', this.builder.getSelectedRow())
+})
 .setHandler(function () {
   actions.unarchiveDocument(this.builder.getSelectedRow(), this.builder.getTableStateName())
 })
@@ -197,6 +218,9 @@ export const UNARCHIVE_MANY = new ContextMenuItem({
 })
 .addFilter(function () {
   return this.builder.selectedMoreThanOneRow() && this.builder.atLeastOne(Statuses.generic.archived.meetsCondition)
+})
+.addFilter(function () {
+  return this.builder.atLeastOne((row) => this.$user.can('edit', row))
 })
 .setHandler(function () {
   const uuids = this.builder.getSelection()

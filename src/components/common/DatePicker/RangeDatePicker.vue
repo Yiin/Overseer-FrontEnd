@@ -1,139 +1,140 @@
-<template>
-  <div v-clickaway="closeDatePicker" class="dropdown" :class="{ 'datepicker--open': isOpen }">
-    <div @click="toggle" class="dropdown__input-wrapper">
-      <input class     = "dropdown__input --datepicker"
-             :class    = "{ 'dropdown__input--nil': nil }"
-             v-model   = "date"
-             :name     = "name"
-             type      = "text"
-             readonly>
-    </div>
-    <div v-if="isOpen" class="calendars">
-      <!--
-        Main Calendar
-       -->
-      <div class="calendar__wrapper">
-        <input type="text" @input="inputStartDate($event.target.value)" v-model="startDatePreview" class="form__input form__input--calendar" readonly>
-        <div class="calendar__controls">
-          <div @click="prevMonth()" class="calendar__control-arrow">
-            <div class="arrow-left"></div>
-          </div>
-          <div class="calendar__month">
-            {{ currentMonth.format('MMM YYYY') }}
-          </div>
-          <div @click="nextMonth()" class="calendar__control-arrow">
-            <div class="arrow-right"></div>
-          </div>
-        </div>
-        <div class="calendar" @mouseleave="previewDate()">
-          <div class="weekdays">
-            <div v-for="weekday in weekdays" class="calendar__weekday">
-              {{ $t('weekdays.' + weekday) }}
-            </div>
-          </div>
-          <div v-for="week in calendar" class="calendar__week">
-            <div
-              v-for="day in week"
-              class="calendar__day"
-              :class="{
-                'calendar__day--another-month': !day.isCurrentMonth,
-                'calendar__day--start-date': !nil && day.moment.isSame(selectedStartDate || startDate, 'day'),
-                'calendar__day--end-date': !nil && day.moment.isSame(selectedEndDate || endDate, 'day') && selectedStartDate.isBefore(endDate),
-                'calendar__day--in-range': !nil && day.moment.isBetween(selectedStartDate || startDate, selectedEndDate || endDate)
-              }"
-              @mouseover="previewDate(day.moment)"
-              @mousedown="setStartDate(day.moment)"
-            >
-              {{ day.date }}
-            </div>
-          </div>
-        </div>
-      </div>
+<template lang="pug">
+  .dropdown(
+    v-clickaway='closeDatePicker'
+    :class='dropdownClasses'
+  )
 
-      <!--
+    //-
+      Main input (readonly)
+      Shows currently selected date range
+
+    .dropdown__input-wrapper(@click='toggle')
+      input.dropdown__input.--datepicker(
+        :class='dropdownInputClasses'
+        v-model='date'
+        :name='name'
+        type='text'
+        readonly
+      )
+
+    //-
+      Show calendars if menu is open
+
+    .calendars(v-if='isOpen')
+
+      //-
+        Main calendar
+
+      .calendar__wrapper
+        input.form__input.form__input--calendar(
+          type='text'
+          v-model='startDatePreview'
+          @input='inputStartDate($event.target.value)'
+        )
+
+        //-
+          Month controls
+          left / right
+
+        .calendar__controls
+          .calendar__control-arrow(@click='prevMonth()')
+            .arrow-left
+
+          //-
+            Current month
+
+          .calendar__month {{ currentMonth.format('MMM YYYY') }}
+
+          .calendar__control-arrow(@click='nextMonth()')
+            .arrow-right
+
+        //-
+          The actual calendar
+
+        .calendar(@mouseleave='previewDate()')
+
+          //-
+            Header with weekdays
+
+          .weekdays
+            .calendar__weekday(v-for='weekday in weekdays') {{ $t('weekdays.' + weekday) }}
+
+          //-
+            Days
+
+          .calendar__week(v-for='week in calendar')
+            .calendar__day(
+              v-for='day in week'
+              :class='getDayClasses(day)'
+              @mouseover='previewDate(day.moment)'
+              @mousedown='setStartDate(day.moment)'
+            ) {{ day.date }}
+
+      //-
         Additional Calendar for date range selection
-      -->
-      <div class="calendar__wrapper">
-        <input type="text" @input="inputStartDate($event.target.value)" v-model="endDatePreview" class="form__input form__input--calendar" readonly>
-        <div class="calendar__controls">
-          <div @click="prevRangeMonth()" class="calendar__control-arrow">
-            <div class="arrow-left"></div>
-          </div>
-          <div class="calendar__month">
-            {{ currentRangeMonth.format('MMM YYYY') }}
-          </div>
-          <div @click="nextRangeMonth()" class="calendar__control-arrow">
-            <div class="arrow-right"></div>
-          </div>
-        </div>
-        <div class="calendar" @mouseleave="previewDate()">
-          <div class="weekdays">
-            <div v-for="weekday in weekdays" class="calendar__weekday">
-              {{ $t('weekdays.' + weekday) }}
-            </div>
-          </div>
-          <div v-for="week in rangeCalendar" class="calendar__week">
-            <div
-              v-for="day in week"
-              class="calendar__day"
-              :class="{
-                'calendar__day--another-month': !day.isCurrentMonth,
-                'calendar__day--start-date': !nil && day.moment.isSame(selectedStartDate || startDate, 'day'),
-                'calendar__day--end-date': !nil && day.moment.isSame(selectedEndDate || endDate, 'day') && selectedStartDate.isBefore(endDate),
-                'calendar__day--in-range': !nil && day.moment.isBetween(selectedStartDate || startDate, selectedEndDate || endDate)
-              }"
-              @mouseover="previewDate(day.moment)"
-              @mousedown="setEndDate(day.moment)"
-            >
-              {{ day.date }}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!--
-        Predefined ranges
-      -->
-      <div class="calendar__predefined-ranges-list">
-        <div
-            v-for="range in predefinedRanges"
-            @click="setRange(range)"
-            :class="{ 'calendar__predefined-range--selected': !nil && activeRange && activeRange === range }"
-            class="calendar__predefined-range"
-        >
-          {{ $t(range.name) }}
-        </div>
-      </div>
-    </div>
-  </div>
+      .calendar__wrapper
+        input.form__input.form__input--calendar(
+          type='text'
+          v-model='endDatePreview'
+          @input='inputEndDate($event.target.value)'
+        )
+
+        //-
+          Month controls
+          left / right
+
+        .calendar__controls
+          .calendar__control-arrow(@click='prevRangeMonth()')
+            .arrow-left
+
+          //-
+            Current month
+
+          .calendar__month {{ currentRangeMonth.format('MMM YYYY') }}
+
+          .calendar__control-arrow(@click='nextRangeMonth()')
+            .arrow-right
+
+        //-
+          The actual calendar
+
+        .calendar(@mouseleave='previewDate()')
+
+          //-
+            Header with weekdays
+
+          .weekdays
+            .calendar__weekday(v-for='weekday in weekdays') {{ $t('weekdays.' + weekday) }}
+
+          //-
+            Days
+
+          .calendar__week(v-for='week in rangeCalendar')
+            .calendar__day(
+              v-for='day in week'
+              :class='getDayClasses(day)'
+              @mouseover='previewDate(day.moment)'
+              @mousedown='setEndDate(day.moment)'
+            ) {{ day.date }}
+
 </template>
 
 <script>
 import moment from 'moment'
+import DateFormatsMixin from '@/mixins/date/formats'
 import CalendarMixin from './mixins/CalendarMixin'
-
-const currentDate = moment()
-const predefinedRanges = [
-  { key: 'last7', name: 'datetime.last7', start: moment().subtract(7, 'days'), end: currentDate },
-  { key: 'last30', name: 'datetime.last30', start: moment().subtract(30, 'days'), end: currentDate },
-  { key: 'month', name: 'datetime.month', start: moment().startOf('month'), end: currentDate },
-  { key: 'year', name: 'datetime.year', start: moment().startOf('year'), end: currentDate },
-  { key: 'lastyear', name: 'datetime.lastyear', start: moment().subtract(1, 'year').startOf('year'), end: moment().subtract(1, 'year').endOf('year') }
-]
 
 export default {
   mixins: [
-    CalendarMixin
+    CalendarMixin,
+    DateFormatsMixin
   ],
 
   props: {
     name: {
       type: String,
       default: 'date'
-    },
-
-    range: {
-      required: true
     },
 
     value: {
@@ -152,12 +153,13 @@ export default {
   },
 
   data() {
-    let range = this.range
-    let activeRange
+    let range = this.value
 
-    if (typeof this.range === 'string') {
-      range = predefinedRanges.find((r) => r.key === this.range)
-      activeRange = range
+    if (!range) {
+      range = {
+        start: undefined,
+        end: undefined
+      }
     }
 
     return {
@@ -173,13 +175,32 @@ export default {
       endDate: moment(range.end),
       selectedEndDate: moment(range.end),
 
-      activeRange
+      activeRange: null
     }
   },
 
   computed: {
-    predefinedRanges() {
-      return predefinedRanges
+    dropdownClasses() {
+      return {
+        'datepicker--open': this.isOpen
+      }
+    },
+
+    dropdownInputClasses() {
+      return {
+        'dropdown__input--nil': this.nil
+      }
+    },
+
+    getDayClasses() {
+      return (day) => {
+        return {
+          'calendar__day--another-month': !day.isCurrentMonth,
+          'calendar__day--start-date': !this.nil && day.moment.isSame(this.selectedStartDate || this.startDate, 'day'),
+          'calendar__day--end-date': !this.nil && day.moment.isSame(this.selectedEndDate || this.endDate, 'day') && this.selectedStartDate.isBefore(this.endDate),
+          'calendar__day--in-range': !this.nil && day.moment.isBetween(this.selectedStartDate || this.startDate, this.selectedEndDate || this.endDate)
+        }
+      }
     },
 
     date: {
@@ -190,8 +211,9 @@ export default {
         const startDate = moment((this.value && this.value.start) || this.selectedStartDate)
         const endDate = moment((this.value && this.value.end) || this.selectedEndDate || this.endDate)
 
-        return `${startDate.format('MMM D, YYYY')} - ${endDate.format('MMM D, YYYY')}`
+        return `${startDate.format(this.DATE_INPUT_FORMAT)} - ${endDate.format(this.DATE_INPUT_FORMAT)}`
       },
+
       set() {}
     },
 
@@ -201,16 +223,42 @@ export default {
 
     startDatePreview: {
       get() {
-        return this.startDate ? this.startDate.format('MMM D, YYYY') : ''
+        return this.startDate ? this.startDate.format(this.DATE_INPUT_FORMAT) : ''
       },
-      set() {}
+      set(value) {
+        if (value.length !== this.DATE_INPUT_FORMAT.length) {
+          return
+        }
+        value.replace(/-/g, '/')
+        value.replace(/ /g, '/')
+        value.replace(/\./g, '/')
+
+        const date = moment(value, this.DATE_INPUT_FORMAT)
+
+        if (date.isValid()) {
+          this.startDate = moment(date)
+        }
+      }
     },
 
     endDatePreview: {
       get() {
-        return this.endDate ? this.endDate.format('MMM D, YYYY') : ''
+        return this.endDate ? this.endDate.format(this.DATE_INPUT_FORMAT) : ''
       },
-      set() {}
+      set(value) {
+        if (value.length !== this.DATE_INPUT_FORMAT.length) {
+          return
+        }
+        value.replace(/-/g, '/')
+        value.replace(/ /g, '/')
+        value.replace(/\./g, '/')
+
+        const date = moment(value, this.DATE_INPUT_FORMAT)
+
+        if (date.isValid()) {
+          this.endDate = moment(date)
+        }
+      }
     },
 
     startDateIsSame() {
@@ -223,7 +271,41 @@ export default {
   },
 
   watch: {
-    selectedStartDate: function (date) {
+    value(range) {
+      if (!range) {
+        range = {
+          start: undefined,
+          end: undefined
+        }
+      }
+
+      const currentStartDate = moment(this.selectedStartDate)
+      const currentEndDate = moment(this.selectedEndDate)
+      const newStartDate = moment(range && range.start)
+      const newEndDate = moment(range && range.end)
+
+      if (currentStartDate.isSame(newStartDate, 'day') && currentEndDate.isSame(newEndDate, 'day')) {
+        // same date
+        console.log('same date', this.date)
+        return
+      } else {
+        console.log('set range', range)
+      }
+
+      // Start date
+      this.currentMonth = moment(range.start)
+      this.startDate = moment(range.start)
+      this.selectedStartDate = moment(range.start)
+
+      // End date
+      this.currentRangeMonth = moment(range.end).isSame(moment(range.start), 'month')
+          ? moment(range.start).add(1, 'month')
+          : moment(range.end)
+      this.endDate = moment(range.end)
+      this.selectedEndDate = moment(range.end)
+    },
+
+    selectedStartDate(date) {
       this.startDate = date
       this.$emit('input-start', date)
 
@@ -239,7 +321,7 @@ export default {
       }
     },
 
-    selectedEndDate: function (date) {
+    selectedEndDate(date) {
       this.endDate = date
       this.$emit('input-end', date)
 
@@ -257,9 +339,6 @@ export default {
   },
 
   mounted() {
-    if (typeof this.range === 'string') {
-      this.$emit('selected-key', this.range)
-    }
     if (!this.nil) {
       this.$emit('input', {
         start: this.selectedStartDate.format(),
@@ -269,23 +348,12 @@ export default {
   },
 
   methods: {
-    setRange(range) {
-      this.activeRange = range
-      this.setStartDate(range.start, true, true)
-      this.setEndDate(range.end, true, true)
-      this.$emit('selected-key', range.key)
-      if (range.start.isSame(range.end, 'month')) {
-        this.currentRangeMonth = this.currentRangeMonth.add(1, 'month')
-        this.recalculateComputedProperty('rangeCalendar')
-      }
-    },
-
     inputStartDate(input) {
       if (!input) {
         this.setStartDate(null, true)
         return
       }
-      const date = moment(input)
+      const date = moment(input, this.DATE_INPUT_FORMAT)
 
       if (date.year() >= 1000) {
         if (date.isValid()) {
@@ -295,7 +363,7 @@ export default {
     },
 
     inputEndDate(input) {
-      const date = moment(input)
+      const date = moment(input, this.DATE_INPUT_FORMAT)
 
       if (date.year() >= 1000) {
         if (date.isValid()) {

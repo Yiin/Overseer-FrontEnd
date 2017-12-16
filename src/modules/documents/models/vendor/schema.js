@@ -33,7 +33,9 @@ const VendorSchema = (superclass) => class extends mix(superclass).with(Document
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       uuid: this.uuid,
       name: this.name,
       registration_number: this.registrationNumber,
@@ -41,8 +43,10 @@ const VendorSchema = (superclass) => class extends mix(superclass).with(Document
       website: this.website,
       phone: this.phone,
       contacts: this.contacts.map((contact) => contact.serialize(options)),
-      currency_code: (this.currency || null) && this.currency.code
-    }, this.address.serialize(options))
+      currency_code: (this.currency || null) && this.currency.code,
+
+      ...this.address.serialize(options)
+    }
   }
 }
 

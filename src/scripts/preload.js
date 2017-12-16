@@ -1,4 +1,5 @@
 import store from '@/store'
+import router from '@/router'
 
 function logout() {
   store.dispatch('auth/LOGOUT', { redirect: false })
@@ -9,14 +10,6 @@ function tryToAuthenticate({ redirected = true } = {}) {
    * No preloaded data means user wasn't authenticated on server side
    */
   if (!store.state.preloadedData || !store.state.preloadedData.auth) {
-    return false
-  }
-
-  /**
-   * ???
-   */
-  if (redirected && store.state.auth.isLoggedIn) {
-    console.log('what the fuck is this check')
     return false
   }
 
@@ -48,6 +41,11 @@ export default () => {
     }
   } else {
     if (!tryToAuthenticate()) {
+      if (router.currentRoute.name === 'invite') {
+        // Do not redirect to login if user accepting
+        // invitation
+        return
+      }
       logout()
     }
   }

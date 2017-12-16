@@ -2,7 +2,7 @@ import i18n from '@/i18n'
 import TableContextMenuBuilder from '@/modules/table/contextmenu/builder'
 import ContextMenuItem from '@/modules/contextmenu/cm-item'
 import Statuses from '@/modules/documents/statuses'
-import * as actions from '@/modules/documents/actions'
+const actions = require('@/modules/documents/actions')
 
 /**
  * Print latest pdf of selected document
@@ -291,7 +291,9 @@ export const HISTORY_LIST = new ContextMenuItem({
    * separate current document state from previous ones
    */
   if (this.builder.getSelectedRow().history.length > 1) {
-    list.addSeparator(1)
+    list.addSeparator({
+      index: 1
+    })
   }
 
   return list.build()

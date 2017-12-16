@@ -59,7 +59,7 @@
             <form-field :errors="validationErrors.country_id" :label="$t('labels.country')">
               <form-dropdown-input
                 v-model="country_id"
-                :items="dropdownOptions.countries"
+                :items="availableCountries"
                 searchable
                 :readonly="preview"
               >
@@ -223,6 +223,18 @@ export default {
   components: {
     FormCurrencyDropdown,
     VatCheckerSidebar
+  },
+
+  computed: {
+    availableCountries() {
+      if (this.$user.assignAllCountries) {
+        return this.dropdownOptions.countries
+      } else {
+        return this.dropdownOptions.countries.filter((country) => {
+          return this.$user.assignedCountries.indexOf(country.id) > -1
+        })
+      }
+    }
   },
 
   methods: {

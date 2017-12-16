@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import Currency from '@/modules/documents/models/currency'
+import Currency from '@models/currency'
 import BillItemNameInput from './partials/BillItemNameInput.vue'
 import BillItemIdNumberInput from './partials/BillItemIdNumberInput.vue'
 import BillItemCostInput from './partials/BillItemCostInput.vue'
@@ -140,15 +140,15 @@ export default {
     }
   },
 
-  computed: Object.assign({
-
-  }, mapProps([
-    'product_uuid',
-    'name',
-    'identification_number',
-    'qty',
-    'cost'
-  ])),
+  computed: {
+    ...mapProps([
+      'product_uuid',
+      'name',
+      'identification_number',
+      'qty',
+      'cost'
+    ])
+  },
 
   methods: {
     selectItemProduct(uuid) {

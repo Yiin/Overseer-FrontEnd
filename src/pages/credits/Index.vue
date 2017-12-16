@@ -8,17 +8,15 @@
           Here you can enter and manage credit notes;<br>
           Such as bank cheques and refunds.
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateCredit" @click="create" class="button button--create">
           <span class="icon-new-credit-btn-icon"></span>
           {{ $t('actions.new_credit') }}
         </button>
       </div>
     </template>
     <template v-else>
-      <breadcrumb :path="[ $t('common.credits') ]"></breadcrumb>
-
       <div class="table__heading">
-        <button @click="create" class="button button--create">
+        <button v-if="canCreateCredit" @click="create" class="button button--create">
           <span class="icon-new-credit-btn-icon"></span>
           {{ $t('actions.new_credit') }}
         </button>
@@ -133,7 +131,11 @@ export default {
           title: this.$t('actions.clone_credit')
         }))
         .addItem(TableCmItems.HISTORY_LIST)
-        .addSeparator()
+        .addSeparator({
+          filter(builder) {
+            return !builder.selectedMoreThanOneRow()
+          }
+        })
         .addItem(TableCmItems.ARCHIVE)
         .addItem(TableCmItems.UNARCHIVE)
         .addItem(TableCmItems.DELETE)

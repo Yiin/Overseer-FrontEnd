@@ -5,7 +5,7 @@ import { methods as ClientRepository } from '../../repositories/client'
 const QuoteFaker = (superclass) => class extends superclass {
 
   static fakeData() {
-    return Object.assign({
+    return {
       client_uuid: faker.random.arrayElement(ClientRepository.getActiveCompanyItems().map((client) => client.uuid)),
       quote_date: moment().format('YYYY-MM-DD'),
       due_date: faker.random.arrayElement([null, moment().add(faker.random.number() % 60, 'days').format('YYYY-MM-DD')]),
@@ -14,8 +14,10 @@ const QuoteFaker = (superclass) => class extends superclass {
       currency_code: faker.random.arrayElement(['EUR', 'USD', 'GBP']),
       note_to_client: faker.lorem.paragraph(),
       terms: faker.lorem.sentence(),
-      footer: faker.lorem.sentence()
-    }, this.fakeItems())
+      footer: faker.lorem.sentence(),
+
+      ...this.fakeItems()
+    }
   }
 }
 

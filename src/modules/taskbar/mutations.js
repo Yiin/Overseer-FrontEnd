@@ -24,11 +24,11 @@ export default {
   },
 
   SAVE_ITEM_DATA(state, index) {
-    state.items[index].data = Object.assign({}, state.items[index].data)
+    state.items[index].data = { ...state.items[index].data }
   },
 
   SAVE_ITEM_STATE(state, { index, itemState }) {
-    state.items[index].itemState = Object.assign({}, itemState)
+    state.items[index].itemState = { ...itemState }
   },
 
   RESET_ACTIVE_ITEM(state) {

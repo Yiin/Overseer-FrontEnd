@@ -1,5 +1,5 @@
 import FormActions from '../base/actions'
-import Vendor from '@/modules/documents/models/vendor'
+import Vendor from '@models/vendor'
 
 export default FormActions({
   model: Vendor,

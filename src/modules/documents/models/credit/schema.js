@@ -34,13 +34,15 @@ const CreditSchema = (superclass) => class extends mix(superclass).with(Document
   }
 
   serialize(options = {}) {
-    return Object.assign(super.serialize(options), {
+    return {
+      ...super.serialize(options),
+
       client_uuid: this.client.uuid,
       balance: this.balance.amount,
       currency_code: this.amount.currency.code,
       credit_date: this.creditDate.format('YYYY-MM-DD'),
       credit_number: this.creditNumber
-    })
+    }
   }
 }
 
