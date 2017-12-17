@@ -112,24 +112,70 @@
 
 
       .tabsContainer(:style='tabsContainerStyles')
-        tabs(inline)
-          timeline(
-            :profile='profile'
-            :timeline-style='timelineStyles'
-          )
-          tab(title='Notes')
-          tab(title='Events')
-          tab(title='Tasks')
-          tab(title='Mail')
-          tab(title='Documents')
+        tabs(ref='tabs')
+          tab-dropdown
+            all-activity-tab(:profile='profile' :timeline-style='timelineStyles')
+            payments-activity-tab(v-if='canViewPayments' :profile='profile' :timeline-style='timelineStyles')
+            invoices-activity-tab(v-if='canViewInvoices' :profile='profile' :timeline-style='timelineStyles')
+            expenses-activity-tab(v-if='canViewExpenses' :profile='profile' :timeline-style='timelineStyles')
+            quotes-activity-tab(v-if='canViewQuotes' :profile='profile' :timeline-style='timelineStyles')
+            clients-activity-tab(v-if='canViewClients' :profile='profile' :timeline-style='timelineStyles')
+            credits-activity-tab(v-if='canViewCredits' :profile='profile' :timeline-style='timelineStyles')
+            products-activity-tab(v-if='canViewProducts' :profile='profile' :timeline-style='timelineStyles')
+            vendors-activity-tab(v-if='canViewVendors' :profile='profile' :timeline-style='timelineStyles')
+            employees-activity-tab(v-if='canViewEmployees' :profile='profile' :timeline-style='timelineStyles')
+            projects-activity-tab(v-if='canViewProjects' tab-key='projects-activity' :profile='profile' :timeline-style='timelineStyles')
+            tasks-activity-tab(v-if='canViewProjects' tab-key='tasks-activity' :profile='profile' :timeline-style='timelineStyles')
+          upcoming-payments-tab(v-if='canViewInvoices' :profile='profile')
+          overdue-invoices-tab(v-if='canViewInvoices' :profile='profile')
+          projects-tab(v-if='canViewProjects' :profile='profile')
+          tasks-tab(v-if='canViewProjects' :profile='profile')
 </template>
 
 <script>
-import Timeline from './tabs/Timeline.vue'
+import AuthorizationHelpersMixin from '@/mixins/authorization/helpers'
+
+import AllActivityTab from '@/components/overview/tabs/activity/all'
+import PaymentsActivityTab from '@/components/overview/tabs/activity/payments'
+import ExpensesActivityTab from '@/components/overview/tabs/activity/expenses'
+import InvoicesActivityTab from '@/components/overview/tabs/activity/invoices'
+import CreditsActivityTab from '@/components/overview/tabs/activity/credits'
+import QuotesActivityTab from '@/components/overview/tabs/activity/quotes'
+import ClientsActivityTab from '@/components/overview/tabs/activity/clients'
+import ProductsActivityTab from '@/components/overview/tabs/activity/products'
+import VendorsActivityTab from '@/components/overview/tabs/activity/vendors'
+import EmployeesActivityTab from '@/components/overview/tabs/activity/employees'
+import ProjectsActivityTab from '@/components/overview/tabs/activity/projects'
+import TasksActivityTab from '@/components/overview/tabs/activity/tasks'
+
+import UpcomingPaymentsTab from '@/components/overview/tabs/UpcomingPaymentsTab.vue'
+import OverdueInvoicesTab from '@/components/overview/tabs/OverdueInvoicesTab.vue'
+import ProjectsTab from '@/components/overview/tabs/ProjectsTab.vue'
+import TasksTab from '@/components/overview/tabs/TasksTab.vue'
 
 export default {
+  mixins: [
+    AuthorizationHelpersMixin
+  ],
+
   components: {
-    Timeline
+    AllActivityTab,
+    PaymentsActivityTab,
+    ExpensesActivityTab,
+    InvoicesActivityTab,
+    CreditsActivityTab,
+    QuotesActivityTab,
+    ClientsActivityTab,
+    ProductsActivityTab,
+    VendorsActivityTab,
+    EmployeesActivityTab,
+    ProjectsActivityTab,
+    TasksActivityTab,
+
+    UpcomingPaymentsTab,
+    OverdueInvoicesTab,
+    ProjectsTab,
+    TasksTab
   },
 
   props: {
@@ -167,14 +213,14 @@ export default {
     },
 
     timelineStyles() {
-      const timelineOffsetFromContainerTop = 147
+      const timelineOffsetFromContainerTop = 115
       const targetHeight = this.columnsHeight && ((this.columnsHeight - timelineOffsetFromContainerTop) + 'px')
-
-      return {
+      const styles = {
         'max-height': targetHeight,
         'min-height': targetHeight,
         'height': targetHeight
       }
+      return styles
     },
 
     who() {
@@ -192,9 +238,9 @@ export default {
 
     profile() {
       if (this.who === 'me') {
-        return this.$store.getters['documents/repositories/employee/AVAILABLE_ITEMS'].find((employee) => employee.isMe())
+        return this.$repository('employees').availableItems.find((employee) => employee.isMe())
       } else {
-        return this.$store.getters[`documents/repositories/employee/FIND_ITEM_BY_KEY`](this.who)
+        return this.$repository('employees').find(this.who)
       }
     },
 
@@ -221,11 +267,15 @@ export default {
       }
     },
 
-    isVisible() {
+    isVisible(isVisible) {
       this.$nextTick(() => {
         this.columnsHeight = this.$refs.profileContainer.clientHeight
       })
       this.cancelProfileImageCropping()
+
+      if (isVisible) {
+        this.resetTabs()
+      }
     }
   },
 
@@ -282,6 +332,10 @@ export default {
     cancelProfileImageCropping() {
       this.cropped = null
       this.editing = false
+    },
+
+    resetTabs() {
+      this.$refs.tabs.reset()
     }
   }
 }

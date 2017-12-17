@@ -5,6 +5,7 @@ const DocumentSchema = (superclass) => class extends superclass {
     const parsedData = {}
 
     parsedData.uuid = data.uuid
+    parsedData.userUuid = data.user_uuid
     parsedData.createdAt = data.created_at && moment(data.created_at.date)
     parsedData.updatedAt = data.updated_at && moment(data.updated_at.date)
     parsedData.archivedAt = data.archived_at && moment(data.archived_at.date)

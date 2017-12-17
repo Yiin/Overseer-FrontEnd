@@ -160,6 +160,12 @@ export const RepositoryGetters = (getters) => Object.assign({
     })
   },
 
+  AA_COMPANY_ITEMS(state, getters) {
+    return getters.AVAILABLE_COMPANY_ITEMS.filter((item) => {
+      return Statuses.generic.active.meetsCondition(item) || Statuses.generic.archived.meetsCondition(item)
+    })
+  },
+
   API_NAME: () => {
     return 'UNDEFINED_API_NAME'
   },

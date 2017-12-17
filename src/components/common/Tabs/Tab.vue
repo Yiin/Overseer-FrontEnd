@@ -1,6 +1,7 @@
 <template lang="pug">
   transition(name='fade')
     .tab__holder(
+      v-if='(enableIf && isActive) || !enableIf'
       v-show='isActive'
       :class='tabClasses'
     )
@@ -26,12 +27,16 @@ export default {
     tabKey: {
       type: String,
       default() {
-        console.log('tabKey default:', this.title)
         return this.title
       }
     },
 
     fade: {
+      type: Boolean,
+      default: false
+    },
+
+    enableIf: {
       type: Boolean,
       default: false
     }

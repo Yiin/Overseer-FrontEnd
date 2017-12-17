@@ -1,5 +1,6 @@
 <template lang="pug">
   v-menu(
+    top left
     min-width='430px'
     max-width='430px'
     v-model='creditsMenu'

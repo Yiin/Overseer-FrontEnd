@@ -16,7 +16,7 @@ export default {
     },
 
     activityList() {
-      return this.$store.getters['documents/repositories/activity/AVAILABLE_ITEMS'].filter((activity) => {
+      return this.activity.filter((activity) => {
         return activity.document.type === 'task' && SELECTED_COMPANY_ITEMS(activity.document.data)
       })
     }

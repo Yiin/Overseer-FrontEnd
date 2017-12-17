@@ -4,9 +4,15 @@
       .placeholder-area
         .placeholder.placeholder--projects
         .placeholder.placeholder--line
-        .placeholder__text Create a new project by pressing the button below.
+        .placeholder__text
+          template(v-if='profile') This employee has no projects.
+          template(v-else) Create a new project by pressing the button below.
 
-        button(@click="create" class="button button--create")
+        button(
+          v-if='!profile'
+          @click='create'
+          class='button button--create'
+        )
           span.icon-new-quote-btn-icon
           | {{ $t('actions.new_project') }}
 
@@ -65,6 +71,9 @@ export default {
   props: {
     title: {
       default: 'Projects'
+    },
+    profile: {
+      default: null
     }
   },
 

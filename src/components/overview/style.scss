@@ -13,20 +13,6 @@
     }
 }
 
-.tab--dashboard {
-    .placeholder-area {
-        max-width: initial;
-        margin-left: -10px;
-    }
-    .placeholder:not(.placeholder--line) {
-        width: 407px;
-        height: 333px;
-    }
-    .placeholder--line {
-        transform: scale(0.7);
-    }
-}
-
 .dropdown--dashboard-options
 {
     &:first-child {
@@ -38,7 +24,7 @@
         width: 190px;
 
         .dropdown__options-wrapper.scrollable {
-            max-height: 291px;
+            max-height: 339px;
         }
     }
 }
@@ -46,37 +32,6 @@
 .dropdown--dashboard-options.dropdown--datepicker
 {
     width: 308px;
-}
-
-.dropdown.dropdown--blank {
-    min-width: 140px;
-    cursor: pointer;
-}
-
-.dropdown.dropdown--blank .dropdown__input {
-    height: inherit;
-    line-height: inherit;
-    padding-left: 20px;
-    border: 1px solid transparent;
-    border-top: none !important;
-    border-bottom: none !important;
-}
-
-.dropdown--open.dropdown--blank .dropdown__input {
-    border: 1px solid #e2e2e2;
-}
-
-.dropdown--open.dropdown--blank .dropdown__options-wrapper {
-    top: 52px !important;
-    border-top: 4px solid #eee !important;
-}
-
-.dropdown.dropdown--blank .dropdown__input-wrapper::after {
-    top: 24px;
-}
-
-.dropdown.dropdown--blank.dropdown--open > .dropdown__input-wrapper::after {
-    top: 20px;
 }
 
 .value.value__dashboard.value__dashboard--total

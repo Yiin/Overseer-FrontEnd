@@ -268,9 +268,11 @@ export default {
         if (this.isAuthenticated) {
           this.authSuccess()
         } else {
+          console.log('auth is over, but user is not authenticated')
           this.authFail()
         }
       } else {
+        console.log('waiting for promise')
         promise.then(this.authSuccess.bind(this))
           .catch(this.authFail.bind(this))
       }
@@ -280,13 +282,23 @@ export default {
       if (this.isRedirecting) {
         this.$store.dispatch('auth/REDIRECT')
       } else {
+        console.log('wtf')
         setTimeout(() => {
+          console.log('authSuccess callback', this.$route.name, this.$route)
+
+          if (this.$route.name === 'login' || this.$route.name === 'register') {
+            console.log('going to overview')
+            this.$router.push({
+              name: 'overview'
+            })
+          }
           this.$store.dispatch('auth/LOAD')
         }, 1000)
       }
     },
 
-    authFail() {
+    authFail(e) {
+      console.log('authFail', e)
       this.timeline.reverse()
     },
 

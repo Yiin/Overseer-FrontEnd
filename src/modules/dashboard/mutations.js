@@ -16,6 +16,7 @@ export default {
   },
 
   UPDATE_DATE_RANGE_KEY(state, key) {
+    console.log('UPDATE_DATE_RANGE_KEY', key)
     state.statisticsDateRangeKey = key
   }
 }

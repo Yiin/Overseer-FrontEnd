@@ -1,44 +1,46 @@
 <template lang="pug">
-  tr
+  tr.itemRow
 
     //-
       Select or enter product or serice
 
-    th.field.field--itemName
+    td.field.field--itemName
+
+      .itemName {{ name }}
 
       //-
         List of products/services
 
-      form-dropdown-input(
-        :items='products'
-        v-model='productUuid'
-        :top='36'
-        searchable
-      )
+        form-dropdown-input(
+          :items='products'
+          v-model='productUuid'
+          :top='38'
+          searchable
+        )
 
         //-
           Custom input
 
-        input(
-          slot='activator'
-          slot-scope='{ parent }'
-          type='text'
-          v-model='item.name'
-          @input='parent.input($event.target.value)'
-          @blur='parent.onBlur'
-          @focus='parent.onFocus'
-        )
+          input.itemName(
+            slot='activator'
+            slot-scope='{ parent }'
+            placeholder='Enter or select item'
+            type='text'
+            :class='{ empty: !name }'
+            v-model='name'
+            @input='parent.input($event.target.value)'
+            @blur='parent.onBlur'
+            @focus='parent.onFocus'
+          )
 
     //-
       Quantity
-
-    th.field.field--itemQty
       input(type='text' v-model='qty')
+
+    td.field.field--itemQty {{ qty }}
 
     //-
       Price
-
-    th.field.field--itemPrice
       vue-numeric(
         type='text'
         :precision='2'
@@ -47,46 +49,48 @@
         v-model='cost'
       )
 
+    td.field.field--itemPrice {{ costFormatted }}
+
     //-
       Discount
 
       Either percentage or flat value. Can't be both
 
-    th.field.field--itemDiscount
+      td.field.field--itemDiscount
 
-      //-
-        Percentage discount input
+        //-
+          Percentage discount input
 
-      vue-numeric(
-        type='text'
-        :precision='2'
-        currency-symbol-position='suffix'
-        currency='%'
-        separator=','
-        v-model='discountPercentage'
-      )
+        vue-numeric(
+          type='text'
+          :precision='2'
+          currency-symbol-position='suffix'
+          currency='%'
+          separator=','
+          v-model='discountPercentage'
+        )
 
-      //-
-        Flat discount input
+        //-
+          Flat discount input
 
-      vue-numeric(
-        type='text'
-        :precision='2'
-        :currency='currency.symbol'
-        separator=','
-        v-model='discountAmount'
-      )
+        vue-numeric(
+          type='text'
+          :precision='2'
+          :currency='currency.symbol'
+          separator=','
+          v-model='discountAmount'
+        )
 
     //-
       sum = price * qty - discount
-
-    th.field.field--itemAmount
       input(type='text' v-model='amount' readonly)
+
+    td.field.field--itemAmount {{ amountFormatted }}
 
       //-
         A button to remove this items
 
-      .button--removeRow(v-if='!isLast' @click='removeSelf')
+        .button--removeRow(v-if='!isLast' @click='removeSelf')
 
 </template>
 
@@ -119,6 +123,7 @@ export default {
   data() {
     return {
       productUuid: (this.item.product || null) && this.item.product.uuid,
+      name: this.item.name,
       cost: this.item.cost.get(),
       qty: this.item.qty,
       discountPercentage: this.item.discount.type === 'percentage' ? this.item.discount.amount : 0,
@@ -132,6 +137,14 @@ export default {
         text: product.name,
         value: product.uuid
       }))
+    },
+
+    costFormatted() {
+      return this.currency.symbol + ' ' + Money.formatNumber(this.cost)
+    },
+
+    amountFormatted() {
+      return this.currency.symbol + ' ' + Money.formatNumber(this.amount)
     },
 
     amount: {
@@ -157,6 +170,13 @@ export default {
       this.item.name = product.name
       this.qty = 1
       this.cost = product.price.getIn(this.item.currency)
+    },
+
+    name(name) {
+      if (!name) {
+        this.productUuid = null
+      }
+      this.item.name = name
     },
 
     qty(qty) {
@@ -196,11 +216,15 @@ export default {
     item: {
       handler(item) {
         const productUuid = (item.product || null) && item.product.uuid
+        const name = item.name
         const cost = item.cost.get()
         const qty = item.qty
 
         if (this.productUuid !== productUuid) {
           this.productUuid = productUuid
+        }
+        if (this.name !== name) {
+          this.name = name
         }
         if (this.cost !== cost) {
           this.cost = cost

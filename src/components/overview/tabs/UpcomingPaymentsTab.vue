@@ -5,9 +5,10 @@
         <div class="placeholder placeholder--invoices"></div>
         <div class="placeholder placeholder--line"></div>
         <div class="placeholder__text">
-          Add a new invoice by pressing the button below.
+          <template v-if="profile">This employee has no upcoming payments.</template>
+          <template v-else>Add a new invoice by pressing the button below.</template>
         </div>
-        <button @click="create" class="button button--create">
+        <button v-if="!profile" @click="create" class="button button--create">
           <span class="icon-new-invoice-btn-icon"></span>
           {{ $t('actions.new_invoice') }}
         </button>
@@ -26,30 +27,36 @@
         <column width="13%">{{ $t('fields.amount') }}</column>
         <column width="13%">{{ $t('fields.paid_in') }}</column>
       </template>
-      <template slot="columns" slot-scope="props">
+      <template slot="columns" slot-scope="{ row }">
         <column width="18%">
-          <a :href="`#${props.row.uuid}`" @click="edit(props.row)">{{ props.row.invoice_number }}</a>
+          <a href="#" @click="edit(row)">
+            {{ row.invoiceNumber }}
+          </a>
         </column>
         <column width="22%">
-          <span>{{ props.row.client ? props.row.client.name : '-' }}</span>
+          <a href="#" @click.prevent="editDocument(row.client, 'client')">
+            {{ row.client.name }}
+          </a>
         </column>
         <column width="17%">
-          <span>{{ props.row.invoice_date | date }}</span>
+          <span>{{ row.date | date }}</span>
         </column>
         <column width="17%">
-          <span>{{ props.row.due_date | date }}</span>
+          <span>{{ row.dueDate | date }}</span>
         </column>
         <column width="13%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--primary">{{ props.row.amount | currency }}</span>
+          <span class="currency">{{ row.amount.currency | currencySymbol }}</span>
+          <span class="currency currency--primary">{{ row.amount.amount | currency }}</span>
         </column>
         <column width="13%">
-          <span class="currency">{{ props.row.currency | currencySymbol }}</span>
-          <span class="currency currency--secondary"
+          <span class="currency">{{ row.paidIn.currency | currencySymbol }}</span>
+          <span class="currency"
                 :class="{
-                  'currency--primary': props.row.paid_in === props.row.amount
-                }">
-            {{ props.row.paid_in | currency }}
+                  'currency--secondary': row.paidIn.amount < row.amount.amount,
+                  'currency--primary': row.paidIn.amount >= row.amount.amount
+                }"
+          >
+            {{ row.paidIn.amount | currency }}
           </span>
         </column>
       </template>
@@ -61,25 +68,7 @@
 import Tab from '@/components/common/Tabs/Tab.vue'
 import TableMixin from '@/mixins/TableMixin'
 
-import {
-  whenMoreThanOneRowIsSelected,
-  whenSpecificRowIsSelected,
-  __SEPARATOR__,
-  SELECTED_ROWS,
-  SELECTED_DOCUMENT,
-  TableName,
-  CreateDocument,
-  Archive,
-  Delete,
-  Unarchive,
-  Recover,
-  EditDocument,
-  CloneDocument,
-  HistoryList,
-  MarkSent,
-  MarkPaid,
-  EnterPayment
-} from '@/modules/table/cm-actions'
+import TableCmItems from '@/modules/table/contextmenu/items'
 
 export default {
   extends: Tab,
@@ -89,6 +78,9 @@ export default {
   props: {
     title: {
       default: 'Upcoming Payments'
+    },
+    profile: {
+      default: null
     }
   },
 
@@ -98,39 +90,36 @@ export default {
     },
 
     contextMenuActions() {
-      return [
-        SELECTED_ROWS,
-        Archive.extend({ moreThanOne: true }),
-        Unarchive.extend({ moreThanOne: true }),
-        Recover.extend({ moreThanOne: true }),
-        Delete.extend({ moreThanOne: true }),
-        __SEPARATOR__.isVisible(whenMoreThanOneRowIsSelected),
-        TableName.extend({
-          title: 'common.invoice_table'
-        }),
-        CreateDocument.extend({
-          documentType: 'invoice',
-          title: 'actions.new_invoice',
-          icon: 'icon-new-invoice-btn-icon'
-        }),
-        SELECTED_DOCUMENT.extend({ documentType: 'invoice' }),
-        EditDocument.extend({ title: 'actions.edit_invoice' }),
-        CloneDocument.extend({ title: 'actions.clone_invoice' }),
-        HistoryList,
-        __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
-        MarkSent,
-        MarkPaid,
-        EnterPayment,
-        __SEPARATOR__.isVisible(whenSpecificRowIsSelected),
-        Archive,
-        Unarchive,
-        Delete,
-        Recover
-      ]
+      return this.$contextMenu.init({
+        tableStateName: this.name
+      })
+        .addItem(TableCmItems.SELECTED_ROWS)
+        .addItem(TableCmItems.ARCHIVE_MANY)
+        .addItem(TableCmItems.UNARCHIVE_MANY)
+        .addItem(TableCmItems.DELETE_MANY)
+        .addItem(TableCmItems.RECOVER_MANY)
+        .addSeparator()
+        .addItem(TableCmItems.TABLE_NAME)
+        .addItem(TableCmItems.CREATE_DOCUMENT)
+        .addItem(TableCmItems.SELECTED_DOCUMENT)
+        .addItem(TableCmItems.PREVIEW)
+        .addItem(TableCmItems.EDIT_DOCUMENT)
+        .addItem(TableCmItems.CLONE_DOCUMENT.extend({
+          title: this.$t('actions.clone_payment')
+        }))
+        .addItem(TableCmItems.REFUND_PAYMENT)
+        .addItem(TableCmItems.HISTORY_LIST)
+        .addSeparator()
+        .addItem(TableCmItems.ARCHIVE)
+        .addItem(TableCmItems.UNARCHIVE)
+        .addItem(TableCmItems.DELETE)
+        .addItem(TableCmItems.RECOVER)
     },
 
     upcomingInvoices() {
-      return this.$store.getters['table/invoices/waitingForPayments']
+      return this.$store.getters['table/invoices/waitingForPayments'].filter((invoice) => {
+        return invoice.userUuid === this.$user.uuid
+      })
     },
 
     tableData() {

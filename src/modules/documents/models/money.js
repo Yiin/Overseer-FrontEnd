@@ -13,7 +13,7 @@ class Money extends Model {
   static create(data) {
     return new Money({
       currency: CurrencyRepository.findByKey(data.currency.code),
-      amount: Number(accounting.toFixed(data.amount || 0, DEFAULT_PRECISION))
+      amount: accounting.toFixed(accounting.unformat(data.amount || 0), DEFAULT_PRECISION)
     })
   }
 
@@ -30,14 +30,18 @@ class Money extends Model {
       return amount
     }
 
-    return accounting.unformat(
-      accounting.toFixed(
+    return accounting.toFixed(
+      accounting.unformat(
         fx.convert(amount, {
           from: fromCurrencyCode || 'EUR',
           to: toCurrencyCode
-        }), precision
-      )
+        })
+      ), precision
     )
+  }
+
+  static toFixed(number, precision = DEFAULT_PRECISION) {
+    return accounting.toFixed(number, precision)
   }
 
   static formatNumber(number, precision = DEFAULT_PRECISION) {

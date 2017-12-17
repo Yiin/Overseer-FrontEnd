@@ -1,43 +1,252 @@
 .billForm
 {
+    line-height: initial;
+
     position: relative;
 
     width: $document-width;
     min-height: $document-height;
-    margin: auto;
-    padding: 119px 78px 100px 92px;
+    padding: $document-padding-top $document-padding-right $document-padding-bottom $document-padding-left;
 
-    background-color: #fff;
+    color: $document-ink-color;
+    background-color: $document-background-color;
+}
 
-    line-height: initial;
+.billHeader
+{
+    display: flex;
+    .billHeaderLeft
+    {
+        flex-grow: 1;
+    }
+    .billHeaderRight
+    {
+        text-align: right;
+    }
+
+    &--first
+    {
+        .billHeaderRight
+        {
+            padding-right: 30px;
+        }
+
+        .billType
+        {
+            font-size: 56px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+        }
+
+        .billNumber
+        {
+            font-size: 16px;
+            font-weight: 600;
+
+            padding: 2px 11px;
+
+            text-align: center;
+
+            color: #fff;
+            background: $document-ink-color;
+
+            white-space: nowrap;
+
+            .billNumberLabel,
+            .billNumberValue {
+                display: inline;
+            }
+            .billNumberLabel {
+                padding-right: 10px;
+            }
+        }
+    }
+
+    &--second
+    {
+        margin: 40px 0;
+
+        .billHeaderLeft
+        {
+            display: flex;
+            flex-direction: column;
+
+            padding-left: 24px;
+
+            justify-content: center;
+        }
+
+        .billHeaderRight
+        {
+            width: $document-header-right-width;
+
+            .billTopSummary
+            {
+                padding: 30px 30px 20px 0;
+
+                border-top: 2px solid $document-separator-color;
+                border-bottom: 2px solid $document-separator-color;
+            }
+
+            .billBalanceDue
+            {
+                font-size: 32px;
+                font-weight: 600;
+            }
+
+            .billDate
+            {
+                font-size: 18px;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+.billHeader
+{
+    display: flex;
+
+    &--top
+    {
+        .billBlockColumn--headerRight
+        {
+            padding-right: 40px;
+        }
+    }
 }
 
 .billTitle
 {
-    font-size: 25px;
-}
+    font-size: 24px;
+    font-weight: bold;
 
-.billBlock {
-    display: flex;
+    color: $document-accent-color;
 
-    &--companies {
-        padding: 95px 0 40px;
+    &--client
+    {
+        font-size: 20px;
+
+        text-transform: uppercase;
     }
-    &--footer {
-        flex-flow: column;
+
+    &--weekday
+    {
+        font-size: 18px;
+        font-weight: 800;
+
+        margin-top: 5px;
     }
-}
+    &--paymentMethod
+    {
+        font-size: 20px;
 
-.billBlockColumn {
-    width: 100%;
-
-    &:not(:first-child) {
-        margin-left: 132px;
-    }
-}
-
-.billBuyerCompany {
-    .dropdown {
         margin-bottom: 4px;
     }
+}
+
+.billClientName
+{
+    width: 300px;
+    input
+    {
+        font-size: 26px;
+        font-weight: bold;
+
+        border: none;
+
+        &::-webkit-input-placeholder
+        {
+            color: $document-ink-color;
+        }
+        &:focus,
+        &:active
+        {
+            outline: none;
+        }
+    }
+}
+
+.billClientDetails
+{
+    font-weight: 600;
+
+    padding: 5px 0;
+}
+
+.billClientDetailsLine
+{
+    max-width: 350px;
+    padding: 2px 0 3px;
+}
+
+.field
+{
+    &--paymentMethods
+    {
+        padding-top: 12px;
+        padding-left: 24px;
+
+        vertical-align: top;
+
+        table.billPaymentMethod
+        {
+            text-align: left;
+            th,
+            td
+            {
+                font-weight: bold;
+            }
+            th
+            {
+                height: 22px !important;
+
+                text-transform: uppercase;
+            }
+        }
+    }
+
+    &--subtotal {
+        padding-top: 10px;
+        vertical-align: top;
+    }
+}
+
+.applyCredit
+{
+    cursor: pointer;
+    &::after
+    {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+
+        width: 100%;
+
+        content: '';
+
+        // border-bottom: 1px solid $document-ink-color;
+    }
+}
+
+.billFooter {
+    width: 281px;
+    margin-left: auto;
+    margin-top: 110px;
+}
+
+.signatureArea {
+    width: 100%;
+    border-bottom: 1px solid black;
+    margin-bottom: 10px;
+}
+
+.employeeName {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.employeeTitle {
+    margin-top: -2px;
 }

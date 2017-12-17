@@ -1,6 +1,7 @@
 {
     "datetime": {
         "custom_range": "Custom Range",
+        "today": "Today",
         "last7": "Last 7 Days",
         "last30": "Last 30 Days",
         "month": "This Month",

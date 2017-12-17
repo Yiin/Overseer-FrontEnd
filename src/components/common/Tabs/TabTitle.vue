@@ -1,6 +1,6 @@
 <template lang="pug">
   .tab__title(
-    @mousedown='selectTab()'
+    @click='selectTab()'
     :class="classes"
     :title='tab.title'
   )

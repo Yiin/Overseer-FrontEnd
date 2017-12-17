@@ -37,9 +37,8 @@
 
       form-dropdown-input.dropdown--primary.dropdown--dashboard-options(
         :items="predefinedRanges"
-        :value='statisticsDateRangeKey'
+        v-model='statisticsDateRangeKey'
         :placeholder="$t('datetime.custom_range')"
-        @input='changeDateRangeByKey'
       )
 
       //-
@@ -129,6 +128,7 @@ export default {
       const currentDate = moment()
 
       return [
+        { value: 'today', text: 'Today', start: moment(), end: moment() },
         { value: 'last7', text: this.$t('datetime.last7'), start: moment().subtract(7, 'days'), end: currentDate },
         { value: 'last30', text: this.$t('datetime.last30'), start: moment().subtract(30, 'days'), end: currentDate },
         { value: 'month', text: this.$t('datetime.month'), start: moment().startOf('month'), end: currentDate },
@@ -221,8 +221,13 @@ export default {
       set() {}
     },
 
-    statisticsDateRangeKey() {
-      return this.$store.state.dashboard.statisticsDateRangeKey
+    statisticsDateRangeKey: {
+      get() {
+        return this.$store.state.dashboard.statisticsDateRangeKey
+      },
+      set(value) {
+        this.changeDateRangeByKey(value)
+      }
     },
 
     totalRevenue() {
@@ -302,9 +307,24 @@ export default {
   },
 
   methods: {
-    changeDateRange(dateRange) {
+    changeDateRange(dateRange, key = null) {
+      console.log('changeDateRange', dateRange)
+      if ((
+          !dateRange && !this.statisticsDateRange
+        ) || (
+          dateRange === this.statisticsDateRange
+        ) || (
+          moment(dateRange.start).isSame(moment(this.statisticsDateRange.start), 'day') &&
+          moment(dateRange.end).isSame(moment(this.statisticsDateRange.end), 'day')
+      )) {
+        return
+      }
       this.$store.dispatch('dashboard/CHANGE_DATE_RANGE', dateRange)
-      this.updateDateRangeKey(null)
+
+      if (moment().isSame(moment(dateRange.start), 'day') && moment().isSame(moment(dateRange.end))) {
+        key = 'today'
+      }
+      this.updateDateRangeKey(key)
     },
 
     changeDateRangeByKey(key) {
@@ -314,8 +334,7 @@ export default {
         this.changeDateRange({
           start: predefinedRange.start,
           end: predefinedRange.end
-        })
-        this.updateDateRangeKey(predefinedRange.value)
+        }, predefinedRange.value)
       }
     },
 

@@ -3,7 +3,9 @@
     bill-form(
       :currency='currency'
       :client='client'
-      @update-items='items'
+      @update-items='items = $event'
+      @update-applied-credits='applied_credits = $event'
+      @update-client='client_uuid = $event'
     )
       template(slot='title') Invoice
 

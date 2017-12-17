@@ -1,6 +1,6 @@
-.itemsList {
+.itemsList
+{
     overflow: visible;
-    min-height: 610px;
 }
 
 .itemsList,
@@ -8,119 +8,200 @@
 {
     width: 100%;
 
-    th
-    {
-        text-align: left;
+    th, td {
+        white-space: nowrap;
+    }
+}
 
-        &.left
+.itemsList
+{
+    table.items
+    {
+        border-collapse: collapse;
+
+        th
         {
+            font-size: 16px;
+
+            padding: 12px 24px;
+
             text-align: left;
-        }
-        &.center
-        {
-            text-align: center;
-        }
-        &.right
-        {
-            text-align: right;
-        }
-    }
+            text-transform: uppercase;
 
-    .field
-    {
-        position: relative;
+            color: #fff;
+            background-color: $document-ink-color;
 
-        padding: 12px 0;
-
-        border-bottom: 1px solid #e8e8e8;
-        input
-        {
-            font-size: 15px;
-        }
-        & + .field
-        {
-            padding-left: 4px;
-        }
-        &--itemName
-        {
-            width: 355px;
-        }
-        &--itemQty
-        {
-            width: 80px;
-            input {
+            &.left
+            {
+                text-align: left;
+            }
+            &.center
+            {
                 text-align: center;
             }
-        }
-        &--itemPrice
-        {
-            width: 100px;
-            input {
-                text-align: right;
-            }
-        }
-        &--itemDiscount
-        {
-            display: flex;
-            input:first-child
+            &.right
             {
-                float: left;
-
-                padding: 0 6px;
-
-                text-align: center;
-
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-            input + input
-            {
-                float: left;
-
                 text-align: right;
-
-                border-left: none !important;
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
             }
         }
-        &--itemAmount
+
+        &:not(.summary) tbody tr
         {
-            width: 100px;
-            input {
-                text-align: right;
+            background-image: linear-gradient(to right, #8c8c8c 33%, rgba(255,255,255,0) 0%);
+            background-repeat: repeat-x;
+            background-position: bottom;
+            background-size: 7px 2px;
+        }
+
+        .itemRow {
+            font-size: 16px;
+        }
+
+        .field
+        {
+            position: relative;
+
+            padding: 15px 0;
+
+            input
+            {
+                font-size: 15px;
+            }
+            & + .field
+            {
+                padding-left: 4px;
+            }
+            &--itemName
+            {
+                width: 355px;
+
+                .dropdown
+                {
+                    width: 350px;
+                }
+
+                font-size: 18px;
+                font-weight: 600;
+
+                width: calc(100% - 12px);
+                margin-left: 12px;
+                padding-right: 0;
+                padding-left: 24px;
+
+                color: $document-ink-color;
+
+
+                .description
+                {
+                    font-weight: 600;
+
+                    padding: 0 14px;
+                }
+            }
+            &--itemQty
+            {
+                width: 80px;
+                &, input
+                {
+                    font-weight: bold;
+                    text-align: center;
+                }
+            }
+            &--itemPrice
+            {
+                width: 100px;
+                &, input
+                {
+                    font-weight: bold;
+                    text-align: center;
+                }
+            }
+            &--itemDiscount
+            {
+                display: flex;
+                input:first-child
+                {
+                    float: left;
+
+                    padding: 0 6px;
+
+                    text-align: center;
+
+                    border-top-right-radius: 0;
+                    border-bottom-right-radius: 0;
+                }
+                input + input
+                {
+                    float: left;
+
+                    text-align: right;
+
+                    border-left: none !important;
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                }
+            }
+            &--itemAmount
+            {
+                width: 100px;
+                padding-right: 24px;
+                &, input
+                {
+                    font-weight: bold;
+                    text-align: right;
+                }
             }
         }
     }
 
-    .summaryRow .field
+    table.summary
     {
-        border-bottom: none;
-    }
-
-    .subtotal {
-        margin: 7px 0 0;
         width: 100%;
-        color: #767e86;
+        margin-top: 20px;
 
-        th, td {
-            border-bottom: 1px solid #e8e8e8;
-            padding: 10px 0px 12px 10px;
-            font-weight: 600;
+        th
+        {
+            color: $document-ink-color;
+            background: initial;
+            height: 32px;
         }
-        td {
-            text-align: right;
-            font-size: 14px;
-        }
-    }
 
-    .total {
-        th {
-            vertical-align: middle;
-        }
-        td {
+        table.subtotal
+        {
+            font-size: 18px;
             font-weight: bold;
-            font-size: 15px;
+
+            text-align: right;
+            width: 275px;
+            margin-left: auto;
+            border-collapse: collapse;
+            td
+            {
+                width: 120px;
+                padding-right: 22px;
+                font-size: 20px;
+            }
+
+            tr.spacer td {
+                height: 16px;
+            }
+
+            tr.total {
+                background: $document-accent-color;
+
+                th, td {
+                    color: #ffffff;
+                    padding: 12px 19px 12px 15px;
+                    font-size: 21px;
+                    font-weight: bold;
+                }
+
+                td {
+                    font-size: 25px;
+                    font-weight: bold;
+                    padding: 11px 19px 13px 15px;
+                }
+            }
         }
     }
 }
@@ -137,12 +218,14 @@
 .button--applyCredit
 {
     font-size: 13px;
-    position: absolute;
-    width: 100px;
     line-height: 22px;
-    height: 22px;
+
+    position: absolute;
     top: -13px;
     left: 13px;
+
+    width: 100px;
+    height: 22px;
 }
 
 .button--removeRow

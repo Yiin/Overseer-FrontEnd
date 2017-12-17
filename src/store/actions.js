@@ -84,6 +84,7 @@ export default {
         /**
          * Update user settings
          */
+        console.log('Update user settings', state.auth.user.settings, state.auth.user)
         dispatch('settings/SET_SETTINGS', state.auth.user.settings)
 
         /**

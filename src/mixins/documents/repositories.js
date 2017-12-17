@@ -7,6 +7,8 @@ export default {
         const repositoryName = getRepositoryName(type)
 
         return {
+          aaItems: this.$store.getters[`documents/repositories/${repositoryName}/AA_ITEMS`],
+          aaCompanyItems: this.$store.getters[`documents/repositories/${repositoryName}/AA_COMPANY_ITEMS`],
           availableItems: this.$store.getters[`documents/repositories/${repositoryName}/AVAILABLE_ITEMS`],
           availableCompanyItems: this.$store.getters[`documents/repositories/${repositoryName}/AVAILABLE_COMPANY_ITEMS`],
           activeItems: this.$store.getters[`documents/repositories/${repositoryName}/ACTIVE_ITEMS`],

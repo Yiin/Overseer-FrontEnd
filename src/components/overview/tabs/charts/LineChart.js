@@ -8,8 +8,7 @@ export default {
   watch: {
     chartData: {
       handler: function () {
-        console.log('chartData changed')
-        this.$data._chart.update()
+        this.render()
       },
       deep: true
     }
@@ -25,7 +24,9 @@ export default {
 
   methods: {
     render() {
-      console.log('render')
+      if (this.$data._chart) {
+        this.$data._chart.destroy()
+      }
       this.renderChart(this.chartData, this.options)
     }
   }

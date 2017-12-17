@@ -69,14 +69,24 @@ export default {
     }
   },
 
+  mounted() {
+    if (this.tabs.length < 1) {
+      throw new Error(`Tabs should contain at least 1 tab.`)
+    }
+    this.selectTab(this.tabs[0].key)
+  },
+
   methods: {
+    reset() {
+      this.selectTab(this.tabs[0].key)
+    },
+
     /**
      * Register tab that is dropdown.
      *
      * That dropdown contains more tabs.
      */
     registerTabDropdown(key, items, selectOption) {
-      console.log('registerTabDropdown', key, items)
       this.tabs.push({ isDropdown: true, key, items, selectOption })
     },
 
@@ -122,13 +132,6 @@ export default {
         }
       })
     }
-  },
-
-  mounted() {
-    if (this.tabs.length < 1) {
-      throw new Error(`Tabs should contain at least 1 tab.`)
-    }
-    this.selectTab(this.tabs[0].key)
   }
 }
 </script>

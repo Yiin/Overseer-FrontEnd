@@ -5,95 +5,57 @@
       Heading
 
     .billBlock
-      .billHeader
-        .billBlockColumn
+      .billHeader.billHeader--first
+        .billHeaderLeft
           .billLogo
-        .billBlockColumn.billBlockColumn--headerRight
-          .billTitle Invoice
+        .billHeaderRight
+          .billType Invoice
           .billNumber
-            slot(name='number')
+            .billNumberLabel Invoice No:
+            .billNumberValue 12 3456 00
 
-      .billHeader.billHeader--info
-        .billBlockColumn
+      .billHeader.billHeader--second
+        .billHeaderLeft
           .billTitle.billTitle--client Customer
-          .billClientName Client Name Here
-          .billClientDetails
-            .billClientDetailsLine P. +01 234 854 654
-            .billClientDetailsLine E. uremailname@gmail.com
-            .billClientDetailsLine A. 6598 West media sponcer, usa-568
+          form-dropdown-input.billClientName(
+            :items='clients'
+            v-model='clientUuid'
+          )
+            input.custom(
+              slot='activator'
+              slot-scope='{ parent }'
+              v-model='clientName'
+              type='text'
+              placeholder='Select Client'
+              data-lpignore='true'
+              @input='parent.input($event.target.value)'
+              @blur='parent.onBlur'
+              @focus='parent.onFocus'
+            )
+          .billClientDetails(v-if='client')
+            .billClientDetailsLine P. {{ client.phone }}
+            .billClientDetailsLine E. {{ client.email }}
+            .billClientDetailsLine A. {{ client.address.format() }}
 
-        .billBlockColumn.billBlockColumn--headerRight
+        .billHeaderRight
           .billTopSummary
             .billTitle.billTitle--balanceDue Balance Due
-            .billBalanceDue $ 1,750.00/-
-            .billTitle.billTitle--weekday Tuesday
-            .billDate 7#[small th] June, 2018
-
-    .billItemsList
-
-    //-
-      Companies
-
-    .billBlock.billBlock--companies
-
-      //-
-        Our company
-
-      .billBlockColumn
-        .billSellerTitle
-          slot(name='sellerTitle') Seller
-        .billSellerName
-          slot(name='sellerName') {{ sellerName }}
-        .billSellerAddress
-          slot(name='sellerAddress') {{ sellerAddress }}
-        .billSellerBank
-          slot(name='sellerBank')
-            form-dropdown-input(
-              :items='bankAccounts'
-              :top='36'
-              v-model='bankAccountUuid'
-            )
-              input(
-                slot='activator'
-                type='text'
-                v-model='bankAccountNumber'
-                readonly
-              )
-
-      //-
-        Clients company
-
-      .billBlockColumn
-        .billBuyerTitle
-          slot(name='buyerTitle') Buyer
-        .billBuyerCompany
-          slot(name='buyerCompany' :clients='clients')
-        .billBuyerName
-          slot(name='buyerName')
-        .billBuyerAddress
-          slot(name='buyerAddress')
-        .billBuyerCode
-          slot(name='buyerCode')
-        .billBuyerVatCode
-          slot(name='buyerVatCode')
-        .billBuyerPhoneNumber
-          slot(name='buyerPhoneNumber')
-        .billBuyerEmptyField
-          slot(name='buyerEmptyField')
+            .billBalanceDue {{ totalAmountFormatted }}
+            bill-date-field
 
     //-
       Items
 
     .billBlock
       .itemsList
-        table
+        table.items
           thead
             tr
-              th Product or Service
-              th.center Qty
+              th Item description
+              th.center Quantity
               th.center Price
-              th.center Discount
-              th.center Amount
+              th.center Total
+
           tbody
 
             //-
@@ -108,27 +70,67 @@
               @remove='removeRow(index)'
             )
 
-            //-
-              Summary
-
-            tr.summaryRow
-              td.field(colspan='2')
-
-                //-
-                  Add new row
+          //-
+            tr
+                Add new row
 
                 button.button.button--addRow(
                   @click='addRow'
                 ) Add row
 
-              td(colspan='3')
+        //-
+          Summary
+
+        table.summary
+          tbody
+            tr
+              td.field.field--paymentMethods(colspan='2')
+                .billTitle.billTitle--paymentMethod Payment Options
+                table.billPaymentMethod
+                  tbody
+                    tr
+                      th Account Name:
+                      td Dynamix Technologies
+                    tr
+                      th Account Number:
+                      td 1234568
+                    tr
+                      th IBAN:
+                      td IE12345680525645564656
+                    tr
+                      th SWIFT:
+                      td 99-22-40
+
+              td.field.field--subtotal(colspan='3')
                 table.subtotal
                   tbody
+
+                    //-
+                      Subtotal
+
+                    tr
+                      th Subtotal
+                      td {{ subtotalFormatted }}
+
+                    //-
+                      Taxes
+
+                    tr
+                      th Taxes
+                      td.totalDiscount € 0.00
+
+                    //-
+                      Discount
+
                     tr
                       th Discount
                       td.totalDiscount {{ totalDiscount }}
+
+                    //-
+                      Applied Credit
+
                     tr
-                      th Applied credit
+                      th
                         bill-apply-credit-menu(
                           v-if='client'
                           v-model='applied_credits'
@@ -136,23 +138,35 @@
                           :currency='currency'
                           :credits='clientCredits'
                         )
-                          template(slot='activator')
-                            button.button.button--applyCredit Apply Credit
+                          span.applyCredit(slot='activator') Applied credit
+                        span(v-else) Applied credit
 
                       td {{ appliedCredit }}
+
+                    //-
+                      Total Amount
+
+                    tr.spacer
+                      td
                     tr.total
-                      th Total amount
+                      th Total
                       td.totalValue {{ totalAmountFormatted }}
 
-    .billBlock.billBlock--summary
-      fieldset.form-holder.form-holder--invoice-comment
-        label.text.optional(for="comment") Comment
-        textarea.text.optional#comment
+      //-
+        .billBlock.billBlock--summary
+          fieldset.form-holder.form-holder--invoice-comment
+            label.text.optional(for="comment") Comment
+            textarea.text.optional#comment
 
-    .billBlock.billBlock--footer
-      .footerBlock
-        span.footerLabel Amount in words:
-        span {{ totalAmountInWords }}
+        .billBlock.billBlock--footer
+          .footerBlock
+            span.footerLabel Amount in words:
+            span {{ totalAmountInWords }}
+      .billFooter
+        .signatureArea
+        .employeeName David Anderson
+        .employeeTitle Account Manager
+
 
 </template>
 
@@ -164,11 +178,13 @@ import BillApplyCreditMenu from '@/components/form/BillApplyCreditMenu.vue'
 import ItemRow from './ItemRow.vue'
 import Money from '@models/money'
 import BillItem from '@models/bill-item'
+import BillDateField from './fields/BillDateField.vue'
 
 export default {
   components: {
     ItemRow,
-    BillApplyCreditMenu
+    BillApplyCreditMenu,
+    BillDateField
   },
 
   props: {
@@ -182,6 +198,8 @@ export default {
 
   data() {
     return {
+      clientUuid: null,
+      clientName: '',
       bankAccountUuid: null,
       bankAccountNumber: '',
       items: [],
@@ -237,6 +255,16 @@ export default {
       return '123 6th St. Melbourne, FL 32904'
     },
 
+    subtotal() {
+      return this.items.reduce((subtotalSum, item) => {
+        return subtotalSum + item.getInitialPrice()
+      }, 0)
+    },
+
+    subtotalFormatted() {
+      return this.currency.symbol + ' ' + Money.formatNumber(this.subtotal)
+    },
+
     totalDiscount() {
       const amount = this.items.reduce((discountSum, item) => {
         return discountSum + item.getDiscount()
@@ -269,6 +297,21 @@ export default {
   },
 
   watch: {
+    clientUuid(clientUuid) {
+      this.$emit('update-client', clientUuid)
+    },
+
+    clientName(clientName) {
+      if (this.client && clientName !== this.client.name) {
+        this.clientUuid = null
+      }
+    },
+
+    client(client) {
+      this.clientName = client.name
+      this.applied_credits = []
+    },
+
     bankAccountUuid(bankAccountUuid) {
       const bankAccount = this.bankAccounts.find((bankAccount) => bankAccount.value === bankAccountUuid)
 
@@ -299,13 +342,18 @@ export default {
   },
 
   mounted() {
-    this.addRow()
+    this.addRow(BillItem.fakeData())
+    this.addRow(BillItem.fakeData())
+    this.addRow(BillItem.fakeData())
+    this.addRow(BillItem.fakeData())
   },
 
   methods: {
-    addRow() {
+    addRow(itemData = {}) {
       const item = BillItem.create({
-        currency_code: this.currency.code
+        currency_code: this.currency.code,
+
+        ...itemData
       })
       this.items.push(item)
     },

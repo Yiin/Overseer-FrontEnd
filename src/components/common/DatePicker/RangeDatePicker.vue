@@ -211,7 +211,14 @@ export default {
         const startDate = moment((this.value && this.value.start) || this.selectedStartDate)
         const endDate = moment((this.value && this.value.end) || this.selectedEndDate || this.endDate)
 
-        return `${startDate.format(this.DATE_INPUT_FORMAT)} - ${endDate.format(this.DATE_INPUT_FORMAT)}`
+        const startDateFormatted = startDate.format(this.DATE_INPUT_FORMAT)
+        const endDateFormatted = endDate.format(this.DATE_INPUT_FORMAT)
+
+        if (startDateFormatted === endDateFormatted) {
+          return startDateFormatted
+        } else {
+          return `${startDateFormatted} - ${endDateFormatted}`
+        }
       },
 
       set() {}

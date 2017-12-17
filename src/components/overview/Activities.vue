@@ -23,7 +23,7 @@
 <script>
 import AuthorizationHelpersMixin from '@/mixins/authorization/helpers'
 
-import AllActivityTab from './tabs/activity/All.vue'
+import AllActivityTab from './tabs/activity/all'
 import PaymentsActivityTab from './tabs/activity/payments'
 import ExpensesActivityTab from './tabs/activity/expenses'
 import InvoicesActivityTab from './tabs/activity/invoices'

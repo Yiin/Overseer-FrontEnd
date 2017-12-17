@@ -5,7 +5,8 @@
         <div class="placeholder placeholder--invoices"></div>
         <div class="placeholder placeholder--line"></div>
         <div class="placeholder__text">
-          There are no overdue invoices.
+          <template v-if="profile">This employee has no overdue invoices.</template>
+          <template v-else>There are no overdue invoices.</template>
         </div>
       </div>
     </template>
@@ -67,6 +68,9 @@ export default {
   props: {
     title: {
       default: 'Overdue Invoices'
+    },
+    profile: {
+      default: null
     }
   },
 
@@ -109,7 +113,9 @@ export default {
     },
 
     overdueInvoices() {
-      return this.$store.getters['table/invoices/overdue']
+      return this.$store.getters['table/invoices/overdue'].filter((invoice) => {
+        return invoice.userUuid === this.$user.uuid
+      })
     },
 
     tableData() {

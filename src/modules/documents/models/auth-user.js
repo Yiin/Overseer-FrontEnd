@@ -46,7 +46,7 @@ class AuthUser extends User {
       /**
        * Update states, i.e. taskbar, overview selections
        */
-      this.updateStates()
+      // this.updateStates()
 
       /**
        * Redirect to index if we're not authorized to see the page we're in

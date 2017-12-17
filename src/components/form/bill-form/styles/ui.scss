@@ -1,4 +1,4 @@
-.billForm input[type='text']
+.billForm input[type='text']:not(.custom)
 {
     font-size: 15px;
     font-weight: 600;
@@ -10,20 +10,18 @@
     margin-bottom: 4px;
     padding: 0 12px;
 
-    transition: all .3s ease;
     vertical-align: middle;
     white-space: normal;
 
-    color: #757d85;
-    border: 1px solid #e9edf1;
+    color: $document-ink-color;
+    border: 1px solid $document-separator-color;
     border-radius: 3px;
     outline: none;
-    background: #fff;
 
     &:focus,
     &:hover
     {
-        border: 1px solid #e2e2e2;
+        border: 1px solid $document-ink-color;
     }
 
     &:not([readonly])
@@ -60,6 +58,7 @@
     .dropdown--datepicker .dropdown__input-wrapper::after
     {
         top: 13px;
+        display: none;
     }
 }
 
@@ -84,7 +83,7 @@
     {
         margin-top: 4px;
     }
-    input[type='text']
+    input[type='text']:not(.custom)
     {
         width: 195px;
         height: 30px;

@@ -1,6 +1,10 @@
 import debounce from 'debounce'
 
 const saveUserOverviewState = debounce(function (dispatch, state) {
+  const ignore = true
+  if (ignore) {
+    return
+  }
   dispatch('auth/SAVE_USER_OVERVIEW_STATE', {
     showGraphs: state.showGraphs,
     currencyCode: state.currency.code,

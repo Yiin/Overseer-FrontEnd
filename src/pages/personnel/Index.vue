@@ -214,7 +214,7 @@ export default {
 
 .dialogContent {
   position: relative;
-  padding: 50px 0 30px;
+  padding: 55px 0 30px;
   display: flex;
   justify-content: center;
   overflow-y: auto;

@@ -81,7 +81,9 @@ class BillItem extends Model {
       name: faker.commerce.productName(),
       identification_number: faker.finance.account(),
       cost: faker.commerce.price() % 60,
-      qty: faker.random.number() % 20 + 1
+      qty: faker.random.number() % 20 + 1,
+      discount_type: 'percentage',
+      discount_value: 0
     }
   }
 }

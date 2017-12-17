@@ -1,0 +1,14 @@
+.tab--dashboard {
+    .placeholder-area {
+        max-width: initial;
+        margin-left: -10px;
+        margin-top: 27px;
+    }
+    .placeholder:not(.placeholder--line) {
+        width: 407px;
+        height: 333px;
+    }
+    .placeholder--line {
+        transform: scale(0.7);
+    }
+}
