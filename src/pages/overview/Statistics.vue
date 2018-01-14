@@ -21,32 +21,33 @@
         Currency dropdown
 
       form-dropdown-input.dropdown--primary.dropdown--dashboard-options(
-        :items="currencies"
-        v-model="selectedCurrencyCode"
+        :items='currencies'
+        v-model='selectedCurrencyCode'
       )
-        template(slot="option" slot-scope="{ item, parent }")
-          v-list-tile(avatar @click="parent.select(item)" tag="div")
+        template(slot='option' slot-scope='{ item, parent }')
+          v-list-tile(avatar @click='parent.select(item)' tag='div')
             v-list-tile-avatar
-              img(:src="require(`@/assets/icons/currency/${item.code.toLowerCase()}.svg`)")
+              img(:src='require(`@/assets/icons/currency/${item.code.toLowerCase()}.svg`)')
             v-list-tile-content
-              v-list-tile-title(v-html="item.code")
-              v-list-tile-sub-title(v-html="item.name")
+              v-list-tile-title(v-html='item.code')
+              v-list-tile-sub-title(v-html='item.name')
 
       //-
         Date range helper options
 
       form-dropdown-input.dropdown--primary.dropdown--dashboard-options(
-        :items="predefinedRanges"
+        :items='predefinedRanges'
         v-model='statisticsDateRangeKey'
         :placeholder="$t('datetime.custom_range')"
+        debug
       )
 
       //-
         Date range picker
 
       range-date-picker.dropdown--primary.dropdown--dashboard-options.dropdown--datepicker(
-        v-model="statisticsDateRange"
-        @input="changeDateRange"
+        v-model='statisticsDateRange'
+        @input='changeDateRange'
       )
 
     //-
@@ -226,6 +227,9 @@ export default {
         return this.$store.state.dashboard.statisticsDateRangeKey
       },
       set(value) {
+        if (this.statisticsDateRangeKey === value) {
+          return
+        }
         this.changeDateRangeByKey(value)
       }
     },

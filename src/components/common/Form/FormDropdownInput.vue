@@ -134,6 +134,10 @@ export default {
   ],
 
   props: {
+    debug: {
+      type: Boolean,
+      default: false
+    },
     placeholder: {
       type: String,
       default: ''

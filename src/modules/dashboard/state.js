@@ -6,5 +6,5 @@ export default {
     start: undefined,
     end: undefined
   },
-  statisticsDateRangeKey: 'today'
+  statisticsDateRangeKey: 'last7'
 }
