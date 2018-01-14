@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '@/store'
 import * as Routes from './routes.js'
-import Overview from '@/components/overview/Overview.vue'
+import Overview from '@/pages/overview/Overview.vue'
 import { getApiRequestName, getTableName } from '@/modules/documents/helpers'
 import AuthorizationService from '@/services/authorization'
 

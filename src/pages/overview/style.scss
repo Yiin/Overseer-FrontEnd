@@ -1,0 +1,82 @@
+.overview {
+    margin-top: 24px;
+}
+
+.row
+{
+    display: flex;
+    &--options
+    {
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 38px;
+    }
+}
+
+.dropdown--dashboard-options
+{
+    &:first-child {
+        width: 215px;
+    }
+    &:not(:first-child)
+    {
+        margin-left: 31px;
+        width: 190px;
+
+        .dropdown__options-wrapper.scrollable {
+            max-height: 339px;
+        }
+    }
+}
+
+.dropdown--dashboard-options.dropdown--datepicker
+{
+    width: 308px;
+}
+
+.value.value__dashboard.value__dashboard--total
+{
+    font-size: 38px;
+    font-weight: bold;
+
+    margin-top: 25px;
+}
+
+.value.value__dashboard.value__dashboard--time-framed
+{
+    font-size: 27px;
+    font-weight: bold;
+
+    color: $color-main;
+}
+
+.block__body.block__body--dashboard-statistics
+{
+    display: flex;
+
+    justify-content: space-between;
+}
+
+.block.block--dashboard:not(:first-child)
+{
+    margin-left: 33px;
+}
+
+.time-frame-total
+{
+    margin-top: 14px;
+
+    text-align: right;
+}
+
+.time-frame
+{
+    font-size: 16px;
+
+    margin-top: 16px;
+}
+
+.block__title
+{
+    font-size: 16px;
+}
