@@ -169,6 +169,12 @@ export default ({ model, repository }, actions = {}) => Object.assign({
   },
 
   CREATE({ dispatch, state }) {
+    if (state.isCreating) {
+      return new Promise.resolve()
+    }
+
+    commit('SET_CREATING', true)
+
     const listeners = state.listeners.create.slice()
 
     return dispatch(`${repository}/API_CREATE`, state.fields, {
@@ -189,9 +195,15 @@ export default ({ model, repository }, actions = {}) => Object.assign({
       }
       return response
     })
+    .finally(() => {
+      commit('SET_CREATING', false)
+    })
   },
 
   SAVE({ dispatch, state }) {
+    if (state.isSaving) {
+      return
+    }
     return dispatch(`${repository}/API_UPDATE`, state.fields, {
       root: true
     })

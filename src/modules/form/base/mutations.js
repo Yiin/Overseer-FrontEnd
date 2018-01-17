@@ -6,6 +6,10 @@ export default (mutations = {}) => Object.assign({
     copyFields(/* from */ newState, /* to */ state)
   },
 
+  SET_CREATING(state, isCreating) {
+    state._isCreating = isCreating
+  },
+
   SET_PREVIEW(state, preview) {
     state._preview = preview
   },

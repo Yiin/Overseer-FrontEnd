@@ -40,6 +40,8 @@ export default {
   },
 
   INIT({ dispatch, commit, state }, preloadedData = null) {
+    console.log('INIT', preloadedData)
+
     // Use preloaded data if possible, load everything if not
     if (preloadedData) {
       if ('data' in preloadedData) {

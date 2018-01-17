@@ -11,6 +11,7 @@ export default (name, state = {}) => {
   const formState = JSON.parse(JSON.stringify(Object.assign({
     _name: typeof name === 'string' ? name : '',
     _preview: false,
+    _isCreating: false,
 
     /**
      * Current revision
